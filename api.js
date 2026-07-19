@@ -80,6 +80,7 @@ export const api = {
   },
   download: {
     info:      (url) => req('POST', '/api/download/info', { url }),
+    search:    (q, limit) => req('POST', '/api/download/search', { q, limit }),
     analyze:   (url) => req('POST', '/api/download/analyze', { url }),
     streamUrl: (url) => `${BASE}/api/download/stream?url=${encodeURIComponent(url)}&token=${encodeURIComponent(getToken())}`,
     clipUrl:   (url, start, end, frame, crop) => {

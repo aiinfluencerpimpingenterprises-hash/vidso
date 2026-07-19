@@ -861,7 +861,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
               </div>
               <div class="clip-discover-search">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-                <input type="text" id="clip-discover-q" placeholder="Search a video..." oninput="renderClipDiscover()"/>
+                <input type="text" id="clip-discover-q" placeholder="Search a video..." oninput="onClipDiscoverSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchClipDiscover(true)}"/>
               </div>
             </div>
             <div class="clip-discover-tabs" id="clip-discover-tabs">
@@ -2391,35 +2391,34 @@ const CLIP_DISCOVER = [
 ]
 
 let clipDiscoverCat = 'recommended'
+let clipDiscoverSearchTimer = null
+let clipDiscoverSearchSeq = 0
+let clipDiscoverResults = null // null = curated mode; array = live YouTube search results
 
 window.setClipDiscoverCat = (cat, btn) => {
   clipDiscoverCat = cat
   document.querySelectorAll('#clip-discover-tabs .clip-tab').forEach((b) => b.classList.remove('active'))
   btn?.classList.add('active')
+  // Switching tabs clears live search and shows curated for that category
+  const input = document.getElementById('clip-discover-q')
+  if (input) input.value = ''
+  clipDiscoverResults = null
   renderClipDiscover()
 }
 
-window.renderClipDiscover = () => {
+function paintClipDiscoverCards(list) {
   const grid = document.getElementById('clip-discover-grid')
   if (!grid) return
-  const q = (document.getElementById('clip-discover-q')?.value || '').trim().toLowerCase()
-  const seen = new Set()
-  const list = CLIP_DISCOVER.filter((v) => {
-    if (seen.has(v.id)) return false
-    seen.add(v.id)
-    const hay = `${v.title} ${v.channel}`.toLowerCase()
-    if (q) return hay.includes(q)
-    return v.cats.includes(clipDiscoverCat)
-  })
   if (!list.length) {
-    grid.innerHTML = '<div class="clip-discover-empty">No videos match that search. Try another keyword or paste a link above.</div>'
+    grid.innerHTML = '<div class="clip-discover-empty">No videos found. Try another keyword or paste a link above.</div>'
     return
   }
   grid.innerHTML = list.slice(0, 12).map((v) => {
-    const thumb = `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`
+    const thumb = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`
     const initial = (v.channel || '?').trim().charAt(0).toUpperCase()
-    const safeTitle = v.title.replace(/"/g, '&quot;')
-    return `<button type="button" class="clip-pick" onclick="pickClipDiscover('${v.id}')" title="${safeTitle}">
+    const safeTitle = String(v.title || '').replace(/"/g, '&quot;')
+    const safeId = String(v.id || '').replace(/'/g, '')
+    return `<button type="button" class="clip-pick" onclick="pickClipDiscover('${safeId}')" title="${safeTitle}">
       <div class="clip-pick-thumb">
         <img src="${thumb}" alt="" loading="lazy" referrerpolicy="no-referrer"/>
         <div class="clip-pick-overlay">
@@ -2430,12 +2429,60 @@ window.renderClipDiscover = () => {
       <div class="clip-pick-meta">
         <div class="clip-pick-avatar">${initial}</div>
         <div>
-          <div class="clip-pick-title">${v.title.replace(/</g, '&lt;')}</div>
-          <div class="clip-pick-channel">${v.channel.replace(/</g, '&lt;')}</div>
+          <div class="clip-pick-title">${String(v.title || '').replace(/</g, '&lt;')}</div>
+          <div class="clip-pick-channel">${String(v.channel || '').replace(/</g, '&lt;')}</div>
         </div>
       </div>
     </button>`
   }).join('')
+}
+
+window.renderClipDiscover = () => {
+  if (clipDiscoverResults) {
+    paintClipDiscoverCards(clipDiscoverResults)
+    return
+  }
+  const seen = new Set()
+  const list = CLIP_DISCOVER.filter((v) => {
+    if (seen.has(v.id)) return false
+    seen.add(v.id)
+    return v.cats.includes(clipDiscoverCat)
+  })
+  paintClipDiscoverCards(list)
+}
+
+window.onClipDiscoverSearch = () => {
+  clearTimeout(clipDiscoverSearchTimer)
+  const q = (document.getElementById('clip-discover-q')?.value || '').trim()
+  if (!q) {
+    clipDiscoverResults = null
+    renderClipDiscover()
+    return
+  }
+  clipDiscoverSearchTimer = setTimeout(() => searchClipDiscover(false), 450)
+}
+
+window.searchClipDiscover = async (immediate) => {
+  clearTimeout(clipDiscoverSearchTimer)
+  const q = (document.getElementById('clip-discover-q')?.value || '').trim()
+  const grid = document.getElementById('clip-discover-grid')
+  if (!q) {
+    clipDiscoverResults = null
+    renderClipDiscover()
+    return
+  }
+  if (!grid) return
+  const seq = ++clipDiscoverSearchSeq
+  grid.innerHTML = '<div class="clip-discover-empty">Searching YouTube…</div>'
+  try {
+    const { videos } = await api.download.search(q, 12)
+    if (seq !== clipDiscoverSearchSeq) return // stale response
+    clipDiscoverResults = videos || []
+    paintClipDiscoverCards(clipDiscoverResults)
+  } catch (e) {
+    if (seq !== clipDiscoverSearchSeq) return
+    grid.innerHTML = `<div class="clip-discover-empty">${(e.message || 'Search failed').replace(/</g, '&lt;')}</div>`
+  }
 }
 
 window.pickClipDiscover = (id) => {
