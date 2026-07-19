@@ -1846,16 +1846,8 @@ let captionJobId = null
 let captionPollTimer = null
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
-// Auth gate temporarily disabled for live testing — dashboard opens for everyone.
-function enterGuestMode() {
-  currentUser = { email: 'guest@clipzo.pro', name: 'Guest', plan: 'guest', credits: '∞' }
-  populateUser()
-  restorePanelFromHash()
-}
-
 async function checkAuth() {
-  hideModal()
-  if (!getToken()) { enterGuestMode(); return }
+  if (!getToken()) { showModal(); return }
   try {
     currentUser = await api.user.me()
   } catch {
@@ -1863,14 +1855,15 @@ async function checkAuth() {
     // refresh_token before giving up — without this, every hard-refresh past
     // the 1h mark dumps the user back at the sign-in modal.
     const rt = localStorage.getItem('clipzo_refresh')
-    if (!rt) { clearSession(); enterGuestMode(); return }
+    if (!rt) { clearSession(); showModal(); return }
     try {
       const { session } = await api.auth.refresh(rt)
       if (!session?.access_token) throw new Error('refresh returned no session')
       setSession(session)
       currentUser = await api.user.me()
-    } catch { clearSession(); enterGuestMode(); return }
+    } catch { clearSession(); showModal(); return }
   }
+  hideModal()
   populateUser()
   loadUsage()
   loadVoices()
@@ -1925,11 +1918,11 @@ window.doSignup = async () => {
 window.doLogout = async () => {
   await api.auth.logout().catch(()=>{})
   clearSession()
-  enterGuestMode()
+  currentUser = null
+  showModal()
 }
 
 function populateUser() {
-  if (!currentUser) return
   document.getElementById('user-email').textContent = currentUser.email
   document.getElementById('user-plan').textContent  = currentUser.plan
   document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.email)[0].toUpperCase()
