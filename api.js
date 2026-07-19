@@ -15,11 +15,16 @@ async function req(method, path, body, isFormData = false) {
   const headers = {}
   if (token) headers['Authorization'] = `Bearer ${token}`
   if (!isFormData) headers['Content-Type'] = 'application/json'
-  const res = await fetch(BASE + path, {
-    method,
-    headers,
-    body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
-  })
+  let res
+  try {
+    res = await fetch(BASE + path, {
+      method,
+      headers,
+      body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
+    })
+  } catch {
+    throw new Error('Cannot reach Clipzo API — the backend may be down. Try again in a minute.')
+  }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
     // 402 = paid-only gate (no active plan or monthly quota used up). Surface a
