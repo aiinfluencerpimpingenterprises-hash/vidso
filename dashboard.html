@@ -41,14 +41,24 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .sidebar-nav::-webkit-scrollbar-track{background:transparent}
 .sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:6px}
 .sidebar-nav::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26)}
-.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;cursor:pointer;font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:.9rem;font-weight:500;color:rgba(255,255,255,.56);transition:background .18s,color .18s;border:none;background:none;width:100%;text-align:left;letter-spacing:-.01em;position:relative;flex-shrink:0}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;cursor:pointer;font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:.9rem;font-weight:500;color:rgba(255,255,255,.56);transition:background .18s,color .18s,box-shadow .18s,border-color .18s;border:1px solid transparent;background:none;width:100%;text-align:left;letter-spacing:-.01em;position:relative;flex-shrink:0}
 .nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
-.nav-item.active{background:linear-gradient(90deg,rgba(91,140,255,.22),rgba(91,140,255,.04));color:#fff;font-weight:600}
-.nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--grad)}
-.nav-ico{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);transition:background .18s,border-color .18s,color .18s}
+.nav-item.active{
+  background:rgba(91,140,255,.14);
+  border-color:rgba(91,140,255,.42);
+  box-shadow:0 0 0 1px rgba(91,140,255,.12),0 0 24px rgba(91,140,255,.18);
+  color:#fff;font-weight:600
+}
+.nav-item.active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:3px;border-radius:0 4px 4px 0;background:#5b8cff;box-shadow:0 0 10px rgba(91,140,255,.65)}
+.nav-ico{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);transition:background .18s,border-color .18s,color .18s,box-shadow .18s}
 .nav-ico svg{width:16px;height:16px;opacity:1}
 .nav-item:hover .nav-ico{background:rgba(255,255,255,.07);color:#fff}
-.nav-item.active .nav-ico{background:rgba(91,140,255,.22);border-color:rgba(91,140,255,.35);color:var(--blue)}
+.nav-item.active .nav-ico{
+  background:rgba(91,140,255,.28);
+  border-color:rgba(91,140,255,.4);
+  color:#5b8cff;
+  box-shadow:0 0 12px rgba(91,140,255,.25)
+}
 .sidebar-footer{padding:14px 12px;border-top:1px solid var(--line);flex-shrink:0}
 .user-profile-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px 14px;background:transparent;text-decoration:none;color:inherit;cursor:default}
@@ -367,76 +377,85 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .vr-count-input{width:64px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:#fff;font-size:.85rem;font-weight:700;padding:7px 8px;text-align:center}
 .cv-genre-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
 
-/* Clipper discover — SendClip UI */
+/* Clipper discover — match SendClip production UI */
 #panel-clipper > .tool-card{
-  background:transparent;border:none;padding:8px 4px 28px;max-width:1100px
+  background:rgba(12,14,22,.92);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;
+  padding:28px 28px 32px;
+  max-width:980px;
+  margin:0 auto 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35)
 }
 #panel-clipper > .tool-card > h3{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:1.65rem;font-weight:700;letter-spacing:-.02em;margin-bottom:8px
+  font-family:'Bricolage Grotesque',sans-serif;font-size:1.75rem;font-weight:700;letter-spacing:-.03em;margin-bottom:10px;color:#fff
 }
 #panel-clipper > .tool-card > p{
-  font-size:.92rem;color:var(--muted);margin-bottom:28px;max-width:640px;line-height:1.55
+  font-size:.95rem;color:rgba(255,255,255,.55);margin-bottom:26px;max-width:720px;line-height:1.55
 }
-.clip-hero{margin-bottom:28px}
+.clip-hero{margin-bottom:8px}
 .clip-hero-row{
   display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.03);border:1.5px solid var(--line-2);
-  border-radius:999px;padding:8px 8px 8px 18px;
+  background:#050507;border:1.5px solid rgba(91,140,255,.55);
+  border-radius:999px;padding:7px 7px 7px 18px;
+  box-shadow:0 0 0 3px rgba(91,140,255,.1),0 0 28px rgba(91,140,255,.12);
   transition:border-color .15s,box-shadow .15s
 }
 .clip-hero-row:focus-within{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(91,140,255,.18)
+  border-color:#5b8cff;
+  box-shadow:0 0 0 4px rgba(91,140,255,.18),0 0 36px rgba(91,140,255,.2)
 }
 .clip-hero-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .clip-hero-input{
   flex:1;min-width:0;background:none;border:none;color:#fff;
-  font-size:.95rem;padding:12px 8px;outline:none
+  font-size:.95rem;padding:12px 8px;outline:none;font-family:inherit
 }
-.clip-hero-input::placeholder{color:#666}
+.clip-hero-input::placeholder{color:rgba(255,255,255,.35)}
 .clip-hero-btn{
   flex-shrink:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
-  border-radius:999px!important;padding:12px 20px!important;font-weight:700
+  border-radius:999px!important;padding:12px 22px!important;font-weight:700;
+  background:#5b8cff!important;box-shadow:0 6px 18px rgba(91,140,255,.35)!important;color:#fff!important
 }
+.clip-hero-btn:hover{background:#6b9aff!important;transform:none!important}
 .clip-ctype{
-  display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap;
   font-size:.8rem;color:var(--muted)
 }
 .clip-ctype-label{
   display:inline-flex;align-items:center;gap:6px;font-weight:600;color:#fff
 }
-.clip-ctype-label svg{opacity:.85;color:var(--a2)}
+.clip-ctype-label svg{opacity:1;color:#5b8cff}
 .clip-ctype select{
-  background:#111;border:1px solid rgba(255,255,255,.12);border-radius:999px;
-  color:#fff;font-size:.8rem;font-weight:600;padding:8px 14px;outline:none;cursor:pointer
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:999px;
+  color:#fff;font-size:.8rem;font-weight:600;padding:8px 14px;outline:none;cursor:pointer;font-family:inherit
 }
-.clip-ctype select:focus{border-color:var(--a2)}
-.clip-ctype-hint{color:#777}
-.clip-discover{margin-top:8px;padding-top:8px;border-top:none}
+.clip-ctype select:focus{border-color:#5b8cff;box-shadow:0 0 0 3px rgba(91,140,255,.15)}
+.clip-ctype-hint{color:rgba(255,255,255,.4)}
+.clip-discover{margin-top:28px;padding-top:4px;border-top:none;max-width:980px;margin-left:auto;margin-right:auto}
 .clip-discover-head{margin-bottom:14px}
-.clip-discover-title{font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-.01em}
-.clip-discover-sub{font-size:.88rem;color:#888;margin-top:6px;line-height:1.45}
+.clip-discover-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;font-weight:700;color:#fff;letter-spacing:-.02em}
+.clip-discover-sub{font-size:.9rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.45}
 .clip-discover-search{
   display:flex;align-items:center;gap:10px;
-  background:#0a0a0a;border:1px solid rgba(255,255,255,.1);
-  border-radius:999px;padding:12px 16px;width:100%;max-width:none;margin:16px 0 18px
+  background:#050507;border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;padding:14px 18px;width:100%;max-width:none;margin:18px 0 18px
 }
-.clip-discover-search:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(91,140,255,.18)}
-.clip-discover-search svg{flex-shrink:0;opacity:.5}
+.clip-discover-search:focus-within{border-color:#5b8cff;box-shadow:0 0 0 3px rgba(91,140,255,.16)}
+.clip-discover-search svg{flex-shrink:0;opacity:.45;color:#fff}
 .clip-discover-search input{
-  flex:1;min-width:0;background:none;border:none;color:#fff;font-size:.9rem;outline:none;font-family:inherit
+  flex:1;min-width:0;background:none;border:none;color:#fff;font-size:.92rem;outline:none;font-family:inherit
 }
-.clip-discover-search input::placeholder{color:#666}
-.clip-discover-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.clip-discover-search input::placeholder{color:rgba(255,255,255,.35)}
+.clip-discover-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 .clip-tab{
-  border:1.5px solid var(--line-2);background:transparent;color:#999;
-  border-radius:999px;padding:9px 18px;font-size:.82rem;font-weight:600;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(255,255,255,.55);
+  border-radius:999px;padding:10px 18px;font-size:.84rem;font-weight:600;cursor:pointer;
   transition:all .15s;font-family:inherit
 }
-.clip-tab:hover{color:#fff;border-color:rgba(91,140,255,.45)}
+.clip-tab:hover{color:#fff;border-color:rgba(91,140,255,.4);background:rgba(91,140,255,.08)}
 .clip-tab.active{
-  background:rgba(91,140,255,.14);border-color:var(--a1);color:#fff;
-  box-shadow:0 0 0 1px rgba(91,140,255,.2)
+  background:#5b8cff;border-color:#5b8cff;color:#fff;
+  box-shadow:0 6px 18px rgba(91,140,255,.3)
 }
 .clip-discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 @media(max-width:900px){.clip-discover-grid{grid-template-columns:repeat(2,1fr)}}
@@ -444,7 +463,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   .clip-discover-grid{grid-template-columns:1fr}
   .clip-hero-row{flex-wrap:wrap;border-radius:20px;padding:12px}
   .clip-hero-btn{width:100%;justify-content:center}
-  #panel-clipper > .tool-card > h3{font-size:1.35rem}
+  #panel-clipper > .tool-card{padding:20px 16px 24px;border-radius:18px}
+  #panel-clipper > .tool-card > h3{font-size:1.4rem}
 }
 .clip-pick{
   position:relative;border:none;background:none;padding:0;cursor:pointer;
@@ -476,14 +496,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   grid-column:1/-1;padding:36px;text-align:center;color:#777;font-size:.88rem;
   background:#0a0a0a;border:1px dashed rgba(255,255,255,.1);border-radius:16px
 }
-.clip-upload-sep{
-  text-align:center;font-size:.72rem;color:#555;margin:28px 0 14px;
-  text-transform:uppercase;letter-spacing:.08em
-}
-#panel-clipper .upload-zone{
-  border-radius:16px;border-style:dashed;padding:22px;opacity:.85
-}
-#panel-clipper .upload-zone:hover{opacity:1}
+.clip-upload-sep,
+#panel-clipper .upload-zone{display:none}
 
 .vr-layout{display:flex;gap:24px;align-items:flex-start}
 .vr-left{flex:1;min-width:0}
@@ -904,10 +918,10 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
     <!-- CLIPPER -->
     <div class="panel" id="panel-clipper">
-      <div class="tool-card">
-        <h3>Video Clipper</h3>
-        <p>Paste a YouTube, TikTok, Instagram, X or Reddit link — SendClip's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
-        <div id="clip-loader">
+      <div id="clip-loader">
+        <div class="tool-card">
+          <h3>Video Clipper</h3>
+          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link — SendClip's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
           <div class="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
@@ -921,7 +935,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             </div>
             <div class="clip-ctype">
               <span class="clip-ctype-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
                 Content type
               </span>
               <select id="clip-content-type" onchange="setClipContentType(this.value)">
@@ -941,35 +955,36 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             </div>
             <div class="status" id="clip-url-status" style="display:none;margin-top:12px"></div>
           </div>
-
-          <div class="clip-discover" id="clip-discover">
-            <div class="clip-discover-head">
-              <div class="clip-discover-title">Or start from a video</div>
-              <div class="clip-discover-sub">Search YouTube or pick a popular video to clip.</div>
-            </div>
-            <div class="clip-discover-search">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input type="text" id="clip-discover-q" placeholder="Search YouTube..." oninput="onClipDiscoverSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchClipDiscover(true)}"/>
-            </div>
-            <div class="clip-discover-tabs" id="clip-discover-tabs">
-              <button type="button" class="clip-tab active" data-cat="recommended" onclick="setClipDiscoverCat('recommended',this)">Recommended</button>
-              <button type="button" class="clip-tab" data-cat="entertainment" onclick="setClipDiscoverCat('entertainment',this)">Entertainment</button>
-              <button type="button" class="clip-tab" data-cat="sport" onclick="setClipDiscoverCat('sport',this)">Sport</button>
-              <button type="button" class="clip-tab" data-cat="podcasts" onclick="setClipDiscoverCat('podcasts',this)">Podcasts</button>
-            </div>
-            <div class="clip-discover-grid" id="clip-discover-grid"></div>
-          </div>
-
-          <div class="clip-upload-sep">or upload a file</div>
-          <div class="upload-zone" id="clip-drop-zone" onclick="document.getElementById('clip-file-input').click()">
-            <div class="uz-icon">✂️</div>
-            <p><strong>Click to load video</strong> or drag &amp; drop</p>
-            <p style="margin-top:4px;font-size:.72rem">MP4, MOV, WebM</p>
-          </div>
         </div>
-        <input type="file" id="clip-file-input" accept="video/*" style="display:none"/>
 
-        <div id="clip-editor" style="display:none;margin-top:20px">
+        <div class="clip-discover" id="clip-discover">
+          <div class="clip-discover-head">
+            <div class="clip-discover-title">Or start from a video</div>
+            <div class="clip-discover-sub">Search YouTube or pick a popular video to clip.</div>
+          </div>
+          <div class="clip-discover-search">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="clip-discover-q" placeholder="Search YouTube..." oninput="onClipDiscoverSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchClipDiscover(true)}"/>
+          </div>
+          <div class="clip-discover-tabs" id="clip-discover-tabs">
+            <button type="button" class="clip-tab active" data-cat="recommended" onclick="setClipDiscoverCat('recommended',this)">Recommended</button>
+            <button type="button" class="clip-tab" data-cat="entertainment" onclick="setClipDiscoverCat('entertainment',this)">Entertainment</button>
+            <button type="button" class="clip-tab" data-cat="sport" onclick="setClipDiscoverCat('sport',this)">Sport</button>
+            <button type="button" class="clip-tab" data-cat="podcasts" onclick="setClipDiscoverCat('podcasts',this)">Podcasts</button>
+          </div>
+          <div class="clip-discover-grid" id="clip-discover-grid"></div>
+        </div>
+
+        <div class="clip-upload-sep">or upload a file</div>
+        <div class="upload-zone" id="clip-drop-zone" onclick="document.getElementById('clip-file-input').click()">
+          <div class="uz-icon">✂️</div>
+          <p><strong>Click to load video</strong> or drag &amp; drop</p>
+          <p style="margin-top:4px;font-size:.72rem">MP4, MOV, WebM</p>
+        </div>
+      </div>
+      <input type="file" id="clip-file-input" accept="video/*" style="display:none"/>
+
+      <div id="clip-editor" style="display:none;margin-top:20px">
           <button type="button" class="btn btn-ghost btn-sm" onclick="resetClipper()" style="margin-bottom:12px;gap:6px">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
             Change video
@@ -1172,9 +1187,8 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div>
           </div><!-- /.clip-right -->
           </div><!-- /.clip-layout -->
-        </div>
-      </div>
-    </div>
+        </div><!-- /#clip-editor -->
+    </div><!-- /#panel-clipper -->
 
     <!-- VIDEO EDITOR -->
     <div class="panel" id="panel-editor">
