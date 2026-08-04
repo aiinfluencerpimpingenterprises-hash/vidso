@@ -179,6 +179,11 @@ export const api = {
       return URL.createObjectURL(await res.blob())
     },
   },
+  faceless: {
+    presets: () => req('GET', '/api/faceless/presets'),
+    // body: { topic, duration_id, aspect } → structured script
+    script: (body) => req('POST', '/api/faceless/script', body),
+  },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
     checkoutUrl: (tier, interval) => WHOP_CHECKOUT[`${tier}_${interval}`] || WHOP_CHECKOUT.creator_monthly,

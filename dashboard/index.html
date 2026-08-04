@@ -126,6 +126,40 @@ select option{background:var(--card)}
 .voice-name{font-size:.78rem;font-weight:500;margin-bottom:2px}
 .voice-cat{font-size:.68rem;color:var(--muted)}
 
+/* FACELESS VIDEO GEN — Phase 1 */
+.fv-wizard{display:flex;flex-direction:column;gap:18px}
+.fv-stepper{display:flex;align-items:center;gap:8px;margin-bottom:4px;overflow-x:auto;padding-bottom:4px}
+.fv-step-pill{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;font-size:.75rem;font-weight:600;color:var(--muted);white-space:nowrap;border:1px solid transparent}
+.fv-step-pill .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:.7rem;font-weight:800}
+.fv-step-pill.active{color:#fff;border-color:rgba(91,140,255,.35);background:rgba(91,140,255,.08)}
+.fv-step-pill.active .n{background:var(--a1);border-color:var(--a1);color:#fff}
+.fv-step-pill.done{color:#fff}
+.fv-step-pill.done .n{background:var(--a2);border-color:var(--a2);color:#fff;font-size:0}
+.fv-step-pill.done .n::after{content:'✓';font-size:.72rem}
+.fv-step-line{flex:1;height:1px;background:var(--border);min-width:12px}
+.fv-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px}
+.fv-seg-btn{border:none;background:transparent;color:var(--muted);font-size:.82rem;font-weight:600;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
+.fv-seg-btn.active{background:var(--a1);color:#fff}
+.fv-chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.fv-chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.78rem;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .15s}
+.fv-chip:hover{border-color:var(--a2);color:#fff}
+.fv-chip.active{background:rgba(91,140,255,.15);border-color:var(--a1);color:#fff}
+.fv-voice-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.fv-voice-preview{display:none;margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px}
+.fv-voice-preview.show{display:block}
+.fv-voice-preview audio{width:100%;height:32px}
+.fv-meta{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:.75rem;color:var(--muted);margin-top:8px}
+.fv-meta b{color:#fff;font-weight:600}
+.fv-script-box{display:none;margin-top:8px}
+.fv-script-box.show{display:block}
+.fv-script-title{font-size:.95rem;font-weight:700;margin-bottom:6px}
+.fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.fv-section label{display:block;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fv-section textarea{width:100%;min-height:72px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:#fff;padding:10px 12px;font-size:.85rem;line-height:1.45;resize:vertical;font-family:inherit}
+.fv-section textarea:focus{outline:none;border-color:var(--a2)}
+@media (max-width:640px){.fv-seg{grid-template-columns:1fr}.fv-voice-row{grid-template-columns:1fr}}
+
 /* IMAGES GRID */
 .img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px}
 .img-wrap{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:9/16}
@@ -1912,9 +1946,86 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
     <div class="panel" id="panel-videogen">
       <div class="tool-card">
-        <h3>Video Generation</h3>
-        <p>Coming soon — generate short-form video from a prompt.</p>
-        <div class="empty-panel">Video Generation is on the way</div>
+        <h3>Faceless Video Generator</h3>
+        <p>Turn a topic into a narrated short or long-form video — script, voice, B-roll, and captions.</p>
+
+        <div class="fv-wizard">
+          <div class="fv-stepper" aria-label="Progress">
+            <div class="fv-step-pill active" id="fv-pill-1"><span class="n">1</span> Setup</div>
+            <div class="fv-step-line"></div>
+            <div class="fv-step-pill" id="fv-pill-2"><span class="n">2</span> Script</div>
+            <div class="fv-step-line"></div>
+            <div class="fv-step-pill" id="fv-pill-3"><span class="n">3</span> Media</div>
+            <div class="fv-step-line"></div>
+            <div class="fv-step-pill" id="fv-pill-4"><span class="n">4</span> Preview</div>
+            <div class="fv-step-line"></div>
+            <div class="fv-step-pill" id="fv-pill-5"><span class="n">5</span> Export</div>
+          </div>
+
+          <!-- Phase 1: Setup -->
+          <div id="fv-setup">
+            <div class="field">
+              <label>Topic / Prompt</label>
+              <textarea id="fv-topic" placeholder='e.g. "12 Airport Secrets Airlines Don’t Want You to Know"' style="min-height:88px"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Video length</label>
+              <div class="fv-seg" id="fv-format-seg" role="tablist">
+                <button type="button" class="fv-seg-btn active" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30–60s</button>
+                <button type="button" class="fv-seg-btn" data-format="long" onclick="fvSetFormat('long')">Long-form · 3–5 min</button>
+              </div>
+              <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px"></div>
+            </div>
+
+            <div class="field">
+              <label>Aspect ratio</label>
+              <div class="fv-chip-row" id="fv-aspect-chips">
+                <button type="button" class="fv-chip active" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
+                <button type="button" class="fv-chip" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Narrator voice</label>
+              <div class="fv-voice-row">
+                <select id="fv-voice" class="cm-input" onchange="fvOnVoiceChange()">
+                  <option value="">Loading voices…</option>
+                </select>
+                <button type="button" class="btn btn-ghost" id="fv-voice-preview-btn" onclick="fvPreviewVoice()" disabled title="Preview voice">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5z"/></svg>
+                  Preview
+                </button>
+              </div>
+              <div class="fv-voice-preview" id="fv-voice-preview">
+                <audio id="fv-voice-audio" controls preload="none"></audio>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+              <button type="button" class="btn btn-primary" id="fv-gen-script-btn" onclick="fvGenerateScript()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Generate Script
+              </button>
+              <div class="status" id="fv-status" style="display:none;margin:0"></div>
+            </div>
+          </div>
+
+          <!-- Script result (feeds Phase 2) -->
+          <div class="fv-script-box" id="fv-script-box">
+            <div class="result-box" style="margin-top:0">
+              <div class="result-label">Generated script</div>
+              <div class="fv-script-title" id="fv-script-title"></div>
+              <div class="fv-meta" id="fv-script-meta"></div>
+              <div class="fv-sections" id="fv-sections"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+                <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
+                <button type="button" class="btn btn-primary" id="fv-to-phase2-btn" disabled title="Phase 2 coming next">Continue to editor →</button>
+              </div>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)">Phase 1 complete. Script is editable above — section rewrite &amp; media pipeline land in the next phases.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2100,6 +2211,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   }
   document.body.classList.remove('nav-open')
   if (id === 'voiceover') loadVoiceLibrary()
+  if (id === 'videogen') fvInit()
   if (!opts.silent) {
     const next = pathForPanel(id)
     if (normalizePath(location.pathname) !== normalizePath(next)) {
@@ -2155,13 +2267,17 @@ async function loadVoices() {
   try {
     voices = await api.tts.voices()
     const grid = document.getElementById('voices-grid')
-    grid.innerHTML = voices.map(v => `
-      <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
-        <div class="voice-name">${v.name.split(' - ')[0]}</div>
-        <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
-      </div>`).join('')
+    if (grid) {
+      grid.innerHTML = voices.map(v => `
+        <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
+          <div class="voice-name">${v.name.split(' - ')[0]}</div>
+          <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
+        </div>`).join('')
+    }
+    fvPopulateVoices()
   } catch(e) {
-    document.getElementById('voices-grid').innerHTML = '<div style="color:var(--muted);font-size:.8rem">Failed to load voices</div>'
+    const grid = document.getElementById('voices-grid')
+    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Failed to load voices</div>'
   }
 }
 
@@ -2172,6 +2288,192 @@ window.selectVoice = (id, preview, name) => {
   if (preview) {
     document.getElementById('voice-preview-audio').src = preview
     document.getElementById('voice-preview-row').style.display = ''
+  }
+}
+
+// ── FACELESS VIDEO GENERATOR (Phase 1) ───────────────────────────────────────
+const FV_DURATIONS = {
+  shorts: [
+    { id: 'shorts_30', label: '30s', seconds: 30 },
+    { id: 'shorts_45', label: '45s', seconds: 45 },
+    { id: 'shorts_60', label: '60s', seconds: 60 },
+  ],
+  long: [
+    { id: 'long_180', label: '3 min', seconds: 180 },
+    { id: 'long_240', label: '4 min', seconds: 240 },
+    { id: 'long_300', label: '5 min', seconds: 300 },
+  ],
+}
+
+window.fvState = {
+  format: 'shorts',
+  durationId: 'shorts_60',
+  aspect: '9:16',
+  voiceId: null,
+  voicePreview: null,
+  script: null,
+  inited: false,
+}
+
+function fvSetStatus(msg, kind) {
+  const el = document.getElementById('fv-status')
+  if (!el) return
+  if (!msg) { el.style.display = 'none'; return }
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.innerHTML = kind === 'loading'
+    ? `<span class="spinner"></span> ${msg}`
+    : msg
+}
+
+function fvRenderDurationChips() {
+  const row = document.getElementById('fv-duration-chips')
+  if (!row) return
+  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  if (!list.some(d => d.id === fvState.durationId)) {
+    fvState.durationId = list[list.length - 1].id
+  }
+  row.innerHTML = list.map(d =>
+    `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
+  ).join('')
+}
+
+window.fvSetFormat = (format) => {
+  fvState.format = format === 'long' ? 'long' : 'shorts'
+  document.querySelectorAll('#fv-format-seg .fv-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.format === fvState.format)
+  })
+  fvState.durationId = FV_DURATIONS[fvState.format][fvState.format === 'shorts' ? 2 : 0].id
+  fvRenderDurationChips()
+}
+
+window.fvSetDuration = (id) => {
+  fvState.durationId = id
+  fvRenderDurationChips()
+}
+
+window.fvSetAspect = (aspect) => {
+  fvState.aspect = aspect === '16:9' ? '16:9' : '9:16'
+  document.querySelectorAll('#fv-aspect-chips .fv-chip').forEach(b => {
+    b.classList.toggle('active', b.dataset.aspect === fvState.aspect)
+  })
+}
+
+function fvPopulateVoices() {
+  const sel = document.getElementById('fv-voice')
+  if (!sel) return
+  if (!voices.length) {
+    sel.innerHTML = '<option value="">No voices available</option>'
+    document.getElementById('fv-voice-preview-btn').disabled = true
+    return
+  }
+  const prev = fvState.voiceId || selectedVoiceId || voices[0].id
+  sel.innerHTML = voices.map(v => {
+    const label = v.name.split(' - ')[0]
+    const cat = v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : (v.category || '')
+    return `<option value="${v.id}" data-preview="${v.preview_url || ''}">${label}${cat ? ' · ' + cat : ''}</option>`
+  }).join('')
+  sel.value = voices.some(v => v.id === prev) ? prev : voices[0].id
+  fvOnVoiceChange()
+}
+
+window.fvOnVoiceChange = () => {
+  const sel = document.getElementById('fv-voice')
+  if (!sel) return
+  const opt = sel.options[sel.selectedIndex]
+  fvState.voiceId = sel.value || null
+  fvState.voicePreview = opt?.dataset?.preview || null
+  const btn = document.getElementById('fv-voice-preview-btn')
+  if (btn) btn.disabled = !fvState.voicePreview
+  const box = document.getElementById('fv-voice-preview')
+  if (box) box.classList.remove('show')
+  const audio = document.getElementById('fv-voice-audio')
+  if (audio) { audio.pause(); audio.removeAttribute('src') }
+}
+
+window.fvPreviewVoice = () => {
+  if (!fvState.voicePreview) return
+  const box = document.getElementById('fv-voice-preview')
+  const audio = document.getElementById('fv-voice-audio')
+  box.classList.add('show')
+  audio.src = fvState.voicePreview
+  audio.play().catch(() => {})
+}
+
+window.fvInit = () => {
+  fvRenderDurationChips()
+  if (voices.length) fvPopulateVoices()
+  else loadVoices().then(() => fvPopulateVoices())
+  fvState.inited = true
+}
+
+function fvRebuildFullScriptFromSections() {
+  if (!fvState.script) return
+  const areas = document.querySelectorAll('#fv-sections textarea[data-sid]')
+  const map = {}
+  areas.forEach(t => { map[t.dataset.sid] = t.value.trim() })
+  fvState.script.sections = (fvState.script.sections || []).map(s => ({
+    ...s,
+    text: map[s.id] != null ? map[s.id] : s.text,
+  }))
+  fvState.script.full_script = fvState.script.sections.map(s => s.text).filter(Boolean).join('\n\n')
+  if (fvState.script.sections[0]) fvState.script.hook = fvState.script.sections[0].text
+}
+window.fvRebuildFullScriptFromSections = fvRebuildFullScriptFromSections
+
+function fvRenderScript(script) {
+  fvState.script = script
+  const box = document.getElementById('fv-script-box')
+  box.classList.add('show')
+  document.getElementById('fv-script-title').textContent = script.title || 'Untitled'
+  const dur = script.estimated_duration_sec || 0
+  const durLabel = dur >= 120 ? `${Math.round(dur / 60)} min` : `${dur}s`
+  document.getElementById('fv-script-meta').innerHTML =
+    `<span><b>${durLabel}</b> target</span>` +
+    `<span><b>${script.aspect || fvState.aspect}</b></span>` +
+    `<span><b>${(script.sections || []).length}</b> sections</span>` +
+    (script.keywords?.length ? `<span>B-roll: <b>${script.keywords.slice(0, 4).join(', ')}</b></span>` : '')
+
+  const wrap = document.getElementById('fv-sections')
+  wrap.innerHTML = (script.sections || []).map(s => `
+    <div class="fv-section">
+      <label>${(s.heading || s.id).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</label>
+      <textarea data-sid="${s.id}" oninput="fvRebuildFullScriptFromSections()">${(s.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
+    </div>`).join('')
+
+  document.getElementById('fv-pill-1').classList.add('done')
+  document.getElementById('fv-pill-1').classList.remove('active')
+  document.getElementById('fv-pill-2').classList.add('active')
+  const cont = document.getElementById('fv-to-phase2-btn')
+  cont.disabled = true
+  cont.title = 'Phase 2 (script editor polish) is next'
+}
+
+window.fvGenerateScript = async () => {
+  const topic = (document.getElementById('fv-topic')?.value || '').trim()
+  if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
+  if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
+
+  const btn = document.getElementById('fv-gen-script-btn')
+  btn.disabled = true
+  fvSetStatus('Writing your script…', 'loading')
+  try {
+    const data = await api.faceless.script({
+      topic,
+      duration_id: fvState.durationId,
+      aspect: fvState.aspect,
+    })
+    // Persist voice choice on the job state for later phases
+    data.voice_id = fvState.voiceId
+    data.voice_preview = fvState.voicePreview
+    data.duration_id = fvState.durationId
+    fvRenderScript(data)
+    fvSetStatus('Script ready — tweak sections below', 'ok')
+    try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
+  } catch (e) {
+    fvSetStatus(e.message || 'Script generation failed', 'err')
+  } finally {
+    btn.disabled = false
   }
 }
 
