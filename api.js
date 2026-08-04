@@ -188,6 +188,22 @@ export const api = {
     // body: { script, voice_id, aspect } → { jobId }
     startMedia: (body) => req('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
+    // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
+    startRender: (body) => req('POST', '/api/faceless/render', body),
+    pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
+    downloadRender: async (jobId) => {
+      const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        const err = new Error(data.message || data.error || 'Download failed')
+        err.status = res.status
+        err.needsPlan = res.status === 402
+        throw err
+      }
+      return URL.createObjectURL(await res.blob())
+    },
   },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
