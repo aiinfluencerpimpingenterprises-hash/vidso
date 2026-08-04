@@ -183,6 +183,8 @@ export const api = {
     presets: () => req('GET', '/api/faceless/presets'),
     // body: { topic, duration_id, aspect } → structured script
     script: (body) => req('POST', '/api/faceless/script', body),
+    // body: { topic, section_id, heading, text, full_script } → rewritten section
+    rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
   },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'

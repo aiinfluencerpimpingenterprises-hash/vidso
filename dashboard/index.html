@@ -155,9 +155,14 @@ select option{background:var(--card)}
 .fv-script-title{font-size:.95rem;font-weight:700;margin-bottom:6px}
 .fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-.fv-section label{display:block;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fv-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.fv-section label{display:block;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0}
 .fv-section textarea{width:100%;min-height:72px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:#fff;padding:10px 12px;font-size:.85rem;line-height:1.45;resize:vertical;font-family:inherit}
 .fv-section textarea:focus{outline:none;border-color:var(--a2)}
+.fv-section.busy{opacity:.65;pointer-events:none}
+.fv-regen-btn{border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.72rem;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.fv-regen-btn:hover{border-color:var(--a2);color:#fff}
+.fv-setup.collapsed{display:none}
 @media (max-width:640px){.fv-seg{grid-template-columns:1fr}.fv-voice-row{grid-template-columns:1fr}}
 
 /* IMAGES GRID */
@@ -1963,7 +1968,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div>
 
           <!-- Phase 1: Setup -->
-          <div id="fv-setup">
+          <div id="fv-setup" class="fv-setup">
             <div class="field">
               <label>Topic / Prompt</label>
               <textarea id="fv-topic" placeholder='e.g. "12 Airport Secrets Airlines Don’t Want You to Know"' style="min-height:88px"></textarea>
@@ -2011,18 +2016,25 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             </div>
           </div>
 
-          <!-- Script result (feeds Phase 2) -->
+          <!-- Phase 2: Script editor -->
           <div class="fv-script-box" id="fv-script-box">
             <div class="result-box" style="margin-top:0">
-              <div class="result-label">Generated script</div>
-              <div class="fv-script-title" id="fv-script-title"></div>
-              <div class="fv-meta" id="fv-script-meta"></div>
-              <div class="fv-sections" id="fv-sections"></div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-                <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
-                <button type="button" class="btn btn-primary" id="fv-to-phase2-btn" disabled title="Phase 2 coming next">Continue to editor →</button>
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                  <div class="result-label">Script editor</div>
+                  <div class="fv-script-title" id="fv-script-title"></div>
+                  <div class="fv-meta" id="fv-script-meta"></div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" id="fv-back-setup-btn" onclick="fvBackToSetup()" style="display:none">← Edit setup</button>
               </div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)">Phase 1 complete. Script is editable above — section rewrite &amp; media pipeline land in the next phases.</p>
+              <div class="fv-sections" id="fv-sections"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
+                <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
+                <button type="button" class="btn btn-primary" id="fv-to-phase2-btn" onclick="fvEnterEditor()">Continue to editor →</button>
+                <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()" style="display:none">Continue to media →</button>
+                <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
+              </div>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-help">Edit any section, or use Regenerate on a section. Then continue to editor.</p>
             </div>
           </div>
         </div>
@@ -2291,7 +2303,7 @@ window.selectVoice = (id, preview, name) => {
   }
 }
 
-// ── FACELESS VIDEO GENERATOR (Phase 1) ───────────────────────────────────────
+// ── FACELESS VIDEO GENERATOR (Phase 1–2) ─────────────────────────────────────
 const FV_DURATIONS = {
   shorts: [
     { id: 'shorts_30', label: '30s', seconds: 30 },
@@ -2312,11 +2324,12 @@ window.fvState = {
   voiceId: null,
   voicePreview: null,
   script: null,
+  phase: 1,
   inited: false,
 }
 
-function fvSetStatus(msg, kind) {
-  const el = document.getElementById('fv-status')
+function fvSetStatus(msg, kind, which) {
+  const el = document.getElementById(which === 2 ? 'fv-status-2' : 'fv-status')
   if (!el) return
   if (!msg) { el.style.display = 'none'; return }
   el.style.display = 'flex'
@@ -2324,6 +2337,15 @@ function fvSetStatus(msg, kind) {
   el.innerHTML = kind === 'loading'
     ? `<span class="spinner"></span> ${msg}`
     : msg
+}
+
+function fvSetPills(active) {
+  for (let i = 1; i <= 5; i++) {
+    const p = document.getElementById('fv-pill-' + i)
+    if (!p) continue
+    p.classList.toggle('active', i === active)
+    p.classList.toggle('done', i < active)
+  }
 }
 
 function fvRenderDurationChips() {
@@ -2418,8 +2440,13 @@ function fvRebuildFullScriptFromSections() {
   }))
   fvState.script.full_script = fvState.script.sections.map(s => s.text).filter(Boolean).join('\n\n')
   if (fvState.script.sections[0]) fvState.script.hook = fvState.script.sections[0].text
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 window.fvRebuildFullScriptFromSections = fvRebuildFullScriptFromSections
+
+function fvEsc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')
+}
 
 function fvRenderScript(script) {
   fvState.script = script
@@ -2432,21 +2459,95 @@ function fvRenderScript(script) {
     `<span><b>${durLabel}</b> target</span>` +
     `<span><b>${script.aspect || fvState.aspect}</b></span>` +
     `<span><b>${(script.sections || []).length}</b> sections</span>` +
-    (script.keywords?.length ? `<span>B-roll: <b>${script.keywords.slice(0, 4).join(', ')}</b></span>` : '')
+    (script.keywords?.length ? `<span>B-roll: <b>${fvEsc(script.keywords.slice(0, 4).join(', '))}</b></span>` : '')
 
   const wrap = document.getElementById('fv-sections')
+  const editorMode = fvState.phase >= 2
   wrap.innerHTML = (script.sections || []).map(s => `
-    <div class="fv-section">
-      <label>${(s.heading || s.id).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</label>
-      <textarea data-sid="${s.id}" oninput="fvRebuildFullScriptFromSections()">${(s.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
+    <div class="fv-section" id="fv-sec-${fvEsc(s.id)}">
+      <div class="fv-section-head">
+        <label>${fvEsc(s.heading || s.id)}</label>
+        ${editorMode ? `<button type="button" class="fv-regen-btn" onclick="fvRegenerateSection('${fvEsc(s.id)}')">↻ Regenerate</button>` : ''}
+      </div>
+      <textarea data-sid="${fvEsc(s.id)}" oninput="fvRebuildFullScriptFromSections()">${fvEsc(s.text || '')}</textarea>
     </div>`).join('')
 
-  document.getElementById('fv-pill-1').classList.add('done')
-  document.getElementById('fv-pill-1').classList.remove('active')
-  document.getElementById('fv-pill-2').classList.add('active')
-  const cont = document.getElementById('fv-to-phase2-btn')
-  cont.disabled = true
-  cont.title = 'Phase 2 (script editor polish) is next'
+  const toEditor = document.getElementById('fv-to-phase2-btn')
+  const toMedia = document.getElementById('fv-to-phase3-btn')
+  const backBtn = document.getElementById('fv-back-setup-btn')
+  const help = document.getElementById('fv-help')
+
+  if (fvState.phase >= 2) {
+    fvSetPills(2)
+    document.getElementById('fv-setup')?.classList.add('collapsed')
+    if (toEditor) toEditor.style.display = 'none'
+    if (toMedia) { toMedia.style.display = ''; toMedia.disabled = false }
+    if (backBtn) backBtn.style.display = ''
+    if (help) help.textContent = 'Tweak any section or regenerate one. When it sounds right, continue to media.'
+  } else {
+    fvSetPills(2)
+    if (toEditor) { toEditor.style.display = ''; toEditor.disabled = false; toEditor.title = 'Open the script editor' }
+    if (toMedia) toMedia.style.display = 'none'
+    if (backBtn) backBtn.style.display = 'none'
+    if (help) help.textContent = 'Edit any section above, then continue to the script editor for per-section regenerate.'
+  }
+}
+
+window.fvEnterEditor = () => {
+  if (!fvState.script) return fvSetStatus('Generate a script first', 'err')
+  fvRebuildFullScriptFromSections()
+  fvState.phase = 2
+  fvRenderScript(fvState.script)
+  fvSetStatus('Script editor ready — regenerate any section', 'ok', 2)
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+}
+
+window.fvBackToSetup = () => {
+  fvState.phase = 1
+  document.getElementById('fv-setup')?.classList.remove('collapsed')
+  fvSetPills(1)
+  if (fvState.script) {
+    fvState.phase = 1
+    fvRenderScript(fvState.script)
+  }
+  fvSetStatus('', null, 2)
+}
+
+window.fvContinueToMedia = () => {
+  fvRebuildFullScriptFromSections()
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+  fvSetStatus('Media pipeline (voice + B-roll + captions) is next — Phase 3', 'ok', 2)
+  // Phase 3 lands next; keep button usable as a clear next-step cue
+  alert('Script locked. Phase 3 (voice, B-roll, captions) is next — say the word and we’ll build it.')
+}
+
+window.fvRegenerateSection = async (sectionId) => {
+  if (!fvState.script) return
+  fvRebuildFullScriptFromSections()
+  const sec = (fvState.script.sections || []).find(s => s.id === sectionId)
+  if (!sec) return
+  const card = document.getElementById('fv-sec-' + sectionId)
+  if (card) card.classList.add('busy')
+  fvSetStatus('Rewriting section…', 'loading', 2)
+  try {
+    const topic = fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim()
+    const data = await api.faceless.rewriteSection({
+      topic,
+      section_id: sec.id,
+      heading: sec.heading,
+      text: sec.text,
+      full_script: fvState.script.full_script,
+    })
+    sec.text = data.text
+    if (data.heading) sec.heading = data.heading
+    fvRebuildFullScriptFromSections()
+    fvRenderScript(fvState.script)
+    fvSetStatus('Section updated', 'ok', 2)
+  } catch (e) {
+    fvSetStatus(e.message || 'Rewrite failed', 'err', 2)
+  } finally {
+    if (card) card.classList.remove('busy')
+  }
 }
 
 window.fvGenerateScript = async () => {
@@ -2455,25 +2556,30 @@ window.fvGenerateScript = async () => {
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
 
   const btn = document.getElementById('fv-gen-script-btn')
-  btn.disabled = true
+  if (btn) btn.disabled = true
   fvSetStatus('Writing your script…', 'loading')
+  fvSetStatus('Writing your script…', 'loading', 2)
   try {
     const data = await api.faceless.script({
       topic,
       duration_id: fvState.durationId,
       aspect: fvState.aspect,
     })
-    // Persist voice choice on the job state for later phases
     data.voice_id = fvState.voiceId
     data.voice_preview = fvState.voicePreview
     data.duration_id = fvState.durationId
+    data.topic = topic
+    // Keep editor mode if already in Phase 2
+    if (fvState.phase < 2) fvState.phase = 1
     fvRenderScript(data)
-    fvSetStatus('Script ready — tweak sections below', 'ok')
+    fvSetStatus('Script ready — continue to editor', 'ok')
+    fvSetStatus('Script ready', 'ok', 2)
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
     fvSetStatus(e.message || 'Script generation failed', 'err')
+    fvSetStatus(e.message || 'Script generation failed', 'err', 2)
   } finally {
-    btn.disabled = false
+    if (btn) btn.disabled = false
   }
 }
 
