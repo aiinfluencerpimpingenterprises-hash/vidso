@@ -179,6 +179,34 @@ select option{background:var(--card)}
 .fv-word.on{color:#fff;border-color:var(--a1);background:rgba(91,140,255,.2)}
 .fv-tl{display:flex;height:28px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface);margin-top:10px}
 .fv-tl > i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.08);background:rgba(91,140,255,.35)}
+.fv-preview-box{display:none;margin-top:8px}
+.fv-preview-box.show{display:block}
+.fv-prev-layout{display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:18px;align-items:start;margin-top:12px}
+@media (max-width:980px){.fv-prev-layout{grid-template-columns:1fr}}
+.fv-stage-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.fv-stage{position:relative;width:100%;max-width:320px;aspect-ratio:9/16;background:#0a0a0c;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.fv-stage.landscape{max-width:100%;aspect-ratio:16/9}
+.fv-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.fv-stage .fv-cap{position:absolute;left:6%;right:6%;bottom:12%;text-align:center;z-index:2;pointer-events:none;line-height:1.15;font-weight:800;text-wrap:balance}
+.fv-stage .fv-cap span{display:inline;margin:0 .12em;transition:color .08s,background .08s}
+.fv-stage .fv-cap span.on{border-radius:.2em;padding:0 .05em}
+.fv-stage-controls{display:flex;gap:8px;align-items:center;width:100%;max-width:320px}
+.fv-stage.landscape ~ .fv-stage-controls,.fv-stage-wrap:has(.fv-stage.landscape) .fv-stage-controls{max-width:100%}
+.fv-seek{flex:1;accent-color:var(--a1)}
+.fv-side{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.fv-side .field{margin-bottom:12px}
+.fv-side .field:last-child{margin-bottom:0}
+.fv-music-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+.fv-music-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:.8rem;color:var(--muted)}
+.fv-music-item:hover,.fv-music-item.active{border-color:var(--a1);color:#fff;background:rgba(91,140,255,.1)}
+.fv-prev-tl{margin-top:14px}
+.fv-prev-tracks{display:flex;flex-direction:column;gap:6px}
+.fv-track{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:.7rem;color:var(--muted)}
+.fv-track-bar{position:relative;height:22px;border-radius:6px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
+.fv-track-bar .seg{position:absolute;top:0;bottom:0;background:rgba(91,140,255,.4);border-right:1px solid rgba(255,255,255,.1)}
+.fv-track-bar .seg.audio{background:rgba(111,207,151,.35)}
+.fv-track-bar .seg.music{background:rgba(240,198,116,.35)}
+.fv-track-bar .playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:2;pointer-events:none}
 @media (max-width:640px){.fv-seg{grid-template-columns:1fr}.fv-voice-row{grid-template-columns:1fr}}
 
 /* IMAGES GRID */
@@ -2090,8 +2118,88 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                   <button type="button" class="btn btn-ghost" onclick="fvStartMedia(true)">↻ Re-run media</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase4-btn" onclick="fvContinueToPreview()">Continue to preview →</button>
                 </div>
-                <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-media-help">Voice, word timestamps, and B-roll are ready. Preview &amp; caption styling land in Phase 4.</p>
+                <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-media-help">Voice, word timestamps, and B-roll are ready. Continue to style captions and preview the cut.</p>
               </div>
+            </div>
+          </div>
+
+          <!-- Phase 4: Preview editor -->
+          <div class="fv-preview-box" id="fv-preview-box">
+            <div class="result-box" style="margin-top:0">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                  <div class="result-label">Preview editor</div>
+                  <div class="fv-script-title" id="fv-prev-title">Style captions &amp; music</div>
+                  <div class="fv-meta" id="fv-prev-meta"></div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="fvBackToMedia()">← Back to media</button>
+              </div>
+
+              <div class="fv-prev-layout">
+                <div class="fv-stage-wrap">
+                  <div class="fv-stage" id="fv-stage">
+                    <video id="fv-prev-video" muted playsinline preload="auto"></video>
+                    <div class="fv-cap" id="fv-prev-cap"></div>
+                  </div>
+                  <div class="fv-stage-controls">
+                    <button type="button" class="btn btn-ghost btn-sm" id="fv-prev-play" onclick="fvTogglePreview()">▶ Play</button>
+                    <input type="range" class="fv-seek" id="fv-prev-seek" min="0" max="1000" value="0" oninput="fvSeekPreview(this.value)">
+                    <span id="fv-prev-time" style="font-size:.72rem;color:var(--muted);min-width:72px;text-align:right">0:00 / 0:00</span>
+                  </div>
+                  <audio id="fv-prev-voice" preload="auto" style="display:none"></audio>
+                  <audio id="fv-prev-music" preload="auto" loop style="display:none"></audio>
+                </div>
+
+                <div class="fv-side">
+                  <div class="result-label" style="margin-bottom:10px">Caption style</div>
+                  <div class="field">
+                    <label>Font</label>
+                    <select id="fv-cap-font" class="cm-input" onchange="fvApplyCapStyle()">
+                      <option value="Anton, Impact, sans-serif">Anton</option>
+                      <option value="Bangers, cursive" selected>Bangers</option>
+                      <option value="'Montserrat', sans-serif">Montserrat</option>
+                      <option value="'Inter', sans-serif">Inter</option>
+                      <option value="Georgia, serif">Georgia</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Size <span id="fv-cap-size-val">42</span>px</label>
+                    <input type="range" id="fv-cap-size" min="22" max="72" value="42" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
+                  </div>
+                  <div class="cm-grid-2">
+                    <div class="field" style="margin:0">
+                      <label>Font color</label>
+                      <input type="color" id="fv-cap-color" value="#ffffff" oninput="fvApplyCapStyle()" style="width:100%;height:36px;border:none;background:transparent;cursor:pointer">
+                    </div>
+                    <div class="field" style="margin:0">
+                      <label>Highlight</label>
+                      <input type="color" id="fv-cap-hl" value="#5b8cff" oninput="fvApplyCapStyle()" style="width:100%;height:36px;border:none;background:transparent;cursor:pointer">
+                    </div>
+                  </div>
+                  <div class="field" style="margin-top:12px">
+                    <label>Letter spacing <span id="fv-cap-ls-val">0</span>px</label>
+                    <input type="range" id="fv-cap-ls" min="-2" max="8" step="0.5" value="0" oninput="document.getElementById('fv-cap-ls-val').textContent=this.value;fvApplyCapStyle()">
+                  </div>
+
+                  <div class="result-label" style="margin:16px 0 10px">Background music</div>
+                  <div class="fv-music-list" id="fv-music-list"></div>
+                  <div class="field" style="margin-top:10px">
+                    <label>Music volume <span id="fv-music-vol-val">25</span>%</label>
+                    <input type="range" id="fv-music-vol" min="0" max="100" value="25" oninput="fvSetMusicVol(this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="fv-prev-tl">
+                <div class="result-label">Timeline</div>
+                <div class="fv-prev-tracks" id="fv-prev-tracks"></div>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center">
+                <button type="button" class="btn btn-primary" id="fv-to-phase5-btn" onclick="fvContinueToExport()">Continue to export →</button>
+                <div class="status" id="fv-prev-status" style="display:none;margin:0"></div>
+              </div>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)">Preview is live in-browser. Final MP4 render is Phase 5.</p>
             </div>
           </div>
         </div>
@@ -2384,6 +2492,7 @@ window.fvState = {
   media: null,
   mediaJobId: null,
   mediaPoll: null,
+  preview: null,
   phase: 1,
   inited: false,
 }
@@ -2589,8 +2698,10 @@ window.fvContinueToMedia = () => {
 
 window.fvBackToEditor = () => {
   if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+  fvPausePreview()
   fvState.phase = 2
   document.getElementById('fv-media-box')?.classList.remove('show')
+  document.getElementById('fv-preview-box')?.classList.remove('show')
   document.getElementById('fv-script-box')?.classList.add('show')
   if (fvState.script) fvRenderScript(fvState.script)
 }
@@ -2723,8 +2834,272 @@ window.fvStartMedia = async (force) => {
 
 window.fvContinueToPreview = () => {
   if (!fvState.media?.voiceover_url) return fvSetMediaStatus('Wait for media to finish', 'err')
-  fvSetMediaStatus('Preview editor is Phase 4 — coming next', 'ok')
-  alert('Media locked. Phase 4 (preview + caption styling + music) is next.')
+  fvPausePreview()
+  fvState.phase = 4
+  document.getElementById('fv-media-box')?.classList.remove('show')
+  document.getElementById('fv-preview-box')?.classList.add('show')
+  fvSetPills(4)
+  fvInitPreview()
+}
+
+window.fvBackToMedia = () => {
+  fvPausePreview()
+  fvState.phase = 3
+  document.getElementById('fv-preview-box')?.classList.remove('show')
+  document.getElementById('fv-media-box')?.classList.add('show')
+  fvSetPills(3)
+}
+
+const FV_MUSIC = [
+  { id: 'none', name: 'No music', url: '' },
+  { id: 'tech', name: 'Tech House Vibes', url: 'https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3' },
+  { id: 'hiphop', name: 'Hip Hop 02', url: 'https://assets.mixkit.co/music/preview/mixkit-hip-hop-02-738.mp3' },
+  { id: 'dreamy', name: 'Dreaming Big', url: 'https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3' },
+  { id: 'deep', name: 'Deep Urban', url: 'https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3' },
+  { id: 'games', name: 'Games Worldbeat', url: 'https://assets.mixkit.co/music/preview/mixkit-games-worldbeat-466.mp3' },
+]
+
+function fvFmtTime(s) {
+  s = Math.max(0, Math.floor(s || 0))
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0')
+}
+
+function fvCapStyle() {
+  return {
+    font: document.getElementById('fv-cap-font')?.value || 'Bangers, cursive',
+    size: parseInt(document.getElementById('fv-cap-size')?.value || '42', 10),
+    color: document.getElementById('fv-cap-color')?.value || '#ffffff',
+    highlight: document.getElementById('fv-cap-hl')?.value || '#5b8cff',
+    letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
+  }
+}
+
+window.fvApplyCapStyle = () => {
+  const cap = document.getElementById('fv-prev-cap')
+  if (!cap) return
+  const s = fvCapStyle()
+  cap.style.fontFamily = s.font
+  cap.style.fontSize = s.size + 'px'
+  cap.style.color = s.color
+  cap.style.letterSpacing = s.letterSpacing + 'px'
+  cap.style.textShadow = '0 2px 8px rgba(0,0,0,.85), 0 0 2px #000'
+  cap.querySelectorAll('span.on').forEach(el => {
+    el.style.color = s.highlight
+    el.style.background = 'transparent'
+  })
+  fvPersistPreviewSettings()
+}
+
+function fvPersistPreviewSettings() {
+  try {
+    sessionStorage.setItem('vidso_faceless_preview', JSON.stringify({
+      caption: fvCapStyle(),
+      musicId: fvState.preview?.musicId || 'none',
+      musicVol: fvState.preview?.musicVol ?? 0.25,
+    }))
+  } catch {}
+}
+
+function fvRenderMusicList() {
+  const list = document.getElementById('fv-music-list')
+  if (!list) return
+  const active = fvState.preview?.musicId || 'none'
+  list.innerHTML = FV_MUSIC.map(m => `
+    <button type="button" class="fv-music-item${m.id === active ? ' active' : ''}" onclick="fvSelectMusic('${m.id}')">
+      <span>${m.id === 'none' ? '∅' : '♪'}</span>
+      <span style="flex:1;text-align:left">${fvEsc(m.name)}</span>
+    </button>`).join('')
+}
+
+window.fvSelectMusic = (id) => {
+  const track = FV_MUSIC.find(m => m.id === id) || FV_MUSIC[0]
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.musicId = track.id
+  const music = document.getElementById('fv-prev-music')
+  if (!track.url) {
+    music.pause()
+    music.removeAttribute('src')
+  } else {
+    music.src = track.url
+    music.volume = fvState.preview.musicVol ?? 0.25
+    if (fvState.preview.playing) music.play().catch(() => {})
+  }
+  fvRenderMusicList()
+  fvRenderPreviewTimeline()
+  fvPersistPreviewSettings()
+}
+
+window.fvSetMusicVol = (v) => {
+  document.getElementById('fv-music-vol-val').textContent = v
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.musicVol = Number(v) / 100
+  const music = document.getElementById('fv-prev-music')
+  if (music) music.volume = fvState.preview.musicVol
+  fvPersistPreviewSettings()
+}
+
+function fvRenderPreviewTimeline() {
+  const wrap = document.getElementById('fv-prev-tracks')
+  if (!wrap || !fvState.media) return
+  const dur = fvState.media.duration || 1
+  const segs = (fvState.media.timeline || []).map(seg => {
+    const left = (seg.start / dur) * 100
+    const width = Math.max(1, ((seg.end - seg.start) / dur) * 100)
+    return `<div class="seg" style="left:${left}%;width:${width}%" title="${fvEsc(seg.query || 'clip')}"></div>`
+  }).join('')
+  const hasMusic = fvState.preview?.musicId && fvState.preview.musicId !== 'none'
+  wrap.innerHTML = `
+    <div class="fv-track"><span>B-roll</span><div class="fv-track-bar" id="fv-tl-video">${segs}<div class="playhead" id="fv-tl-ph-v" style="left:0"></div></div></div>
+    <div class="fv-track"><span>Voice</span><div class="fv-track-bar"><div class="seg audio" style="left:0;width:100%"></div><div class="playhead" id="fv-tl-ph-a" style="left:0"></div></div></div>
+    <div class="fv-track"><span>Music</span><div class="fv-track-bar">${hasMusic ? '<div class="seg music" style="left:0;width:100%"></div>' : ''}<div class="playhead" id="fv-tl-ph-m" style="left:0"></div></div></div>`
+}
+
+function fvActiveClipAt(t) {
+  const tl = fvState.media?.timeline || []
+  return tl.find(s => t >= s.start && t < s.end) || tl[0] || null
+}
+
+function fvEnsureClip(t) {
+  const video = document.getElementById('fv-prev-video')
+  const clip = fvActiveClipAt(t)
+  if (!clip || !video) return
+  if (fvState.preview?.clipUrl !== clip.url) {
+    fvState.preview.clipUrl = clip.url
+    const wasPlaying = fvState.preview.playing
+    video.src = clip.url
+    video.currentTime = Math.max(0, t - clip.start)
+    if (wasPlaying) video.play().catch(() => {})
+  } else if (Math.abs((video.currentTime || 0) - Math.max(0, t - clip.start)) > 0.45) {
+    video.currentTime = Math.max(0, t - clip.start)
+  }
+}
+
+function fvUpdateCaptions(t) {
+  const words = fvState.media?.words || []
+  if (!words.length) {
+    document.getElementById('fv-prev-cap').innerHTML = ''
+    return
+  }
+  let idx = words.findIndex(w => t >= w.start && t < w.end)
+  if (idx < 0) {
+    // nearest upcoming / last spoken
+    idx = words.findIndex(w => w.start > t)
+    if (idx < 0) idx = words.length - 1
+    else idx = Math.max(0, idx - 1)
+  }
+  const start = Math.max(0, idx - 1)
+  const end = Math.min(words.length, idx + 3)
+  const slice = words.slice(start, end)
+  const style = fvCapStyle()
+  document.getElementById('fv-prev-cap').innerHTML = slice.map((w, i) => {
+    const global = start + i
+    const on = global === idx && t >= words[idx].start && t < words[idx].end
+    return `<span class="${on ? 'on' : ''}" style="${on ? 'color:' + style.highlight : ''}">${fvEsc(w.text)}</span>`
+  }).join(' ')
+  fvApplyCapStyle()
+}
+
+function fvTickPreview() {
+  const voice = document.getElementById('fv-prev-voice')
+  if (!voice) return
+  const t = voice.currentTime || 0
+  const dur = fvState.media?.duration || voice.duration || 1
+  document.getElementById('fv-prev-seek').value = String(Math.round((t / dur) * 1000))
+  document.getElementById('fv-prev-time').textContent = `${fvFmtTime(t)} / ${fvFmtTime(dur)}`
+  const pct = (t / dur) * 100 + '%'
+  ;['fv-tl-ph-v', 'fv-tl-ph-a', 'fv-tl-ph-m'].forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.style.left = pct
+  })
+  fvEnsureClip(t)
+  fvUpdateCaptions(t)
+  if (voice.ended) fvPausePreview()
+}
+
+window.fvTogglePreview = () => {
+  if (fvState.preview?.playing) fvPausePreview()
+  else fvPlayPreview()
+}
+
+window.fvPlayPreview = () => {
+  const voice = document.getElementById('fv-prev-voice')
+  const music = document.getElementById('fv-prev-music')
+  const video = document.getElementById('fv-prev-video')
+  if (!voice?.src) return
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.playing = true
+  document.getElementById('fv-prev-play').textContent = '⏸ Pause'
+  fvEnsureClip(voice.currentTime || 0)
+  voice.play().catch(() => {})
+  video?.play().catch(() => {})
+  if (music?.src) { music.volume = fvState.preview.musicVol ?? 0.25; music.play().catch(() => {}) }
+  if (fvState.preview.raf) cancelAnimationFrame(fvState.preview.raf)
+  const loop = () => {
+    fvTickPreview()
+    if (fvState.preview.playing) fvState.preview.raf = requestAnimationFrame(loop)
+  }
+  fvState.preview.raf = requestAnimationFrame(loop)
+}
+
+window.fvPausePreview = () => {
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.playing = false
+  document.getElementById('fv-prev-play') && (document.getElementById('fv-prev-play').textContent = '▶ Play')
+  document.getElementById('fv-prev-voice')?.pause()
+  document.getElementById('fv-prev-music')?.pause()
+  document.getElementById('fv-prev-video')?.pause()
+  if (fvState.preview.raf) { cancelAnimationFrame(fvState.preview.raf); fvState.preview.raf = null }
+}
+
+window.fvSeekPreview = (v) => {
+  const voice = document.getElementById('fv-prev-voice')
+  const dur = fvState.media?.duration || voice?.duration || 1
+  const t = (Number(v) / 1000) * dur
+  if (voice) voice.currentTime = t
+  const music = document.getElementById('fv-prev-music')
+  if (music?.src) music.currentTime = t % (music.duration || t || 1)
+  fvState.preview && (fvState.preview.clipUrl = null)
+  fvEnsureClip(t)
+  fvUpdateCaptions(t)
+  fvTickPreview()
+}
+
+function fvInitPreview() {
+  const media = fvState.media
+  if (!media) return
+  fvState.preview = fvState.preview || { musicId: 'none', musicVol: 0.25, playing: false, clipUrl: null }
+  const landscape = (media.aspect || fvState.aspect) === '16:9'
+  document.getElementById('fv-stage')?.classList.toggle('landscape', landscape)
+  document.getElementById('fv-prev-title').textContent = fvState.script?.title || 'Preview'
+  document.getElementById('fv-prev-meta').innerHTML =
+    `<span><b>${fvFmtTime(media.duration)}</b></span>` +
+    `<span><b>${landscape ? '16:9' : '9:16'}</b></span>` +
+    `<span><b>${(media.words || []).length}</b> words</span>` +
+    `<span><b>${(media.timeline || []).length}</b> clips</span>`
+
+  const voice = document.getElementById('fv-prev-voice')
+  voice.src = media.voiceover_url
+  voice.onended = () => fvPausePreview()
+
+  document.getElementById('fv-music-vol').value = String(Math.round((fvState.preview.musicVol ?? 0.25) * 100))
+  document.getElementById('fv-music-vol-val').textContent = document.getElementById('fv-music-vol').value
+  fvRenderMusicList()
+  fvSelectMusic(fvState.preview.musicId || 'none')
+  fvRenderPreviewTimeline()
+  fvApplyCapStyle()
+  fvSeekPreview(0)
+}
+
+window.fvContinueToExport = () => {
+  fvPausePreview()
+  fvPersistPreviewSettings()
+  const el = document.getElementById('fv-prev-status')
+  if (el) {
+    el.style.display = 'flex'
+    el.className = 'status ok'
+    el.textContent = 'Export / render is Phase 5 — coming next'
+  }
+  alert('Preview locked. Phase 5 (final MP4 render + download) is next.')
 }
 
 window.fvRegenerateSection = async (sectionId) => {
