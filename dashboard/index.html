@@ -183,6 +183,30 @@ select option{background:var(--card)}
 .fv-preview-box.show{display:block}
 .fv-export-box{display:none;margin-top:8px}
 .fv-export-box.show{display:block}
+.fv-side-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:12px}
+.fv-side-tab{flex:1;border:none;background:transparent;color:var(--muted);font-size:.75rem;font-weight:600;padding:8px 6px;border-radius:7px;cursor:pointer}
+.fv-side-tab.active{background:var(--a1);color:#fff}
+.fv-side-pane{display:none}
+.fv-side-pane.active{display:block}
+.fv-seg-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto}
+.fv-seg-row{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer}
+.fv-seg-row.active{border-color:var(--a1);background:rgba(91,140,255,.1)}
+.fv-seg-thumb{width:56px;height:56px;border-radius:8px;overflow:hidden;background:#000;flex-shrink:0}
+.fv-seg-thumb.landscape{height:36px}
+.fv-seg-thumb img,.fv-seg-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.fv-seg-info{min-width:0}
+.fv-seg-info .t{font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fv-seg-info .s{font-size:.68rem;color:var(--muted);margin-top:2px}
+.fv-seg-actions{display:flex;flex-direction:column;gap:4px}
+.fv-seg-actions button{border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:.65rem;padding:3px 6px;border-radius:5px;cursor:pointer;line-height:1.2}
+.fv-seg-actions button:hover{border-color:var(--a2);color:#fff}
+.fv-clip-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;max-height:200px;overflow-y:auto;margin-top:8px}
+.fv-clip-pick .pick{position:relative;aspect-ratio:9/16;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#000}
+.fv-clip-pick .pick.landscape{aspect-ratio:16/9}
+.fv-clip-pick .pick:hover,.fv-clip-pick .pick.on{border-color:var(--a1)}
+.fv-clip-pick .pick img,.fv-clip-pick .pick video{width:100%;height:100%;object-fit:cover}
+.fv-broll-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.fv-search-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px}
 .fv-prev-layout{display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:18px;align-items:start;margin-top:12px}
 @media (max-width:980px){.fv-prev-layout{grid-template-columns:1fr}}
 .fv-stage-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -2153,6 +2177,34 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 </div>
 
                 <div class="fv-side">
+                  <div class="fv-side-tabs" role="tablist">
+                    <button type="button" class="fv-side-tab active" data-pane="broll" onclick="fvSideTab('broll')">B-roll</button>
+                    <button type="button" class="fv-side-tab" data-pane="captions" onclick="fvSideTab('captions')">Captions</button>
+                    <button type="button" class="fv-side-tab" data-pane="music" onclick="fvSideTab('music')">Music</button>
+                  </div>
+
+                  <div class="fv-side-pane active" id="fv-pane-broll">
+                    <div class="result-label" style="margin-bottom:8px">Timeline clips</div>
+                    <p style="font-size:.72rem;color:var(--muted);margin:0 0 10px">Select a segment, then pick a replacement from the library or search.</p>
+                    <div class="fv-seg-list" id="fv-seg-list"></div>
+                    <div class="fv-broll-tools">
+                      <button type="button" class="btn btn-ghost btn-sm" onclick="fvShuffleBroll()">Shuffle all</button>
+                      <button type="button" class="btn btn-ghost btn-sm" onclick="fvRedistributeBroll()">Even timing</button>
+                      <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0">
+                        Upload clip
+                        <input type="file" id="fv-broll-upload" accept="video/*" style="display:none" onchange="fvUploadBroll(this)">
+                      </label>
+                    </div>
+                    <div class="result-label" style="margin:14px 0 6px">Clip library</div>
+                    <div class="fv-search-row">
+                      <input type="text" id="fv-broll-query" class="cm-input" placeholder="Search Pexels…" onkeydown="if(event.key==='Enter')fvSearchBroll()">
+                      <button type="button" class="btn btn-ghost btn-sm" onclick="fvSearchBroll()">Search</button>
+                    </div>
+                    <div class="fv-clip-pick" id="fv-clip-pick"></div>
+                    <div class="status" id="fv-broll-status" style="display:none;margin-top:8px"></div>
+                  </div>
+
+                  <div class="fv-side-pane" id="fv-pane-captions">
                   <div class="result-label" style="margin-bottom:10px">Caption style</div>
                   <div class="field">
                     <label>Font</label>
@@ -2182,18 +2234,21 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                     <label>Letter spacing <span id="fv-cap-ls-val">0</span>px</label>
                     <input type="range" id="fv-cap-ls" min="-2" max="8" step="0.5" value="0" oninput="document.getElementById('fv-cap-ls-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
+                  </div>
 
-                  <div class="result-label" style="margin:16px 0 10px">Background music</div>
+                  <div class="fv-side-pane" id="fv-pane-music">
+                  <div class="result-label" style="margin-bottom:10px">Background music</div>
                   <div class="fv-music-list" id="fv-music-list"></div>
                   <div class="field" style="margin-top:10px">
                     <label>Music volume <span id="fv-music-vol-val">25</span>%</label>
                     <input type="range" id="fv-music-vol" min="0" max="100" value="25" oninput="fvSetMusicVol(this.value)">
                   </div>
+                  </div>
                 </div>
               </div>
 
               <div class="fv-prev-tl">
-                <div class="result-label">Timeline</div>
+                <div class="result-label">Timeline overview</div>
                 <div class="fv-prev-tracks" id="fv-prev-tracks"></div>
               </div>
 
@@ -2201,7 +2256,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 <button type="button" class="btn btn-primary" id="fv-to-phase5-btn" onclick="fvContinueToExport()">Continue to export →</button>
                 <div class="status" id="fv-prev-status" style="display:none;margin:0"></div>
               </div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)">Preview is live in-browser. Continue to render the final MP4.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)">Swap B-roll, tweak captions &amp; music, then export the final MP4.</p>
             </div>
           </div>
 
@@ -3100,10 +3155,276 @@ window.fvSeekPreview = (v) => {
   fvTickPreview()
 }
 
+function fvPersistMedia() {
+  if (!fvState.media) return
+  try {
+    sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
+      jobId: fvState.media.jobId,
+      voiceover_url: fvState.media.voiceover_url,
+      duration: fvState.media.duration,
+      words: fvState.media.words,
+      clips: fvState.media.clips,
+      timeline: fvState.media.timeline,
+      aspect: fvState.media.aspect,
+      voice_id: fvState.media.voice_id,
+    }))
+  } catch {}
+}
+
+window.fvSideTab = (pane) => {
+  document.querySelectorAll('.fv-side-tab').forEach(b => b.classList.toggle('active', b.dataset.pane === pane))
+  document.querySelectorAll('.fv-side-pane').forEach(p => p.classList.toggle('active', p.id === 'fv-pane-' + pane))
+}
+
+function fvSetBrollStatus(msg, kind) {
+  const el = document.getElementById('fv-broll-status')
+  if (!el) return
+  if (!msg) { el.style.display = 'none'; return }
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.innerHTML = kind === 'loading' ? `<span class="spinner"></span> ${msg}` : msg
+}
+
+function fvNormalizeTimelineTimes() {
+  if (!fvState.media?.timeline?.length) return
+  const dur = fvState.media.duration || 1
+  const n = fvState.media.timeline.length
+  const slice = dur / n
+  fvState.media.timeline = fvState.media.timeline.map((seg, i) => ({
+    ...seg,
+    start: Number((i * slice).toFixed(3)),
+    end: Number((i === n - 1 ? dur : (i + 1) * slice).toFixed(3)),
+  }))
+}
+
+function fvRenderBrollEditor() {
+  const list = document.getElementById('fv-seg-list')
+  if (!list || !fvState.media) return
+  const landscape = (fvState.media.aspect || fvState.aspect) === '16:9'
+  const tl = fvState.media.timeline || []
+  const sel = fvState.preview?.segIdx ?? 0
+  list.innerHTML = tl.map((seg, i) => `
+    <div class="fv-seg-row${i === sel ? ' active' : ''}" onclick="fvSelectSeg(${i})">
+      <div class="fv-seg-thumb${landscape ? ' landscape' : ''}">
+        ${seg.preview ? `<img src="${fvEsc(seg.preview)}" alt="">` : (seg.url ? `<video src="${fvEsc(seg.url)}" muted></video>` : '')}
+      </div>
+      <div class="fv-seg-info">
+        <div class="t">${fvEsc(seg.query || seg.photographer || 'Clip ' + (i + 1))}</div>
+        <div class="s">${fvFmtTime(seg.start)} – ${fvFmtTime(seg.end)} · ${Math.max(0.1, (seg.end - seg.start)).toFixed(1)}s</div>
+      </div>
+      <div class="fv-seg-actions" onclick="event.stopPropagation()">
+        <button type="button" title="Move up" onclick="fvMoveSeg(${i},-1)">↑</button>
+        <button type="button" title="Move down" onclick="fvMoveSeg(${i},1)">↓</button>
+        <button type="button" title="Remove" onclick="fvRemoveSeg(${i})">✕</button>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:.78rem">No clips yet — search or upload below.</div>'
+
+  fvRenderClipPicker()
+  fvRenderPreviewTimeline()
+}
+
+function fvRenderClipPicker(extraClips) {
+  const pick = document.getElementById('fv-clip-pick')
+  if (!pick) return
+  const landscape = (fvState.media?.aspect || fvState.aspect) === '16:9'
+  const pool = [
+    ...(extraClips || fvState.preview?.searchClips || []),
+    ...(fvState.media?.clips || []),
+  ]
+  // de-dupe by id/url
+  const seen = new Set()
+  const clips = []
+  for (const c of pool) {
+    const key = c.id || c.url
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    clips.push(c)
+  }
+  fvState.preview = fvState.preview || {}
+  fvState.preview.library = clips
+
+  pick.innerHTML = clips.length
+    ? clips.map((c, i) => `
+      <button type="button" class="pick${landscape ? ' landscape' : ''}" title="${fvEsc(c.query || '')}" onclick="fvApplyLibraryClip(${i})">
+        ${c.preview ? `<img src="${fvEsc(c.preview)}" alt="" loading="lazy">` : `<video src="${fvEsc(c.url)}" muted></video>`}
+      </button>`).join('')
+    : '<div style="grid-column:1/-1;color:var(--muted);font-size:.75rem">Search Pexels or upload a clip to fill the library.</div>'
+}
+
+window.fvSelectSeg = (i) => {
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.segIdx = i
+  fvRenderBrollEditor()
+  const seg = fvState.media?.timeline?.[i]
+  if (seg) {
+    const voice = document.getElementById('fv-prev-voice')
+    const dur = fvState.media.duration || 1
+    if (voice) {
+      voice.currentTime = seg.start
+      fvState.preview.clipUrl = null
+      fvEnsureClip(seg.start)
+      fvUpdateCaptions(seg.start)
+      fvTickPreview()
+    }
+  }
+}
+
+window.fvMoveSeg = (i, dir) => {
+  const tl = fvState.media?.timeline
+  if (!tl) return
+  const j = i + dir
+  if (j < 0 || j >= tl.length) return
+  const tmp = tl[i]; tl[i] = tl[j]; tl[j] = tmp
+  fvNormalizeTimelineTimes()
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.segIdx = j
+  fvState.preview.clipUrl = null
+  fvPersistMedia()
+  fvRenderBrollEditor()
+}
+
+window.fvRemoveSeg = (i) => {
+  const tl = fvState.media?.timeline
+  if (!tl || tl.length <= 1) return fvSetBrollStatus('Keep at least one clip', 'err')
+  tl.splice(i, 1)
+  fvNormalizeTimelineTimes()
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.segIdx = Math.min(i, tl.length - 1)
+  fvState.preview.clipUrl = null
+  fvPersistMedia()
+  fvRenderBrollEditor()
+  fvSetBrollStatus('Segment removed', 'ok')
+}
+
+window.fvApplyLibraryClip = (libIdx) => {
+  const clip = fvState.preview?.library?.[libIdx]
+  const tl = fvState.media?.timeline
+  if (!clip || !tl?.length) return
+  const i = fvState.preview.segIdx ?? 0
+  const prev = tl[i] || { start: 0, end: 3 }
+  tl[i] = {
+    ...prev,
+    id: clip.id || ('custom-' + Date.now()),
+    url: clip.url,
+    preview: clip.preview || null,
+    query: clip.query || clip.photographer || 'Custom',
+    width: clip.width,
+    height: clip.height,
+    duration: clip.duration || 0,
+    photographer: clip.photographer || null,
+    pexels_url: clip.pexels_url || null,
+  }
+  // Also add to pool if new
+  if (!fvState.media.clips) fvState.media.clips = []
+  if (clip.id && !fvState.media.clips.some(c => c.id === clip.id)) fvState.media.clips.unshift(clip)
+  fvState.preview.clipUrl = null
+  fvPersistMedia()
+  fvRenderBrollEditor()
+  fvEnsureClip(tl[i].start)
+  fvSetBrollStatus('Clip applied to segment ' + (i + 1), 'ok')
+}
+
+window.fvShuffleBroll = () => {
+  const tl = fvState.media?.timeline
+  const pool = fvState.media?.clips || []
+  if (!tl?.length) return
+  if (pool.length) {
+    const shuffled = [...pool].sort(() => Math.random() - 0.5)
+    tl.forEach((seg, i) => {
+      const c = shuffled[i % shuffled.length]
+      Object.assign(seg, {
+        id: c.id, url: c.url, preview: c.preview, query: c.query,
+        width: c.width, height: c.height, duration: c.duration,
+        photographer: c.photographer, pexels_url: c.pexels_url,
+      })
+    })
+  } else {
+    for (let i = tl.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const t = tl[i]; tl[i] = tl[j]; tl[j] = t
+    }
+    fvNormalizeTimelineTimes()
+  }
+  fvState.preview.clipUrl = null
+  fvPersistMedia()
+  fvRenderBrollEditor()
+  fvSetBrollStatus('B-roll shuffled', 'ok')
+}
+
+window.fvRedistributeBroll = () => {
+  fvNormalizeTimelineTimes()
+  fvState.preview.clipUrl = null
+  fvPersistMedia()
+  fvRenderBrollEditor()
+  fvSetBrollStatus('Timing evened across clips', 'ok')
+}
+
+window.fvSearchBroll = async () => {
+  const q = (document.getElementById('fv-broll-query')?.value || '').trim()
+  if (!q) return fvSetBrollStatus('Enter a search term', 'err')
+  fvSetBrollStatus('Searching Pexels…', 'loading')
+  try {
+    const data = await api.faceless.searchBroll({
+      query: q,
+      aspect: fvState.media?.aspect || fvState.aspect,
+      per_page: 10,
+    })
+    if (!fvState.preview) fvState.preview = {}
+    fvState.preview.searchClips = (data.clips || []).map(c => ({ ...c, query: q }))
+    fvRenderClipPicker(fvState.preview.searchClips)
+    fvSetBrollStatus((data.clips?.length || 0) + ' clips found — click one to apply', 'ok')
+  } catch (e) {
+    fvSetBrollStatus(e.message || 'Search failed', 'err')
+  }
+}
+
+window.fvUploadBroll = async (input) => {
+  const file = input?.files?.[0]
+  if (!file) return
+  fvSetBrollStatus('Uploading…', 'loading')
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const data = await api.upload.file(fd)
+    const url = data.url || data.file_url || data.publicUrl
+    if (!url) throw new Error('Upload returned no URL')
+    const clip = {
+      id: 'upload-' + Date.now(),
+      url,
+      preview: null,
+      query: file.name.replace(/\.[^.]+$/, ''),
+      duration: 0,
+    }
+    if (!fvState.media.clips) fvState.media.clips = []
+    fvState.media.clips.unshift(clip)
+    if (!fvState.media.timeline?.length) {
+      fvState.media.timeline = [{
+        ...clip,
+        start: 0,
+        end: fvState.media.duration || 5,
+        clip_start: 0,
+      }]
+    } else {
+      // apply to selected segment
+      const i = fvState.preview?.segIdx ?? 0
+      const prev = fvState.media.timeline[i]
+      fvState.media.timeline[i] = { ...prev, ...clip, start: prev.start, end: prev.end, clip_start: 0 }
+    }
+    fvState.preview.clipUrl = null
+    input.value = ''
+    fvPersistMedia()
+    fvRenderBrollEditor()
+    fvSetBrollStatus('Uploaded and applied', 'ok')
+  } catch (e) {
+    fvSetBrollStatus(e.message || 'Upload failed', 'err')
+  }
+}
+
 function fvInitPreview() {
   const media = fvState.media
   if (!media) return
-  fvState.preview = fvState.preview || { musicId: 'none', musicVol: 0.25, playing: false, clipUrl: null }
+  fvState.preview = fvState.preview || { musicId: 'none', musicVol: 0.25, playing: false, clipUrl: null, segIdx: 0 }
+  if (fvState.preview.segIdx == null) fvState.preview.segIdx = 0
   const landscape = (media.aspect || fvState.aspect) === '16:9'
   document.getElementById('fv-stage')?.classList.toggle('landscape', landscape)
   document.getElementById('fv-prev-title').textContent = fvState.script?.title || 'Preview'
@@ -3121,7 +3442,8 @@ function fvInitPreview() {
   document.getElementById('fv-music-vol-val').textContent = document.getElementById('fv-music-vol').value
   fvRenderMusicList()
   fvSelectMusic(fvState.preview.musicId || 'none')
-  fvRenderPreviewTimeline()
+  fvSideTab('broll')
+  fvRenderBrollEditor()
   fvApplyCapStyle()
   fvSeekPreview(0)
 }

@@ -188,6 +188,8 @@ export const api = {
     // body: { script, voice_id, aspect } → { jobId }
     startMedia: (body) => req('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
+    // body: { query, aspect } → { clips }
+    searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
     startRender: (body) => req('POST', '/api/faceless/render', body),
     pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
