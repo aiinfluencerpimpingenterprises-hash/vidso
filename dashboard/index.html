@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SendClip · Dashboard</title>
+<title>Vidso · Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -369,7 +369,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .vr-count-input{width:64px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:#fff;font-size:.85rem;font-weight:700;padding:7px 8px;text-align:center}
 .cv-genre-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
 
-/* Clipper section — exact SendClip production match */
+/* Clipper section — exact Vidso production match */
 #panel-clipper #clip-loader{max-width:960px;margin:0 auto}
 #panel-clipper .tool-card{
   background:#111113;border:1px solid rgba(255,255,255,.1);border-radius:24px;
@@ -586,7 +586,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .preview-stage.framed video{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px}
 .preview-stage.framed canvas{position:relative;display:inline-block;border-radius:4px;max-height:340px}
 
-/* SendClip polish */
+/* Vidso polish */
 ::selection{background:#5b8cff;color:#fff}
 html{color-scheme:dark}
 body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:600px;pointer-events:none;z-index:0;
@@ -612,7 +612,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 <!-- AUTH MODAL -->
 <div class="modal-bg hidden" id="auth-modal">
   <div class="modal">
-    <h2>Welcome to <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.02em;color:#fff;text-transform:lowercase">sendclip</span></h2>
+    <h2>Welcome to <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.02em;color:#fff;text-transform:lowercase">vidso</span></h2>
     <p>Sign in to access your AI content tools.</p>
     <div class="modal-tabs">
       <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
@@ -637,8 +637,8 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <img src="/sendclip-logo.png" alt="sendclip">
-    <span class="brand">sendclip</span>
+    <img src="/sendclip-logo.png" alt="vidso">
+    <span class="brand">vidso</span>
   </div>
   <nav class="sidebar-nav">
     <button class="nav-item active" data-panel="home" onclick="switchPanel('home',this)">
@@ -903,7 +903,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       <div id="clip-loader">
         <div class="tool-card">
           <h3>Video Clipper</h3>
-          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link — SendClip's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
+          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link — Vidso's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
           <div class="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
@@ -2057,7 +2057,7 @@ function populateUser() {
   document.getElementById('credits-pill').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#5b8cff"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg> ${currentUser.credits} credits`
 }
 
-// ── PANELS + clean URL routes (SendClip-style) ───────────────────────────────
+// ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
 const titles = {
   home:'Overview', clipper:'Clipping', ranking:'Ranking', imagegen:'Image Generation',
   videogen:'Video Generation', upscale:'Upscale', tools:'Tools', dashboard:'Dashboard',
