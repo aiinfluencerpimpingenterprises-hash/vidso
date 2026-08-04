@@ -185,6 +185,9 @@ export const api = {
     script: (body) => req('POST', '/api/faceless/script', body),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
+    // body: { script, voice_id, aspect } → { jobId }
+    startMedia: (body) => req('POST', '/api/faceless/media', body),
+    pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
   },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'

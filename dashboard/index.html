@@ -163,6 +163,22 @@ select option{background:var(--card)}
 .fv-regen-btn{border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.72rem;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
 .fv-regen-btn:hover{border-color:var(--a2);color:#fff}
 .fv-setup.collapsed{display:none}
+.fv-media-box{display:none;margin-top:8px}
+.fv-media-box.show{display:block}
+.fv-progress{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.fv-progress > span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .35s}
+.fv-media-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:14px}
+@media (max-width:900px){.fv-media-grid{grid-template-columns:1fr}}
+.fv-clip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:320px;overflow-y:auto}
+.fv-clip-card{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:9/16;background:#000;border:1px solid var(--border)}
+.fv-clip-card.landscape{aspect-ratio:16/9}
+.fv-clip-card img,.fv-clip-card video{width:100%;height:100%;object-fit:cover;display:block}
+.fv-clip-card .tag{position:absolute;left:6px;bottom:6px;right:6px;font-size:.65rem;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fv-words{max-height:180px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:4px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.fv-word{font-size:.72rem;padding:3px 7px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border)}
+.fv-word.on{color:#fff;border-color:var(--a1);background:rgba(91,140,255,.2)}
+.fv-tl{display:flex;height:28px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface);margin-top:10px}
+.fv-tl > i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.08);background:rgba(91,140,255,.35)}
 @media (max-width:640px){.fv-seg{grid-template-columns:1fr}.fv-voice-row{grid-template-columns:1fr}}
 
 /* IMAGES GRID */
@@ -2037,6 +2053,47 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
               <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-help">Edit any section, or use Regenerate on a section. Then continue to editor.</p>
             </div>
           </div>
+
+          <!-- Phase 3: Media -->
+          <div class="fv-media-box" id="fv-media-box">
+            <div class="result-box" style="margin-top:0">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                  <div class="result-label">Media &amp; audio</div>
+                  <div class="fv-script-title" id="fv-media-title">Building voiceover + B-roll</div>
+                  <div class="fv-meta" id="fv-media-meta"></div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="fvBackToEditor()">← Back to script</button>
+              </div>
+
+              <div id="fv-media-progress-wrap">
+                <div class="fv-progress"><span id="fv-media-bar"></span></div>
+                <div class="status" id="fv-media-status" style="display:flex;margin:0"><span class="spinner"></span> Starting…</div>
+              </div>
+
+              <div id="fv-media-result" style="display:none">
+                <div class="fv-media-grid">
+                  <div>
+                    <div class="result-label">Voiceover</div>
+                    <audio id="fv-media-audio" controls style="width:100%;margin-top:6px"></audio>
+                    <div class="result-label" style="margin-top:14px">Word-level captions</div>
+                    <div class="fv-words" id="fv-media-words"></div>
+                  </div>
+                  <div>
+                    <div class="result-label">B-roll clips</div>
+                    <div class="fv-clip-grid" id="fv-media-clips"></div>
+                    <div class="result-label" style="margin-top:14px">Timeline</div>
+                    <div class="fv-tl" id="fv-media-timeline" title="Clip segments over voiceover duration"></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center">
+                  <button type="button" class="btn btn-ghost" onclick="fvStartMedia(true)">↻ Re-run media</button>
+                  <button type="button" class="btn btn-primary" id="fv-to-phase4-btn" onclick="fvContinueToPreview()">Continue to preview →</button>
+                </div>
+                <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-media-help">Voice, word timestamps, and B-roll are ready. Preview &amp; caption styling land in Phase 4.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2324,6 +2381,9 @@ window.fvState = {
   voiceId: null,
   voicePreview: null,
   script: null,
+  media: null,
+  mediaJobId: null,
+  mediaPoll: null,
   phase: 1,
   inited: false,
 }
@@ -2515,10 +2575,156 @@ window.fvBackToSetup = () => {
 
 window.fvContinueToMedia = () => {
   fvRebuildFullScriptFromSections()
+  if (!fvState.script?.full_script) return fvSetStatus('Script is empty', 'err', 2)
+  if (!fvState.voiceId && !fvState.script.voice_id) return fvSetStatus('Select a narrator voice in setup', 'err', 2)
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
-  fvSetStatus('Media pipeline (voice + B-roll + captions) is next — Phase 3', 'ok', 2)
-  // Phase 3 lands next; keep button usable as a clear next-step cue
-  alert('Script locked. Phase 3 (voice, B-roll, captions) is next — say the word and we’ll build it.')
+  fvState.phase = 3
+  document.getElementById('fv-setup')?.classList.add('collapsed')
+  document.getElementById('fv-script-box')?.classList.remove('show')
+  const mediaBox = document.getElementById('fv-media-box')
+  mediaBox.classList.add('show')
+  fvSetPills(3)
+  fvStartMedia(false)
+}
+
+window.fvBackToEditor = () => {
+  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+  fvState.phase = 2
+  document.getElementById('fv-media-box')?.classList.remove('show')
+  document.getElementById('fv-script-box')?.classList.add('show')
+  if (fvState.script) fvRenderScript(fvState.script)
+}
+
+function fvSetMediaStatus(msg, kind) {
+  const el = document.getElementById('fv-media-status')
+  if (!el) return
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.innerHTML = kind === 'loading'
+    ? `<span class="spinner"></span> ${msg}`
+    : msg
+}
+
+function fvRenderMediaResult(job) {
+  fvState.media = job
+  document.getElementById('fv-media-progress-wrap').style.display = 'none'
+  document.getElementById('fv-media-result').style.display = ''
+  document.getElementById('fv-media-title').textContent = fvState.script?.title || 'Media ready'
+  const dur = job.duration || 0
+  const durLabel = dur >= 120 ? `${(dur / 60).toFixed(1)} min` : `${Math.round(dur)}s`
+  document.getElementById('fv-media-meta').innerHTML =
+    `<span><b>${durLabel}</b> voiceover</span>` +
+    `<span><b>${(job.words || []).length}</b> words timed</span>` +
+    `<span><b>${(job.clips || []).length}</b> B-roll clips</span>` +
+    (job.warning ? `<span style="color:#f0c674">${fvEsc(job.warning)}</span>` : '')
+
+  const audio = document.getElementById('fv-media-audio')
+  audio.src = job.voiceover_url || ''
+  audio.onplay = () => fvSyncWordHighlight(audio)
+  audio.ontimeupdate = () => fvSyncWordHighlight(audio)
+
+  const wordsEl = document.getElementById('fv-media-words')
+  wordsEl.innerHTML = (job.words || []).map((w, i) =>
+    `<span class="fv-word" data-i="${i}" data-start="${w.start}" data-end="${w.end}">${fvEsc(w.text)}</span>`
+  ).join('') || '<span style="color:var(--muted);font-size:.78rem">No word timings returned</span>'
+
+  const portrait = (job.aspect || fvState.aspect) !== '16:9'
+  const clipsEl = document.getElementById('fv-media-clips')
+  clipsEl.innerHTML = (job.clips || []).length
+    ? job.clips.map(c => `
+      <div class="fv-clip-card${portrait ? '' : ' landscape'}">
+        ${c.preview ? `<img src="${fvEsc(c.preview)}" alt="" loading="lazy">` : `<video src="${fvEsc(c.url)}" muted playsinline></video>`}
+        <div class="tag">${fvEsc(c.query || 'clip')}</div>
+      </div>`).join('')
+    : '<div style="color:var(--muted);font-size:.78rem;grid-column:1/-1">No B-roll yet. Add a Pexels API key on the backend, or re-run after richer keywords.</div>'
+
+  const tl = document.getElementById('fv-media-timeline')
+  const total = job.duration || 1
+  tl.innerHTML = (job.timeline || []).map(seg => {
+    const pct = Math.max(2, ((seg.end - seg.start) / total) * 100)
+    return `<i style="width:${pct}%" title="${fvEsc(seg.query || '')} ${seg.start.toFixed(1)}s–${seg.end.toFixed(1)}s"></i>`
+  }).join('') || '<i style="width:100%;opacity:.25"></i>'
+
+  try {
+    sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
+      jobId: job.jobId,
+      voiceover_url: job.voiceover_url,
+      duration: job.duration,
+      words: job.words,
+      clips: job.clips,
+      timeline: job.timeline,
+      aspect: job.aspect,
+      voice_id: job.voice_id,
+    }))
+  } catch {}
+}
+
+function fvSyncWordHighlight(audio) {
+  const t = audio.currentTime || 0
+  document.querySelectorAll('#fv-media-words .fv-word').forEach(el => {
+    const s = parseFloat(el.dataset.start)
+    const e = parseFloat(el.dataset.end)
+    el.classList.toggle('on', t >= s && t < e)
+  })
+}
+
+window.fvStartMedia = async (force) => {
+  if (!fvState.script) return
+  fvRebuildFullScriptFromSections()
+  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+
+  document.getElementById('fv-media-progress-wrap').style.display = ''
+  document.getElementById('fv-media-result').style.display = 'none'
+  document.getElementById('fv-media-bar').style.width = '5%'
+  fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
+
+  const voiceId = fvState.voiceId || fvState.script.voice_id
+  try {
+    const { jobId } = await api.faceless.startMedia({
+      script: {
+        title: fvState.script.title,
+        topic: fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
+        full_script: fvState.script.full_script,
+        keywords: fvState.script.keywords || [],
+        sections: fvState.script.sections || [],
+        aspect: fvState.script.aspect || fvState.aspect,
+        voice_id: voiceId,
+      },
+      voice_id: voiceId,
+      aspect: fvState.script.aspect || fvState.aspect,
+    })
+    fvState.mediaJobId = jobId
+    fvState.mediaPoll = setInterval(async () => {
+      try {
+        const job = await api.faceless.pollMedia(jobId)
+        document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
+        if (job.status === 'processing' || job.status === 'queued') {
+          fvSetMediaStatus(job.step || 'Processing…', 'loading')
+          return
+        }
+        clearInterval(fvState.mediaPoll)
+        fvState.mediaPoll = null
+        if (job.status === 'error') {
+          fvSetMediaStatus(job.error || 'Media failed', 'err')
+          return
+        }
+        fvSetMediaStatus('Ready', 'ok')
+        fvRenderMediaResult(job)
+      } catch (e) {
+        clearInterval(fvState.mediaPoll)
+        fvState.mediaPoll = null
+        fvSetMediaStatus(e.message || 'Poll failed', 'err')
+      }
+    }, 1200)
+  } catch (e) {
+    fvSetMediaStatus(e.message || 'Could not start media job', 'err')
+  }
+}
+
+window.fvContinueToPreview = () => {
+  if (!fvState.media?.voiceover_url) return fvSetMediaStatus('Wait for media to finish', 'err')
+  fvSetMediaStatus('Preview editor is Phase 4 — coming next', 'ok')
+  alert('Media locked. Phase 4 (preview + caption styling + music) is next.')
 }
 
 window.fvRegenerateSection = async (sectionId) => {
