@@ -52,6 +52,7 @@
   header{position:sticky;top:0;z-index:50;padding:14px 0;background:transparent}
   nav{display:flex;align-items:center;justify-content:space-between;height:54px;padding:0 10px 0 20px;border:1px solid var(--line);border-radius:16px;background:rgba(12,12,14,.72);backdrop-filter:blur(22px) saturate(1.5);box-shadow:0 10px 40px rgba(0,0,0,.5)}
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+  .logo img{width:28px;height:28px;object-fit:contain;filter:invert(27%) sepia(95%) saturate(4000%) hue-rotate(338deg) brightness(1.05)}
   .logo .mark{width:28px;height:28px;border-radius:8px;background:#fff;display:grid;place-items:center}
   .logo .mark svg{width:14px;height:14px}
   .nav-links{display:flex;gap:32px;font-size:14px;font-weight:500;color:var(--muted)}
@@ -113,8 +114,8 @@
   .hero-grid .hero-visual .browser{border-radius:18px;border:1px solid rgba(255,59,74,.35);box-shadow:0 0 0 1px rgba(255,59,74,.2),0 40px 100px rgba(0,0,0,.85),0 0 100px rgba(255,59,74,.22)}
   .hero-grid h1{font-size:clamp(28px,5vw,46px);text-align:center;max-width:18ch;margin:0 auto;line-height:1.1}
   .hero-copy .sub{margin:18px auto 0;max-width:38em;text-align:center;font-size:15.5px;line-height:1.55}
-  .hero-copy .hero-cta{align-self:center;display:flex;justify-content:center;width:100%;margin:28px auto 0}
-  .hero-copy .hero-cta .btn{margin-left:auto;margin-right:auto;min-width:240px;box-shadow:0 0 0 1px rgba(255,59,74,.35),0 12px 40px rgba(196,16,40,.55),0 0 80px rgba(255,59,74,.25)}
+  .hero-copy .hero-cta{align-self:center;display:flex;justify-content:center;width:100%;margin:28px auto 0;position:relative;z-index:5;min-height:56px}
+  .hero-copy .hero-cta .btn{margin-left:auto;margin-right:auto;min-width:240px;opacity:1!important;visibility:visible!important;transform:none;box-shadow:0 0 0 1px rgba(255,59,74,.35),0 12px 40px rgba(196,16,40,.55),0 0 80px rgba(255,59,74,.25)}
   .hero-copy .hero-cta .btn:hover{box-shadow:0 0 0 1px rgba(255,59,74,.5),0 16px 48px rgba(196,16,40,.65),0 0 100px rgba(255,59,74,.35)}
   .hero-platforms{margin:28px auto 0;display:flex;flex-direction:column;align-items:center;gap:12px}
   .hero-platforms .plabel{font-size:11px;letter-spacing:.2em;font-weight:600;color:var(--faint);text-transform:uppercase}
@@ -422,7 +423,7 @@
   <div class="wrap" style="position:relative">
     <nav>
       <a href="/landing" class="logo">
-        <img src="/sendclip-logo.png" alt="Vidso" style="width:28px;height:28px;object-fit:contain">
+        <img src="/sendclip-logo.png" alt="Vidso">
         Vidso
       </a>
       <div class="nav-links">
@@ -914,7 +915,7 @@
     <div class="foot">
       <div>
         <a href="/landing" class="logo">
-          <img src="/sendclip-logo.png" alt="Vidso" style="width:28px;height:28px;object-fit:contain">
+          <img src="/sendclip-logo.png" alt="Vidso">
           Vidso
         </a>
         <p class="fdesc">Create long-form YouTube videos with AI — script, voice, B-roll, and captions — built for creators who want to monetize.</p>
@@ -982,18 +983,19 @@
   if(reduce){return;} // respect reduced-motion: keep everything static
 
   // ---------- HERO load-in ----------
-  var words = splitWords(document.querySelector('h1'));
+  var heroH1 = document.querySelector('.hero h1');
+  var words = heroH1 ? splitWords(heroH1) : [];
+  // Keep CTA visible — never leave it stuck at opacity:0 if the timeline hiccups
+  gsap.set('.hero-cta .btn', {opacity:1, visibility:'visible', clearProps:'transform'});
   var heroTl = gsap.timeline({defaults:{ease:'power3.out'}});
   heroTl
     .from('.trust-badge',{y:18,opacity:0,duration:.55})
-    
     .from(words,{yPercent:115,opacity:0,duration:.75,stagger:.04,ease:'power4.out'},'-=.25')
     .from('.hero .sub',{y:20,opacity:0,duration:.65},'-=.45')
-    .from('.hero-cta .btn',{y:16,opacity:0,duration:.55},'-=.35')
+    .from('.hero-cta .btn',{y:12,duration:.45,clearProps:'transform'},'-=.35')
     .from('.hero-platforms',{y:16,opacity:0,duration:.55},'-=.3')
     .from('.hero-proof',{y:16,opacity:0,duration:.55},'-=.3')
-    .from('.av-stack .av',{scale:0,opacity:0,duration:.45,stagger:.07,ease:'back.out(2)'},'-=.35')
-    
+    .from('.hero .av-stack .av',{scale:0,opacity:0,duration:.45,stagger:.07,ease:'back.out(2)'},'-=.35')
     .from('.hero-visual',{y:48,opacity:0,scale:.985,duration:1,ease:'power2.out'},'-=.55')
     .from('.bb-left .prow',{x:-14,opacity:0,duration:.45,stagger:.08},'-=.45')
     .from('.bb-right .clip',{y:18,opacity:0,scale:.9,duration:.45,stagger:.08},'-=.4');
