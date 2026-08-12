@@ -178,8 +178,8 @@
   .sub{max-width:580px;margin:28px auto 0;font-size:clamp(14px,1.5vw,15.5px);font-weight:400;color:var(--muted);letter-spacing:-.01em;position:relative;z-index:2;line-height:1.55}
   .hero-cta{display:flex;gap:14px;justify-content:center;margin-top:28px;flex-wrap:wrap;position:relative;z-index:2}
   .hero-proof{margin-top:26px;display:flex;align-items:center;justify-content:center;gap:12px;position:relative;z-index:2}
-  .av-stack{display:flex}
-  .av-stack .av{width:34px;height:34px;border-radius:50%;display:block;overflow:hidden;border:2px solid #000;margin-left:-9px;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1a1f;padding:0;flex-shrink:0}
+  .av-stack{display:flex;min-width:134px;height:34px;align-items:center}
+  .av-stack .av{width:34px;height:34px;border-radius:50%;display:block;overflow:hidden;border:2px solid #000;margin-left:-9px;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1a1f;padding:0;flex-shrink:0;object-fit:cover}
   .av-stack .av:first-child{margin-left:0}
   .av-mono{display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.78);background:linear-gradient(145deg,#1c2844 0%,#12141c 100%)}
   .av-stack .av.av-mono{font-size:10px}
@@ -579,13 +579,39 @@
       </div>
     </div>
     <div class="hero-proof">
-      <div class="av-stack">
-        <span class="av av-mono" aria-label="Sarah M.">SM</span>
-        <span class="av av-mono" aria-label="Jessica R.">JR</span>
-        <span class="av av-mono" aria-label="Maya K.">MK</span>
-        <span class="av av-mono" aria-label="Taylor B.">TB</span>
-        <span class="av av-mono" aria-label="Emma L.">EL</span>
-      </div>
+      <div class="av-stack" id="trustedAvatars" aria-label="Trusted creators"></div>
+      <script>
+      (function () {
+        // Plain <img> (not next/image) — R2 URLs must not go through Vercel image optimization.
+        var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
+        var TRUSTED_CREATOR_FILES = [
+          'trustedcreators1.png',
+          'trustedcreators2.png',
+          'trustedcreators3.png',
+          'trustedcreators4.png',
+          'trustedcreators5.png'
+        ];
+        var TRUSTED_CREATOR_ALTS = [
+          'Trusted creator portrait 1',
+          'Trusted creator portrait 2',
+          'Trusted creator portrait 3',
+          'Trusted creator portrait 4',
+          'Trusted creator portrait 5'
+        ];
+        var stack = document.getElementById('trustedAvatars');
+        if (!stack) return;
+        var html = '';
+        for (var i = 0; i < TRUSTED_CREATOR_FILES.length; i++) {
+          html += '<img class="av"'
+            + ' src="' + R2_BASE + '/' + TRUSTED_CREATOR_FILES[i] + '"'
+            + ' width="34" height="34"'
+            + ' alt="' + TRUSTED_CREATOR_ALTS[i] + '"'
+            + ' loading="eager" fetchpriority="high" decoding="async"'
+            + '>';
+        }
+        stack.innerHTML = html;
+      })();
+      </script>
       <span class="lbl">Trusted by creators building <b>monetizable</b> YouTube channels</span>
     </div>
     </div><!-- /hero-copy -->
