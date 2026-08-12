@@ -309,9 +309,10 @@ select option{background:var(--card)}
 .auth-google:hover{transform:translateY(-1px);background:#f5f5f5;color:#111;box-shadow:0 8px 22px rgba(0,0,0,.25)}
 .auth-google:disabled,.auth-google.is-loading{opacity:.7;cursor:not-allowed;transform:none}
 .auth-google svg{width:18px;height:18px;flex-shrink:0}
-.auth-google .auth-cta-spinner{display:none}
+.auth-google .auth-cta-spinner{display:none;position:absolute;inset:0;place-items:center}
 .auth-google.is-loading .auth-cta-label,.auth-google.is-loading > svg{opacity:0}
-.auth-google.is-loading .auth-cta-spinner{display:inline-flex}
+.auth-google.is-loading .auth-cta-spinner{display:grid}
+.auth-google .auth-cta-spinner i{border-color:rgba(0,0,0,.15);border-top-color:#222}
 .modal-error{font-size:.78rem;color:#eb5757;margin-top:12px;display:none;text-align:center}
 @media (max-width:760px){
   .modal.auth-shell{max-width:420px;border-radius:18px}
