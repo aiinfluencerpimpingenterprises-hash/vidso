@@ -78,7 +78,9 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .user-info{flex:1;min-width:0;overflow:hidden}
 .user-name{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
 .user-email{font-size:.68rem;color:var(--text-label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;margin-top:2px}
-.user-settings-btn{background:none;border:none;color:var(--text-body);padding:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:8px;pointer-events:none}
+.user-settings-btn{background:none;border:none;color:var(--text-body);padding:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:8px;cursor:pointer;min-width:44px;min-height:44px;pointer-events:auto}
+.user-settings-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.user-settings-btn:focus-visible{outline:2px solid rgba(255,77,94,.7);outline-offset:1px}
 .user-signout-btn{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;cursor:pointer;color:var(--text-body);font-size:.82rem;font-weight:500;padding:12px;margin:0;font-family:inherit;text-align:left;transition:background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out)}
 .user-signout-btn:hover{background:rgba(255,255,255,.06);color:#fff}
 .user-signout-btn:focus-visible{outline:2px solid rgba(255,77,94,.7);outline-offset:-2px}
@@ -346,13 +348,14 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .qa-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}
 @media (max-width:1100px){.qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.qa-grid{grid-template-columns:1fr}}
-.qa-card{display:flex;align-items:flex-start;gap:12px;padding:16px;text-align:left;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.qa-card{display:flex;flex-direction:row;align-items:flex-start;gap:12px;padding:16px;text-align:left;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);font:inherit;color:inherit;width:100%;white-space:normal}
 .qa-card:hover{border-color:rgba(255,59,74,.4);transform:translateY(-2px);background:rgba(255,59,74,.05)}
 .qa-card:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
 .qa-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--border);color:#fff;flex-shrink:0}
 .qa-ico svg{width:16px;height:16px}
-.qa-title{display:block;font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;line-height:1.3}
-.qa-sub{display:block;font-size:14px;color:rgba(255,255,255,.45);line-height:1.4;margin:0}
+.qa-body{display:flex;flex-direction:column;align-items:stretch;gap:0;flex:1;min-width:0;text-align:left}
+.qa-title{display:block;font-size:16px;font-weight:600;color:#fff;margin:0;line-height:1.3;white-space:normal}
+.qa-sub{display:block;font-size:14px;color:rgba(255,255,255,.45);line-height:1.4;margin-top:6px;white-space:normal}
 .dash-recent{display:flex;flex-direction:column;gap:8px}
 .dash-recent-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
 .dash-recent-name{flex:1;min-width:0;font-size:.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -416,7 +419,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .vr-sticky-bar{position:sticky;bottom:0;z-index:5;padding:12px 0 8px;margin-top:12px;background:rgba(8,8,10,.72);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-top:1px solid rgba(255,255,255,.08)}
 .vr-phone{width:min(100%,280px);margin:0 auto;padding:10px;border-radius:28px;background:linear-gradient(180deg,#1a1a1e,#0a0a0c);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}
 .vr-phone .vr-preview-stage{border-radius:18px}
-.vr-stage-empty-bg{display:flex;align-items:center;justify-content:center;color:var(--text-label)!important;font-size:.8rem!important;font-weight:500;letter-spacing:-.01em}
+.vr-stage-empty span{color:rgba(255,255,255,.55)!important;font-size:.72rem!important;font-weight:500;letter-spacing:-.01em}
 .btn.is-loading{pointer-events:none;opacity:.75}
 .fv-stepper{gap:0;padding:4px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px}
 .fv-step-pill{flex:1;justify-content:center;border-radius:10px;padding:8px 10px}
@@ -817,12 +820,19 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .vr-preview-bar{display:flex;align-items:center;gap:10px;color:var(--muted);margin-top:10px;padding:0 2px}
 #vr-stage-inner{position:absolute;inset:0;z-index:1}
 #vr-stage-inner video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.vr-stage-ranks{position:absolute;left:6px;top:18%;bottom:10%;display:flex;flex-direction:column;justify-content:space-around;z-index:3;pointer-events:none}
-.vr-stage-rank-row{display:flex;align-items:center;gap:3px;line-height:1.2}
-.vr-stage-num{font-weight:900;font-size:.85rem;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 6px rgba(0,0,0,.7)}
-.vr-stage-num.c0{color:#f5c842}.vr-stage-num.c1{color:#d4d4d4}.vr-stage-num.c2{color:#ef4444}.vr-stage-num.c3{color:#22c55e}.vr-stage-num.c4{color:#ef4444}
-.vr-stage-ctitle{font-weight:800;font-size:.55rem;color:#fff;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 4px rgba(0,0,0,.7);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vr-stage-empty-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font-size:.7rem}
+.vr-stage-list{position:absolute;left:10px;right:10px;top:52px;bottom:14px;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;z-index:3;pointer-events:none;overflow:hidden}
+.vr-stage-rank-row{display:flex;align-items:center;gap:8px;min-height:0;flex:1;max-height:56px}
+.vr-stage-badge{width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.68rem;color:#111;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.vr-stage-badge.c0{background:linear-gradient(180deg,#f6d86b,#d4a017);color:#1a1400}
+.vr-stage-badge.c1{background:linear-gradient(180deg,#ececec,#b0b0b0);color:#1a1a1a}
+.vr-stage-badge.c2{background:linear-gradient(180deg,#e08a5a,#b45309);color:#1a0c00}
+.vr-stage-badge.c3,.vr-stage-badge.c4{background:linear-gradient(180deg,#9ca3af,#6b7280);color:#111}
+.vr-stage-thumb{flex:1;min-width:0;height:100%;min-height:36px;max-height:48px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);overflow:hidden;position:relative}
+.vr-stage-thumb img,.vr-stage-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.vr-stage-thumb-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.28);font-size:.58rem;font-weight:600;letter-spacing:.02em}
+.vr-stage-empty{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:24px 18px;text-align:center;pointer-events:none}
+.vr-stage-empty span{color:rgba(255,255,255,.55);font-size:.72rem;font-weight:500;line-height:1.35;max-width:11em}
+.vr-preview-title.is-placeholder{color:rgba(255,255,255,.28)!important;font-weight:600!important;text-shadow:none!important}
 .vr-editor{background:var(--surface);border-radius:10px;padding:16px;margin-top:14px}
 .vr-editor video{width:100%;max-height:320px;border-radius:10px;background:#000;display:block;margin:0 auto 14px}
 .vr-trim-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
@@ -1007,10 +1017,25 @@ input:focus,textarea:focus,select:focus,
 .qa-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}
 @media (max-width:1100px){.qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.qa-grid{grid-template-columns:1fr}}
-.qa-card{flex-direction:column;align-items:flex-start;gap:12px;padding:20px;min-height:148px}
-.qa-card .qa-body{display:flex;flex-direction:column;gap:6px;min-width:0}
-.qa-title{display:block;font-size:16px;font-weight:600;color:#fff;margin:0;line-height:1.3}
-.qa-sub{display:block;font-size:14px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+.qa-card{
+  display:flex!important;flex-direction:row!important;align-items:flex-start!important;
+  gap:12px!important;padding:20px!important;min-height:120px;text-align:left!important;
+  white-space:normal!important
+}
+.qa-card .qa-ico{flex-shrink:0}
+.qa-card .qa-body{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:0!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;text-align:left!important
+}
+.qa-card .qa-title{
+  display:block!important;font-size:16px!important;font-weight:600!important;color:#fff!important;
+  margin:0!important;padding:0!important;line-height:1.3!important;white-space:normal!important
+}
+.qa-card .qa-sub{
+  display:block!important;font-size:14px!important;font-weight:400!important;
+  color:rgba(255,255,255,.45)!important;margin:6px 0 0!important;padding:0!important;line-height:1.4!important;
+  white-space:normal!important
+}
 .dash-recent-wrap{padding:20px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);min-height:200px}
 
 /* Tools V2 */
@@ -1184,10 +1209,137 @@ input:focus,textarea:focus,select:focus,
 .img-pane{padding:24px!important}
 .card-pad-20{padding:20px!important}
 .card-pad-24{padding:24px!important}
+
+/* Account settings */
+.settings-shell{max-width:420px;width:calc(100% - 32px);padding:0;overflow:hidden}
+.settings-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 0}
+.settings-head h2{margin:0;font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:-.02em}
+.settings-close{width:44px;height:44px;border:none;border-radius:12px;background:transparent;color:rgba(255,255,255,.7);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.settings-close:hover{background:rgba(255,255,255,.06);color:#fff}
+.settings-close:focus-visible{outline:2px solid rgba(255,77,94,.7);outline-offset:1px}
+.settings-profile{display:flex;align-items:center;gap:12px;padding:18px;margin:14px 18px 0;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
+.settings-profile-meta{min-width:0;flex:1}
+.settings-name{font-size:.95rem;font-weight:650;color:#fff;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.settings-email{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.settings-rows{padding:14px 18px 0;display:flex;flex-direction:column;gap:8px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
+.settings-row.is-soon{opacity:.62}
+.settings-row-label{font-size:.85rem;font-weight:550;color:rgba(255,255,255,.82)}
+.settings-row-value{font-size:.85rem;font-weight:650;color:#fff;font-variant-numeric:tabular-nums}
+.settings-signout{width:calc(100% - 36px);margin:16px 18px 18px;min-height:44px}
+
+/* Mobile chrome (drawer) — desktop unchanged */
+.mobile-nav-toggle,.mobile-nav-close{display:none}
+.nav-backdrop{display:none}
+
+@media (max-width:768px){
+  body{overflow-x:hidden}
+  body.nav-open{overflow:hidden}
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:80;width:min(288px,86vw);
+    transform:translateX(-105%);transition:transform 220ms var(--ease-out);
+    border-right:1px solid var(--line);box-shadow:none
+  }
+  body.nav-open .sidebar{transform:translateX(0);box-shadow:24px 0 60px rgba(0,0,0,.45)}
+  .nav-backdrop{
+    display:block;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);
+    opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-out)
+  }
+  body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
+  .nav-backdrop[hidden]{display:none!important}
+  body.nav-open .nav-backdrop[hidden]{display:block!important}
+  .mobile-nav-toggle{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;margin:0;padding:0;border:none;border-radius:12px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;flex-shrink:0
+  }
+  .mobile-nav-toggle:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:1px}
+  .mobile-nav-close{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;margin:0 0 0 auto;padding:0;border:none;border-radius:12px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;order:3
+  }
+  .sidebar-logo{gap:8px}
+  .sidebar-logo .brand{order:2}
+  .topbar{
+    padding:8px 12px;min-height:56px;gap:10px;
+    display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center
+  }
+  .topbar::after{left:12px;right:12px}
+  .topbar-title{font-size:1rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-title.is-hidden{visibility:visible;pointer-events:auto}
+  .credits-pill{padding:6px 10px;gap:5px;max-width:100%}
+  .credits-pill-label{display:none}
+  .content{padding:16px 12px;overflow-x:hidden}
+  .page-header{margin-bottom:16px!important}
+  .page-header h2{font-size:1.35rem!important}
+  .dash-stats{grid-template-columns:1fr!important;gap:10px}
+  .qa-grid{grid-template-columns:1fr!important;gap:10px}
+  .qa-card{min-height:0!important;padding:16px!important}
+  .tools-grid{grid-template-columns:1fr!important}
+  .vr-layout{flex-direction:column!important}
+  .vr-right{width:100%!important}
+  .vr-preview-card{position:static!important;max-width:320px;margin:0 auto}
+  .vr-sticky-bar{
+    left:0;right:0;width:100%;border-radius:14px 14px 0 0!important;
+    padding:12px!important;margin-left:0!important;margin-right:0!important
+  }
+  #panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:120px!important}
+  #panel-ranking .page-shell-wide{padding:0}
+  .nav-item{min-height:44px;height:auto;padding:10px 12px}
+  .user-settings-btn,.user-signout-btn{min-height:44px}
+  .img-layout,.fv-prev-layout,.cm-layout,.clip-layout{grid-template-columns:1fr!important;flex-direction:column!important}
+  body, .main, .content{max-width:100vw}
+  .tool-card,.ui-card,.page-shell,.page-shell-wide{max-width:100%}
+}
+@media (max-width:390px){
+  .content{padding:14px 10px}
+  .topbar{padding:8px 10px}
+  .credits-pill{padding:6px 8px}
+}
 </style>
 <script src="/brand.js"></script>
 </head>
 <body>
+
+
+<!-- ACCOUNT SETTINGS -->
+<div class="modal-bg hidden" id="settings-modal" onclick="if(event.target===this)closeAccountSettings()">
+  <div class="modal settings-shell" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+    <div class="settings-head">
+      <h2 id="settings-title">Account</h2>
+      <button type="button" class="settings-close" onclick="closeAccountSettings()" aria-label="Close settings">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="settings-profile">
+      <span class="user-avatar" id="settings-avatar">?</span>
+      <div class="settings-profile-meta">
+        <div class="settings-name" id="settings-name">Your account</div>
+        <div class="settings-email" id="settings-email">—</div>
+      </div>
+    </div>
+    <div class="settings-rows">
+      <div class="settings-row">
+        <span class="settings-row-label">Credits</span>
+        <span class="settings-row-value" id="settings-credits">—</span>
+      </div>
+      <div class="settings-row is-soon" aria-disabled="true">
+        <span class="settings-row-label">Billing</span>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+      <div class="settings-row is-soon" aria-disabled="true">
+        <span class="settings-row-label">Change email</span>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+      <div class="settings-row is-soon" aria-disabled="true">
+        <span class="settings-row-label">Change password</span>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+    </div>
+    <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
+  </div>
+</div>
 
 <!-- AUTH MODAL -->
 <div class="modal-bg hidden" id="auth-modal">
@@ -1253,8 +1405,11 @@ input:focus,textarea:focus,select:focus,
 </div>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="app-sidebar" aria-label="Main navigation">
   <div class="sidebar-logo">
+    <button type="button" class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
     <img data-vidso-logo width="30" height="30" alt="Vidso" decoding="async">
     <span class="brand">vidso</span>
   </div>
@@ -1299,9 +1454,9 @@ input:focus,textarea:focus,select:focus,
           <div class="user-name" id="user-name">Your account</div>
           <div class="user-email" id="user-email">...</div>
         </div>
-        <span class="user-settings-btn" aria-hidden="true">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </span>
+        <button type="button" class="user-settings-btn" id="user-settings-btn" onclick="openAccountSettings()" aria-label="Account settings">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </button>
       </div>
       <button type="button" class="user-signout-btn" onclick="doLogout()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -1311,9 +1466,14 @@ input:focus,textarea:focus,select:focus,
   </div>
 </aside>
 
+<div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
+
 <!-- MAIN -->
 <main class="main">
   <div class="topbar">
+    <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
     <span class="topbar-title" id="topbar-title">Dashboard</span>
     <span class="credits-pill" id="credits-pill" title="Credits">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
@@ -2122,7 +2282,7 @@ input:focus,textarea:focus,select:focus,
           <label class="vr-mini-label" style="margin-bottom:8px">How many videos?</label>
           <div class="vr-count-stepper" role="group" aria-label="Video count">
             <button type="button" onclick="vrStepCount(-1)" aria-label="Fewer videos">−</button>
-            <input type="number" id="vr-count" min="2" max="15" value="3" onchange="vrSetCount()" oninput="clampVrCount(this)"/>
+            <input type="number" id="vr-count" min="2" max="15" value="" placeholder="3" onchange="vrSetCount()" oninput="clampVrCount(this)"/>
             <button type="button" onclick="vrStepCount(1)" aria-label="More videos">+</button>
           </div>
         </div>
@@ -2146,7 +2306,7 @@ input:focus,textarea:focus,select:focus,
             </div>
             <label class="vr-toggle"><input type="checkbox" id="vr-drag-title"/><span class="sw"></span>Drag title</label>
           </div>
-          <input type="text" id="vr-title-text" value="Biggest of all time" placeholder="Enter your ranking title..." style="width:100%;margin-bottom:14px" oninput="vrRenderTitlePreview()"/>
+          <input type="text" id="vr-title-text" value="" placeholder="Enter your ranking title" style="width:100%;margin-bottom:14px" oninput="vrRenderTitlePreview()"/>
           <div id="vr-title-preview" style="background:rgba(0,0,0,.35);border:1px dashed var(--border);border-radius:12px;padding:24px 16px;text-align:center;font-weight:800;color:#fff;font-size:1.35rem;margin-bottom:14px"></div>
           <label class="vr-mini-label">Title stroke</label>
           <div style="display:flex;align-items:center;gap:10px">
@@ -2229,7 +2389,7 @@ input:focus,textarea:focus,select:focus,
             <span style="flex:1"></span>
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3m11 0h3a2 2 0 002-2v-3"/></svg>
           </div>
-          <div class="vr-preview-status" id="vr-preview-status">No video loaded</div>
+          <div class="vr-preview-status" id="vr-preview-status">Add videos to preview your ranking</div>
         </div>
       </div>
       </div><!-- /.vr-layout -->
@@ -2957,20 +3117,32 @@ input:focus,textarea:focus,select:focus,
         <div class="section-label">Quick actions</div>
         <div class="qa-grid">
           <button type="button" class="qa-card" onclick="switchPanel('videogen',null)">
-            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
-            <span class="qa-body"><span class="qa-title">Start a faceless video</span><span class="qa-sub">Script, voice, B-roll, and captions</span></span>
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">Start a faceless video</div>
+              <div class="qa-sub">Script, voice, B-roll, and captions</div>
+            </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
-            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-            <span class="qa-body"><span class="qa-title">Clip a video</span><span class="qa-sub">Find viral moments from any link</span></span>
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">Clip a video</div>
+              <div class="qa-sub">Find viral moments from any link</div>
+            </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('ranking',null)">
-            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/></svg></span>
-            <span class="qa-body"><span class="qa-title">Build a ranking</span><span class="qa-sub">Assemble ranked short videos</span></span>
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">Build a ranking</div>
+              <div class="qa-sub">Assemble ranked short videos</div>
+            </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
-            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <span class="qa-body"><span class="qa-title">Generate images</span><span class="qa-sub">Thumbnails and cinematic stills</span></span>
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">Generate images</div>
+              <div class="qa-sub">Thumbnails and cinematic stills</div>
+            </div>
           </button>
         </div>
         <div class="section-label">Recent</div>
@@ -3161,6 +3333,72 @@ window.doLogout = async () => {
   showModal()
 }
 
+window.closeMobileNav = () => {
+  document.body.classList.remove('nav-open')
+  const backdrop = document.getElementById('nav-backdrop')
+  if (backdrop) backdrop.hidden = true
+  const toggle = document.getElementById('mobile-nav-toggle')
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', 'false')
+    toggle.setAttribute('aria-label', 'Open menu')
+  }
+}
+window.openMobileNav = () => {
+  document.body.classList.add('nav-open')
+  const backdrop = document.getElementById('nav-backdrop')
+  if (backdrop) backdrop.hidden = false
+  const toggle = document.getElementById('mobile-nav-toggle')
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', 'true')
+    toggle.setAttribute('aria-label', 'Close menu')
+  }
+}
+window.toggleMobileNav = () => {
+  if (document.body.classList.contains('nav-open')) window.closeMobileNav()
+  else window.openMobileNav()
+}
+
+let _settingsPrevFocus = null
+window.openAccountSettings = () => {
+  if (!currentUser) { showModal(); return }
+  const modal = document.getElementById('settings-modal')
+  if (!modal) return
+  _settingsPrevFocus = document.activeElement
+  const email = currentUser.email || '—'
+  const name = ((currentUser.name || '').trim() || String(email).split('@')[0] || 'Your account').trim()
+  const initial = (currentUser.name || currentUser.email || '').trim().charAt(0)
+  const av = document.getElementById('settings-avatar')
+  if (av) av.textContent = initial ? initial.toUpperCase() : '?'
+  const nameEl = document.getElementById('settings-name')
+  if (nameEl) nameEl.textContent = name || 'Your account'
+  const emailEl = document.getElementById('settings-email')
+  if (emailEl) emailEl.textContent = email
+  const creditsEl = document.getElementById('settings-credits')
+  if (creditsEl) creditsEl.textContent = String(currentUser.credits ?? 0)
+  modal.classList.remove('hidden')
+  const shell = modal.querySelector('.settings-shell')
+  shell?.focus?.()
+  window.closeMobileNav?.()
+}
+window.closeAccountSettings = () => {
+  const modal = document.getElementById('settings-modal')
+  if (!modal) return
+  modal.classList.add('hidden')
+  if (_settingsPrevFocus && typeof _settingsPrevFocus.focus === 'function') {
+    try { _settingsPrevFocus.focus() } catch (_) {}
+  }
+  _settingsPrevFocus = null
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return
+  const settings = document.getElementById('settings-modal')
+  if (settings && !settings.classList.contains('hidden')) {
+    closeAccountSettings()
+    return
+  }
+  if (document.body.classList.contains('nav-open')) closeMobileNav()
+})
+
 function populateUser() {
   document.getElementById('user-email').textContent = currentUser.email || ''
   const nameEl = document.getElementById('user-name')
@@ -3225,7 +3463,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen','upscale'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
   }
-  document.body.classList.remove('nav-open')
+  window.closeMobileNav?.()
   if (id === 'voiceover') loadVoiceLibrary()
   if (id === 'videogen') fvInit()
   if (!opts.silent) {
@@ -5907,31 +6145,45 @@ function vrNewCard() {
 }
 
 function clampVrCount(input) {
-  let v = parseInt(input.value) || 2
+  if (!input) return
+  if (input.value === '' || input.value == null) return
+  let v = parseInt(input.value, 10)
+  if (Number.isNaN(v)) return
   v = Math.min(15, Math.max(2, v))
-  input.value = v
+  input.value = String(v)
+}
+
+function vrUpdatePreviewStatus() {
+  const st = document.getElementById('vr-preview-status')
+  if (!st) return
+  if (!vrCards.length) {
+    st.textContent = 'Add videos to preview your ranking'
+    return
+  }
+  const ready = vrCards.filter(c => c && (c.loaded || c.streamUrl || c.link)).length
+  st.textContent = ready ? `${ready} of ${vrCards.length} videos ready` : 'Add videos to preview your ranking'
 }
 
 window.vrSetCount = () => {
   const input = document.getElementById('vr-count')
+  if (!input || input.value === '' || input.value == null) return
   clampVrCount(input)
-  const n = parseInt(input.value)
+  const n = parseInt(input.value, 10)
+  if (Number.isNaN(n)) return
   while (vrCards.length < n) vrCards.push(vrNewCard())
   vrCards.length = n
   vrRenderCards()
   window.vrSyncStage?.()
-  const st = document.getElementById('vr-preview-status')
-  if (st) {
-    const ready = vrCards.filter(c => c && (c.loaded || c.streamUrl || c.link)).length
-    st.textContent = ready ? `${ready} of ${vrCards.length} videos ready` : 'No video loaded'
-  }
+  vrUpdatePreviewStatus()
 }
 
 window.vrStepCount = (delta) => {
   const input = document.getElementById('vr-count')
   if (!input) return
-  const next = Math.min(15, Math.max(2, (parseInt(input.value) || 3) + (delta || 0)))
-  input.value = next
+  const cur = parseInt(input.value, 10)
+  const base = Number.isNaN(cur) ? 3 : cur
+  const next = Math.min(15, Math.max(2, base + (delta || 0)))
+  input.value = String(next)
   vrSetCount()
 }
 
@@ -6238,7 +6490,8 @@ function vrStrokeShadow(color, width) {
 }
 
 window.vrRenderTitlePreview = () => {
-  const text = document.getElementById('vr-title-text').value || ''
+  const raw = document.getElementById('vr-title-text')?.value || ''
+  const text = raw.trim()
   const font = document.getElementById('vr-title-font').value
   const size = document.getElementById('vr-title-size').value
   const color = document.getElementById('vr-title-color').value
@@ -6246,22 +6499,24 @@ window.vrRenderTitlePreview = () => {
   const strokeWidth = parseFloat(document.getElementById('vr-stroke-width').value) || 0
 
   const preview = document.getElementById('vr-title-preview')
-  preview.textContent = text
-  preview.style.fontFamily = font
-  preview.style.fontSize = size
-  preview.style.color = color
-  preview.style.fontWeight = '800'
-  preview.style.textShadow = vrStrokeShadow(strokeColor, strokeWidth)
+  if (preview) {
+    preview.textContent = text || 'Enter your ranking title'
+    preview.style.fontFamily = font
+    preview.style.fontSize = size
+    preview.style.color = text ? color : 'rgba(255,255,255,.35)'
+    preview.style.fontWeight = text ? '800' : '600'
+    preview.style.textShadow = text ? vrStrokeShadow(strokeColor, strokeWidth) : 'none'
+  }
 
-  // Mirror everything onto the live preview stage on the right.
   const stageTitle = document.getElementById('vr-stage-title')
   if (stageTitle) {
-    stageTitle.textContent = text
+    stageTitle.textContent = text || 'Your ranking title'
+    stageTitle.classList.toggle('is-placeholder', !text)
     stageTitle.style.fontFamily = font
     stageTitle.style.fontSize = `clamp(.7rem, ${parseFloat(size) / 22}rem, 1.3rem)`
-    stageTitle.style.color = color
-    stageTitle.style.fontWeight = '800'
-    stageTitle.style.textShadow = vrStrokeShadow(strokeColor, strokeWidth)
+    stageTitle.style.color = text ? color : 'rgba(255,255,255,.28)'
+    stageTitle.style.fontWeight = text ? '800' : '600'
+    stageTitle.style.textShadow = text ? vrStrokeShadow(strokeColor, strokeWidth) : 'none'
   }
 }
 
@@ -6275,35 +6530,49 @@ window.vrSyncStage = () => {
   if (!stage || !inner) return
 
   const bgColor = document.getElementById('vr-bg-color').value
-  document.getElementById('vr-bg-hex').value = bgColor.toUpperCase()
+  const hexEl = document.getElementById('vr-bg-hex')
+  if (hexEl) hexEl.value = bgColor.toUpperCase()
   stage.style.background = bgColor
 
-  const n = vrCards.length || 1
+  const n = vrCards.length
   let totalDur = 0
   vrCards.forEach(c => { if (c.duration) totalDur += (c.end || c.duration) - (c.start || 0) })
   const mins = Math.floor(totalDur / 60)
   const secs = Math.floor(totalDur % 60)
-  time.textContent = `0:00 / ${mins}:${String(secs).padStart(2, '0')}`
+  if (time) time.textContent = `0:00 / ${mins}:${String(secs).padStart(2, '0')}`
 
-  if (vrPreviewIdx >= n) vrPreviewIdx = 0
+  if (n && vrPreviewIdx >= n) vrPreviewIdx = 0
   const loadedIdxs = vrCards.map((c, i) => c.streamUrl ? i : -1).filter(x => x >= 0)
   if (loadedIdxs.length && !loadedIdxs.includes(vrPreviewIdx)) vrPreviewIdx = loadedIdxs[0]
-  const cur = vrCards[vrPreviewIdx] || {}
+  const cur = n ? (vrCards[vrPreviewIdx] || {}) : {}
+  const anyReady = loadedIdxs.length > 0
 
-  const bgVid = cur.streamUrl
-    ? `<video src="${cur.streamUrl}" muted preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`
-    : `<div class="vr-stage-empty-bg">No video loaded</div>`
+  let html = ''
+  if (cur.streamUrl) {
+    html += `<video src="${cur.streamUrl}" muted preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`
+  }
 
-  const ranks = vrCards.map((c, i) => {
-    const colorCls = VR_NUM_COLORS[i % VR_NUM_COLORS.length]
-    const title = c.clipTitle || ''
-    return `<div class="vr-stage-rank-row">
-      <span class="vr-stage-num ${colorCls}">${i + 1}.</span>
-      ${title ? `<span class="vr-stage-ctitle">${title}</span>` : ''}
-    </div>`
-  }).join('')
+  if (n > 0) {
+    const ranks = vrCards.map((c, i) => {
+      const colorCls = VR_NUM_COLORS[i % VR_NUM_COLORS.length]
+      const thumb = c.streamUrl
+        ? `<video src="${c.streamUrl}" muted preload="metadata"></video>`
+        : `<span class="vr-stage-thumb-ph">Empty</span>`
+      return `<div class="vr-stage-rank-row">
+        <span class="vr-stage-badge ${colorCls}">${i + 1}</span>
+        <div class="vr-stage-thumb">${thumb}</div>
+      </div>`
+    }).join('')
+    html += `<div class="vr-stage-list">${ranks}</div>`
+  }
 
-  inner.innerHTML = bgVid + `<div class="vr-stage-ranks">${ranks}</div>`
+  if (!anyReady) {
+    html += `<div class="vr-stage-empty"><span>Add videos to preview your ranking</span></div>`
+  }
+
+  inner.innerHTML = html
+  window.vrRenderTitlePreview?.()
+  vrUpdatePreviewStatus()
 }
 
 window.vrSyncFromHex = () => {
@@ -6315,6 +6584,11 @@ window.vrSyncFromHex = () => {
 }
 
 window.vrGenerate = async () => {
+  const countInput = document.getElementById('vr-count')
+  if (countInput && (countInput.value === '' || countInput.value == null)) {
+    alert('Add at least 2 videos before generating.')
+    return
+  }
   if (vrCards.length < 2) {
     alert('Add at least 2 videos before generating.')
     return
@@ -6442,7 +6716,13 @@ window.vrGenerate = async () => {
 }
 
 ;(function initVrPanel() {
-  window.vrSetCount?.()
+  const count = document.getElementById('vr-count')
+  if (count) count.value = ''
+  const title = document.getElementById('vr-title-text')
+  if (title) title.value = ''
+  vrCards = []
+  const cards = document.getElementById('vr-cards')
+  if (cards) cards.innerHTML = ''
   window.vrRenderTitlePreview?.()
   window.vrSyncStage?.()
 })()

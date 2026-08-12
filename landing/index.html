@@ -161,10 +161,10 @@
     .bb-right{padding:12px;gap:8px;grid-template-columns:1fr 1fr}
     .final-box{padding:48px 16px;border-radius:22px}
     .final-box .microcopy{gap:10px 14px}
-    .rs-card{flex:0 0 168px;width:168px}
+    .rs-card{flex:0 0 220px;width:220px}
     .rs-card.feat{transform:scale(1.04)}
     .gen-cards{max-width:100%;gap:8px}
-    .gen-card{border-radius:14px;aspect-ratio:9/16}
+    .gen-card{border-radius:14px;aspect-ratio:16/9}
     .gen-box{padding:16px}
     .gen-options{gap:6px}
     .gen-opt{padding:7px 11px;font-size:12px}
@@ -209,8 +209,8 @@
   .prow .check svg{width:11px;height:11px}
   .prow.pending{color:var(--faint)}
   .prow.pending .check{background:rgba(255,255,255,.04);color:var(--faint)}
-  .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;background:#050505}
-  .clip{aspect-ratio:9/16;border-radius:12px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;transition:border-color .25s}
+  .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;background:#050505;align-items:start}
+  .clip{aspect-ratio:16/9;border-radius:12px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;transition:border-color .25s}
   .clip:hover{border-color:var(--line-2)}
   .clip .media-ph{position:absolute;inset:0;z-index:0}
   .clip .score{position:absolute;top:9px;right:9px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;z-index:2}
@@ -387,7 +387,7 @@
   .reelshow{padding:60px 0 90px;text-align:center;overflow:hidden}
   .rs-viewport{overflow:hidden;padding:44px 0}
   .rs-row{display:flex;gap:20px;align-items:center;transition:transform .45s cubic-bezier(.4,0,.2,1);touch-action:pan-y;user-select:none;will-change:transform}
-  .rs-card{flex:0 0 240px;width:240px;aspect-ratio:9/16;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:pointer;transform:scale(.86);opacity:.5;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s,box-shadow .4s,border-color .4s}
+  .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:pointer;transform:scale(.86);opacity:.5;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s,box-shadow .4s,border-color .4s}
   .rs-card .media-ph{position:absolute;inset:0;z-index:0}
   .rs-card.feat{transform:scale(1.08);opacity:1;z-index:2;box-shadow:0 30px 80px rgba(0,0,0,.62);border-color:rgba(255,59,74,.5)}
   .media-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 12px;text-align:center;background:linear-gradient(165deg,#1a2238 0%,#0a0c14 55%,#14101c 100%)}
@@ -402,7 +402,7 @@
   .gen-promo h2 .accent{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
   .gen-promo-body{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:stretch;max-width:1060px;margin:0 auto}
   .gen-cards{display:flex;gap:14px;align-items:stretch;height:100%}
-  .gen-card{flex:1;aspect-ratio:9/16;background:linear-gradient(180deg,#141728 0%,#0a0c14 100%);border:1px solid var(--line);border-radius:18px;min-width:0;overflow:hidden;position:relative}
+  .gen-card{flex:1;aspect-ratio:16/9;background:linear-gradient(180deg,#141728 0%,#0a0c14 100%);border:1px solid var(--line);border-radius:18px;min-width:0;overflow:hidden;position:relative}
   .gen-box{background:var(--panel);border:1px solid var(--line-2);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px}
   .gen-prompt{width:100%;min-height:108px;background:transparent;border:none;color:#fff;font-family:inherit;font-size:15px;line-height:1.55;resize:none;outline:none;flex:1}
   .gen-prompt::placeholder{color:var(--faint)}
@@ -415,7 +415,7 @@
   @media(max-width:900px){
     .gen-promo-body{grid-template-columns:1fr;gap:22px}
     .gen-cards{max-width:360px;margin:0 auto;width:100%}
-    .gen-card{aspect-ratio:9/14}
+    .gen-card{aspect-ratio:16/9}
     .gen-promo .s-head{margin-bottom:36px}
   }
   @media(max-width:380px){
