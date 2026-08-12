@@ -20,8 +20,10 @@
     { "source": "/signup", "destination": "/dashboard/index.html" }
   ],
   "redirects": [
-    { "source": "/dashboard", "destination": "/overview", "permanent": false },
-    { "source": "/dashboard/", "destination": "/overview", "permanent": false },
+    { "source": "/overview", "destination": "/analytics", "permanent": false },
+    { "source": "/overview/", "destination": "/analytics", "permanent": false },
+    { "source": "/dashboard", "destination": "/analytics", "permanent": false },
+    { "source": "/dashboard/", "destination": "/analytics", "permanent": false },
     { "source": "/index.html", "destination": "/landing", "permanent": false }
   ],
   "headers": [
