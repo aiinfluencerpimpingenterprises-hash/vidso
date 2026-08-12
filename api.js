@@ -1,4 +1,7 @@
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
+// Public Supabase project used by the Railway API (iss claim on JWTs).
+// Google OAuth starts here; tokens return to the app via redirect hash/query.
+const SUPABASE_URL = 'https://ymtmgpgcmrazqeklixwf.supabase.co'
 
 function getToken() { return localStorage.getItem('clipzo_token') }
 function setSession(session) {
@@ -55,6 +58,9 @@ export const api = {
     login:   (email, password)       => req('POST', '/api/auth/login',   { email, password }),
     logout:  ()                      => req('POST', '/api/auth/logout'),
     refresh: (refresh_token)         => req('POST', '/api/auth/refresh', { refresh_token }),
+    // Google OAuth via Supabase Auth (implicit redirect with tokens in URL hash).
+    googleStartUrl: (redirect_to) =>
+      `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}`,
   },
   user: {
     me:    () => req('GET', '/api/user/me'),
