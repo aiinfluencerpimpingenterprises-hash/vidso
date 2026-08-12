@@ -18,11 +18,11 @@
 :root{
   --bg:#000000;--surface:#0a0a0a;--card:#111111;
   --ink:#ffffff;--muted:#888888;
-  --a1:#5b8cff;--a2:#4f7cff;--a3:#2748d6;
+  --a1:#ff3b4a;--a2:#ff4d5e;--a3:#c41028;
   --border:rgba(255,255,255,0.1);
   --radius:14px;
-  --blue:#5b8cff; --deep:#2748d6;
-  --grad:linear-gradient(135deg,#5b8cff 0%,#2748d6 100%);
+  --blue:#ff3b4a; --deep:#c41028;
+  --grad:linear-gradient(135deg,#ff4d5e 0%,#c41028 100%);
   --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
   --panel:#0c0e16; --panel-2:#141728;
   --faint:rgba(255,255,255,.34);
@@ -43,13 +43,13 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .sidebar-nav::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26)}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:.9rem;font-weight:500;color:rgba(255,255,255,.55);transition:background .18s,color .18s;border:none;background:transparent;width:100%;text-align:left;letter-spacing:-.01em;position:relative;flex-shrink:0}
 .nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
-.nav-item.active{background:rgba(91,140,255,.14);color:#fff;font-weight:600}
+.nav-item.active{background:rgba(255,59,74,.14);color:#fff;font-weight:600}
 .nav-item.active::before{display:none}
 .nav-ico{width:22px;height:22px;border-radius:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent;border:none;color:inherit;padding:0}
 .nav-ico svg{width:18px;height:18px;opacity:.85}
 .nav-item:hover .nav-ico{color:#fff;background:transparent}
-.nav-item.active .nav-ico{background:transparent;border:none;color:#5b8cff}
-.nav-item.active .nav-ico svg{opacity:1;color:#5b8cff}
+.nav-item.active .nav-ico{background:transparent;border:none;color:#ff3b4a}
+.nav-item.active .nav-ico svg{opacity:1;color:#ff3b4a}
 .sidebar-footer{padding:14px 12px;border-top:1px solid var(--line);flex-shrink:0}
 .user-profile-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px 14px;background:transparent;text-decoration:none;color:inherit;cursor:default}
@@ -96,8 +96,8 @@ select option{background:var(--card)}
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:'SF Pro Display','Inter',-apple-system,sans-serif}
-.btn-primary{background:var(--grad);color:#ffffff;box-shadow:0 6px 20px rgba(43,78,214,.34)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(43,78,214,.5)}
+.btn-primary{background:var(--grad);color:#ffffff;box-shadow:0 6px 20px rgba(196,16,40,.34)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(196,16,40,.5)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
 .btn-ghost:hover{border-color:var(--a2);color:var(--a2)}
@@ -105,7 +105,7 @@ select option{background:var(--card)}
 
 /* UPLOAD ZONE */
 .upload-zone{border:2px dashed var(--border);border-radius:10px;padding:36px;text-align:center;cursor:pointer;transition:border-color .15s}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--a2);background:rgba(91,140,255,0.05)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--a2);background:rgba(255,59,74,0.05)}
 .upload-zone .uz-icon{font-size:2rem;margin-bottom:10px}
 .upload-zone p{font-size:.82rem;color:var(--muted)}
 .upload-zone strong{color:var(--a2)}
@@ -121,7 +121,7 @@ select option{background:var(--card)}
 /* VOICES GRID */
 .voices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px;max-height:260px;overflow-y:auto}
 .voice-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all .15s}
-.voice-card:hover,.voice-card.selected{border-color:var(--a2);background:rgba(91,140,255,0.08)}
+.voice-card:hover,.voice-card.selected{border-color:var(--a2);background:rgba(255,59,74,0.08)}
 .voice-card.selected{border-width:2px}
 .voice-name{font-size:.78rem;font-weight:500;margin-bottom:2px}
 .voice-cat{font-size:.68rem;color:var(--muted)}
@@ -131,7 +131,7 @@ select option{background:var(--card)}
 .fv-stepper{display:flex;align-items:center;gap:8px;margin-bottom:4px;overflow-x:auto;padding-bottom:4px}
 .fv-step-pill{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;font-size:.75rem;font-weight:600;color:var(--muted);white-space:nowrap;border:1px solid transparent}
 .fv-step-pill .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:.7rem;font-weight:800}
-.fv-step-pill.active{color:#fff;border-color:rgba(91,140,255,.35);background:rgba(91,140,255,.08)}
+.fv-step-pill.active{color:#fff;border-color:rgba(255,59,74,.35);background:rgba(255,59,74,.08)}
 .fv-step-pill.active .n{background:var(--a1);border-color:var(--a1);color:#fff}
 .fv-step-pill.done{color:#fff}
 .fv-step-pill.done .n{background:var(--a2);border-color:var(--a2);color:#fff;font-size:0}
@@ -143,7 +143,7 @@ select option{background:var(--card)}
 .fv-chip-row{display:flex;flex-wrap:wrap;gap:8px}
 .fv-chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.78rem;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .15s}
 .fv-chip:hover{border-color:var(--a2);color:#fff}
-.fv-chip.active{background:rgba(91,140,255,.15);border-color:var(--a1);color:#fff}
+.fv-chip.active{background:rgba(255,59,74,.15);border-color:var(--a1);color:#fff}
 .fv-voice-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
 .fv-voice-preview{display:none;margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px}
 .fv-voice-preview.show{display:block}
@@ -176,9 +176,9 @@ select option{background:var(--card)}
 .fv-clip-card .tag{position:absolute;left:6px;bottom:6px;right:6px;font-size:.65rem;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fv-words{max-height:180px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:4px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
 .fv-word{font-size:.72rem;padding:3px 7px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border)}
-.fv-word.on{color:#fff;border-color:var(--a1);background:rgba(91,140,255,.2)}
+.fv-word.on{color:#fff;border-color:var(--a1);background:rgba(255,59,74,.2)}
 .fv-tl{display:flex;height:28px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface);margin-top:10px}
-.fv-tl > i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.08);background:rgba(91,140,255,.35)}
+.fv-tl > i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.08);background:rgba(255,59,74,.35)}
 .fv-preview-box{display:none;margin-top:8px}
 .fv-preview-box.show{display:block}
 .fv-export-box{display:none;margin-top:8px}
@@ -190,7 +190,7 @@ select option{background:var(--card)}
 .fv-side-pane.active{display:block}
 .fv-seg-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto}
 .fv-seg-row{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer}
-.fv-seg-row.active{border-color:var(--a1);background:rgba(91,140,255,.1)}
+.fv-seg-row.active{border-color:var(--a1);background:rgba(255,59,74,.1)}
 .fv-seg-thumb{width:56px;height:56px;border-radius:8px;overflow:hidden;background:#000;flex-shrink:0}
 .fv-seg-thumb.landscape{height:36px}
 .fv-seg-thumb img,.fv-seg-thumb video{width:100%;height:100%;object-fit:cover;display:block}
@@ -224,12 +224,12 @@ select option{background:var(--card)}
 .fv-side .field:last-child{margin-bottom:0}
 .fv-music-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
 .fv-music-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:.8rem;color:var(--muted)}
-.fv-music-item:hover,.fv-music-item.active{border-color:var(--a1);color:#fff;background:rgba(91,140,255,.1)}
+.fv-music-item:hover,.fv-music-item.active{border-color:var(--a1);color:#fff;background:rgba(255,59,74,.1)}
 .fv-prev-tl{margin-top:14px}
 .fv-prev-tracks{display:flex;flex-direction:column;gap:6px}
 .fv-track{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:.7rem;color:var(--muted)}
 .fv-track-bar{position:relative;height:22px;border-radius:6px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
-.fv-track-bar .seg{position:absolute;top:0;bottom:0;background:rgba(91,140,255,.4);border-right:1px solid rgba(255,255,255,.1)}
+.fv-track-bar .seg{position:absolute;top:0;bottom:0;background:rgba(255,59,74,.4);border-right:1px solid rgba(255,255,255,.1)}
 .fv-track-bar .seg.audio{background:rgba(111,207,151,.35)}
 .fv-track-bar .seg.music{background:rgba(240,198,116,.35)}
 .fv-track-bar .playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:2;pointer-events:none}
@@ -259,7 +259,7 @@ select option{background:var(--card)}
 .stat-label{font-size:.78rem;color:var(--muted);margin-top:4px}
 .tool-shortcuts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .shortcut{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .15s;text-align:center}
-.shortcut:hover{border-color:var(--a2);background:rgba(91,140,255,0.06)}
+.shortcut:hover{border-color:var(--a2);background:rgba(255,59,74,0.06)}
 .shortcut-icon{font-size:1.6rem;margin-bottom:10px}
 .shortcut-name{font-size:.82rem;font-weight:500}
 .shortcut-desc{font-size:.72rem;color:var(--muted);margin-top:4px}
@@ -282,7 +282,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 /* CLIPPER TIMELINE */
 .clip-track{position:relative;height:48px;background:var(--bg);border-radius:6px;overflow:visible;cursor:crosshair;border:1px solid var(--border);user-select:none}
-.clip-selection{position:absolute;top:0;bottom:0;background:rgba(91,140,255,0.22);border-top:2px solid var(--a2);border-bottom:2px solid var(--a2);pointer-events:none}
+.clip-selection{position:absolute;top:0;bottom:0;background:rgba(255,59,74,0.22);border-top:2px solid var(--a2);border-bottom:2px solid var(--a2);pointer-events:none}
 .clip-handle{position:absolute;top:0;bottom:0;width:10px;background:var(--a2);border-radius:3px;cursor:ew-resize;z-index:2;transform:translateX(-50%)}
 .clip-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:60%;background:rgba(35,23,22,.5);border-radius:1px}
 .clip-playhead{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--a3);pointer-events:none;z-index:3;transform:translateX(-1px)}
@@ -306,7 +306,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .ed-timeline{height:184px;flex-shrink:0;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .ed-ruler{height:22px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;user-select:none}
 .ed-tracks{flex:1;overflow:auto;position:relative;display:flex;flex-direction:column}
-.ed-track{display:flex;height:44px;flex-shrink:0;border-bottom:1px solid rgba(91,140,255,.1)}
+.ed-track{display:flex;height:44px;flex-shrink:0;border-bottom:1px solid rgba(255,59,74,.1)}
 .track-lbl{width:66px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;align-items:center;padding:0 8px;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .track-body{flex:1;position:relative;min-width:0;overflow:visible}
 .tl-clip{position:absolute;top:4px;bottom:4px;border-radius:4px;cursor:pointer;display:flex;align-items:center;padding:0 6px;font-size:.62rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none;transition:outline .1s}
@@ -321,19 +321,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 /* TEXT STYLE PICKER */
 .txt-style-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
 .txt-style-btn{border:2px solid transparent;border-radius:8px;padding:0;cursor:pointer;background:var(--card);overflow:hidden;transition:border-color .15s;display:block}
-.txt-style-btn:hover{border-color:rgba(91,140,255,.5)}
+.txt-style-btn:hover{border-color:rgba(255,59,74,.5)}
 .txt-style-btn.active{border-color:var(--a2)}
 /* FRAME PICKER */
 .frame-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
 .frame-btn{border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);padding:8px 4px 6px;text-align:center;transition:border-color .15s}
 .clip-fmt-btn{border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);padding:10px 8px 8px;text-align:center;transition:border-color .15s;color:#fff;min-width:90px}
-.clip-fmt-btn:hover{border-color:rgba(91,140,255,.5)}
-.clip-fmt-btn.active{border-color:var(--a2);background:rgba(91,140,255,.08)}
+.clip-fmt-btn:hover{border-color:rgba(255,59,74,.5)}
+.clip-fmt-btn.active{border-color:var(--a2);background:rgba(255,59,74,.08)}
 .cap-style-btn{border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);padding:9px 14px;font-size:.8rem;font-weight:600;color:#fff;transition:border-color .15s}
-.cap-style-btn:hover{border-color:rgba(91,140,255,.5)}
-.cap-style-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
+.cap-style-btn:hover{border-color:rgba(255,59,74,.5)}
+.cap-style-btn.active{border-color:var(--a2);background:rgba(255,59,74,.12)}
 .cap-pad{position:relative;width:160px;aspect-ratio:9/16;margin:0 auto;background:repeating-linear-gradient(45deg,#1a1a24,#1a1a24 8px,#1e1e2a 8px,#1e1e2a 16px);border:2px solid var(--border);border-radius:10px;overflow:hidden;touch-action:none}
-.cap-chip{position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);background:rgba(91,140,255,.9);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.5px;padding:4px 8px;border-radius:5px;cursor:grab;user-select:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.cap-chip{position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);background:rgba(255,59,74,.9);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.5px;padding:4px 8px;border-radius:5px;cursor:grab;user-select:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .cap-chip:active{cursor:grabbing}
 .clip-card{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px}
 .clip-card-video{width:128px;flex-shrink:0;border-radius:8px;background:#000;align-self:flex-start;max-height:280px}
@@ -346,19 +346,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .rf-section-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:8px}
 .rf-chip-row{display:flex;flex-wrap:wrap;gap:8px}
 .rf-chip{border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:8px;padding:8px 14px;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:border-color .15s}
-.rf-chip:hover:not(.soon){border-color:rgba(91,140,255,.5)}
-.rf-chip.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
+.rf-chip:hover:not(.soon){border-color:rgba(255,59,74,.5)}
+.rf-chip.active{border-color:var(--a2);background:rgba(255,59,74,.12)}
 .rf-chip.soon{opacity:.45;cursor:not-allowed;position:relative}
 .rf-chip.soon::after{content:"Soon";font-size:.55rem;font-weight:700;color:var(--a2);margin-left:6px;padding:2px 5px;border:1px solid var(--a2);border-radius:3px;letter-spacing:.05em}
 .cv-genre-btn{border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:7px;padding:6px 12px;font-size:.74rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:border-color .15s}
-.cv-genre-btn:hover{border-color:rgba(91,140,255,.5)}
+.cv-genre-btn:hover{border-color:rgba(255,59,74,.5)}
 
 /* Video Ranking tool */
 .vr-toggle{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;color:var(--ink);user-select:none}
 .vr-toggle input{display:none}
 .vr-toggle .sw{width:34px;height:20px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);position:relative;transition:background .15s,border-color .15s;flex-shrink:0}
 .vr-toggle .sw::after{content:"";position:absolute;top:1px;left:1px;width:15px;height:15px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
-.vr-toggle input:checked + .sw{background:rgba(91,140,255,.25);border-color:var(--a2)}
+.vr-toggle input:checked + .sw{background:rgba(255,59,74,.25);border-color:var(--a2)}
 .vr-toggle input:checked + .sw::after{transform:translateX(14px);background:var(--a2)}
 .vr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .vr-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:16px}
@@ -366,7 +366,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .vr-mini-label{font-size:.72rem;color:var(--muted);margin-bottom:6px;display:block}
 .cm-style-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:.82rem;font-weight:600;padding:11px 12px;border-radius:9px;cursor:pointer;transition:all .15s;text-align:center}
 .cm-style-btn:hover{border-color:var(--a2);color:#fff}
-.cm-style-btn.active{background:rgba(91,140,255,0.15);border-color:var(--a1);color:#fff}
+.cm-style-btn.active{background:rgba(255,59,74,0.15);border-color:var(--a1);color:#fff}
 
 /* ---- Commentary wizard ---- */
 .cm-wizard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
@@ -391,8 +391,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .cm-range{width:100%;accent-color:var(--a1)}
 .cm-color{width:28px;height:28px;border:none;border-radius:50%;background:none;cursor:pointer;padding:0}
 
-.cm-drop-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 18px;border:1.5px dashed var(--border);border-radius:14px;cursor:pointer;color:var(--muted);transition:all .15s;background:rgba(91,140,255,0.02)}
-.cm-drop-zone:hover{border-color:var(--a2);color:#fff;background:rgba(91,140,255,0.05)}
+.cm-drop-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 18px;border:1.5px dashed var(--border);border-radius:14px;cursor:pointer;color:var(--muted);transition:all .15s;background:rgba(255,59,74,0.02)}
+.cm-drop-zone:hover{border-color:var(--a2);color:#fff;background:rgba(255,59,74,0.05)}
 .cm-drop-title{margin-top:10px;font-weight:700;font-size:.95rem;color:#fff}
 .cm-drop-sub{margin-top:4px;font-size:.78rem;color:var(--muted)}
 .cm-or-row{display:flex;align-items:center;gap:10px;margin:18px 0 10px;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em}
@@ -424,13 +424,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .cm-sub-presets{display:flex;flex-direction:column;gap:8px;max-height:480px;overflow-y:auto;padding-right:6px}
 .cm-sub-preset-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:18px 12px;text-align:center;cursor:pointer;font-weight:800;letter-spacing:.05em;color:#fff;transition:border-color .15s}
 .cm-sub-preset-card:hover{border-color:var(--a2)}
-.cm-sub-preset-card.active{border-color:var(--a1);background:rgba(91,140,255,0.08)}
+.cm-sub-preset-card.active{border-color:var(--a1);background:rgba(255,59,74,0.08)}
 
 .cm-shape-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:520px}
 @media (max-width:700px){.cm-shape-grid{grid-template-columns:repeat(2,1fr)}}
 .cm-shape-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;color:var(--muted);font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s}
 .cm-shape-btn:hover{border-color:var(--a2);color:#fff}
-.cm-shape-btn.active{border-color:var(--a1);color:#fff;background:rgba(91,140,255,0.08)}
+.cm-shape-btn.active{border-color:var(--a1);color:#fff;background:rgba(255,59,74,0.08)}
 .cm-shape-btn .muted{color:var(--muted);font-weight:500;font-size:.72rem}
 .cm-shape-box{border:1.5px solid currentColor;border-radius:3px;margin-bottom:2px}
 
@@ -476,7 +476,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .vr-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.7rem;margin:14px 0}
 .vr-or::before,.vr-or::after{content:"";flex:1;height:1px;background:var(--border)}
 .vr-count-input{width:64px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:#fff;font-size:.85rem;font-weight:700;padding:7px 8px;text-align:center}
-.cv-genre-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
+.cv-genre-btn.active{border-color:var(--a2);background:rgba(255,59,74,.12)}
 
 /* Clipper section — exact Vidso production match */
 #panel-clipper #clip-loader{max-width:960px;margin:0 auto}
@@ -493,13 +493,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 }
 .clip-hero{margin-bottom:0}
 .clip-hero-row{
-  display:flex;align-items:center;gap:12px;background:#0a0a0c;border:1.5px solid rgba(91,140,255,.55);
+  display:flex;align-items:center;gap:12px;background:#0a0a0c;border:1.5px solid rgba(255,59,74,.55);
   border-radius:999px;padding:6px 6px 6px 18px;
-  box-shadow:0 0 0 3px rgba(91,140,255,.12),0 0 24px rgba(91,140,255,.1);
+  box-shadow:0 0 0 3px rgba(255,59,74,.12),0 0 24px rgba(255,59,74,.1);
   transition:border-color .15s,box-shadow .15s
 }
 .clip-hero-row:focus-within{
-  border-color:#6b9aff;box-shadow:0 0 0 4px rgba(91,140,255,.18),0 0 28px rgba(91,140,255,.14)
+  border-color:#6b9aff;box-shadow:0 0 0 4px rgba(255,59,74,.18),0 0 28px rgba(255,59,74,.14)
 }
 .clip-hero-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px}
 .clip-hero-icon svg{width:24px;height:24px}
@@ -511,22 +511,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .clip-hero-btn{
   flex-shrink:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
   border-radius:999px!important;padding:12px 22px!important;font-weight:700;font-size:.88rem!important;
-  background:#5b8cff!important;box-shadow:0 4px 18px rgba(91,140,255,.4)!important;color:#fff!important;border:none!important
+  background:#ff3b4a!important;box-shadow:0 4px 18px rgba(255,59,74,.4)!important;color:#fff!important;border:none!important
 }
 .clip-hero-btn svg{width:15px;height:15px}
-.clip-hero-btn:hover{background:#6b9aff!important;transform:none!important;box-shadow:0 6px 22px rgba(91,140,255,.5)!important}
+.clip-hero-btn:hover{background:#6b9aff!important;transform:none!important;box-shadow:0 6px 22px rgba(255,59,74,.5)!important}
 .clip-ctype{
   display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap;font-size:.82rem;color:#9ca3af
 }
 .clip-ctype-label{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:#fff}
-.clip-ctype-label svg{opacity:1;color:#5b8cff;flex-shrink:0}
+.clip-ctype-label svg{opacity:1;color:#ff3b4a;flex-shrink:0}
 .clip-ctype select{
   appearance:none;-webkit-appearance:none;
   background:#16161a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
   border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#fff;font-size:.8rem;font-weight:600;
   padding:8px 34px 8px 14px;outline:none;cursor:pointer;font-family:inherit;width:auto
 }
-.clip-ctype select:focus{border-color:#5b8cff;box-shadow:0 0 0 3px rgba(91,140,255,.12)}
+.clip-ctype select:focus{border-color:#ff3b4a;box-shadow:0 0 0 3px rgba(255,59,74,.12)}
 .clip-ctype-hint{color:#6b7280}
 .clip-discover{margin-top:8px;padding-top:4px;border-top:none;max-width:none;margin-left:0;margin-right:0}
 .clip-discover-head{margin-bottom:18px;text-align:center}
@@ -536,7 +536,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   display:flex;align-items:center;gap:12px;background:#0a0a0c;border:1px solid rgba(255,255,255,.12);
   border-radius:999px;padding:14px 20px;width:100%;max-width:560px;margin:0 auto 20px
 }
-.clip-discover-search:focus-within{border-color:rgba(91,140,255,.5);box-shadow:0 0 0 3px rgba(91,140,255,.1)}
+.clip-discover-search:focus-within{border-color:rgba(255,59,74,.5);box-shadow:0 0 0 3px rgba(255,59,74,.1)}
 .clip-discover-search svg{flex-shrink:0;opacity:.5;color:#fff}
 .clip-discover-search input{flex:1;min-width:0;background:none;border:none;color:#fff;font-size:.92rem;outline:none;font-family:inherit}
 .clip-discover-search input::placeholder{color:#6b7280}
@@ -546,7 +546,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   border-radius:999px;padding:10px 18px;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit
 }
 .clip-tab:hover{color:#fff;background:rgba(255,255,255,.07)}
-.clip-tab.active{background:transparent;border-color:#5b8cff;color:#fff;box-shadow:none}
+.clip-tab.active{background:transparent;border-color:#ff3b4a;color:#fff;box-shadow:none}
 .clip-discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 @media(max-width:900px){.clip-discover-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){
@@ -622,7 +622,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .vr-vol-row svg{flex-shrink:0}
 .vr-vol-row input[type=range]{width:100px;accent-color:var(--a2)}
 .vr-timeline{position:relative;height:36px;background:var(--card);border-radius:6px;margin-bottom:16px;cursor:pointer;overflow:hidden}
-.vr-timeline-fill{position:absolute;top:0;bottom:0;background:rgba(91,140,255,.15);border-left:3px solid #22c55e;border-right:3px solid #ef4444;pointer-events:none}
+.vr-timeline-fill{position:absolute;top:0;bottom:0;background:rgba(255,59,74,.15);border-left:3px solid #22c55e;border-right:3px solid #ef4444;pointer-events:none}
 .vr-timeline-ticks{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:0 4px;font-size:.58rem;color:var(--muted)}
 .vr-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border);margin-bottom:14px;overflow-x:auto}
 .vr-tab{background:none;border:none;color:var(--muted);font-size:.76rem;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
@@ -649,8 +649,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .cv-ctrl-label{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:8px 0 4px}
 .cv-mini-row{display:flex;gap:5px;flex-wrap:wrap}
 .cv-mini-btn{border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:#fff;font-size:.66rem;font-weight:600;padding:5px 8px;cursor:pointer;transition:border-color .15s}
-.cv-mini-btn:hover{border-color:rgba(91,140,255,.5)}
-.cv-mini-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
+.cv-mini-btn:hover{border-color:rgba(255,59,74,.5)}
+.cv-mini-btn.active{border-color:var(--a2);background:rgba(255,59,74,.12)}
 .cv-cap-toggle{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.72rem;font-weight:600;margin-top:10px}
 .cv-cap-toggle input{width:14px;height:14px;accent-color:var(--a2)}
 .cap-settings{margin-top:10px}
@@ -663,7 +663,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .cap-set-row input[type=range]{width:100%;accent-color:var(--a2)}
 .cap-stroke-row{display:flex;align-items:center;gap:8px}
 .cap-swatch{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);cursor:pointer;flex-shrink:0;padding:0}
-.cap-swatch.active{border-color:var(--a2);box-shadow:0 0 0 2px rgba(91,140,255,.35)}
+.cap-swatch.active{border-color:var(--a2);box-shadow:0 0 0 2px rgba(255,59,74,.35)}
 .cap-case-btn{border:1.5px solid var(--border);border-radius:7px;background:var(--surface);color:var(--muted);font-size:.72rem;font-weight:600;padding:6px 12px;cursor:pointer}
 .cap-case-btn.active{border-color:var(--a2);color:#fff}
 .cap-styles-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -671,8 +671,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .cap-font-row::-webkit-scrollbar{height:6px}
 .cap-font-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .cap-font-btn{border:1.5px solid var(--border);border-radius:7px;background:var(--surface);color:#fff;font-size:.78rem;padding:7px 12px;cursor:pointer;transition:border-color .15s;flex-shrink:0;white-space:nowrap}
-.cap-font-btn:hover{border-color:rgba(91,140,255,.5)}
-.cap-font-btn.active{border-color:var(--a2);background:rgba(91,140,255,.12)}
+.cap-font-btn:hover{border-color:rgba(255,59,74,.5)}
+.cap-font-btn.active{border-color:var(--a2);background:rgba(255,59,74,.12)}
 .cv-fmt-preview{margin-top:8px}
 .fmtp{position:relative;border-radius:5px;overflow:hidden;background:#000;border:1px solid var(--border)}
 .fmtp-wide{width:90px;aspect-ratio:16/9}
@@ -681,9 +681,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .fmtp .blur{filter:blur(5px) brightness(.65);transform:scale(1.25)}
 .fmtp .fg{position:absolute;left:0;top:50%;width:100%;height:31.6%;transform:translateY(-50%);object-fit:cover}
 .clip-crop-btn{border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--surface);padding:6px 12px;font-size:.72rem;color:#fff;transition:border-color .15s}
-.clip-crop-btn:hover{border-color:rgba(91,140,255,.5)}
-.clip-crop-btn.active{border-color:var(--a2);background:rgba(91,140,255,.15);color:var(--a2)}
-.frame-btn:hover{border-color:rgba(91,140,255,.5)}
+.clip-crop-btn:hover{border-color:rgba(255,59,74,.5)}
+.clip-crop-btn.active{border-color:var(--a2);background:rgba(255,59,74,.15);color:var(--a2)}
+.frame-btn:hover{border-color:rgba(255,59,74,.5)}
 .frame-btn.active{border-color:var(--a2)}
 .frame-ico{width:30px;height:48px;margin:0 auto 5px;border-radius:3px;display:flex;flex-direction:column;overflow:hidden;background:#0d0d0d}
 .frame-ico .bar{height:11px;width:100%}
@@ -696,10 +696,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .preview-stage.framed canvas{position:relative;display:inline-block;border-radius:4px;max-height:340px}
 
 /* Vidso polish */
-::selection{background:#5b8cff;color:#fff}
+::selection{background:#ff3b4a;color:#fff}
 html{color-scheme:dark}
 body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:600px;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse at center,rgba(91,140,255,.16),rgba(39,72,214,.05) 46%,transparent 70%)}
+  background:radial-gradient(ellipse at center,rgba(255,59,74,.16),rgba(39,72,214,.05) 46%,transparent 70%)}
 .sidebar,.main{position:relative;z-index:1}
 .topbar{height:auto;min-height:60px;padding:14px 30px;border-bottom:none;align-items:center;justify-content:space-between}
 .credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:.78rem;color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px}
@@ -722,6 +722,9 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 <!-- AUTH MODAL -->
 <div class="modal-bg hidden" id="auth-modal">
   <div class="modal">
+    <div class="auth-brand" style="display:flex;justify-content:center;margin:0 0 14px">
+      <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+    </div>
     <h2>Welcome to <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.02em;color:#fff;text-transform:lowercase">vidso</span></h2>
     <p>Sign in to access your AI content tools.</p>
     <div class="modal-tabs">
@@ -808,7 +811,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 <main class="main">
   <div class="topbar">
     <span class="topbar-title" id="topbar-title">Overview</span>
-    <span class="credits-pill" id="credits-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="#5b8cff"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg> 10 credits</span>
+    <span class="credits-pill" id="credits-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="#ff3b4a"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg> 10 credits</span>
   </div>
   <div class="content">
 
@@ -848,10 +851,10 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('cap-file-input').click()">
           <div class="uz-icon">🎥</div>
           <p><strong>Click to upload</strong> or drag &amp; drop</p>
-          <p style="margin-top:4px;font-size:.72rem">MP4, MOV, WebM — max 500MB</p>
+          <p style="margin-top:4px;font-size:.72rem">MP4, MOV, WebM (max 500MB)</p>
         </div>
         <input type="file" id="cap-file-input" accept="video/*,audio/*" style="display:none"/>
-        <div style="margin-top:12px;text-align:center;font-size:.75rem;color:var(--muted)">— or paste a public URL —</div>
+        <div style="margin-top:12px;text-align:center;font-size:.75rem;color:var(--muted)">or paste a public URL</div>
         <div class="field" style="margin-top:10px">
           <input type="text" id="cap-url" placeholder="https://example.com/video.mp4"/>
         </div>
@@ -874,7 +877,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div>
           <div class="result-box" style="margin-top:10px">
             <div class="result-label">🔥 Burn captions into video</div>
-            <p style="font-size:.72rem;color:var(--muted);margin:4px 0 10px">Render the captions directly onto your video — open Captions to pick a style and tweak fonts.</p>
+            <p style="font-size:.72rem;color:var(--muted);margin:4px 0 10px">Render the captions directly onto your video. Open Captions to pick a style and tweak fonts.</p>
             <div id="cap-settings-slot"></div>
             <div id="cap-styles-row" class="cap-styles-row" style="display:none;margin-bottom:12px">
               <button class="cap-style-btn active" data-style="karaoke" onclick="setCapStyle('karaoke',this)">🟢 Viral Green</button>
@@ -983,9 +986,9 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           <div class="field" style="margin:0">
             <label>Aspect Ratio</label>
             <select id="img-ratio">
-              <option value="9:16">9:16 — Portrait (Reels/TikTok)</option>
-              <option value="16:9">16:9 — Landscape (YouTube)</option>
-              <option value="1:1">1:1 — Square</option>
+              <option value="9:16">9:16: Portrait (Reels/TikTok)</option>
+              <option value="16:9">16:9: Landscape (YouTube)</option>
+              <option value="1:1">1:1: Square</option>
             </select>
           </div>
           <div class="field" style="margin:0">
@@ -1013,13 +1016,13 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       <div id="clip-loader">
         <div class="tool-card">
           <h3>Video Clipper</h3>
-          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link — Vidso's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
+          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link. Vidso's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
           <div class="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22.5 6.5s-.2-1.5-.9-2.1c-.8-.9-1.7-.9-2.1-1C16.7 3 12 3 12 3h0s-4.7 0-7.5.4c-.4.1-1.3.1-2.1 1-.7.6-.9 2.1-.9 2.1S1.2 8.3 1.2 10v1.9c0 1.8.3 3.5.3 3.5s.2 1.5.9 2.1c.8.9 1.9.8 2.3.9 1.7.2 7.3.4 7.3.4s4.7 0 7.5-.4c.4-.1 1.3-.1 2.1-1 .7-.6.9-2.1.9-2.1s.3-1.8.3-3.5V10c0-1.7-.3-3.5-.3-3.5z" fill="#FF0033"/><path d="M10 14.6l5.2-3-5.2-3v6z" fill="#fff"/></svg>
               </span>
-              <input type="text" id="clip-url" class="clip-hero-input" placeholder="Paste a video link — YouTube, TikTok, Instagram, X..." onkeydown="if(event.key==='Enter')findClipsFromUrl()"/>
+              <input type="text" id="clip-url" class="clip-hero-input" placeholder="Paste a video link (YouTube, TikTok, Instagram, X...)" onkeydown="if(event.key==='Enter')findClipsFromUrl()"/>
               <button class="btn btn-primary clip-hero-btn" id="clip-url-btn" onclick="findClipsFromUrl()">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
                 Find clips
@@ -1043,7 +1046,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 <option value="motivational">Motivational</option>
                 <option value="other">Other</option>
               </select>
-              <span class="clip-ctype-hint">— helps the AI find better moments</span>
+              <span class="clip-ctype-hint">(helps the AI find better moments)</span>
             </div>
             <div class="status" id="clip-url-status" style="display:none;margin-top:12px"></div>
           </div>
@@ -1086,10 +1089,10 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           <!-- Preview -->
           <video id="clip-preview" controls style="width:100%;border-radius:8px;background:#000;max-height:300px"></video>
           <img id="clip-thumb" style="display:none;width:100%;border-radius:8px;background:#000;max-height:300px;object-fit:contain"/>
-          <div id="clip-url-note" style="display:none;font-size:.74rem;color:var(--a2);margin-top:8px">⚡ Server-side clip — only the selected range is downloaded from the source. Ideal for long videos.</div>
+          <div id="clip-url-note" style="display:none;font-size:.74rem;color:var(--a2);margin-top:8px">⚡ Server-side clip: only the selected range is downloaded from the source. Ideal for long videos.</div>
 
           <details id="clip-manual-tools" class="manual-clip" open>
-          <summary>✂️ Manual clip<span style="opacity:.55;font-weight:400"> — optional, for trimming a specific range yourself</span></summary>
+          <summary>✂️ Manual clip<span style="opacity:.55;font-weight:400"> (optional, for trimming a specific range yourself)</span></summary>
           <!-- Timeline -->
           <div style="margin-top:16px;background:var(--card);border-radius:10px;padding:16px">
             <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:8px">
@@ -1185,7 +1188,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                   <button class="cap-style-btn" data-style="font_tiktok" onclick="setClipCaptionStyle('font_tiktok',this)">Aa TikTok</button>
                 </div>
               </div>
-              <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;margin-top:10px">Position — drag the caption where you want it</div>
+              <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;margin-top:10px">Position: drag the caption where you want it</div>
               <div id="clip-cap-pad" class="cap-pad">
                 <div id="clip-cap-chip" class="cap-chip">Captions</div>
               </div>
@@ -1267,13 +1270,13 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             <div class="status" id="clip-viral-status" style="display:none;margin-bottom:10px"></div>
             <div id="clip-viral-results" style="display:none">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-                <div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Viral Moments — ranked by AI</div>
+                <div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Viral Moments, ranked by AI</div>
                 <button class="btn btn-primary btn-sm" id="clip-viral-dl-all" onclick="clipViralDownloadAll()">
                   <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   Download All
                 </button>
               </div>
-              <p style="font-size:.7rem;color:var(--muted);margin-bottom:12px">Each clip has its own format, captions &amp; position — customize and download them separately.</p>
+              <p style="font-size:.7rem;color:var(--muted);margin-bottom:12px">Each clip has its own format, captions &amp; position. Customize and download them separately.</p>
               <div id="clip-viral-list"></div>
             </div>
           </div>
@@ -1327,7 +1330,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
               <div class="upload-zone" style="max-width:340px;pointer-events:none">
                 <div class="uz-icon">🎞️</div>
                 <p><strong>Click to add your first clip</strong></p>
-                <p style="font-size:.72rem;margin-top:4px">MP4, MOV — drag multiple clips to sequence them</p>
+                <p style="font-size:.72rem;margin-top:4px">MP4, MOV: drag multiple clips to sequence them</p>
               </div>
             </div>
             <div class="preview-stage" id="ed-stage" style="display:none">
@@ -1392,7 +1395,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             <!-- Frame / format props -->
             <div id="ep-frame" style="display:none">
               <h4>Vertical Frame (9:16)</h4>
-              <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">Reframe to portrait with a top &amp; bottom background — perfect for adding a caption above the video.</p>
+              <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">Reframe to portrait with a top &amp; bottom background, perfect for adding a caption above the video.</p>
               <div class="frame-grid">
                 <button class="frame-btn" data-fr="none" onclick="edSetFrame('none')">
                   <div class="frame-ico" style="background:none"><div class="mid" style="border-radius:3px"></div></div>
@@ -1474,7 +1477,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     <div class="panel" id="panel-reframe">
       <div class="tool-card">
         <h3>AI Reframe</h3>
-        <p>Auto-fit any landscape video into a vertical / square format by detecting the main subject and centering the crop around them. One click — no manual reframing.</p>
+        <p>Auto-fit any landscape video into a vertical / square format by detecting the main subject and centering the crop around them. One click, no manual reframing.</p>
 
         <div class="field" style="margin-top:14px">
           <label>Video URL (YouTube, TikTok, Instagram, X, Reddit) or paste any direct video link</label>
@@ -1506,7 +1509,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div>
           <div class="status" id="rf-viral-status" style="display:none;margin-bottom:10px"></div>
           <div id="rf-viral-results" style="display:none">
-            <div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Viral Moments — ranked by AI</div>
+            <div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Viral Moments, ranked by AI</div>
             <div id="rf-viral-list"></div>
           </div>
         </div>
@@ -1597,7 +1600,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       <div class="vr-left">
       <div class="tool-card">
         <h3>Video Ranking</h3>
-        <p>Pick how many videos you want to rank, add each one by link or upload, then style the countdown title. (Generating the final ranking video is coming soon — this builds your ranking list.)</p>
+        <p>Pick how many videos you want to rank, add each one by link or upload, then style the countdown title. (Generating the final ranking video is coming soon; this builds your ranking list.)</p>
 
         <div class="vr-row" style="margin-top:14px">
           <div>
@@ -1746,7 +1749,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
                 <label class="vr-mini-label" style="margin-top:14px">…or pick from My Files</label>
                 <select id="cm-file-picker" class="cm-input" onchange="cmPickFile(this.value)">
-                  <option value="">— select an uploaded video —</option>
+                  <option value="">Select an uploaded video</option>
                 </select>
               </div>
 
@@ -1896,7 +1899,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
                   <label class="vr-mini-label" style="margin-top:12px">Select</label>
                   <select id="cm-voice" class="cm-input">
-                    <option value="">— pick a voice —</option>
+                    <option value="">Pick a voice</option>
                   </select>
 
                   <label class="vr-mini-label" style="margin-top:14px">Volume</label>
@@ -1924,7 +1927,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                   <div id="cm-bg-library" style="margin-top:10px">
                     <label class="vr-mini-label">Select</label>
                     <select id="cm-bg-lib" class="cm-input">
-                      <option value="">— pick a track —</option>
+                      <option value="">Pick a track</option>
                       <option value="https://cdn.pixabay.com/audio/2024/03/12/audio_b3a7f5fdfa.mp3">Chill Lo-fi</option>
                       <option value="https://cdn.pixabay.com/audio/2024/05/01/audio_3a4e9aa9aa.mp3">Upbeat Pop</option>
                       <option value="https://cdn.pixabay.com/audio/2023/10/04/audio_ad6f9faf3c.mp3">Cinematic Build</option>
@@ -1985,7 +1988,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 </div>
               </div>
             </div>
-            <div id="cm-error" style="display:none;margin-top:14px;padding:10px 12px;background:rgba(91,140,255,0.1);border:1px solid rgba(91,140,255,0.3);border-radius:9px;color:#ff6677;font-size:.82rem"></div>
+            <div id="cm-error" style="display:none;margin-top:14px;padding:10px 12px;background:rgba(255,59,74,0.1);border:1px solid rgba(255,59,74,0.3);border-radius:9px;color:#ff6677;font-size:.82rem"></div>
 
           </div>
 
@@ -2012,7 +2015,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
         <p>All files you've uploaded or generated.</p>
         <div style="display:flex;gap:10px;margin-bottom:16px">
           <div class="upload-zone" style="flex:1;padding:20px" onclick="document.getElementById('files-input').click()">
-            <p><strong>Upload a file</strong> — video, image or audio</p>
+            <p><strong>Upload a file</strong>: video, image or audio</p>
           </div>
           <input type="file" id="files-input" accept="video/*,audio/*,image/*" style="display:none" onchange="uploadFile(this)"/>
         </div>
@@ -2023,7 +2026,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     <div class="panel" id="panel-videogen">
       <div class="tool-card">
         <h3>Faceless Video Generator</h3>
-        <p>Turn a topic into a narrated short or long-form video — script, voice, B-roll, and captions.</p>
+        <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
 
         <div class="fv-wizard">
           <div class="fv-stepper" aria-label="Progress">
@@ -2228,7 +2231,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                     </div>
                     <div class="field" style="margin:0">
                       <label>Highlight</label>
-                      <input type="color" id="fv-cap-hl" value="#5b8cff" oninput="fvApplyCapStyle()" style="width:100%;height:36px;border:none;background:transparent;cursor:pointer">
+                      <input type="color" id="fv-cap-hl" value="#ff3b4a" oninput="fvApplyCapStyle()" style="width:100%;height:36px;border:none;background:transparent;cursor:pointer">
                     </div>
                   </div>
                   <div class="field" style="margin-top:12px">
@@ -2298,7 +2301,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     <div class="panel" id="panel-upscale">
       <div class="tool-card">
         <h3>Upscale</h3>
-        <p>Coming soon — upscale clips and stills with AI.</p>
+        <p>Coming soon: upscale clips and stills with AI.</p>
         <div class="empty-panel">Upscale is on the way</div>
       </div>
     </div>
@@ -2306,7 +2309,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     <div class="panel" id="panel-tools">
       <div class="tool-card">
         <h3>Tools</h3>
-        <p>Extra creators tools — captions, voiceover, editor, and more.</p>
+        <p>Extra creator tools: captions, voiceover, editor, and more.</p>
         <div class="tool-shortcuts">
           <div class="shortcut" onclick="switchPanel('captions',null)"><div class="shortcut-name">AI Captions</div><div class="shortcut-desc">Auto-transcribe any video</div></div>
           <div class="shortcut" onclick="switchPanel('voiceover',null)"><div class="shortcut-name">AI Voiceover</div><div class="shortcut-desc">35+ ElevenLabs voices</div></div>
@@ -2431,7 +2434,7 @@ function populateUser() {
   const nameEl = document.getElementById('user-name')
   if (nameEl) nameEl.textContent = 'Your account'
   document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.email)[0].toUpperCase()
-  document.getElementById('credits-pill').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#5b8cff"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg> ${currentUser.credits} credits`
+  document.getElementById('credits-pill').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#ff3b4a"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg> ${currentUser.credits} credits`
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
@@ -2759,7 +2762,7 @@ window.fvEnterEditor = () => {
   fvRebuildFullScriptFromSections()
   fvState.phase = 2
   fvRenderScript(fvState.script)
-  fvSetStatus('Script editor ready — regenerate any section', 'ok', 2)
+  fvSetStatus('Script editor ready. Regenerate any section', 'ok', 2)
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 
@@ -2961,7 +2964,7 @@ function fvCapStyle() {
     font: document.getElementById('fv-cap-font')?.value || 'Bangers, cursive',
     size: parseInt(document.getElementById('fv-cap-size')?.value || '42', 10),
     color: document.getElementById('fv-cap-color')?.value || '#ffffff',
-    highlight: document.getElementById('fv-cap-hl')?.value || '#5b8cff',
+    highlight: document.getElementById('fv-cap-hl')?.value || '#ff3b4a',
     letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
   }
 }
@@ -3218,7 +3221,7 @@ function fvRenderBrollEditor() {
         <button type="button" title="Move down" onclick="fvMoveSeg(${i},1)">↓</button>
         <button type="button" title="Remove" onclick="fvRemoveSeg(${i})">✕</button>
       </div>
-    </div>`).join('') || '<div style="color:var(--muted);font-size:.78rem">No clips yet — search or upload below.</div>'
+    </div>`).join('') || '<div style="color:var(--muted);font-size:.78rem">No clips yet. Search or upload below.</div>'
 
   fvRenderClipPicker()
   fvRenderPreviewTimeline()
@@ -3373,7 +3376,7 @@ window.fvSearchBroll = async () => {
     if (!fvState.preview) fvState.preview = {}
     fvState.preview.searchClips = (data.clips || []).map(c => ({ ...c, query: q }))
     fvRenderClipPicker(fvState.preview.searchClips)
-    fvSetBrollStatus((data.clips?.length || 0) + ' clips found — click one to apply', 'ok')
+    fvSetBrollStatus((data.clips?.length || 0) + ' clips found. Click one to apply', 'ok')
   } catch (e) {
     fvSetBrollStatus(e.message || 'Search failed', 'err')
   }
@@ -3466,7 +3469,7 @@ window.fvContinueToExport = () => {
   document.getElementById('fv-export-progress-wrap').style.display = ''
   document.getElementById('fv-export-actions').style.display = ''
   document.getElementById('fv-export-bar').style.width = '0%'
-  fvSetExportStatus('Ready — click Render video', null)
+  fvSetExportStatus('Ready. Click Render video', null)
 }
 
 window.fvBackToPreview = () => {
@@ -3611,7 +3614,7 @@ window.fvGenerateScript = async () => {
     // Keep editor mode if already in Phase 2
     if (fvState.phase < 2) fvState.phase = 1
     fvRenderScript(data)
-    fvSetStatus('Script ready — continue to editor', 'ok')
+    fvSetStatus('Script ready. Continue to editor', 'ok')
     fvSetStatus('Script ready', 'ok', 2)
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
@@ -3717,7 +3720,7 @@ async function handleCapFile(file) {
     const fd = new FormData(); fd.append('file', file)
     const up = await api.upload.file(fd)
     document.getElementById('cap-url').value = up.url
-    setStatus('cap-status', 'Uploaded — click Transcribe', 'ok')
+    setStatus('cap-status', 'Uploaded. Click Transcribe', 'ok')
     loadFiles()
   } catch(e) { setStatus('cap-status', e.message, 'err') }
 }
@@ -3790,7 +3793,7 @@ window.burnCaptions = async () => {
     setStatus('cap-burn-status', 'Done!', 'ok')
     loadUsage()
   } catch (e) {
-    setStatus('cap-burn-status', e.needsPlan ? e.message + ' — upgrade to continue' : e.message, 'err')
+    setStatus('cap-burn-status', e.needsPlan ? e.message + '. Upgrade to continue' : e.message, 'err')
   } finally {
     btn.disabled = false
   }
@@ -4559,7 +4562,7 @@ function edDrawRuler(W) {
   const step = ED_PX >= 60 ? 1 : ED_PX >= 30 ? 2 : 5
   for (let t = 0; t <= edTotalDur + step; t += step) {
     const x = t * ED_PX + 66
-    ctx.fillStyle = 'rgba(91,140,255,.5)'
+    ctx.fillStyle = 'rgba(255,59,74,.5)'
     ctx.fillRect(x, 14, 1, 8)
     ctx.fillStyle = 'rgba(200,190,230,.55)'
     ctx.font = '9px Geist, sans-serif'
@@ -4940,7 +4943,7 @@ window.startReframeAnalysis = async () => {
   document.getElementById('rf-options').style.pointerEvents = 'none'
   const btn = document.getElementById('rf-analyze-btn')
   btn.disabled = true
-  setStatus('rf-status', 'Downloading & tracking the subject — this can take 30-90s…', 'loading')
+  setStatus('rf-status', 'Downloading & tracking the subject (this can take 30-90s)…', 'loading')
   // Fetch the thumbnail in parallel — purely cosmetic for the viral-clip cards,
   // so a failure here must never block the actual reframe analysis.
   api.download.info(url).then((info) => { rfSourceThumb = info?.thumbnail || null }).catch(() => {})
@@ -4949,7 +4952,7 @@ window.startReframeAnalysis = async () => {
     rfJobId = jobId
     pollReframeJob()
   } catch (e) {
-    setStatus('rf-status', e.needsPlan ? e.message + ' — upgrade to continue' : e.message, 'err')
+    setStatus('rf-status', e.needsPlan ? e.message + '. Upgrade to continue' : e.message, 'err')
     btn.disabled = false
   }
 }
@@ -4973,7 +4976,7 @@ async function pollReframeJob() {
     document.getElementById('rf-options').style.pointerEvents = ''
     document.getElementById('rf-viral-section').style.display = ''
     document.querySelectorAll('[id^="rf-clip-render-"]').forEach((b) => { b.disabled = false })
-    setStatus('rf-status', 'Video loaded — pick a format and render, or find viral moments below.', 'ok')
+    setStatus('rf-status', 'Video loaded. Pick a format and render, or find viral moments below.', 'ok')
     setTimeout(() => { const s = document.getElementById('rf-status'); if (s) s.style.display = 'none' }, 3000)
   } catch (e) {
     document.getElementById('rf-analyze-btn').disabled = false
@@ -4998,7 +5001,7 @@ window.renderReframe = async () => {
     setStatus('rf-status', 'Reframed!', 'ok')
     setTimeout(() => { const s = document.getElementById('rf-status'); if (s) s.style.display = 'none' }, 3000)
   } catch (e) {
-    setStatus('rf-status', e.needsPlan ? e.message + ' — upgrade to continue' : e.message, 'err')
+    setStatus('rf-status', e.needsPlan ? e.message + '. Upgrade to continue' : e.message, 'err')
   } finally {
     btn.disabled = false
   }
@@ -5449,7 +5452,7 @@ window.vrGenerate = async () => {
   }
   for (let i = 0; i < vrCards.length; i++) {
     if (!vrCards[i].streamUrl && !vrCards[i].link?.trim() && !vrCards[i].file) {
-      alert(`Video Rank ${i + 1} is empty — add a link or upload a file first.`)
+      alert(`Video Rank ${i + 1} is empty. Add a link or upload a file first.`)
       return
     }
   }
@@ -5856,13 +5859,13 @@ async function captionizeBlob(blob, baseName, opts = {}) {
     if (p.status === 'error') { result = { failed: true }; break }
     setStatus(statusId, `Transcribing audio… ${i * 3}s`, 'loading')
   }
-  if (!result) throw new Error('Transcription timed out — try a shorter clip')
+  if (!result) throw new Error('Transcription timed out. Try a shorter clip')
 
   // No speech (silence) or couldn't transcribe → export the clip clean, no text.
   const usable = !result.failed && (result.words || [])
     .filter((w) => w.text && w.text.trim() && (w.confidence == null || w.confidence >= 0.35)).length > 0
   if (!usable) {
-    setStatus(statusId, 'No speech detected — exported without captions', 'ok')
+    setStatus(statusId, 'No speech detected. Exported without captions', 'ok')
     return URL.createObjectURL(blob)
   }
 
@@ -5914,7 +5917,7 @@ window.exportClip = async () => {
       document.getElementById('clip-output').style.display = ''
       setStatus('clip-status','Done!','ok')
     } catch(e) {
-      setStatus('clip-status', e.needsPlan ? e.message + ' — upgrade to continue' : (e.message || 'Clip failed'), 'err')
+      setStatus('clip-status', e.needsPlan ? e.message + '. Upgrade to continue' : (e.message || 'Clip failed'), 'err')
     }
     btn.disabled = false
     return
@@ -5964,7 +5967,7 @@ window.exportClip = async () => {
     setStatus('clip-status','Done!','ok')
   } catch(e) {
     console.error(e)
-    setStatus('clip-status', e.needsPlan ? e.message + ' — upgrade to continue' : ('Export failed: ' + e.message), 'err')
+    setStatus('clip-status', e.needsPlan ? e.message + '. Upgrade to continue' : ('Export failed: ' + e.message), 'err')
   }
   btn.disabled = false
 }
@@ -6072,7 +6075,7 @@ window.rfFindViral = async () => {
   btn.disabled = true
   rfClips = []
   document.getElementById('rf-viral-results').style.display = 'none'
-  setStatus('rf-viral-status', 'Analyzing speech for viral moments — this may take a minute...', 'loading')
+  setStatus('rf-viral-status', 'Analyzing speech for viral moments (this may take a minute)...', 'loading')
   try {
     const { jobId } = await api.download.analyze(url)
     rfViralJobId = jobId
@@ -6195,7 +6198,7 @@ window.rfPreviewOne = async (i) => {
     body.innerHTML =
       `<div style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden">` +
       `<iframe src="https://www.youtube.com/embed/${vid}?start=${start}&end=${end}&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>` +
-      `<p style="text-align:center;color:#aaa;font-size:.74rem;margin-top:10px">Preview of the moment — your rendered clip uses the aspect ratio &amp; layout you pick.</p>`
+      `<p style="text-align:center;color:#aaa;font-size:.74rem;margin-top:10px">Preview of the moment. Your rendered clip uses the aspect ratio &amp; layout you pick.</p>`
     modal.style.display = 'flex'
     return
   }
@@ -6215,7 +6218,7 @@ window.rfPreviewOne = async (i) => {
     }
     body.innerHTML = `<video src="${url}" controls autoplay playsinline style="width:100%;max-height:75vh;border-radius:10px;background:#000"></video>`
   } catch (e) {
-    body.innerHTML = `<p style="color:#fff;text-align:center;padding:24px">${e.needsPlan ? e.message + ' — upgrade to continue' : e.message}</p>`
+    body.innerHTML = `<p style="color:#fff;text-align:center;padding:24px">${e.needsPlan ? e.message + '. Upgrade to continue' : e.message}</p>`
   }
 }
 
@@ -6285,7 +6288,7 @@ window.rfClipRender = async (i) => {
   // Guard: per-clip render must only run once viral clips are loaded AND the
   // underlying reframe analysis job is ready (rfJobId is set once analysis completes).
   if (!rfClips.length || !rfClips[i]) return
-  if (!rfJobId) return setStatus('rf-viral-status', 'The video is still loading — wait for "Video loaded" above.', 'err')
+  if (!rfJobId) return setStatus('rf-viral-status', 'The video is still loading. Wait for "Video loaded" above.', 'err')
   const s = rfClipSettings[i]
   const clip = rfClips[i]
   const sig = rfClipSettingsSig(s, clip)
@@ -6319,7 +6322,7 @@ window.rfClipRender = async (i) => {
     const a = document.createElement('a'); a.href = blobUrl; a.download = `viral-clip-${i+1}${s.captionsOn ? '_captioned' : ''}.mp4`
     document.body.appendChild(a); a.click(); document.body.removeChild(a)
   } catch (e) {
-    setStatus('rf-viral-status', e.needsPlan ? e.message + ' — upgrade to continue' : e.message, 'err')
+    setStatus('rf-viral-status', e.needsPlan ? e.message + '. Upgrade to continue' : e.message, 'err')
   } finally {
     btn.disabled = false
   }
@@ -6331,7 +6334,7 @@ window.clipFindViral = async () => {
   btn.disabled = true
   cvClips = []
   document.getElementById('clip-viral-results').style.display = 'none'
-  setStatus('clip-viral-status', 'Downloading & analyzing video — this may take a minute...', 'loading')
+  setStatus('clip-viral-status', 'Downloading & analyzing video (this may take a minute)...', 'loading')
   try {
     const { jobId } = await api.download.analyze(clipSourceUrl)
     cvJobId = jobId
@@ -6636,7 +6639,7 @@ window.cvPreviewOne = async (i) => {
     body.innerHTML =
       `<div style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden">` +
       `<iframe src="https://www.youtube.com/embed/${vid}?start=${start}&end=${end}&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>` +
-      `<p style="text-align:center;color:#aaa;font-size:.74rem;margin-top:10px">Preview of the moment — your downloaded clip uses the format &amp; captions you pick.</p>`
+      `<p style="text-align:center;color:#aaa;font-size:.74rem;margin-top:10px">Preview of the moment. Your downloaded clip uses the format &amp; captions you pick.</p>`
     modal.style.display = 'flex'
     return
   }
@@ -6657,7 +6660,7 @@ window.cvPreviewOne = async (i) => {
     }
     body.innerHTML = `<video src="${url}" controls autoplay playsinline style="width:100%;max-height:75vh;border-radius:10px;background:#000"></video>`
   } catch (e) {
-    body.innerHTML = `<p style="color:#fff;text-align:center;padding:24px">${e.needsPlan ? e.message + ' — upgrade to continue' : e.message}</p>`
+    body.innerHTML = `<p style="color:#fff;text-align:center;padding:24px">${e.needsPlan ? e.message + '. Upgrade to continue' : e.message}</p>`
   }
 }
 
@@ -6736,7 +6739,7 @@ window.cvDownloadOne = async (idx, opts = {}) => {
     return outUrl
   } catch (e) {
     if (renderBtn) renderBtn.disabled = false
-    setStatus('clip-viral-status', e.needsPlan ? e.message + ' — upgrade to continue' : e.message, 'err')
+    setStatus('clip-viral-status', e.needsPlan ? e.message + '. Upgrade to continue' : e.message, 'err')
   }
 }
 
@@ -6838,7 +6841,7 @@ window.cmHandleFile = async (file) => {
   cmClearError()
   if (file.size > CM_MAX_BYTES) {
     const mb = (file.size / (1024 * 1024)).toFixed(1)
-    cmShowError(`File is ${mb} MB — the limit is 50 MB. Trim or compress the video first.`)
+    cmShowError(`File is ${mb} MB (limit 50 MB). Trim or compress the video first.`)
     const inp = document.getElementById('cm-file-input')
     if (inp) inp.value = ''
     return
