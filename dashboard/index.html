@@ -1083,26 +1083,42 @@ input:focus,textarea:focus,select:focus,
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
 
 /* V2 punch list */
-#panel-dashboard .page-shell{
-  max-width:min(1120px,100%);
-  margin-left:auto;margin-right:auto;
-  width:100%
+.panel.active{width:100%}
+.content > .panel{width:100%}
+#panel-dashboard .page-shell,
+#panel-dashboard .dash-shell{
+  max-width:1280px!important;
+  margin-left:auto!important;margin-right:auto!important;
+  width:100%!important
 }
-.dash-recent-wrap{min-height:132px!important;padding:20px!important}
-.dash-recent-wrap .ui-empty{min-height:108px!important;padding:24px 16px!important}
+.tools-page,.clip-shell,#panel-upscale .page-shell,
+#panel-imagegen > .page-header,
+#panel-imagegen > .page-shell-wide,
+#panel-ranking > .page-header,
+#panel-ranking > .page-shell-wide,
+#panel-videogen{
+  margin-left:auto!important;margin-right:auto!important
+}
+.tools-page{max-width:1280px;width:100%}
+.clip-shell{max-width:1280px;width:100%}
+.dash-recent-wrap{min-height:120px!important;padding:16px 20px!important}
+.dash-recent-wrap .ui-empty{min-height:96px!important;padding:20px 16px!important}
 #panel-imagegen .img-layout{
   align-items:stretch!important;
-  min-height:calc(100vh - 168px)
+  grid-auto-rows:1fr;
+  min-height:calc(100vh - 168px);
+  width:100%;
+  max-width:1280px
 }
 #panel-imagegen .img-pane{
-  min-height:calc(100vh - 180px);
-  height:100%;
+  min-height:calc(100vh - 180px)!important;
+  height:auto;
   padding:24px!important;
   display:flex;flex-direction:column
 }
 #panel-imagegen .img-results{
   min-height:calc(100vh - 180px)!important;
-  flex:1
+  flex:1 1 auto
 }
 #panel-imagegen .img-results .img-grid{
   flex:1;min-height:0;margin-top:0;
@@ -1135,7 +1151,9 @@ input:focus,textarea:focus,select:focus,
   box-shadow:0 -12px 40px rgba(0,0,0,.35)
 }
 .vr-left{scroll-margin-bottom:96px}
-#panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:8px;padding-bottom:20px!important}
+#panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:108px!important;padding-bottom:24px!important}
+#panel-ranking .vr-sticky-bar{pointer-events:auto}
+#panel-ranking .page-shell-wide{max-width:1280px;width:100%;margin-left:auto;margin-right:auto}
 .fv-voice-wrap{position:relative;min-width:0;flex:1;display:flex;flex-direction:column;gap:8px}
 .fv-voice-skel{
   height:44px;border-radius:12px;overflow:hidden;
