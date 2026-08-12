@@ -3,8 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Vidso lets you create long-form YouTube videos with AI — script, voice, B-roll, and captions — so you can publish and monetize without a film crew.">
-<title>Vidso · Create long-form YouTube videos with AI</title>
+<title>Vidso · AI Long-Form Video Generator for YouTube</title>
+<meta name="description" content="Vidso is an AI long-form video generator for YouTube — script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
+<link rel="canonical" href="https://vidso.pro/landing">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vidso">
+<meta property="og:url" content="https://vidso.pro/landing">
+<meta property="og:title" content="Vidso · AI Long-Form Video Generator for YouTube">
+<meta property="og:description" content="Script to video for long-form YouTube: AI scripts, voiceover, B-roll, and burned-in captions. Faceless channel automation built for watch time and monetization.">
+<!-- TODO: add og:image (and twitter:image) once a long-form brand preview asset exists after this media strip -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vidso · AI Long-Form Video Generator for YouTube">
+<meta name="twitter:description" content="Script to video for long-form YouTube: AI scripts, voiceover, B-roll, and burned-in captions. Faceless channel automation built for watch time and monetization.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -171,7 +181,8 @@
   .av-stack{display:flex}
   .av-stack .av{width:34px;height:34px;border-radius:50%;display:block;overflow:hidden;border:2px solid #000;margin-left:-9px;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1a1f;padding:0;flex-shrink:0}
   .av-stack .av:first-child{margin-left:0}
-  .av-stack .av img{width:100%;height:100%;object-fit:cover;display:block}
+  .av-mono{display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.78);background:linear-gradient(145deg,#1c2844 0%,#12141c 100%)}
+  .av-stack .av.av-mono{font-size:10px}
   .hero-proof .lbl{font-size:13.5px;color:var(--muted);font-weight:500}
   .microcopy{margin-top:20px;font-size:13px;color:var(--faint);display:flex;gap:22px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
   .microcopy span{display:flex;align-items:center;gap:6px}
@@ -198,8 +209,7 @@
   .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;background:#050505}
   .clip{aspect-ratio:9/16;border-radius:12px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;transition:border-color .25s}
   .clip:hover{border-color:var(--line-2)}
-  .clip video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-  .clip video.zoomfit{transform:scale(1.334)}
+  .clip .media-ph{position:absolute;inset:0;z-index:0}
   .clip .score{position:absolute;top:9px;right:9px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;z-index:2}
   .clip .cap{font-size:11px;font-weight:600;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:4px 7px;border-radius:6px;line-height:1.25}
   @media(max-width:720px){.browser-body{grid-template-columns:1fr}.bb-left{border-right:none;border-bottom:1px solid var(--line)}}
@@ -278,7 +288,7 @@
   .quote p{font-size:15px;color:var(--txt);line-height:1.55;letter-spacing:-.01em}
   .quote .who{display:flex;align-items:center;gap:11px;margin-top:22px}
   .quote .av{width:38px;height:38px;border-radius:50%;display:block;overflow:hidden;flex-shrink:0;background:#1a1a1f;padding:0}
-  .quote .av img{width:100%;height:100%;object-fit:cover;display:block}
+  .quote .av.av-mono{font-size:11px;letter-spacing:.02em;color:rgba(255,255,255,.78);background:linear-gradient(145deg,#1c2844 0%,#12141c 100%)}
   .quote .who .nm{font-size:14px;font-weight:600}
   .quote .who .hd{font-size:12.5px;color:var(--faint)}
 
@@ -375,14 +385,11 @@
   .rs-viewport{overflow:hidden;padding:44px 0}
   .rs-row{display:flex;gap:20px;align-items:center;transition:transform .45s cubic-bezier(.4,0,.2,1);touch-action:pan-y;user-select:none;will-change:transform}
   .rs-card{flex:0 0 240px;width:240px;aspect-ratio:9/16;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:pointer;transform:scale(.86);opacity:.5;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s,box-shadow .4s,border-color .4s}
-  .rs-card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .rs-card video.zoomfit{transform:scale(1.334)}
-  .rs-card video.fit5{transform:translateY(18%) scale(2.01)}
-  .rs-card video.fit6{transform:scale(1.99)}
+  .rs-card .media-ph{position:absolute;inset:0;z-index:0}
   .rs-card.feat{transform:scale(1.08);opacity:1;z-index:2;box-shadow:0 30px 80px rgba(0,0,0,.62);border-color:rgba(255,59,74,.5)}
-  .rs-mute{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.16);display:none;align-items:center;justify-content:center;z-index:3;cursor:pointer;color:#fff;padding:0}
-  .rs-mute svg{width:17px;height:17px}
-  .rs-card.feat .rs-mute{display:flex}
+  .media-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 12px;text-align:center;background:linear-gradient(165deg,#1a2238 0%,#0a0c14 55%,#14101c 100%)}
+  .media-ph-play{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(91,140,255,.12);color:rgba(255,255,255,.78);display:grid;place-items:center;flex-shrink:0}
+  .media-ph-label{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:-.01em;color:rgba(255,255,255,.55);max-width:11em}
   .rs-dots{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
   .rs-dot{width:8px;height:8px;padding:0;border:none;border-radius:99px;background:rgba(255,255,255,.2);cursor:pointer;transition:.25s}
   .rs-dot.on{width:26px;background:var(--blue)}
@@ -393,7 +400,6 @@
   .gen-promo-body{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:stretch;max-width:1060px;margin:0 auto}
   .gen-cards{display:flex;gap:14px;align-items:stretch;height:100%}
   .gen-card{flex:1;aspect-ratio:9/16;background:linear-gradient(180deg,#141728 0%,#0a0c14 100%);border:1px solid var(--line);border-radius:18px;min-width:0;overflow:hidden;position:relative}
-  .gen-card img{width:100%;height:100%;object-fit:cover;display:block}
   .gen-box{background:var(--panel);border:1px solid var(--line-2);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px}
   .gen-prompt{width:100%;min-height:108px;background:transparent;border:none;color:#fff;font-family:inherit;font-size:15px;line-height:1.55;resize:none;outline:none;flex:1}
   .gen-prompt::placeholder{color:var(--faint)}
@@ -415,6 +421,93 @@
   /* DrawSVG underline under headline */
   .draw-underline{display:block;width:min(340px,64vw);height:18px;margin:8px auto 0;position:relative;z-index:2}
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Vidso",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web",
+      "url": "https://vidso.pro/landing",
+      "description": "AI long-form video generator for YouTube — script to video with voiceover, B-roll, and captions for faceless channel automation.",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Starter",
+          "price": "9.00",
+          "priceCurrency": "USD",
+          "priceValidUntil": "2027-12-31",
+          "description": "Starter plan — from $9/mo billed annually ($15/mo monthly). 30 long videos / month."
+        },
+        {
+          "@type": "Offer",
+          "name": "Creator Pro",
+          "price": "16.00",
+          "priceCurrency": "USD",
+          "priceValidUntil": "2027-12-31",
+          "description": "Creator Pro — from $16/mo billed annually ($39/mo monthly). 100 long videos / month."
+        },
+        {
+          "@type": "Offer",
+          "name": "Studio",
+          "price": "24.00",
+          "priceCurrency": "USD",
+          "priceValidUntil": "2027-12-31",
+          "description": "Studio — from $24/mo billed annually ($89/mo monthly). Unlimited long-form generation."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Vidso?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload — built for creators who want to monetize with consistent long-form output."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does AI long-form generation work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You pick a topic and length. Vidso writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What kinds of videos should I make to monetize?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Faceless explainers, listicles, story docs, and evergreen tutorials tend to perform well — searchable topics with strong hooks and enough length to build watch time toward YouTube monetization."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does YouTube MCP automate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Connect your channel to keep publishing consistently. Vidso helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a free way to try it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Start without a credit card, generate your first long-form videos, and upgrade when you need more volume. Cancel anytime from your account."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="scroll-prog" id="scrollProg"></div>
@@ -422,6 +515,7 @@
 <header>
   <div class="wrap" style="position:relative">
     <nav>
+      <!-- OWNER REVIEW: brand file still named sendclip-logo.png -->
       <a href="/landing" class="logo">
         <img src="/sendclip-logo.png" alt="Vidso">
         Vidso
@@ -467,8 +561,8 @@
       <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg></span>
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
-    <h1>Monetizable YouTube videos on autopilot</h1>
-    <p class="sub">Join creators using Vidso to write, voice, and produce full YouTube videos with AI. Pick a topic, generate a long-form video, upload, and grow toward monetization.</p>
+    <h1>AI long-form YouTube videos on autopilot</h1>
+    <p class="sub">Vidso is an AI long-form video generator — script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel, ship consistent uploads, and grow watch hours toward monetization.</p>
     <div class="hero-cta">
       <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
@@ -483,11 +577,11 @@
     </div>
     <div class="hero-proof">
       <div class="av-stack">
-        <span class="av"><img src="/avatars/sarah-m.jpg" alt=""></span>
-        <span class="av"><img src="/avatars/jessica-r.jpg" alt=""></span>
-        <span class="av"><img src="/avatars/maya-k.jpg" alt=""></span>
-        <span class="av"><img src="/avatars/taylor-b.jpg" alt=""></span>
-        <span class="av"><img src="/avatars/emma-l.jpg" alt=""></span>
+        <span class="av av-mono" aria-label="Sarah M.">SM</span>
+        <span class="av av-mono" aria-label="Jessica R.">JR</span>
+        <span class="av av-mono" aria-label="Maya K.">MK</span>
+        <span class="av av-mono" aria-label="Taylor B.">TB</span>
+        <span class="av av-mono" aria-label="Emma L.">EL</span>
       </div>
       <span class="lbl">Trusted by creators building <b>monetizable</b> YouTube channels</span>
     </div>
@@ -512,10 +606,10 @@
             </div>
           </div>
           <div class="bb-right">
-            <div class="clip"><video src="/clips/clip1.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="score">98</span></div>
-            <div class="clip"><video class="zoomfit" src="/clips/clip2.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="score">94</span></div>
-            <div class="clip"><video src="/clips/clip3.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="score">91</span></div>
-            <div class="clip"><video src="/clips/clip4.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="score">89</span></div>
+            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div><span class="score">98</span></div>
+            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Documentary deep dive"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Documentary deep dive</span></div><span class="score">94</span></div>
+            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Listicle with chapters"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Listicle with chapters</span></div><span class="score">91</span></div>
+            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Evergreen tutorial"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Evergreen tutorial</span></div><span class="score">89</span></div>
           </div>
         </div>
       </div>
@@ -528,22 +622,22 @@
 <section class="reelshow">
   <div class="wrap s-head center">
     <div class="eyebrow">Long-form output</div>
-    <h2>AI videos built to hold attention</h2>
-    <p>Full narrated videos with B-roll and captions — the kind of content YouTube pays for. Drag to browse.</p>
+    <h2>AI long-form built for retention</h2>
+    <p>Full narrated YouTube videos with B-roll and captions — script to video for watch time, RPM, and the Partner Program. Drag to browse.</p>
   </div>
   <div class="rs-viewport"><div class="rs-row" id="rsRow">
-    <div class="rs-card"><video src="/clips/clip1.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video class="zoomfit" src="/clips/clip2.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/clip3.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/showcase/showcase1.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/showcase/showcase2.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/showcase/showcase3.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/showcase/showcase4.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/showcase/showcase5.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/clip4.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/clip5.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/clip6.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
-    <div class="rs-card"><video src="/clips/clip7.mp4" autoplay muted loop playsinline preload="metadata"></video><button class="rs-mute" aria-label="Toggle sound"></button></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Documentary deep dive"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Documentary deep dive</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Story with chapters"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Story with chapters</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Airport secrets listicle"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Airport secrets listicle</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Niche how-to tutorial"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Niche how-to tutorial</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Authority explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Authority explainer</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Narrative long-form"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Narrative long-form</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Searchable evergreen"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Searchable evergreen</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Retention-first cut"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Retention-first cut</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Monetizable upload"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Monetizable upload</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Script-to-video sample"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Script-to-video sample</span></div></div>
+    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Faceless channel draft"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Faceless channel draft</span></div></div>
   </div></div>
   <div class="rs-dots" id="rsDots"></div>
 </section>
@@ -554,7 +648,7 @@
     <div class="s-head">
       <div class="eyebrow">The product</div>
       <h2>One prompt.<br>A full YouTube video.</h2>
-      <p>Script, voice, B-roll, and captions in one flow — optimized for long-form watch time and monetization.</p>
+      <p>Script to video in one flow — voice, B-roll, and captions optimized for long-form watch time, retention, and YouTube automation.</p>
     </div>
 
     <div class="bento">
@@ -618,7 +712,7 @@
   <div class="wrap s-head center">
     <div class="eyebrow">Made for long-form</div>
     <h2>The videos that <span class="accent">make money</span> on YouTube</h2>
-    <p>Generate the formats advertisers and the algorithm reward — deep, bingeable, searchable.</p>
+    <p>Generate the formats that earn RPM — deep, searchable, retention-led long-form for a faceless YouTube channel.</p>
   </div>
   <div class="wrap" style="margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:960px;margin-left:auto;margin-right:auto">
     <div class="card" style="padding:22px 20px">
@@ -649,7 +743,7 @@
     <div class="s-head center">
       <div class="eyebrow">Workflow</div>
       <h2>From idea to long-form upload in 3 steps</h2>
-      <p>No camera. No crew. A finished YouTube video ready to monetize.</p>
+      <p>No camera. No crew. Script to video — a finished 16:9 YouTube upload ready for watch hours and the Partner Program.</p>
     </div>
     <div class="steps">
       <div class="step">
@@ -705,28 +799,21 @@
 
 <script>
 (function(){
-  var MUTED='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>';
-  var LOUD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
   var vp=document.querySelector('.rs-viewport'), row=document.getElementById('rsRow');
   if(!vp||!row) return;
   var cards=[].slice.call(row.querySelectorAll('.rs-card'));
   var dotsWrap=document.getElementById('rsDots');
   var idx=5, dragged=false;
   cards.forEach(function(c,i){
-    var mb=c.querySelector('.rs-mute'), vid=c.querySelector('video');
-    if(mb) mb.innerHTML=MUTED;
-    c.addEventListener('click',function(e){ if(dragged) return; if(e.target.closest('.rs-mute')) return; go(i); });
-    var d=document.createElement('button'); d.className='rs-dot'; d.setAttribute('aria-label','Clip '+(i+1));
+    c.addEventListener('click',function(){ if(dragged) return; go(i); });
+    var d=document.createElement('button'); d.className='rs-dot'; d.setAttribute('aria-label','Long-form preview '+(i+1));
     d.addEventListener('click',function(){go(i);}); dotsWrap.appendChild(d);
-    if(mb&&vid){ mb.addEventListener('click',function(e){ e.stopPropagation();
-      vid.muted=!vid.muted; mb.innerHTML=vid.muted?MUTED:LOUD; if(!vid.muted){ vid.play().catch(function(){}); } }); }
   });
   var dots=[].slice.call(dotsWrap.children);
   function baseX(){ var c=cards[idx]; return vp.clientWidth/2 - (c.offsetLeft + c.offsetWidth/2); }
   function render(){
     row.style.transform='translateX('+baseX()+'px)';
-    cards.forEach(function(c,i){ var f=(i===idx); c.classList.toggle('feat',f);
-      if(!f){ var v=c.querySelector('video'), m=c.querySelector('.rs-mute'); if(v){v.muted=true;} if(m){m.innerHTML=MUTED;} } });
+    cards.forEach(function(c,i){ c.classList.toggle('feat', i===idx); });
     dots.forEach(function(d,i){d.classList.toggle('on',i===idx);});
   }
   function go(i){ idx=Math.max(0,Math.min(cards.length-1,i)); render(); }
@@ -749,18 +836,22 @@
   </div>
   <div class="marquee-mask">
     <div class="marquee">
-      <div class="quote"><p>"The AI insights are spot on. My videos finally get the views they deserve!"</p><div class="who"><span class="av"><img src="/avatars/sarah-m.jpg" alt=""></span><div><div class="nm">Sarah M.</div><div class="hd">@sarahcreates</div></div></div></div>
-      <div class="quote"><p>"Finally viral! Went from 850 to 12K followers in just 6 weeks."</p><div class="who"><span class="av"><img src="/avatars/jessica-r.jpg" alt=""></span><div><div class="nm">Jessica R.</div><div class="hd">@jessvibes</div></div></div></div>
-      <div class="quote"><p>"My engagement went through the roof. Best tool I've ever used!"</p><div class="who"><span class="av"><img src="/avatars/taylor-b.jpg" alt=""></span><div><div class="nm">Taylor B.</div><div class="hd">@taylormade</div></div></div></div>
-      <div class="quote"><p>"Best investment I've made in my creator journey. Worth every penny!"</p><div class="who"><span class="av"><img src="/avatars/maya-k.jpg" alt=""></span><div><div class="nm">Maya K.</div><div class="hd">@mayacontent</div></div></div></div>
-      <div class="quote"><p>"Life changing! My content finally connects with my audience."</p><div class="who"><span class="av"><img src="/avatars/emma-l.jpg" alt=""></span><div><div class="nm">Emma L.</div><div class="hd">@emmavibes</div></div></div></div>
-      <div class="quote"><p>"Actually works! No fluff, just real actionable insights."</p><div class="who"><span class="av"><img src="/avatars/chloe-p.jpg" alt=""></span><div><div class="nm">Chloe P.</div><div class="hd">@chloegrows</div></div></div></div>
-      <div class="quote"><p>"The AI insights are spot on. My videos finally get the views they deserve!"</p><div class="who"><span class="av"><img src="/avatars/sarah-m.jpg" alt=""></span><div><div class="nm">Sarah M.</div><div class="hd">@sarahcreates</div></div></div></div>
-      <div class="quote"><p>"Finally viral! Went from 850 to 12K followers in just 6 weeks."</p><div class="who"><span class="av"><img src="/avatars/jessica-r.jpg" alt=""></span><div><div class="nm">Jessica R.</div><div class="hd">@jessvibes</div></div></div></div>
-      <div class="quote"><p>"My engagement went through the roof. Best tool I've ever used!"</p><div class="who"><span class="av"><img src="/avatars/taylor-b.jpg" alt=""></span><div><div class="nm">Taylor B.</div><div class="hd">@taylormade</div></div></div></div>
-      <div class="quote"><p>"Best investment I've made in my creator journey. Worth every penny!"</p><div class="who"><span class="av"><img src="/avatars/maya-k.jpg" alt=""></span><div><div class="nm">Maya K.</div><div class="hd">@mayacontent</div></div></div></div>
-      <div class="quote"><p>"Life changing! My content finally connects with my audience."</p><div class="who"><span class="av"><img src="/avatars/emma-l.jpg" alt=""></span><div><div class="nm">Emma L.</div><div class="hd">@emmavibes</div></div></div></div>
-      <div class="quote"><p>"Actually works! No fluff, just real actionable insights."</p><div class="who"><span class="av"><img src="/avatars/chloe-p.jpg" alt=""></span><div><div class="nm">Chloe P.</div><div class="hd">@chloegrows</div></div></div></div>
+<!-- OWNER REVIEW: short-form leftover language ("views") — consider watch time / subscribers -->
+      <div class="quote"><p>"The AI insights are spot on. My videos finally get the views they deserve!"</p><div class="who"><span class="av av-mono" aria-label="Sarah M.">SM</span><div><div class="nm">Sarah M.</div><div class="hd">@sarahcreates</div></div></div></div>
+<!-- OWNER REVIEW: short-form leftovers ("viral", "followers") — consider subscribers / watch hours -->
+      <div class="quote"><p>"Finally viral! Went from 850 to 12K followers in just 6 weeks."</p><div class="who"><span class="av av-mono" aria-label="Jessica R.">JR</span><div><div class="nm">Jessica R.</div><div class="hd">@jessvibes</div></div></div></div>
+      <div class="quote"><p>"My engagement went through the roof. Best tool I've ever used!"</p><div class="who"><span class="av av-mono" aria-label="Taylor B.">TB</span><div><div class="nm">Taylor B.</div><div class="hd">@taylormade</div></div></div></div>
+      <div class="quote"><p>"Best investment I've made in my creator journey. Worth every penny!"</p><div class="who"><span class="av av-mono" aria-label="Maya K.">MK</span><div><div class="nm">Maya K.</div><div class="hd">@mayacontent</div></div></div></div>
+      <div class="quote"><p>"Life changing! My content finally connects with my audience."</p><div class="who"><span class="av av-mono" aria-label="Emma L.">EL</span><div><div class="nm">Emma L.</div><div class="hd">@emmavibes</div></div></div></div>
+      <div class="quote"><p>"Actually works! No fluff, just real actionable insights."</p><div class="who"><span class="av av-mono" aria-label="Chloe P.">CP</span><div><div class="nm">Chloe P.</div><div class="hd">@chloegrows</div></div></div></div>
+<!-- OWNER REVIEW: short-form leftover language ("views") — consider watch time / subscribers -->
+      <div class="quote"><p>"The AI insights are spot on. My videos finally get the views they deserve!"</p><div class="who"><span class="av av-mono" aria-label="Sarah M.">SM</span><div><div class="nm">Sarah M.</div><div class="hd">@sarahcreates</div></div></div></div>
+<!-- OWNER REVIEW: short-form leftovers ("viral", "followers") — consider subscribers / watch hours -->
+      <div class="quote"><p>"Finally viral! Went from 850 to 12K followers in just 6 weeks."</p><div class="who"><span class="av av-mono" aria-label="Jessica R.">JR</span><div><div class="nm">Jessica R.</div><div class="hd">@jessvibes</div></div></div></div>
+      <div class="quote"><p>"My engagement went through the roof. Best tool I've ever used!"</p><div class="who"><span class="av av-mono" aria-label="Taylor B.">TB</span><div><div class="nm">Taylor B.</div><div class="hd">@taylormade</div></div></div></div>
+      <div class="quote"><p>"Best investment I've made in my creator journey. Worth every penny!"</p><div class="who"><span class="av av-mono" aria-label="Maya K.">MK</span><div><div class="nm">Maya K.</div><div class="hd">@mayacontent</div></div></div></div>
+      <div class="quote"><p>"Life changing! My content finally connects with my audience."</p><div class="who"><span class="av av-mono" aria-label="Emma L.">EL</span><div><div class="nm">Emma L.</div><div class="hd">@emmavibes</div></div></div></div>
+      <div class="quote"><p>"Actually works! No fluff, just real actionable insights."</p><div class="who"><span class="av av-mono" aria-label="Chloe P.">CP</span><div><div class="nm">Chloe P.</div><div class="hd">@chloegrows</div></div></div></div>
     </div>
   </div>
 </section>
@@ -896,7 +987,7 @@
   <div class="wrap">
     <div class="final-box">
       <h2>Ready to build a YouTube channel that pays?</h2>
-      <p>Generate your first long-form AI video and start stacking watch time.</p>
+      <p>Generate your first AI long-form video — script to video — and start stacking watch hours toward monetization.</p>
       <div class="hero-cta">
         <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Generate a long video</button>
       </div>
@@ -940,6 +1031,7 @@
         <a href="/refund">Refund policy</a>
       </div>
     </div>
+    <!-- OWNER REVIEW: footer says vidso.ai; production domain is vidso.pro -->
     <div class="foot-copy">© 2026 Vidso · vidso.ai</div>
   </div>
 </footer>
@@ -1039,7 +1131,7 @@
       scrollTrigger:{trigger:fill, start:'top 92%'}});
   });
 
-  // ---------- count-up numbers (virality score + bar values) ----------
+  // ---------- count-up numbers (retention score + bar values) ----------
   function countUp(node){
     var raw=node.textContent.trim();
     var m=raw.match(/^([<$]?)([\d.]+)(.*)$/);
