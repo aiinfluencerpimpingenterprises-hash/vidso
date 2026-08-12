@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vidso · AI Long-Form Video Generator for YouTube</title>
-<meta name="description" content="Vidso is an AI long-form video generator for YouTube — script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
+<meta name="description" content="Vidso is an AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
 <link rel="canonical" href="https://vidso.pro/landing">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vidso">
@@ -181,8 +181,8 @@
   .av-stack{display:flex}
   .av-stack .av{width:34px;height:34px;border-radius:50%;display:block;overflow:hidden;border:2px solid #000;margin-left:-9px;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1a1f;padding:0;flex-shrink:0}
   .av-stack .av:first-child{margin-left:0}
+  .av-stack .av img{width:100%;height:100%;object-fit:cover;display:block}
   .av-mono{display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.78);background:linear-gradient(145deg,#1c2844 0%,#12141c 100%)}
-  .av-stack .av.av-mono{font-size:10px}
   .hero-proof .lbl{font-size:13.5px;color:var(--muted);font-weight:500}
   .microcopy{margin-top:20px;font-size:13px;color:var(--faint);display:flex;gap:22px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
   .microcopy span{display:flex;align-items:center;gap:6px}
@@ -432,7 +432,7 @@
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web",
       "url": "https://vidso.pro/landing",
-      "description": "AI long-form video generator for YouTube — script to video with voiceover, B-roll, and captions for faceless channel automation.",
+      "description": "AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions for faceless channel automation.",
       "offers": [
         {
           "@type": "Offer",
@@ -440,7 +440,7 @@
           "price": "9.00",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Starter plan — from $9/mo billed annually ($15/mo monthly). 30 long videos / month."
+          "description": "Starter plan: from $9/mo billed annually ($15/mo monthly). 30 long videos / month."
         },
         {
           "@type": "Offer",
@@ -448,7 +448,7 @@
           "price": "16.00",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Creator Pro — from $16/mo billed annually ($39/mo monthly). 100 long videos / month."
+          "description": "Creator Pro: from $16/mo billed annually ($39/mo monthly). 100 long videos / month."
         },
         {
           "@type": "Offer",
@@ -456,7 +456,7 @@
           "price": "24.00",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Studio — from $24/mo billed annually ($89/mo monthly). Unlimited long-form generation."
+          "description": "Studio: from $24/mo billed annually ($89/mo monthly). Unlimited long-form generation."
         }
       ]
     },
@@ -468,7 +468,7 @@
           "name": "What is Vidso?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload — built for creators who want to monetize with consistent long-form output."
+            "text": "Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload, built for creators who want to monetize with consistent long-form output."
           }
         },
         {
@@ -484,7 +484,7 @@
           "name": "What kinds of videos should I make to monetize?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Faceless explainers, listicles, story docs, and evergreen tutorials tend to perform well — searchable topics with strong hooks and enough length to build watch time toward YouTube monetization."
+            "text": "Faceless explainers, listicles, story docs, and evergreen tutorials tend to perform well: searchable topics with strong hooks and enough length to build watch time toward YouTube monetization."
           }
         },
         {
@@ -562,7 +562,7 @@
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
     <h1>AI long-form YouTube videos on autopilot</h1>
-    <p class="sub">Vidso is an AI long-form video generator — script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel, ship consistent uploads, and grow watch hours toward monetization.</p>
+    <p class="sub">Vidso is an AI long-form video generator: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel, ship consistent uploads, and grow watch hours toward monetization.</p>
     <div class="hero-cta">
       <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
@@ -576,13 +576,42 @@
       </div>
     </div>
     <div class="hero-proof">
-      <div class="av-stack">
-        <span class="av av-mono" aria-label="Sarah M.">SM</span>
-        <span class="av av-mono" aria-label="Jessica R.">JR</span>
-        <span class="av av-mono" aria-label="Maya K.">MK</span>
-        <span class="av av-mono" aria-label="Taylor B.">TB</span>
-        <span class="av av-mono" aria-label="Emma L.">EL</span>
-      </div>
+      <div class="av-stack" id="trustedAvatars" aria-label="Trusted creators"></div>
+      <script>
+      (function () {
+        // Swap these 5 URLs to Cloudflare Images delivery URLs later (one-place change).
+        var VIDSO_TRUSTED_AVATARS = [
+          '/trusted/creator-1.png',
+          '/trusted/creator-2.png',
+          '/trusted/creator-3.png',
+          '/trusted/creator-4.png',
+          '/trusted/creator-5.png'
+        ];
+        var alts = [
+          'Creator building a monetizable YouTube channel',
+          'Creator shipping long-form YouTube videos',
+          'Faceless YouTube channel creator',
+          'YouTube creator using Vidso long-form AI',
+          'Creator growing watch hours with AI long-form'
+        ];
+        var root = document.getElementById('trustedAvatars');
+        if (!root) return;
+        VIDSO_TRUSTED_AVATARS.forEach(function (src, i) {
+          var span = document.createElement('span');
+          span.className = 'av';
+          var img = document.createElement('img');
+          img.src = src;
+          img.width = 34;
+          img.height = 34;
+          img.alt = alts[i] || ('Trusted creator ' + (i + 1));
+          img.loading = 'eager';
+          img.decoding = 'async';
+          img.fetchPriority = 'high';
+          span.appendChild(img);
+          root.appendChild(span);
+        });
+      })();
+      </script>
       <span class="lbl">Trusted by creators building <b>monetizable</b> YouTube channels</span>
     </div>
     </div><!-- /hero-copy -->
@@ -623,7 +652,7 @@
   <div class="wrap s-head center">
     <div class="eyebrow">Long-form output</div>
     <h2>AI long-form built for retention</h2>
-    <p>Full narrated YouTube videos with B-roll and captions — script to video for watch time, RPM, and the Partner Program. Drag to browse.</p>
+    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, RPM, and the Partner Program. Drag to browse.</p>
   </div>
   <div class="rs-viewport"><div class="rs-row" id="rsRow">
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div></div>
@@ -648,14 +677,14 @@
     <div class="s-head">
       <div class="eyebrow">The product</div>
       <h2>One prompt.<br>A full YouTube video.</h2>
-      <p>Script to video in one flow — voice, B-roll, and captions optimized for long-form watch time, retention, and YouTube automation.</p>
+      <p>Script to video in one flow: voice, B-roll, and captions optimized for long-form watch time, retention, and YouTube automation.</p>
     </div>
 
     <div class="bento">
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></div>
         <h3>Scripts written for long watch time</h3>
-        <p>Hooks, chapters, and payoffs structured for 3–20+ minute videos that keep people watching — and the algorithm happy.</p>
+        <p>Hooks, chapters, and payoffs structured for 3–20+ minute videos that keep people watching, and the algorithm happy.</p>
       </div>
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M3 9v6"/></svg></div>
@@ -665,13 +694,13 @@
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
         <h3>Captions that boost retention</h3>
-        <p>Word-synced subtitles burned in — more completion, more recommended traffic, more revenue.</p>
+        <p>Word-synced subtitles burned in: more completion, more recommended traffic, more revenue.</p>
       </div>
 
       <div class="card wide">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17l6-6-6-6M12 19h8"/></svg></div>
         <h3>Publish for monetization</h3>
-        <p>Export a finished long-form MP4 built for YouTube Partner Program goals — watch time, retention, and repeat uploads.</p>
+        <p>Export a finished long-form MP4 built for YouTube Partner Program goals: watch time, retention, and repeat uploads.</p>
         <div class="term">
           <div class="cmd">vidso create --long-form</div>
           <div class="ok">topic locked · 12-min script ready</div>
@@ -696,7 +725,7 @@
       <div class="card wide">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg></div>
         <h3>From topic to full-length video</h3>
-        <p>Faceless explainers, listicles, stories, and deep dives — generate the whole piece without filming yourself.</p>
+        <p>Faceless explainers, listicles, stories, and deep dives: generate the whole piece without filming yourself.</p>
       </div>
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
@@ -712,12 +741,12 @@
   <div class="wrap s-head center">
     <div class="eyebrow">Made for long-form</div>
     <h2>The videos that <span class="accent">make money</span> on YouTube</h2>
-    <p>Generate the formats that earn RPM — deep, searchable, retention-led long-form for a faceless YouTube channel.</p>
+    <p>Generate the formats that earn RPM: deep, searchable, retention-led long-form for a faceless YouTube channel.</p>
   </div>
   <div class="wrap" style="margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:960px;margin-left:auto;margin-right:auto">
     <div class="card" style="padding:22px 20px">
       <h3 style="margin:0 0 8px;font-size:17px">Faceless explainers</h3>
-      <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.5">Authority topics with narration + B-roll — classic monetizable YouTube.</p>
+      <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.5">Authority topics with narration + B-roll: classic monetizable YouTube.</p>
     </div>
     <div class="card" style="padding:22px 20px">
       <h3 style="margin:0 0 8px;font-size:17px">Listicles &amp; countdowns</h3>
@@ -743,13 +772,13 @@
     <div class="s-head center">
       <div class="eyebrow">Workflow</div>
       <h2>From idea to long-form upload in 3 steps</h2>
-      <p>No camera. No crew. Script to video — a finished 16:9 YouTube upload ready for watch hours and the Partner Program.</p>
+      <p>No camera. No crew. Script to video: a finished 16:9 YouTube upload ready for watch hours and the Partner Program.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="num">01</div>
         <h3>Pick a money topic</h3>
-        <p>Enter the niche idea — secrets, explainers, stories, tutorials. Vidso drafts a full long-form script.</p>
+        <p>Enter the niche idea: secrets, explainers, stories, tutorials. Vidso drafts a full long-form script.</p>
       </div>
       <div class="step">
         <div class="num">02</div>
@@ -960,7 +989,7 @@
     <div class="faq-inner" style="margin-top:44px">
       <details open>
         <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload — built for creators who want to monetize with consistent long-form output.</p>
+        <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload, built for creators who want to monetize with consistent long-form output.</p>
       </details>
       <details>
         <summary>How does AI long-form generation work?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
@@ -968,7 +997,7 @@
       </details>
       <details>
         <summary>What kinds of videos should I make to monetize?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Faceless explainers, listicles, story docs, and evergreen tutorials tend to perform well — searchable topics with strong hooks and enough length to build watch time toward YouTube monetization.</p>
+        <p>Faceless explainers, listicles, story docs, and evergreen tutorials tend to perform well: searchable topics with strong hooks and enough length to build watch time toward YouTube monetization.</p>
       </details>
       <details>
         <summary>What does YouTube MCP automate?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
@@ -987,7 +1016,7 @@
   <div class="wrap">
     <div class="final-box">
       <h2>Ready to build a YouTube channel that pays?</h2>
-      <p>Generate your first AI long-form video — script to video — and start stacking watch hours toward monetization.</p>
+      <p>Generate your first AI long-form video (script to video) and start stacking watch hours toward monetization.</p>
       <div class="hero-cta">
         <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Generate a long video</button>
       </div>
@@ -1009,7 +1038,7 @@
           <img src="/sendclip-logo.png" alt="Vidso">
           Vidso
         </a>
-        <p class="fdesc">Create long-form YouTube videos with AI — script, voice, B-roll, and captions — built for creators who want to monetize.</p>
+        <p class="fdesc">Create long-form YouTube videos with AI (script, voice, B-roll, and captions), built for creators who want to monetize.</p>
       </div>
       <div class="fcol">
         <h4>Product</h4>
