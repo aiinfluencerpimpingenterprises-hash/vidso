@@ -18,7 +18,9 @@ There is no dependency install and nothing to build. Node/npm and Python 3 are p
 python3 scripts/dev-server.py --port 3000
 ```
 
-Then open `http://localhost:3000/` (auto-redirects to `/landing`). Because pages use root-relative asset paths (e.g. `/vendor/gsap/gsap.min.js`), you must serve from the repo root — a plain `python3 -m http.server` will NOT apply the `vercel.json` rewrites (e.g. `/overview` → `dashboard/index.html`), so prefer `scripts/dev-server.py`.
+Then open `http://127.0.0.1:3000/` or `http://localhost:3000/` (auto-redirects to `/landing`). The server dual-stacks (`::` with `IPV6_V6ONLY=0`) so both IPv4 and IPv6 localhost work — older IPv4-only binds caused Chrome `ERR_CONNECTION_REFUSED` when it preferred `::1`. If you still see connection refused, try `127.0.0.1` first and confirm the process is up (`curl -I http://127.0.0.1:3000/landing`).
+
+Because pages use root-relative asset paths (e.g. `/vendor/gsap/gsap.min.js`), you must serve from the repo root — a plain `python3 -m http.server` will NOT apply the `vercel.json` rewrites (e.g. `/overview` → `dashboard/index.html`), so prefer `scripts/dev-server.py`.
 
 ### Non-obvious gotchas
 - **The dashboard requires the external backend + auth.** Visiting `/overview`, `/login`, `/signup`, `/clipping`, etc. loads the dashboard SPA, which shows a full-screen loading animation (a spinning 3D cube) while it tries to authenticate against the external Railway API. Without valid credentials / a reachable backend it will stay on that loader or redirect to `/login`. This is expected locally — it is not a crash of the site. The fully exercisable part locally is the **landing page**.
