@@ -122,7 +122,7 @@ input[type=text],input[type=email],input[type=password],input[type=number],texta
   transition:border-color var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);
 }
 input:hover,textarea:hover,select:hover{border-color:rgba(255,255,255,.18)}
-input:focus,textarea:focus,select:focus{border-color:rgba(255,77,94,.7);box-shadow:0 0 0 3px rgba(255,59,74,.18);background:rgba(255,255,255,.04)}
+input:focus,textarea:focus,select:focus{border-color:rgba(255,77,94,.85);box-shadow:0 0 0 4px rgba(255,59,74,.2),0 0 28px rgba(255,59,74,.16);background:rgba(255,255,255,.04)}
 input:focus-visible,textarea:focus-visible,select:focus-visible,.btn:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
 textarea{resize:vertical;min-height:100px}
 select option{background:var(--card)}
@@ -322,7 +322,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 /* HOME GRID */
 .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
 .stat-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.stat-num{font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:1.8rem;font-weight:700;color:var(--a2)}
+.stat-num{font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:28px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .stat-label{font-size:.78rem;color:var(--text-label);margin-top:4px}
 .tool-shortcuts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .shortcut{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;cursor:pointer;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
@@ -338,32 +338,33 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:28px}
 @media (max-width:900px){.dash-stats{grid-template-columns:1fr}}
 .dash-stat{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.dash-stat-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,59,74,.12);border:1px solid rgba(255,59,74,.22);color:var(--a1);flex-shrink:0}
+.dash-stat-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);flex-shrink:0}
 .dash-stat-ico svg{width:16px;height:16px}
 .dash-stat .stat-num{font-size:1.45rem;line-height:1.1;margin:0}
 .dash-stat .stat-label{margin-top:4px}
-.section-label{font-size:.72rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--text-label);margin:0 0 12px}
-.qa-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:28px}
-@media (max-width:720px){.qa-grid{grid-template-columns:1fr}}
+.section-label{font-size:11px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.40);margin:0 0 12px}
+.qa-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}
+@media (max-width:1100px){.qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.qa-grid{grid-template-columns:1fr}}
 .qa-card{display:flex;align-items:flex-start;gap:12px;padding:16px;text-align:left;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .qa-card:hover{border-color:rgba(255,59,74,.4);transform:translateY(-2px);background:rgba(255,59,74,.05)}
 .qa-card:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
 .qa-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--border);color:#fff;flex-shrink:0}
 .qa-ico svg{width:16px;height:16px}
-.qa-title{font-size:.88rem;font-weight:650;color:#fff;margin:0 0 4px}
-.qa-sub{font-size:.75rem;color:var(--text-body);line-height:1.4;margin:0}
+.qa-title{display:block;font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;line-height:1.3}
+.qa-sub{display:block;font-size:14px;color:rgba(255,255,255,.45);line-height:1.4;margin:0}
 .dash-recent{display:flex;flex-direction:column;gap:8px}
 .dash-recent-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
 .dash-recent-name{flex:1;min-width:0;font-size:.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-recent-meta{font-size:.7rem;color:var(--text-label);flex-shrink:0}
 .tools-group{margin-bottom:22px}
 .tools-group:last-child{margin-bottom:0}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .tool-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:132px;padding:18px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;text-align:left;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .tool-tile:hover{border-color:rgba(255,255,255,.22);transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.28)}
 .tool-tile:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
 .tool-tile.is-soon{opacity:.55;cursor:not-allowed;pointer-events:none}
-.tool-tile-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,59,74,.1);border:1px solid rgba(255,59,74,.2);color:var(--a1)}
+.tool-tile-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
 .tool-tile-ico svg{width:16px;height:16px}
 .tool-tile-title{font-size:.9rem;font-weight:650;color:#fff}
 .tool-tile-desc{font-size:.75rem;color:var(--text-body);line-height:1.4}
@@ -389,7 +390,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .img-stepper button{width:32px;height:32px;border:none;border-radius:9px;background:transparent;color:#fff;font-size:1rem;cursor:pointer;font-family:inherit}
 .img-stepper button:hover{background:rgba(255,255,255,.06)}
 .img-stepper-val{min-width:64px;text-align:center;font-size:.84rem;font-weight:650;color:#fff}
-.img-results{min-height:420px}
+.img-results{min-height:calc(100vh - 180px)}
 .img-skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 .clip-shell{max-width:var(--page-max-wide);margin:0 auto;width:100%}
 #panel-clipper .tool-card{max-width:880px;margin-left:auto;margin-right:auto}
@@ -412,7 +413,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 #panel-ranking .upload-zone .uz-icon{font-size:1.25rem;margin-bottom:6px}
 .vr-card-status{margin-left:8px;font-size:.68rem;font-weight:600;color:var(--text-label);padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
 .vr-card-status.is-ready{color:#fff;background:rgba(255,59,74,.12);border-color:rgba(255,59,74,.28)}
-.vr-sticky-bar{position:sticky;bottom:0;z-index:5;padding:12px 0 4px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.92) 28%,#000);margin-top:8px}
+.vr-sticky-bar{position:sticky;bottom:0;z-index:5;padding:12px 0 8px;margin-top:12px;background:rgba(8,8,10,.72);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-top:1px solid rgba(255,255,255,.08)}
 .vr-phone{width:min(100%,280px);margin:0 auto;padding:10px;border-radius:28px;background:linear-gradient(180deg,#1a1a1e,#0a0a0c);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}
 .vr-phone .vr-preview-stage{border-radius:18px}
 .vr-stage-empty-bg{display:flex;align-items:center;justify-content:center;color:var(--text-label)!important;font-size:.8rem!important;font-weight:500;letter-spacing:-.01em}
@@ -695,12 +696,12 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
   background:#111113;border:1px solid rgba(255,255,255,.1);border-radius:24px;
   padding:32px 32px 28px;max-width:none;margin:0 0 36px;box-shadow:none
 }
-#panel-clipper .tool-card > h3{
+#panel-clipper .tool-card > .page-header h2{
   font-family:'SF Pro Display','Inter',-apple-system,sans-serif;
-  font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;color:#fff
+  font-size:30px;font-weight:600;letter-spacing:-.03em;margin-bottom:8px;color:#fff
 }
-#panel-clipper .tool-card > p{
-  font-size:.9rem;color:#9ca3af;margin-bottom:26px;max-width:720px;line-height:1.55;font-weight:400
+#panel-clipper .tool-card > .page-header p{
+  font-size:14px;color:rgba(255,255,255,.45);margin-bottom:20px;max-width:720px;line-height:1.45;font-weight:400
 }
 .clip-hero{margin-bottom:0}
 .clip-hero-row{
@@ -906,22 +907,182 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .preview-stage.framed video{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px}
 .preview-stage.framed canvas{position:relative;display:inline-block;border-radius:4px;max-height:340px}
 
-/* Vidso polish */
-::selection{background:#ff3b4a;color:#fff}
+/* Vidso polish + V2 depth */
+::selection{background:rgba(255,59,74,.55);color:#fff}
 html{color-scheme:dark}
-body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:600px;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse at center,rgba(255,59,74,.16),transparent 70%)}
+body{position:relative}
+body::before,body::after{content:'';position:fixed;pointer-events:none;z-index:0}
+body::before{
+  top:-220px;left:120px;right:0;height:560px;
+  background:radial-gradient(ellipse 70% 55% at 42% 0%,rgba(255,59,74,.18),transparent 70%)
+}
+body::after{
+  bottom:-120px;left:-80px;width:520px;height:480px;
+  background:radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.045),transparent 68%)
+}
 .sidebar,.main{position:relative;z-index:1}
-.content{padding:28px 32px 40px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
-.content::-webkit-scrollbar{width:8px}
+.main{isolation:isolate}
+.main::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;mix-blend-mode:overlay
+}
+.main::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,.42) 100%)
+}
+.topbar,.content{position:relative;z-index:1}
+.content{padding:28px 32px 48px;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+.content::-webkit-scrollbar{width:6px}
 .content::-webkit-scrollbar-track{background:transparent}
-.content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
-.content::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26);background-clip:padding-box}
-.tool-card:hover{border-color:var(--line-2)}
-.stat-num{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:8px}
+.content::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28)}
 .tab-btn.active{background:var(--grad);color:#fff}
 .clip-discover-title{font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-.02em}
 .modal.auth-shell{border-radius:var(--radius-modal)}
+
+/* V2 page header */
+.page-header{margin:0 0 24px}
+.page-header h2,.page-title{
+  font-family:'SF Pro Display','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:-.03em;
+  color:#fff;margin:0 0 8px;line-height:1.15
+}
+.page-header p,.page-sub{font-size:14px;color:rgba(255,255,255,.45);margin:0;line-height:1.45;font-weight:400}
+.section-label{font-size:11px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.40);margin:0 0 12px}
+.ui-card-title,.tool-tile-title,.qa-title,.vr-sec-title{font-size:16px!important;font-weight:600!important;letter-spacing:-.015em}
+.ui-card-desc,.tool-tile-desc,.qa-sub,.tool-card > p{font-size:14px!important;line-height:1.45}
+
+/* Neutral icon tiles */
+.dash-stat-ico,.qa-ico,.tool-tile-ico,.ui-empty-icon{
+  background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important;
+  color:rgba(255,255,255,.70)!important;border-radius:10px!important
+}
+.dash-stat-ico svg,.qa-ico svg,.tool-tile-ico svg,.ui-empty-icon svg{color:rgba(255,255,255,.70)!important}
+
+/* Stats: white tabular */
+.stat-num,.dash-stat .stat-num{
+  background:none!important;-webkit-background-clip:unset!important;background-clip:unset!important;
+  color:#fff!important;font-size:28px!important;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em
+}
+
+/* Card hover signature + press */
+.tool-card,.ui-card,.qa-card,.tool-tile,.dash-stat,.img-pane,.vr-sec,.upscale-soon,.shortcut{
+  transition:transform 150ms var(--ease-out),border-color 150ms var(--ease-out),box-shadow 150ms var(--ease-out),background 150ms var(--ease-out)
+}
+.qa-card:hover,.tool-tile:hover,.shortcut:hover{
+  transform:translateY(-2px);border-color:rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,59,74,.22),0 12px 28px rgba(0,0,0,.28)
+}
+.btn:active:not(:disabled){transform:scale(.98)!important}
+.btn-primary:active:not(:disabled){background:var(--grad-pressed)!important}
+
+/* App-wide input focus = clipping hero ring */
+input:focus,textarea:focus,select:focus,
+.clip-discover-search:focus-within,.cm-input:focus,.fv-section textarea:focus{
+  border-color:rgba(255,77,94,.85)!important;
+  box-shadow:0 0 0 4px rgba(255,59,74,.2),0 0 28px rgba(255,59,74,.16)!important;
+  outline:none!important
+}
+
+/* Skeleton shimmer already present; ensure */
+.ui-skeleton::after{animation:skel 1.35s ease-out infinite}
+
+/* Animated stepper progress */
+.fv-step-line{position:relative;overflow:hidden;height:2px!important;background:rgba(255,255,255,.08)!important}
+.fv-step-pill.done + .fv-step-line,.fv-step-pill.active + .fv-step-line{
+  background:linear-gradient(90deg,rgba(255,59,74,.85),rgba(255,59,74,.3))!important
+}
+.fv-step-pill.done + .fv-step-line::after,.fv-step-pill.active + .fv-step-line::after{
+  content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  animation:stepShine 1.6s ease-out infinite
+}
+@keyframes stepShine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* Dashboard V2 */
+.dash-welcome{margin-bottom:28px}
+.dash-welcome h2{font-size:30px!important;font-weight:600!important;letter-spacing:-.03em;margin:0 0 8px}
+.dash-welcome p{font-size:14px!important;color:rgba(255,255,255,.45)!important}
+.dash-stats{gap:16px;margin-bottom:32px}
+.dash-stat{padding:20px;align-items:center}
+.qa-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}
+@media (max-width:1100px){.qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.qa-grid{grid-template-columns:1fr}}
+.qa-card{flex-direction:column;align-items:flex-start;gap:12px;padding:20px;min-height:148px}
+.qa-card .qa-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.qa-title{display:block;font-size:16px;font-weight:600;color:#fff;margin:0;line-height:1.3}
+.qa-sub{display:block;font-size:14px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+.dash-recent-wrap{padding:20px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);min-height:200px}
+
+/* Tools V2 */
+#panel-tools .page-shell{max-width:var(--page-max-wide)}
+#panel-tools .tool-card.outer-wrap{display:none}
+.tools-page{max-width:var(--page-max-wide);margin:0 auto;width:100%}
+.tools-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:1024px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.tools-grid{grid-template-columns:1fr}}
+.tool-tile{padding:20px;min-height:140px;height:100%}
+.tool-tile-chev{position:absolute;right:16px;bottom:16px;opacity:0;color:rgba(255,255,255,.55);transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out);transform:translateX(-4px)}
+.tool-tile:hover .tool-tile-chev{opacity:1;transform:translateX(0)}
+
+/* Clipping V2: no outer card */
+#panel-clipper .tool-card{
+  background:transparent!important;border:none!important;box-shadow:none!important;
+  padding:0!important;margin:0 0 32px!important;border-radius:0!important
+}
+#panel-clipper .tool-card > h3{font-size:30px!important;font-weight:600!important;letter-spacing:-.03em;margin-bottom:8px}
+#panel-clipper .tool-card > p{font-size:14px!important;color:rgba(255,255,255,.45)!important;margin-bottom:20px}
+.clip-results-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 16px}
+.clip-results-head h3{font-size:16px;font-weight:600;color:#fff;margin:0}
+.clip-results-count{font-size:13px;color:rgba(255,255,255,.45)}
+.clip-pick-thumb img{transition:transform 150ms var(--ease-out)}
+.clip-pick:hover .clip-pick-thumb img{transform:scale(1.04)}
+.clip-pick:hover{transform:none}
+
+/* Ranking V2 */
+.vr-count-stepper{display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;overflow:hidden;width:auto}
+.vr-count-stepper button{width:36px;height:36px;border:none;background:transparent;color:#fff;font-size:1.1rem;cursor:pointer;font-family:inherit}
+.vr-count-stepper button:hover{background:rgba(255,255,255,.06)}
+.vr-count-stepper #vr-count,.vr-count-stepper .vr-count-val{
+  width:44px;border:none;background:transparent;color:#fff;font-size:15px;font-weight:700;
+  text-align:center;padding:0;font-variant-numeric:tabular-nums;-moz-appearance:textfield
+}
+.vr-count-stepper #vr-count::-webkit-outer-spin-button,.vr-count-stepper #vr-count::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.vr-sec{padding:20px!important}
+.vr-sec-num{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.12)!important;color:rgba(255,255,255,.8)!important}
+.vr-sticky-bar{
+  position:sticky;bottom:0;z-index:5;padding:12px 0 8px;margin-top:12px;
+  background:rgba(8,8,10,.72)!important;backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  border-top:1px solid rgba(255,255,255,.08)
+}
+.vr-phone{padding:12px;border-radius:32px;border:1.5px solid rgba(255,255,255,.14);background:linear-gradient(180deg,#1c1c20,#08080a);box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1)}
+.vr-phone .vr-preview-stage{border-radius:22px;border:1px solid rgba(0,0,0,.5)}
+.vr-preview-status{margin-top:10px;font-size:12px;color:rgba(255,255,255,.45);text-align:center}
+#panel-ranking{padding-bottom:8px}
+#panel-ranking .content-glow::before, #panel-ranking.panel::before{content:none}
+#panel-ranking > .page-shell-wide{padding-top:0}
+
+/* Image gen V2 */
+.img-layout{align-items:stretch;min-height:calc(100vh - 160px)}
+.img-pane{padding:24px!important;display:flex;flex-direction:column}
+.img-results{min-height:calc(100vh - 180px);flex:1}
+.img-results .img-grid{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start}
+.img-results .img-grid:has(.ui-empty){display:flex;align-items:center;justify-content:center}
+.img-results .ui-empty{margin:auto}
+
+/* Video gen V2 */
+#panel-videogen{max-width:760px;margin:0 auto;width:100%}
+#panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
+.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
+.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+.fv-how-t{font-size:16px;font-weight:600;color:#fff;margin:0 0 4px}
+.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+@media (max-width:640px){.fv-how{grid-template-columns:1fr}}
+
+/* Upscale V2 */
+.upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
+.card-pad-20{padding:20px!important}
+.card-pad-24{padding:24px!important}
 </style>
 <script src="/brand.js"></script>
 </head>
@@ -1024,13 +1185,9 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
       <span class="nav-item-label">Tools</span>
     </button>
-    <button class="nav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
+    <button class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       <span class="nav-item-label">Dashboard</span>
-    </button>
-    <button class="nav-item active" data-panel="home" onclick="switchPanel('home',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span class="nav-item-label">Overview</span>
     </button>
   </nav>
   <div class="sidebar-footer">
@@ -1056,7 +1213,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 <!-- MAIN -->
 <main class="main">
   <div class="topbar">
-    <span class="topbar-title" id="topbar-title">Overview</span>
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
     <span class="credits-pill" id="credits-pill" title="Credits">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
       <span class="credits-pill-count" id="credits-count">10</span>
@@ -1065,35 +1222,6 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
   </div>
   <div class="content">
 
-    <!-- HOME -->
-    <div class="panel active content-glow" id="panel-home">
-      <div class="page-shell">
-      <div class="home-grid">
-        <div class="stat-card"><div class="stat-num" id="stat-transcriptions">—</div><div class="stat-label">Transcriptions</div></div>
-        <div class="stat-card"><div class="stat-num" id="stat-voiceovers">—</div><div class="stat-label">Voiceovers</div></div>
-        <div class="stat-card"><div class="stat-num" id="stat-images">—</div><div class="stat-label">Images generated</div></div>
-      </div>
-      <div style="font-size:.72rem;color:var(--text-label);margin-bottom:12px;font-weight:650;text-transform:uppercase;letter-spacing:.08em">Quick actions</div>
-      <div class="tool-shortcuts">
-        <div class="shortcut" onclick="switchPanel('clipper',null)">
-          <div class="shortcut-name">Clipping</div>
-          <div class="shortcut-desc">Find viral moments from any link</div>
-        </div>
-        <div class="shortcut" onclick="switchPanel('ranking',null)">
-          <div class="shortcut-name">Ranking</div>
-          <div class="shortcut-desc">Build ranked short videos</div>
-        </div>
-        <div class="shortcut" onclick="switchPanel('imagegen',null)">
-          <div class="shortcut-name">Image Generation</div>
-          <div class="shortcut-desc">Generate thumbnails and stills</div>
-        </div>
-        <div class="shortcut" onclick="switchPanel('tools',null)">
-          <div class="shortcut-name">Tools</div>
-          <div class="shortcut-desc">Captions, voiceover, editor and more</div>
-        </div>
-      </div>
-      </div>
-    </div>
 
     <!-- CAPTIONS -->
     <div class="panel" id="panel-captions">
@@ -1227,10 +1355,14 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
     <!-- IMAGE GEN -->
     <div class="panel content-glow" id="panel-imagegen">
+      <div class="page-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
+        <h2>Image Generation</h2>
+        <p>Generate thumbnails, portraits, or cinematic stills.</p>
+      </div>
       <div class="page-shell-wide img-layout">
         <div class="img-pane">
-          <h3 class="ui-card-title">AI Image Generator</h3>
-          <p class="ui-card-desc">Generate thumbnails, portraits, or cinematic stills.</p>
+          <h3 class="ui-card-title">Prompt</h3>
+          <p class="ui-card-desc">Describe the image you want to create.</p>
           <div class="field">
             <label>Prompt</label>
             <textarea id="img-prompt" placeholder="e.g. A cinematic mountain landscape at golden hour, 4k" style="min-height:120px"></textarea>
@@ -1291,9 +1423,11 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     <div class="panel content-glow" id="panel-clipper">
       <div class="clip-shell">
       <div id="clip-loader">
-        <div class="tool-card">
-          <h3>Video Clipper</h3>
+        <div class="tool-card clip-hero-card">
+          <div class="page-header">
+          <h2>Video Clipper</h2>
           <p>Paste a link. Vidso finds the best moments and reframes them to 9:16.</p>
+          </div>
           <div class="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
@@ -1330,10 +1464,11 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
         </div>
 
         <div class="clip-discover" id="clip-discover">
-          <div class="clip-discover-head">
-            <div class="clip-discover-title">Or start from a video</div>
-            <div class="clip-discover-sub">Search YouTube or pick a popular video to clip.</div>
+          <div class="clip-results-head">
+            <h3>Or start from a video</h3>
+            <span class="clip-results-count" id="clip-discover-count"></span>
           </div>
+          <div class="clip-discover-sub" style="margin:-8px 0 16px;font-size:14px;color:rgba(255,255,255,.45)">Search YouTube or pick a popular video to clip.</div>
           <div class="clip-discover-search">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
             <input type="text" id="clip-discover-q" placeholder="Search YouTube..." oninput="onClipDiscoverSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchClipDiscover(true)}"/>
@@ -1873,16 +2008,21 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     </div>
 
     <!-- VIDEO RANKING -->
-    <div class="panel" id="panel-ranking">
+    <div class="panel content-glow" id="panel-ranking">
+      <div class="page-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
+        <h2>Ranking</h2>
+        <p>Assemble ranked short videos with a live 9:16 preview.</p>
+      </div>
       <div class="page-shell-wide vr-layout">
       <div class="vr-left">
       <div class="tool-card">
         <div class="vr-sec">
           <div class="vr-sec-head"><span class="vr-sec-num">1</span><h3 class="vr-sec-title">Setup</h3></div>
-          <label class="vr-mini-label" style="margin-bottom:4px">How many videos?</label>
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="number" id="vr-count" class="vr-count-input" min="2" max="15" value="3" oninput="clampVrCount(this)"/>
-            <button class="btn btn-secondary btn-sm" onclick="vrSetCount()">Update</button>
+          <label class="vr-mini-label" style="margin-bottom:8px">How many videos?</label>
+          <div class="vr-count-stepper" role="group" aria-label="Video count">
+            <button type="button" onclick="vrStepCount(-1)" aria-label="Fewer videos">−</button>
+            <input type="number" id="vr-count" min="2" max="15" value="3" onchange="vrSetCount()" oninput="clampVrCount(this)"/>
+            <button type="button" onclick="vrStepCount(1)" aria-label="More videos">+</button>
           </div>
         </div>
 
@@ -1987,6 +2127,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             <span style="flex:1"></span>
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3m11 0h3a2 2 0 002-2v-3"/></svg>
           </div>
+          <div class="vr-preview-status" id="vr-preview-status">No video loaded</div>
         </div>
       </div>
       </div><!-- /.vr-layout -->
@@ -2305,10 +2446,14 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       </div>
     </div>
 
-    <div class="panel" id="panel-videogen">
-      <div class="tool-card">
-        <h3>Faceless Video Generator</h3>
+    <div class="panel content-glow" id="panel-videogen">
+      <div class="page-header">
+        <h2>Video Generation</h2>
         <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
+      </div>
+      <div class="tool-card">
+        <h3 class="ui-card-title">Faceless Video Generator</h3>
+        <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
 
         <div class="fv-wizard">
           <div class="fv-stepper" aria-label="Progress">
@@ -2578,10 +2723,31 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div>
         </div>
       </div>
+      <div class="fv-how" aria-label="How it works">
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 1</div>
+          <div class="fv-how-t">Script</div>
+          <p class="fv-how-d">Generate and edit the narration for your topic.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 2</div>
+          <div class="fv-how-t">Media</div>
+          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 3</div>
+          <div class="fv-how-t">Export</div>
+          <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
+        </div>
+      </div>
     </div>
 
     <div class="panel content-glow" id="panel-upscale">
       <div class="page-shell">
+        <div class="page-header">
+          <h2>Upscale</h2>
+          <p>Enhance clips and stills with AI upscaling.</p>
+        </div>
         <div class="upscale-soon">
           <div class="ui-empty-icon" aria-hidden="true">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
@@ -2594,10 +2760,11 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     </div>
 
     <div class="panel content-glow" id="panel-tools">
-      <div class="page-shell">
-        <div class="tool-card" style="margin-bottom:20px">
-          <h3>Tools</h3>
+      <div class="tools-page">
+        <div class="page-header">
+          <h2>Tools</h2>
           <p>Captions, voiceover, editor, and file utilities.</p>
+        </div>
           <div class="tools-group">
             <div class="section-label">Create</div>
             <div class="tools-grid">
@@ -2605,21 +2772,19 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
                 <span class="tool-tile-title">AI Captions</span>
                 <span class="tool-tile-desc">Auto-transcribe any video</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
               <button type="button" class="tool-tile" onclick="switchPanel('voiceover',null)">
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
                 <span class="tool-tile-title">AI Voiceover</span>
                 <span class="tool-tile-desc">35+ ElevenLabs voices</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
               <button type="button" class="tool-tile" onclick="switchPanel('reframe',null)">
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
                 <span class="tool-tile-title">AI Reframe</span>
                 <span class="tool-tile-desc">Auto-fit to 9:16</span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('commentary',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-                <span class="tool-tile-title">Video Commentary</span>
-                <span class="tool-tile-desc">Voice and captions on clips</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
             </div>
           </div>
@@ -2630,11 +2795,19 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
                 <span class="tool-tile-title">Video Editor</span>
                 <span class="tool-tile-desc">Multi-track timeline</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
               <button type="button" class="tool-tile" onclick="switchPanel('downloader',null)">
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
                 <span class="tool-tile-title">Video Downloader</span>
                 <span class="tool-tile-desc">Download from any platform</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+              </button>
+              <button type="button" class="tool-tile" onclick="switchPanel('commentary',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+                <span class="tool-tile-title">Video Commentary</span>
+                <span class="tool-tile-desc">Voice and captions on clips</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
             </div>
           </div>
@@ -2645,16 +2818,16 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
                 <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
                 <span class="tool-tile-title">My Files</span>
                 <span class="tool-tile-desc">Uploads and exports</span>
+                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
               </button>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
-    <div class="panel content-glow" id="panel-dashboard">
+    <div class="panel active content-glow" id="panel-dashboard">
       <div class="page-shell">
-        <div class="dash-welcome">
+        <div class="page-header dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
           <p>Your usage and shortcuts in one place.</p>
         </div>
@@ -2676,24 +2849,24 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
         <div class="qa-grid">
           <button type="button" class="qa-card" onclick="switchPanel('videogen',null)">
             <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
-            <span><span class="qa-title">Start a faceless video</span><span class="qa-sub">Script, voice, B-roll, and captions</span></span>
+            <span class="qa-body"><span class="qa-title">Start a faceless video</span><span class="qa-sub">Script, voice, B-roll, and captions</span></span>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
             <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-            <span><span class="qa-title">Clip a video</span><span class="qa-sub">Find viral moments from any link</span></span>
+            <span class="qa-body"><span class="qa-title">Clip a video</span><span class="qa-sub">Find viral moments from any link</span></span>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('ranking',null)">
             <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/></svg></span>
-            <span><span class="qa-title">Build a ranking</span><span class="qa-sub">Assemble ranked short videos</span></span>
+            <span class="qa-body"><span class="qa-title">Build a ranking</span><span class="qa-sub">Assemble ranked short videos</span></span>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
             <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <span><span class="qa-title">Generate images</span><span class="qa-sub">Thumbnails and cinematic stills</span></span>
+            <span class="qa-body"><span class="qa-title">Generate images</span><span class="qa-sub">Thumbnails and cinematic stills</span></span>
           </button>
         </div>
         <div class="section-label">Recent</div>
-        <div id="dash-recent">
-          <div class="ui-empty" style="min-height:180px;border:1px solid var(--border);border-radius:var(--radius-card);background:rgba(255,255,255,.02)">
+        <div class="dash-recent-wrap" id="dash-recent">
+          <div class="ui-empty" style="min-height:160px;border:none;background:transparent">
             <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
             <div class="ui-empty-title">No recent files</div>
             <div class="ui-empty-sub">Uploads and exports will show up here.</div>
@@ -2781,7 +2954,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/overview'
+  if (path === '/login' || path === '/signup') return location.origin + '/analytics'
   return location.origin + location.pathname + location.search
 }
 
@@ -2896,33 +3069,35 @@ function populateUser() {
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
 const titles = {
-  home:'Overview', clipper:'Clipping', ranking:'Ranking', imagegen:'Image Generation',
+  home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Image Generation',
   videogen:'Video Generation', upscale:'Upscale', tools:'Tools', dashboard:'Dashboard',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
-  home:'/overview', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  home:'/analytics', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', upscale:'/upscale', tools:'/tools', dashboard:'/analytics',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
-PATH_TO_PANEL['/dashboard'] = 'home'
+PATH_TO_PANEL['/dashboard'] = 'dashboard'
+PATH_TO_PANEL['/overview'] = 'dashboard'
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
-function pathForPanel(id) { return PANEL_PATHS[id] || '/overview' }
-function panelFromPath() { return PATH_TO_PANEL[normalizePath(location.pathname)] || 'home' }
+function pathForPanel(id) { return PANEL_PATHS[id] || '/analytics' }
+function panelFromPath() { return PATH_TO_PANEL[normalizePath(location.pathname)] || 'dashboard' }
 function isAuthPath() {
   const p = normalizePath(location.pathname)
   return p === '/login' || p === '/signup'
 }
 window.switchPanel = (id, btn, opts = {}) => {
-  if (!titles[id]) id = 'home'
+  if (id === 'home') id = 'dashboard'
+  if (!titles[id]) id = 'dashboard'
   const panel = document.getElementById('panel-'+id)
-  if (!panel) id = 'home'
+  if (!panel) id = 'dashboard'
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-'+id).classList.add('active')
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'))
@@ -2952,8 +3127,9 @@ function restorePanelFromPath() {
     else switchTab('login')
     return
   }
-  if (normalizePath(location.pathname) === '/dashboard') {
-    history.replaceState(null, '', '/overview')
+  const p = normalizePath(location.pathname)
+  if (p === '/overview' || p === '/dashboard' || p === '/') {
+    history.replaceState(null, '', '/analytics')
   }
   switchPanel(panelFromPath(), null, { silent: true })
 }
@@ -2976,9 +3152,6 @@ window.addEventListener('hashchange', restorePanelFromHash)
 async function loadUsage() {
   try {
     const u = await api.user.usage()
-    document.getElementById('stat-transcriptions').textContent = u.transcriptions
-    document.getElementById('stat-voiceovers').textContent     = u.voiceovers
-    document.getElementById('stat-images').textContent         = u.images
     const d1 = document.getElementById('dash-transcriptions')
     const d2 = document.getElementById('dash-voiceovers')
     const d3 = document.getElementById('dash-images')
@@ -2989,21 +3162,35 @@ async function loadUsage() {
 }
 
 // ── VOICES ───────────────────────────────────────────────────────────────────
+let voicesLoadState = 'idle' // idle | loading | ready | error
+let voicesLoadError = ''
 async function loadVoices() {
+  voicesLoadState = 'loading'
+  voicesLoadError = ''
+  fvPopulateVoices()
   try {
     voices = await api.tts.voices()
+    voicesLoadState = 'ready'
     const grid = document.getElementById('voices-grid')
     if (grid) {
-      grid.innerHTML = voices.map(v => `
-        <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
-          <div class="voice-name">${v.name.split(' - ')[0]}</div>
-          <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
-        </div>`).join('')
+      if (!voices.length) {
+        grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">No voices returned from the API.</div>'
+      } else {
+        grid.innerHTML = voices.map(v => `
+          <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
+            <div class="voice-name">${v.name.split(' - ')[0]}</div>
+            <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
+          </div>`).join('')
+      }
     }
     fvPopulateVoices()
   } catch(e) {
+    voices = []
+    voicesLoadState = 'error'
+    voicesLoadError = (e && e.message) ? String(e.message) : 'Failed to load voices'
     const grid = document.getElementById('voices-grid')
-    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Failed to load voices</div>'
+    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Could not load voices. Sign in and retry.</div>'
+    fvPopulateVoices()
   }
 }
 
@@ -3105,11 +3292,26 @@ window.fvSetAspect = (aspect) => {
 function fvPopulateVoices() {
   const sel = document.getElementById('fv-voice')
   if (!sel) return
-  if (!voices.length) {
-    sel.innerHTML = '<option value="">No voices available</option>'
-    document.getElementById('fv-voice-preview-btn').disabled = true
+  const btn = document.getElementById('fv-voice-preview-btn')
+  if (voicesLoadState === 'loading' || voicesLoadState === 'idle') {
+    sel.innerHTML = '<option value="">Loading voices…</option>'
+    sel.disabled = true
+    if (btn) btn.disabled = true
     return
   }
+  if (voicesLoadState === 'error') {
+    sel.innerHTML = '<option value="">Could not load voices</option>'
+    sel.disabled = true
+    if (btn) btn.disabled = true
+    return
+  }
+  if (!voices.length) {
+    sel.innerHTML = '<option value="">No voices returned</option>'
+    sel.disabled = true
+    if (btn) btn.disabled = true
+    return
+  }
+  sel.disabled = false
   const prev = fvState.voiceId || selectedVoiceId || voices[0].id
   sel.innerHTML = voices.map(v => {
     const label = v.name.split(' - ')[0]
@@ -4549,6 +4751,9 @@ window.setClipDiscoverCat = (cat, btn) => {
 function paintClipDiscoverCards(list) {
   const grid = document.getElementById('clip-discover-grid')
   if (!grid) return
+  const countEl = document.getElementById('clip-discover-count')
+  const shown = Array.isArray(list) ? Math.min(list.length, 12) : 0
+  if (countEl) countEl.textContent = shown ? `${shown} result${shown === 1 ? '' : 's'}` : ''
   if (!list.length) {
     grid.innerHTML = '<div class="clip-discover-empty">No videos found. Try another keyword or paste a link above.</div>'
     return
@@ -5579,6 +5784,19 @@ window.vrSetCount = () => {
   vrCards.length = n
   vrRenderCards()
   window.vrSyncStage?.()
+  const st = document.getElementById('vr-preview-status')
+  if (st) {
+    const ready = vrCards.filter(c => c && (c.loaded || c.streamUrl || c.link)).length
+    st.textContent = ready ? `${ready} of ${vrCards.length} videos ready` : 'No video loaded'
+  }
+}
+
+window.vrStepCount = (delta) => {
+  const input = document.getElementById('vr-count')
+  if (!input) return
+  const next = Math.min(15, Math.max(2, (parseInt(input.value) || 3) + (delta || 0)))
+  input.value = next
+  vrSetCount()
 }
 
 function vrFmtTime(s) {
