@@ -62,7 +62,7 @@
   header{position:sticky;top:0;z-index:50;padding:14px 0;background:transparent}
   nav{display:flex;align-items:center;justify-content:space-between;height:54px;padding:0 10px 0 20px;border:1px solid var(--line);border-radius:16px;background:rgba(12,12,14,.72);backdrop-filter:blur(22px) saturate(1.5);box-shadow:0 10px 40px rgba(0,0,0,.5)}
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
-  .logo img{width:28px;height:28px;object-fit:contain;filter:invert(27%) sepia(95%) saturate(4000%) hue-rotate(338deg) brightness(1.05)}
+  .logo img{width:28px;height:28px;object-fit:contain}
   .logo .mark{width:28px;height:28px;border-radius:8px;background:#fff;display:grid;place-items:center}
   .logo .mark svg{width:14px;height:14px}
   .nav-links{display:flex;gap:32px;font-size:14px;font-weight:500;color:var(--muted)}
@@ -511,6 +511,7 @@
   ]
 }
 </script>
+<script src="/brand.js"></script>
 </head>
 <body>
 <div class="scroll-prog" id="scrollProg"></div>
@@ -518,9 +519,8 @@
 <header>
   <div class="wrap" style="position:relative">
     <nav>
-      <!-- OWNER REVIEW: brand file still named sendclip-logo.png -->
       <a href="/landing" class="logo">
-        <img src="/sendclip-logo.png" alt="Vidso">
+        <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
         Vidso
       </a>
       <div class="nav-links">
@@ -582,15 +582,9 @@
       <div class="av-stack" id="trustedAvatars" aria-label="Trusted creators"></div>
       <script>
       (function () {
-        // Plain <img> (not next/image) — R2 URLs must not go through Vercel image optimization.
-        var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
-        var TRUSTED_CREATOR_FILES = [
-          'trustedcreators1.png',
-          'trustedcreators2.png',
-          'trustedcreators3.png',
-          'trustedcreators4.png',
-          'trustedcreators5.png'
-        ];
+        // Plain <img> (not next/image): R2 URLs must not go through Vercel image optimization.
+        var R2_BASE = window.VIDSO_R2_BASE;
+        var TRUSTED_CREATOR_FILES = window.VIDSO_TRUSTED_CREATOR_FILES || [];
         var TRUSTED_CREATOR_ALTS = [
           'Trusted creator portrait 1',
           'Trusted creator portrait 2',
@@ -599,7 +593,7 @@
           'Trusted creator portrait 5'
         ];
         var stack = document.getElementById('trustedAvatars');
-        if (!stack) return;
+        if (!stack || !R2_BASE) return;
         var html = '';
         for (var i = 0; i < TRUSTED_CREATOR_FILES.length; i++) {
           html += '<img class="av"'
@@ -1006,7 +1000,7 @@
     <div class="foot">
       <div>
         <a href="/landing" class="logo">
-          <img src="/sendclip-logo.png" alt="Vidso">
+          <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
           Vidso
         </a>
         <p class="fdesc">Create long-form YouTube videos with AI: script, voice, B-roll, and captions. Built for creators who want to monetize.</p>
