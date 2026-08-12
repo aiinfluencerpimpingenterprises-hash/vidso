@@ -827,6 +827,12 @@
 })();
 </script>
 
+<!-- PROOF / testimonials — gated. Re-enable with one line: set SHOW_TESTIMONIALS = true -->
+<script>
+  // TODO: re-enable when real creator quotes exist
+  var SHOW_TESTIMONIALS = false;
+</script>
+<template id="testimonials-section">
 <!-- PROOF -->
 <section class="proof">
   <div class="wrap s-head center">
@@ -855,6 +861,15 @@
     </div>
   </div>
 </section>
+</template>
+<script>
+(function () {
+  if (!SHOW_TESTIMONIALS) return; // marquee CSS never attaches; section stays out of the DOM
+  var tpl = document.getElementById('testimonials-section');
+  if (!tpl) return;
+  tpl.replaceWith(tpl.content.cloneNode(true));
+})();
+</script>
 
 <!-- PRICING -->
 <section class="pricing" id="pricing">
