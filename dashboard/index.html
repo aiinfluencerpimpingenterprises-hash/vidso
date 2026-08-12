@@ -331,6 +331,48 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .shortcut-name{font-size:.82rem;font-weight:600;color:#fff}
 .shortcut-desc{font-size:.72rem;color:var(--text-body);margin-top:4px}
 
+/* PHASE 2: dashboard / tools / upscale */
+.dash-welcome{margin-bottom:24px}
+.dash-welcome h2{font-family:'Bricolage Grotesque','SF Pro Display',sans-serif;font-size:1.55rem;font-weight:800;letter-spacing:-.03em;color:#fff;margin:0 0 6px}
+.dash-welcome p{font-size:.9rem;color:var(--text-body);margin:0}
+.dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:28px}
+@media (max-width:900px){.dash-stats{grid-template-columns:1fr}}
+.dash-stat{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.dash-stat-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,59,74,.12);border:1px solid rgba(255,59,74,.22);color:var(--a1);flex-shrink:0}
+.dash-stat-ico svg{width:16px;height:16px}
+.dash-stat .stat-num{font-size:1.45rem;line-height:1.1;margin:0}
+.dash-stat .stat-label{margin-top:4px}
+.section-label{font-size:.72rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--text-label);margin:0 0 12px}
+.qa-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:28px}
+@media (max-width:720px){.qa-grid{grid-template-columns:1fr}}
+.qa-card{display:flex;align-items:flex-start;gap:12px;padding:16px;text-align:left;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.qa-card:hover{border-color:rgba(255,59,74,.4);transform:translateY(-2px);background:rgba(255,59,74,.05)}
+.qa-card:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
+.qa-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--border);color:#fff;flex-shrink:0}
+.qa-ico svg{width:16px;height:16px}
+.qa-title{font-size:.88rem;font-weight:650;color:#fff;margin:0 0 4px}
+.qa-sub{font-size:.75rem;color:var(--text-body);line-height:1.4;margin:0}
+.dash-recent{display:flex;flex-direction:column;gap:8px}
+.dash-recent-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
+.dash-recent-name{flex:1;min-width:0;font-size:.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-recent-meta{font-size:.7rem;color:var(--text-label);flex-shrink:0}
+.tools-group{margin-bottom:22px}
+.tools-group:last-child{margin-bottom:0}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tool-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:132px;padding:18px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);cursor:pointer;text-align:left;transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.tool-tile:hover{border-color:rgba(255,255,255,.22);transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.28)}
+.tool-tile:focus-visible{outline:2px solid rgba(255,77,94,.75);outline-offset:2px}
+.tool-tile.is-soon{opacity:.55;cursor:not-allowed;pointer-events:none}
+.tool-tile-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,59,74,.1);border:1px solid rgba(255,59,74,.2);color:var(--a1)}
+.tool-tile-ico svg{width:16px;height:16px}
+.tool-tile-title{font-size:.9rem;font-weight:650;color:#fff}
+.tool-tile-desc{font-size:.75rem;color:var(--text-body);line-height:1.4}
+.tool-tile .badge-soon{position:absolute;top:12px;right:12px}
+.upscale-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:56px 24px;min-height:360px;background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.upscale-soon .ui-empty-icon{width:64px;height:64px;margin-bottom:8px}
+.upscale-soon .ui-empty-icon svg{width:28px;height:28px}
+.upscale-soon .btn{margin-top:8px}
+
 /* AUTH MODAL: premium two-panel */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px}
 .modal-bg.hidden{display:none}
@@ -389,10 +431,8 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
   .auth-panel{padding:32px 24px}
 }
 
-/* RANGE */
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a2);cursor:pointer}
-.range-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px}
+/* RANGE helpers (base thumb styles live in the design-system block above) */
+.range-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-label);margin-top:4px}
 
 /* CLIPPER TIMELINE */
 .clip-track{position:relative;height:48px;background:var(--bg);border-radius:6px;overflow:visible;cursor:crosshair;border:1px solid var(--border);user-select:none}
@@ -2454,38 +2494,125 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       </div>
     </div>
 
-    <div class="panel" id="panel-upscale">
-      <div class="tool-card">
-        <h3>Upscale</h3>
-        <p>Coming soon: upscale clips and stills with AI.</p>
-        <div class="empty-panel">Upscale is on the way</div>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-tools">
-      <div class="tool-card">
-        <h3>Tools</h3>
-        <p>Extra creator tools: captions, voiceover, editor, and more.</p>
-        <div class="tool-shortcuts">
-          <div class="shortcut" onclick="switchPanel('captions',null)"><div class="shortcut-name">AI Captions</div><div class="shortcut-desc">Auto-transcribe any video</div></div>
-          <div class="shortcut" onclick="switchPanel('voiceover',null)"><div class="shortcut-name">AI Voiceover</div><div class="shortcut-desc">35+ ElevenLabs voices</div></div>
-          <div class="shortcut" onclick="switchPanel('editor',null)"><div class="shortcut-name">Video Editor</div><div class="shortcut-desc">Multi-track timeline</div></div>
-          <div class="shortcut" onclick="switchPanel('reframe',null)"><div class="shortcut-name">AI Reframe</div><div class="shortcut-desc">Auto-fit to 9:16</div></div>
-          <div class="shortcut" onclick="switchPanel('downloader',null)"><div class="shortcut-name">Video Downloader</div><div class="shortcut-desc">Download from any platform</div></div>
-          <div class="shortcut" onclick="switchPanel('commentary',null)"><div class="shortcut-name">Video Commentary</div><div class="shortcut-desc">Voice + captions on clips</div></div>
-          <div class="shortcut" onclick="switchPanel('files',null)"><div class="shortcut-name">My Files</div><div class="shortcut-desc">Uploads and exports</div></div>
+    <div class="panel content-glow" id="panel-upscale">
+      <div class="page-shell">
+        <div class="upscale-soon">
+          <div class="ui-empty-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </div>
+          <div class="ui-empty-title">Upscale is on the way</div>
+          <div class="ui-empty-sub">Enhance clips and stills with AI upscaling. Same quality pipeline as the rest of Vidso.</div>
+          <button type="button" class="btn btn-ghost" disabled>Coming soon</button>
         </div>
       </div>
     </div>
 
-    <div class="panel" id="panel-dashboard">
-      <div class="tool-card">
-        <h3>Dashboard</h3>
-        <p>Your usage at a glance.</p>
-        <div class="home-grid">
-          <div class="stat-card"><div class="stat-num" id="dash-transcriptions">—</div><div class="stat-label">Transcriptions</div></div>
-          <div class="stat-card"><div class="stat-num" id="dash-voiceovers">—</div><div class="stat-label">Voiceovers</div></div>
-          <div class="stat-card"><div class="stat-num" id="dash-images">—</div><div class="stat-label">Images generated</div></div>
+    <div class="panel content-glow" id="panel-tools">
+      <div class="page-shell">
+        <div class="tool-card" style="margin-bottom:20px">
+          <h3>Tools</h3>
+          <p>Captions, voiceover, editor, and file utilities.</p>
+          <div class="tools-group">
+            <div class="section-label">Create</div>
+            <div class="tools-grid">
+              <button type="button" class="tool-tile" onclick="switchPanel('captions',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
+                <span class="tool-tile-title">AI Captions</span>
+                <span class="tool-tile-desc">Auto-transcribe any video</span>
+              </button>
+              <button type="button" class="tool-tile" onclick="switchPanel('voiceover',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
+                <span class="tool-tile-title">AI Voiceover</span>
+                <span class="tool-tile-desc">35+ ElevenLabs voices</span>
+              </button>
+              <button type="button" class="tool-tile" onclick="switchPanel('reframe',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
+                <span class="tool-tile-title">AI Reframe</span>
+                <span class="tool-tile-desc">Auto-fit to 9:16</span>
+              </button>
+              <button type="button" class="tool-tile" onclick="switchPanel('commentary',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+                <span class="tool-tile-title">Video Commentary</span>
+                <span class="tool-tile-desc">Voice and captions on clips</span>
+              </button>
+            </div>
+          </div>
+          <div class="tools-group">
+            <div class="section-label">Edit</div>
+            <div class="tools-grid">
+              <button type="button" class="tool-tile" onclick="switchPanel('editor',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
+                <span class="tool-tile-title">Video Editor</span>
+                <span class="tool-tile-desc">Multi-track timeline</span>
+              </button>
+              <button type="button" class="tool-tile" onclick="switchPanel('downloader',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+                <span class="tool-tile-title">Video Downloader</span>
+                <span class="tool-tile-desc">Download from any platform</span>
+              </button>
+            </div>
+          </div>
+          <div class="tools-group">
+            <div class="section-label">Manage</div>
+            <div class="tools-grid">
+              <button type="button" class="tool-tile" onclick="switchPanel('files',null)">
+                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
+                <span class="tool-tile-title">My Files</span>
+                <span class="tool-tile-desc">Uploads and exports</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel content-glow" id="panel-dashboard">
+      <div class="page-shell">
+        <div class="dash-welcome">
+          <h2>Welcome back<span id="dash-welcome-name"></span></h2>
+          <p>Your usage and shortcuts in one place.</p>
+        </div>
+        <div class="dash-stats">
+          <div class="dash-stat">
+            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
+            <div><div class="stat-num" id="dash-transcriptions">0</div><div class="stat-label">Transcriptions</div></div>
+          </div>
+          <div class="dash-stat">
+            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></span>
+            <div><div class="stat-num" id="dash-voiceovers">0</div><div class="stat-label">Voiceovers</div></div>
+          </div>
+          <div class="dash-stat">
+            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+            <div><div class="stat-num" id="dash-images">0</div><div class="stat-label">Images generated</div></div>
+          </div>
+        </div>
+        <div class="section-label">Quick actions</div>
+        <div class="qa-grid">
+          <button type="button" class="qa-card" onclick="switchPanel('videogen',null)">
+            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
+            <span><span class="qa-title">Start a faceless video</span><span class="qa-sub">Script, voice, B-roll, and captions</span></span>
+          </button>
+          <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
+            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
+            <span><span class="qa-title">Clip a video</span><span class="qa-sub">Find viral moments from any link</span></span>
+          </button>
+          <button type="button" class="qa-card" onclick="switchPanel('ranking',null)">
+            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/></svg></span>
+            <span><span class="qa-title">Build a ranking</span><span class="qa-sub">Assemble ranked short videos</span></span>
+          </button>
+          <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
+            <span class="qa-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+            <span><span class="qa-title">Generate images</span><span class="qa-sub">Thumbnails and cinematic stills</span></span>
+          </button>
+        </div>
+        <div class="section-label">Recent</div>
+        <div id="dash-recent">
+          <div class="ui-empty" style="min-height:180px;border:1px solid var(--border);border-radius:var(--radius-card);background:rgba(255,255,255,.02)">
+            <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+            <div class="ui-empty-title">No recent files</div>
+            <div class="ui-empty-sub">Uploads and exports will show up here.</div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="switchPanel('files',null)">Open My Files</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2674,6 +2801,11 @@ function populateUser() {
   const creditsCount = document.getElementById('credits-count')
   if (creditsCount) creditsCount.textContent = String(currentUser.credits ?? 0)
   else document.getElementById('credits-pill').textContent = `${currentUser.credits} credits`
+  const welcome = document.getElementById('dash-welcome-name')
+  if (welcome) {
+    const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
+    welcome.textContent = display ? `, ${display}` : ''
+  }
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
@@ -4066,10 +4198,33 @@ window.generateImage = async () => {
 }
 
 // ── FILES ─────────────────────────────────────────────────────────────────────
+function renderDashRecent(files) {
+  const el = document.getElementById('dash-recent')
+  if (!el) return
+  if (!files?.length) {
+    el.innerHTML = `<div class="ui-empty" style="min-height:180px;border:1px solid var(--border);border-radius:var(--radius-card);background:rgba(255,255,255,.02)">
+      <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+      <div class="ui-empty-title">No recent files</div>
+      <div class="ui-empty-sub">Uploads and exports will show up here.</div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="switchPanel('files',null)">Open My Files</button>
+    </div>`
+    return
+  }
+  const recent = files.slice(0, 5)
+  el.innerHTML = `<div class="dash-recent">${recent.map(f => `
+    <div class="dash-recent-row">
+      <div class="dash-recent-name">${f.original_name || 'Untitled'}</div>
+      <div class="dash-recent-meta">${f.created_at ? new Date(f.created_at).toLocaleDateString() : ''}</div>
+      <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">Open</a>
+    </div>`).join('')}</div>`
+}
+
 async function loadFiles() {
   try {
     const files = await api.upload.list()
+    renderDashRecent(files)
     const list  = document.getElementById('files-list')
+    if (!list) return
     if (!files.length) { list.innerHTML = '<div style="color:var(--muted);font-size:.82rem">No files yet.</div>'; return }
     list.innerHTML = files.map(f => `
       <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--card);margin-bottom:8px">
@@ -4081,7 +4236,11 @@ async function loadFiles() {
         <a href="${f.url}" target="_blank" class="btn btn-ghost btn-sm">Open</a>
         <button class="btn btn-ghost btn-sm" onclick="delFile('${f.id}',this)">✕</button>
       </div>`).join('')
-  } catch(e) { document.getElementById('files-list').innerHTML = `<div style="color:var(--muted);">${e.message}</div>` }
+  } catch(e) {
+    renderDashRecent([])
+    const list = document.getElementById('files-list')
+    if (list) list.innerHTML = `<div style="color:var(--muted);">${e.message}</div>`
+  }
 }
 
 window.uploadFile = async (input) => {
