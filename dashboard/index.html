@@ -373,6 +373,61 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .upscale-soon .ui-empty-icon svg{width:28px;height:28px}
 .upscale-soon .btn{margin-top:8px}
 
+/* PHASE 3: workhorse pages */
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.img-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:20px;align-items:start}
+@media (max-width:1024px){.img-layout{grid-template-columns:1fr}}
+.img-pane{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.img-prompt-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.img-prompt-chip{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);border-radius:999px;padding:7px 12px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
+.img-prompt-chip:hover{border-color:rgba(255,59,74,.45);color:#fff;background:rgba(255,59,74,.08)}
+.img-ratio-glyph{display:inline-block;border:1.5px solid currentColor;border-radius:2px;margin-right:6px;vertical-align:-1px;opacity:.85}
+.img-ratio-glyph.g916{width:8px;height:12px}
+.img-ratio-glyph.g169{width:14px;height:8px}
+.img-ratio-glyph.g11{width:10px;height:10px}
+.img-stepper{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:4px}
+.img-stepper button{width:32px;height:32px;border:none;border-radius:9px;background:transparent;color:#fff;font-size:1rem;cursor:pointer;font-family:inherit}
+.img-stepper button:hover{background:rgba(255,255,255,.06)}
+.img-stepper-val{min-width:64px;text-align:center;font-size:.84rem;font-weight:650;color:#fff}
+.img-results{min-height:420px}
+.img-skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.clip-shell{max-width:var(--page-max-wide);margin:0 auto;width:100%}
+#panel-clipper .tool-card{max-width:880px;margin-left:auto;margin-right:auto}
+.clip-hero-row:focus-within{border-color:rgba(255,77,94,.85)!important;box-shadow:0 0 0 4px rgba(255,59,74,.2),0 0 28px rgba(255,59,74,.16)!important}
+.clip-hero-btn:hover{background:var(--grad-hover)!important;box-shadow:0 8px 24px rgba(196,16,40,.45)!important}
+.clip-tab{transition:background var(--dur-hover) var(--ease-out),border-color var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out)}
+.clip-tab.active{background:rgba(255,59,74,.12)!important;border-color:rgba(255,59,74,.55)!important}
+.clip-pick-thumb{border-radius:12px!important}
+.clip-pick-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.clip-pick-channel{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.68rem!important;width:fit-content;max-width:100%}
+.clip-skel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.clip-skel-grid{grid-template-columns:repeat(2,1fr)}}
+.vr-sec{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:18px 18px 16px;margin-bottom:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.vr-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.vr-sec-num{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:.72rem;font-weight:800;background:rgba(255,59,74,.14);border:1px solid rgba(255,59,74,.28);color:#fff;flex-shrink:0}
+.vr-sec-title{font-size:.92rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin:0}
+.vr-sec h4{display:none}
+#panel-ranking .vr-left > .tool-card{background:transparent;border:none;box-shadow:none;padding:0;margin:0}
+#panel-ranking .upload-zone{max-height:140px;padding:18px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px}
+#panel-ranking .upload-zone .uz-icon{font-size:1.25rem;margin-bottom:6px}
+.vr-card-status{margin-left:8px;font-size:.68rem;font-weight:600;color:var(--text-label);padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.vr-card-status.is-ready{color:#fff;background:rgba(255,59,74,.12);border-color:rgba(255,59,74,.28)}
+.vr-sticky-bar{position:sticky;bottom:0;z-index:5;padding:12px 0 4px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.92) 28%,#000);margin-top:8px}
+.vr-phone{width:min(100%,280px);margin:0 auto;padding:10px;border-radius:28px;background:linear-gradient(180deg,#1a1a1e,#0a0a0c);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}
+.vr-phone .vr-preview-stage{border-radius:18px}
+.vr-stage-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-label);font-size:.8rem;z-index:1;pointer-events:none}
+.fv-stepper{gap:0;padding:4px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px}
+.fv-step-pill{flex:1;justify-content:center;border-radius:10px;padding:8px 10px}
+.fv-step-line{height:2px;min-width:8px;background:rgba(255,255,255,.08);margin:0 2px}
+.fv-step-pill.done + .fv-step-line,.fv-step-pill.active + .fv-step-line{background:linear-gradient(90deg,rgba(255,59,74,.7),rgba(255,59,74,.25))}
+.fv-seg{border-radius:12px;padding:3px;background:rgba(255,255,255,.04)}
+.fv-seg-btn.active{background:var(--grad)!important;box-shadow:0 4px 14px rgba(196,16,40,.3)}
+.fv-chip{border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out)}
+.fv-chip:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+.fv-chip.active{background:rgba(255,59,74,.14);border-color:rgba(255,59,74,.5);color:#fff}
+#panel-videogen > .tool-card,#panel-imagegen .img-pane{max-width:none}
+#panel-videogen{max-width:var(--page-max);margin:0 auto;width:100%}
+
 /* AUTH MODAL: premium two-panel */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px}
 .modal-bg.hidden{display:none}
@@ -1170,49 +1225,74 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
     </div>
 
     <!-- IMAGE GEN -->
-    <div class="panel" id="panel-imagegen">
-      <div class="tool-card">
-        <h3>AI Image Generator</h3>
-        <p>Generate thumbnails, portraits, or cinematic stills for your content.</p>
-        <div class="field">
-          <label>Prompt</label>
-          <textarea id="img-prompt" placeholder="e.g. A cinematic mountain landscape at golden hour, 4k" style="min-height:80px"></textarea>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div class="field" style="margin:0">
-            <label>Aspect Ratio</label>
-            <select id="img-ratio">
-              <option value="9:16">9:16: Portrait (Reels/TikTok)</option>
-              <option value="16:9">16:9: Landscape (YouTube)</option>
-              <option value="1:1">1:1: Square</option>
-            </select>
+    <div class="panel content-glow" id="panel-imagegen">
+      <div class="page-shell-wide img-layout">
+        <div class="img-pane">
+          <h3 class="ui-card-title">AI Image Generator</h3>
+          <p class="ui-card-desc">Generate thumbnails, portraits, or cinematic stills.</p>
+          <div class="field">
+            <label>Prompt</label>
+            <textarea id="img-prompt" placeholder="e.g. A cinematic mountain landscape at golden hour, 4k" style="min-height:120px"></textarea>
           </div>
-          <div class="field" style="margin:0">
+          <div class="img-prompt-chips" aria-label="Example prompts">
+            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('A cinematic mountain landscape at golden hour, 4k')">Mountain landscape</button>
+            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Neon city street at night, rain reflections, photorealistic')">Neon city night</button>
+            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Minimal product shot on dark slate, soft studio light')">Product still</button>
+          </div>
+          <div class="field">
+            <label>Aspect ratio</label>
+            <select id="img-ratio" class="visually-hidden" tabindex="-1" aria-hidden="true">
+              <option value="9:16" selected>9:16</option>
+              <option value="16:9">16:9</option>
+              <option value="1:1">1:1</option>
+            </select>
+            <div class="ui-seg" id="img-ratio-seg" role="group" aria-label="Aspect ratio">
+              <button type="button" class="ui-seg-btn active" data-ratio="9:16" onclick="setImgRatio('9:16',this)"><span class="img-ratio-glyph g916"></span>9:16</button>
+              <button type="button" class="ui-seg-btn" data-ratio="16:9" onclick="setImgRatio('16:9',this)"><span class="img-ratio-glyph g169"></span>16:9</button>
+              <button type="button" class="ui-seg-btn" data-ratio="1:1" onclick="setImgRatio('1:1',this)"><span class="img-ratio-glyph g11"></span>1:1</button>
+            </div>
+          </div>
+          <div class="field">
             <label>Number of images</label>
-            <select id="img-count">
-              <option value="1">1 image</option>
-              <option value="2">2 images</option>
-              <option value="4">4 images</option>
+            <select id="img-count" class="visually-hidden" tabindex="-1" aria-hidden="true">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="4">4</option>
             </select>
+            <div class="img-stepper">
+              <button type="button" onclick="stepImgCount(-1)" aria-label="Fewer images">−</button>
+              <span class="img-stepper-val" id="img-count-label">1 image</span>
+              <button type="button" onclick="stepImgCount(1)" aria-label="More images">+</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <button class="btn btn-primary" id="img-btn" onclick="generateImage()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Generate
+            </button>
+            <div class="status" id="img-status" style="display:none"></div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-primary" id="img-btn" onclick="generateImage()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Generate
-          </button>
-          <div class="status" id="img-status" style="display:none"></div>
+        <div class="img-pane img-results">
+          <div class="section-label" style="margin-bottom:14px">Results</div>
+          <div class="img-grid" id="img-grid">
+            <div class="ui-empty" id="img-empty">
+              <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="ui-empty-title">No images yet</div>
+              <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
+            </div>
+          </div>
         </div>
-        <div class="img-grid" id="img-grid"></div>
       </div>
     </div>
 
     <!-- CLIPPER -->
-    <div class="panel" id="panel-clipper">
+    <div class="panel content-glow" id="panel-clipper">
+      <div class="clip-shell">
       <div id="clip-loader">
         <div class="tool-card">
           <h3>Video Clipper</h3>
-          <p>Paste a YouTube, TikTok, Instagram, X or Reddit link. Vidso's AI finds the best moments and reframes them to 9:16 automatically. No upload needed.</p>
+          <p>Paste a link. Vidso finds the best moments and reframes them to 9:16.</p>
           <div class="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
@@ -1479,6 +1559,7 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           </div><!-- /.clip-right -->
           </div><!-- /.clip-layout -->
         </div><!-- /#clip-editor -->
+      </div><!-- /clip-shell -->
     </div><!-- /#panel-clipper -->
 
     <!-- VIDEO EDITOR -->
@@ -1792,23 +1873,20 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
 
     <!-- VIDEO RANKING -->
     <div class="panel" id="panel-ranking">
-      <div class="vr-layout">
+      <div class="page-shell-wide vr-layout">
       <div class="vr-left">
       <div class="tool-card">
-        <h3>Video Ranking</h3>
-        <p>Pick how many videos you want to rank, add each one by link or upload, then style the countdown title. (Generating the final ranking video is coming soon; this builds your ranking list.)</p>
-
-        <div class="vr-row" style="margin-top:14px">
-          <div>
-            <label class="vr-mini-label" style="margin-bottom:4px">How many videos?</label>
-            <div style="display:flex;align-items:center;gap:10px">
-              <input type="number" id="vr-count" class="vr-count-input" min="2" max="15" value="3" oninput="clampVrCount(this)"/>
-              <button class="btn btn-ghost btn-sm" onclick="vrSetCount()">Update</button>
-            </div>
+        <div class="vr-sec">
+          <div class="vr-sec-head"><span class="vr-sec-num">1</span><h3 class="vr-sec-title">Setup</h3></div>
+          <label class="vr-mini-label" style="margin-bottom:4px">How many videos?</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="number" id="vr-count" class="vr-count-input" min="2" max="15" value="3" oninput="clampVrCount(this)"/>
+            <button class="btn btn-secondary btn-sm" onclick="vrSetCount()">Update</button>
           </div>
         </div>
 
-        <div class="vr-section">
+        <div class="vr-sec vr-section">
+          <div class="vr-sec-head"><span class="vr-sec-num">2</span><h3 class="vr-sec-title">Title style</h3></div>
           <h4>Video Ranking Title</h4>
           <div class="vr-row" style="margin-bottom:10px">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -1822,60 +1900,65 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
               <select id="vr-title-size" class="vr-count-input" style="width:auto;padding:7px 10px" onchange="vrRenderTitlePreview()">
                 <option>20px</option><option>24px</option><option selected>28px</option><option>32px</option><option>40px</option>
               </select>
-              <input type="color" id="vr-title-color" value="#ffffff" style="width:32px;height:32px;border:none;border-radius:7px;background:none;cursor:pointer" onchange="vrRenderTitlePreview()"/>
+              <input type="color" id="vr-title-color" value="#ffffff" onchange="vrRenderTitlePreview()"/>
             </div>
-            <label class="vr-toggle"><input type="checkbox" id="vr-drag-title"/><span class="sw"></span>Drag Title</label>
+            <label class="vr-toggle"><input type="checkbox" id="vr-drag-title"/><span class="sw"></span>Drag title</label>
           </div>
-          <input type="text" id="vr-title-text" value="Biggest of all time" placeholder="Enter your ranking title..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:#fff;font-size:.85rem;padding:11px 14px;margin-bottom:14px" oninput="vrRenderTitlePreview()"/>
-          <div id="vr-title-preview" style="background:var(--surface);border:1px dashed var(--border);border-radius:10px;padding:28px 16px;text-align:center;font-weight:800;color:#fff;font-size:1.4rem;margin-bottom:14px"></div>
-          <label class="vr-mini-label">Title Stroke</label>
+          <input type="text" id="vr-title-text" value="Biggest of all time" placeholder="Enter your ranking title..." style="width:100%;margin-bottom:14px" oninput="vrRenderTitlePreview()"/>
+          <div id="vr-title-preview" style="background:rgba(0,0,0,.35);border:1px dashed var(--border);border-radius:12px;padding:24px 16px;text-align:center;font-weight:800;color:#fff;font-size:1.35rem;margin-bottom:14px"></div>
+          <label class="vr-mini-label">Title stroke</label>
           <div style="display:flex;align-items:center;gap:10px">
-            <input type="color" id="vr-stroke-color" value="#000000" style="width:28px;height:28px;border:none;border-radius:50%;background:none;cursor:pointer" oninput="vrRenderTitlePreview()"/>
-            <input type="range" id="vr-stroke-width" min="0" max="10" value="2" style="flex:1;accent-color:var(--a2)" oninput="vrRenderTitlePreview()"/>
+            <input type="color" id="vr-stroke-color" value="#000000" oninput="vrRenderTitlePreview()"/>
+            <input type="range" id="vr-stroke-width" min="0" max="10" value="2" style="flex:1" oninput="vrRenderTitlePreview()"/>
           </div>
         </div>
 
-        <div class="vr-section">
+        <div class="vr-sec vr-section">
+          <div class="vr-sec-head"><span class="vr-sec-num">3</span><h3 class="vr-sec-title">General settings</h3></div>
           <h4>General Setting</h4>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div>
               <label class="vr-mini-label">Video height</label>
-              <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0 12px">
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:0 12px">
                 <input type="number" id="vr-height" value="80" min="20" max="100" style="flex:1;background:none;border:none;color:#fff;font-size:.85rem;padding:11px 0" oninput="vrSyncStage()"/>
-                <span style="color:var(--muted);font-size:.8rem">%</span>
+                <span style="color:var(--text-label);font-size:.8rem">%</span>
               </div>
             </div>
             <div>
               <label class="vr-mini-label">Background</label>
-              <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0 12px">
-                <input type="color" id="vr-bg-color" value="#2b2a2a" style="width:22px;height:22px;border:none;border-radius:50%;background:none;cursor:pointer" oninput="vrSyncStage()"/>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:0 12px">
+                <input type="color" id="vr-bg-color" value="#2b2a2a" oninput="vrSyncStage()"/>
                 <input type="text" id="vr-bg-hex" value="#2B2A2A" style="flex:1;background:none;border:none;color:#fff;font-size:.85rem;padding:11px 0" oninput="vrSyncFromHex()"/>
               </div>
             </div>
           </div>
-          <label class="vr-toggle" style="margin-top:16px"><input type="checkbox" id="vr-enable-caption" onchange="vrSyncStage()"/><span class="sw"></span>Enable Caption</label>
+          <label class="vr-toggle" style="margin-top:16px"><input type="checkbox" id="vr-enable-caption" onchange="vrSyncStage()"/><span class="sw"></span>Enable caption</label>
         </div>
 
-        <div class="vr-section">
+        <div class="vr-sec vr-section">
           <div class="vr-row" style="margin-bottom:0">
+            <div class="vr-sec-head" style="margin:0"><span class="vr-sec-num">4</span><h3 class="vr-sec-title">Playback order</h3></div>
             <h4 style="margin:0">Playback Order</h4>
-            <label class="vr-toggle"><input type="checkbox" id="vr-custom-order"/><span class="sw"></span>Custom Playback Order</label>
+            <label class="vr-toggle"><input type="checkbox" id="vr-custom-order"/><span class="sw"></span>Custom playback order</label>
           </div>
         </div>
 
-        <div id="vr-cards"></div>
+        <div class="vr-sec">
+          <div class="vr-sec-head"><span class="vr-sec-num">5</span><h3 class="vr-sec-title">Video ranks</h3></div>
+          <div id="vr-cards"></div>
+        </div>
 
-        <div style="margin-top:18px">
-          <button class="btn btn-primary" id="vr-generate-btn" style="width:100%" onclick="vrGenerate()">
+        <div class="vr-sticky-bar">
+          <button class="btn btn-primary btn-lg" id="vr-generate-btn" style="width:100%" onclick="vrGenerate()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Generate Ranking Video
           </button>
           <div id="vr-generate-status" style="display:none;margin-top:14px">
             <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-              <span id="vr-status-step" style="font-size:.78rem;color:var(--muted)"></span>
-              <span id="vr-status-pct"  style="font-size:.78rem;color:var(--muted)"></span>
+              <span id="vr-status-step" style="font-size:.78rem;color:var(--text-label)"></span>
+              <span id="vr-status-pct"  style="font-size:.78rem;color:var(--text-label)"></span>
             </div>
-            <div style="background:var(--surface);border-radius:999px;height:6px;overflow:hidden">
+            <div style="background:rgba(255,255,255,.06);border-radius:999px;height:6px;overflow:hidden">
               <div id="vr-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--a1),var(--a2));width:0%;transition:width .3s;border-radius:999px"></div>
             </div>
             <button id="vr-download-btn" class="btn btn-primary" style="display:none;width:100%;margin-top:12px">
@@ -1890,9 +1973,11 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
       <div class="vr-right">
         <div class="vr-preview-card">
           <div class="vr-preview-head">Preview</div>
+          <div class="vr-phone">
           <div class="vr-preview-stage" id="vr-stage">
             <div id="vr-stage-inner"></div>
             <div class="vr-preview-title" id="vr-stage-title"></div>
+          </div>
           </div>
           <div class="vr-preview-bar">
             <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -2247,8 +2332,8 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
             <div class="field">
               <label>Video length</label>
               <div class="fv-seg" id="fv-format-seg" role="tablist">
-                <button type="button" class="fv-seg-btn active" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30–60s</button>
-                <button type="button" class="fv-seg-btn" data-format="long" onclick="fvSetFormat('long')">Long-form · 3–5 min</button>
+                <button type="button" class="fv-seg-btn" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30-60s</button>
+                <button type="button" class="fv-seg-btn active" data-format="long" onclick="fvSetFormat('long')">Long-form · 3-5 min</button>
               </div>
               <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px"></div>
             </div>
@@ -2946,8 +3031,8 @@ const FV_DURATIONS = {
 }
 
 window.fvState = {
-  format: 'shorts',
-  durationId: 'shorts_60',
+  format: 'long',
+  durationId: 'long_180',
   aspect: '9:16',
   voiceId: null,
   voicePreview: null,
@@ -4171,19 +4256,40 @@ window.burnCaptions = async () => {
 }
 
 // ── IMAGE GEN ─────────────────────────────────────────────────────────────────
+window.fillImgPrompt = (text) => {
+  const el = document.getElementById('img-prompt')
+  if (el) el.value = text
+}
+window.setImgRatio = (ratio, btn) => {
+  const sel = document.getElementById('img-ratio')
+  if (sel) sel.value = ratio
+  document.querySelectorAll('#img-ratio-seg .ui-seg-btn').forEach(b => b.classList.toggle('active', b === btn || b.dataset.ratio === ratio))
+}
+window.stepImgCount = (delta) => {
+  const sel = document.getElementById('img-count')
+  const label = document.getElementById('img-count-label')
+  if (!sel) return
+  const opts = Array.from(sel.options).map(o => parseInt(o.value, 10))
+  let idx = opts.indexOf(parseInt(sel.value, 10))
+  if (idx < 0) idx = 0
+  idx = Math.max(0, Math.min(opts.length - 1, idx + delta))
+  sel.value = String(opts[idx])
+  if (label) label.textContent = opts[idx] === 1 ? '1 image' : `${opts[idx]} images`
+}
 window.generateImage = async () => {
   const prompt = document.getElementById('img-prompt').value.trim()
   if (!prompt) return setStatus('img-status','Enter a prompt','err')
-  const ratioMap = {'9:16':'9:16','16:9':'16:9','1:1':'1:1'}
   const btn = document.getElementById('img-btn')
   btn.disabled = true
+  btn.classList.add('is-loading')
   setStatus('img-status','Generating...','loading')
-  document.getElementById('img-grid').innerHTML = ''
+  const count = parseInt(document.getElementById('img-count').value, 10) || 1
+  document.getElementById('img-grid').innerHTML = `<div class="img-skel-grid">${Array.from({length:count}).map(()=>'<div class="ui-skeleton ui-skeleton-thumb"></div>').join('')}</div>`
   try {
     const data = await api.generate.image({
       prompt,
       aspect_ratio: document.getElementById('img-ratio').value,
-      num_images:   parseInt(document.getElementById('img-count').value),
+      num_images:   count,
     })
     const grid = document.getElementById('img-grid')
     grid.innerHTML = data.urls.map(url => `
@@ -4193,8 +4299,15 @@ window.generateImage = async () => {
       </div>`).join('')
     setStatus('img-status','Done!','ok')
     loadUsage()
-  } catch(e) { setStatus('img-status', e.message, 'err') }
-  finally { btn.disabled = false }
+  } catch(e) {
+    document.getElementById('img-grid').innerHTML = `<div class="ui-empty" id="img-empty">
+      <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+      <div class="ui-empty-title">No images yet</div>
+      <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
+    </div>`
+    setStatus('img-status', e.message, 'err')
+  }
+  finally { btn.disabled = false; btn.classList.remove('is-loading') }
 }
 
 // ── FILES ─────────────────────────────────────────────────────────────────────
@@ -4499,7 +4612,7 @@ window.searchClipDiscover = async (immediate) => {
   }
   if (!grid) return
   const seq = ++clipDiscoverSearchSeq
-  grid.innerHTML = '<div class="clip-discover-empty">Searching YouTube…</div>'
+  grid.innerHTML = `<div class="clip-skel-grid">${Array.from({length:6}).map(()=>`<div><div class="ui-skeleton ui-skeleton-thumb"></div><div class="ui-skeleton ui-skeleton-line" style="width:80%;margin-top:10px"></div><div class="ui-skeleton ui-skeleton-line" style="width:50%"></div></div>`).join('')}</div>`
   try {
     const { videos } = await api.download.search(q, 12)
     if (seq !== clipDiscoverSearchSeq) return // stale response
@@ -5502,12 +5615,15 @@ function vrRenderCards() {
   const wrap = document.getElementById('vr-cards')
   wrap.innerHTML = vrCards.map((c, i) => {
     const hasVideo = !!c.streamUrl
+    const status = hasVideo ? 'File added' : (c.link ? 'Link added' : 'Empty')
+    const statusCls = hasVideo || c.link ? ' is-ready' : ''
     return `
     <div class="vr-card" id="vr-card-${i}">
       <div class="vr-card-head" onclick="vrToggleCard(${i})">
         <div class="title">
           <svg id="vr-chevron-${i}" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transition:transform .15s"><polyline points="18 15 12 9 6 15"/></svg>
-          Video Rank ${i + 1}
+          Rank ${i + 1}
+          <span class="vr-card-status${statusCls}">${status}</span>
         </div>
         <div class="vr-card-actions" onclick="event.stopPropagation()">
           ${hasVideo ? `<button onclick="vrClearVideo(${i})" title="Change video"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 105.68-9.72L1 10"/></svg></button>` : ''}
@@ -5557,14 +5673,14 @@ function vrInputHtml(c, i) {
       <div id="vr-link-status-${i}" style="display:none;margin-top:8px" class="status"></div>
       <div class="vr-or">OR</div>
       <label class="vr-mini-label">Upload Video</label>
-      <div class="upload-zone" id="vr-upload-${i}" style="padding:26px"
+      <div class="upload-zone" id="vr-upload-${i}"
            onclick="document.getElementById('vr-file-${i}').click()"
            ondragover="event.preventDefault();this.classList.add('drag')"
            ondragleave="this.classList.remove('drag')"
            ondrop="vrHandleDrop(event,${i})">
         <div class="uz-icon">☁️</div>
-        <p><strong>Choose a clip</strong> or drag and drop it here</p>
-        <p style="margin-top:4px;font-size:.72rem">MP4 format, up to 500MB</p>
+        <p><strong>Choose a clip</strong> or drop it here</p>
+        <p style="margin-top:2px;font-size:.72rem">MP4, up to 500MB</p>
       </div>
       <input type="file" id="vr-file-${i}" accept="video/mp4" style="display:none" onchange="vrHandleFile(event,${i})"/>
     </div>`
