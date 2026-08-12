@@ -23,7 +23,7 @@ async function req(method, path, body, isFormData = false) {
       body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
     })
   } catch {
-    throw new Error('Cannot reach Clipzo API — the backend may be down. Try again in a minute.')
+    throw new Error('Cannot reach Clipzo API. The backend may be down. Try again in a minute.')
   }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
