@@ -147,13 +147,36 @@ class Handler(BaseHTTPRequestHandler):
         print("[dev-server] " + (fmt % args))
 
 
+def make_server(host, port):
+    """Prefer dual-stack (::) so both localhost IPv4 and IPv6 work in Chrome."""
+    import socket
+
+    class DualStackServer(ThreadingHTTPServer):
+        address_family = socket.AF_INET6
+
+        def server_bind(self):
+            # Accept IPv4-mapped connections too (Chrome often tries ::1 first for localhost).
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+            super().server_bind()
+
+    if host in ("0.0.0.0", "", "::"):
+        try:
+            return DualStackServer(("::", port), Handler)
+        except OSError:
+            # Fall back to IPv4-only if IPv6 is unavailable in the environment.
+            return ThreadingHTTPServer(("0.0.0.0", port), Handler)
+    return ThreadingHTTPServer((host, port), Handler)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "3000")))
-    parser.add_argument("--host", default="0.0.0.0")
+    parser.add_argument("--host", default="0.0.0.0",
+                        help="Bind address. Default 0.0.0.0 dual-stacks to :: when possible.")
     args = parser.parse_args()
-    httpd = ThreadingHTTPServer((args.host, args.port), Handler)
-    print(f"Vidso dev server running at http://{args.host}:{args.port} (root: {ROOT})")
+    httpd = make_server(args.host, args.port)
+    print(f"Vidso dev server running at http://127.0.0.1:{args.port}/ (also ::1 when dual-stack)")
+    print(f"Root: {ROOT}")
     print("Routing (rewrites/redirects/trailingSlash) mirrors vercel.json")
     try:
         httpd.serve_forever()
