@@ -304,8 +304,8 @@ select option{background:var(--card)}
 .auth-legal{margin-top:16px;font-size:.72rem;line-height:1.5;color:var(--faint);text-align:center}
 .auth-legal a{color:var(--a1);text-decoration:none;font-weight:500}
 .auth-legal a:hover{color:#ff6b78;text-decoration:underline;text-underline-offset:2px}
-.auth-social{display:flex;flex-direction:column;gap:10px;margin:8px 0 0}
-.auth-google{width:100%;justify-content:center;gap:10px;border-radius:12px;padding:13px 16px;font-weight:600;font-size:.95rem;background:#fff;color:#1f1f1f;border:1px solid rgba(255,255,255,.14);box-shadow:none;position:relative}
+.auth-social{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.auth-google{width:100%;justify-content:center;gap:10px;border-radius:12px;padding:12px 16px;font-weight:600;font-size:.9rem;background:#fff;color:#1f1f1f;border:1px solid rgba(255,255,255,.14);box-shadow:none;position:relative}
 .auth-google:hover{transform:translateY(-1px);background:#f5f5f5;color:#111;box-shadow:0 8px 22px rgba(0,0,0,.25)}
 .auth-google:disabled,.auth-google.is-loading{opacity:.7;cursor:not-allowed;transform:none}
 .auth-google svg{width:18px;height:18px;flex-shrink:0}
@@ -313,9 +313,11 @@ select option{background:var(--card)}
 .auth-google.is-loading .auth-cta-label,.auth-google.is-loading > svg{opacity:0}
 .auth-google.is-loading .auth-cta-spinner{display:grid}
 .auth-google .auth-cta-spinner i{border-color:rgba(0,0,0,.15);border-top-color:#222}
-.modal-error{font-size:.78rem;color:#eb5757;margin-top:12px;display:none;text-align:center}
+.auth-or{display:flex;align-items:center;gap:12px;margin:0 0 18px;color:var(--faint);font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:none}
+.auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
+.modal-error{font-size:.78rem;color:#eb5757;margin-top:10px;display:none;text-align:center}
 @media (max-width:760px){
-  .modal.auth-shell{max-width:420px;border-radius:18px}
+  .modal.auth-shell{max-width:420px;border-radius:18px;max-height:calc(100vh - 40px);overflow-y:auto}
   .auth-showcase{display:none}
   .auth-panel{padding:32px 24px}
 }
@@ -791,7 +793,11 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
         <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
       </div>
       <h2 id="auth-title">Welcome to Vidso</h2>
-      <p class="auth-lead">Continue with Google to access your AI content tools.</p>
+      <p class="auth-lead">Sign in to access your AI content tools.</p>
+      <div class="modal-tabs">
+        <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button type="button" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
       <div class="auth-social">
         <button type="button" class="btn auth-google" id="google-cta" onclick="doGoogleLogin()">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -804,15 +810,14 @@ body::before{content:'';position:fixed;top:-280px;left:180px;width:820px;height:
           <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
         </button>
       </div>
-      <div class="modal-error" id="auth-err"></div>
-      <!-- Email/password kept for later; Google-only for now -->
-      <div id="tab-login" hidden>
+      <div class="auth-or">or continue with email</div>
+      <div id="tab-login">
         <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
         <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
         <button type="button" class="btn btn-primary auth-cta" id="login-cta" onclick="doLogin()"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
         <div class="modal-error" id="login-err"></div>
       </div>
-      <div id="tab-signup" hidden>
+      <div id="tab-signup" style="display:none">
         <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
         <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
         <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
@@ -2480,9 +2485,8 @@ function setAuthCtaLoading(btn, on) {
 }
 
 function showAuthError(message) {
-  const err = document.getElementById('auth-err')
-    || document.getElementById('login-err')
-    || document.getElementById('signup-err')
+  const loginVisible = document.getElementById('tab-login')?.style.display !== 'none'
+  const err = document.getElementById(loginVisible ? 'login-err' : 'signup-err')
   if (!err) return
   err.textContent = message
   err.style.display = 'block'
@@ -2527,11 +2531,12 @@ function consumeOAuthError() {
 window.doGoogleLogin = async () => {
   const btn = document.getElementById('google-cta')
   const redirectTo = authRedirectTarget()
-  const errEl = document.getElementById('auth-err')
-  if (errEl) errEl.style.display = 'none'
+  document.getElementById('login-err').style.display = 'none'
+  document.getElementById('signup-err').style.display = 'none'
   setAuthCtaLoading(btn, true)
   try {
     // Full-page redirect to Supabase Google OAuth; tokens return via URL hash.
+    // Note: Google provider must be enabled on the Supabase project for this to work.
     location.href = api.auth.googleStartUrl(redirectTo)
   } catch (e) {
     showAuthError(e.message || 'Google sign-in failed')
