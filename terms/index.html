@@ -10,12 +10,19 @@
 <style>
 :root{
   --bg:#050507;--panel:#0e0e12;--ink:#fff;--muted:#8b8b96;--faint:#5c5c66;
-  --line:rgba(255,255,255,.08);--blue:#5b8cff;
-  --grad:linear-gradient(135deg,#5b8cff 0%,#2748d6 100%);
+  --line:rgba(255,255,255,.08);--blue:#ff3b4a;--a1:#ff3b4a;
+  --grad:linear-gradient(135deg,#ff4d5e 0%,#c41028 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;min-height:100vh}
 a{color:inherit;text-decoration:none}
+a:visited{color:inherit}
+.legal a{color:var(--blue);text-decoration:none}
+.legal a:hover{color:#ff6b78;text-decoration:underline;text-underline-offset:2px}
+.legal a:visited{color:var(--blue)}
+.logo:visited,.nav-back:visited,footer a:visited{color:inherit}
+.nav-back:visited{color:var(--muted)}
+footer a:visited{color:var(--muted)}
 .wrap{max-width:860px;margin:0 auto;padding:0 24px}
 nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
 .logo{display:flex;align-items:center;gap:10px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:-.02em}
@@ -32,12 +39,13 @@ footer{border-top:1px solid var(--line);padding:28px 0;text-align:center;font-si
 footer a{color:var(--muted)}
 footer a:hover{color:#fff}
 </style>
+<script src="/brand.js"></script>
 </head>
 <body>
   <div class="wrap">
     <nav>
       <a class="logo" href="/landing">
-        <img src="/sendclip-logo.png" alt="">
+        <img data-vidso-logo width="26" height="26" alt="Vidso" decoding="async">
         Vidso
       </a>
       <a class="nav-back" href="/landing">← Back to home</a>
