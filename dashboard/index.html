@@ -293,7 +293,7 @@ select option{background:var(--card)}
 
 /* EMPTY STATE */
 .ui-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:40px 24px;min-height:220px}
-.ui-empty-icon{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:rgba(255,59,74,.12);border:1px solid rgba(255,59,74,.22);color:var(--a1);margin-bottom:4px}
+.ui-empty-icon{width:52px;height:52px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);margin-bottom:4px}
 .ui-empty-icon svg{width:22px;height:22px}
 .ui-empty-title{font-size:.95rem;font-weight:650;color:#fff;letter-spacing:-.01em}
 .ui-empty-sub{font-size:.82rem;color:var(--text-body);max-width:280px;line-height:1.45}
@@ -1081,6 +1081,89 @@ input:focus,textarea:focus,select:focus,
 
 /* Upscale V2 */
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
+
+/* V2 punch list */
+#panel-dashboard .page-shell{
+  max-width:min(1120px,100%);
+  margin-left:auto;margin-right:auto;
+  width:100%
+}
+.dash-recent-wrap{min-height:132px!important;padding:20px!important}
+.dash-recent-wrap .ui-empty{min-height:108px!important;padding:24px 16px!important}
+#panel-imagegen .img-layout{
+  align-items:stretch!important;
+  min-height:calc(100vh - 168px)
+}
+#panel-imagegen .img-pane{
+  min-height:calc(100vh - 180px);
+  height:100%;
+  padding:24px!important;
+  display:flex;flex-direction:column
+}
+#panel-imagegen .img-results{
+  min-height:calc(100vh - 180px)!important;
+  flex:1
+}
+#panel-imagegen .img-results .img-grid{
+  flex:1;min-height:0;margin-top:0;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start
+}
+#panel-imagegen .img-results .img-grid:has(#img-empty),
+#panel-imagegen .img-results .img-grid:has(.ui-empty){
+  display:flex!important;align-items:center;justify-content:center
+}
+#panel-imagegen .img-results .ui-empty{margin:auto;width:100%}
+#panel-clipper .tool-card.clip-hero-card,
+#panel-clipper .tool-card{
+  background:transparent!important;border:none!important;box-shadow:none!important;
+  padding:0!important;margin:0 0 28px!important;border-radius:0!important;max-width:880px;margin-left:auto;margin-right:auto
+}
+@media(max-width:720px){
+  #panel-clipper .tool-card{padding:0!important;border-radius:0!important}
+}
+.vr-left{padding-bottom:0}
+.vr-left > .tool-card{padding-bottom:0!important;margin-bottom:0!important}
+.vr-secs{padding-bottom:12px}
+.vr-sticky-bar{
+  position:sticky!important;bottom:0!important;z-index:8!important;
+  margin-top:16px!important;padding:14px 12px!important;
+  background:rgba(6,6,8,.58)!important;
+  backdrop-filter:blur(18px) saturate(1.25)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.25)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:14px 14px 0 0!important;
+  box-shadow:0 -12px 40px rgba(0,0,0,.35)
+}
+.vr-left{scroll-margin-bottom:96px}
+#panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:8px;padding-bottom:20px!important}
+.fv-voice-wrap{position:relative;min-width:0;flex:1;display:flex;flex-direction:column;gap:8px}
+.fv-voice-skel{
+  height:44px;border-radius:12px;overflow:hidden;
+  background:rgba(255,255,255,.04);border:1px solid var(--border)
+}
+.fv-voice-skel[hidden],.fv-voice-error[hidden],#fv-voice[hidden]{display:none!important}
+.fv-voice-error{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:44px;padding:8px 12px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  font-size:13px;color:rgba(255,255,255,.55)
+}
+.fv-voice-error .btn{flex-shrink:0;height:30px;padding:0 10px;font-size:.75rem}
+.fv-voice-row{align-items:start!important}
+@media (max-width:1280px){
+  .qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #panel-imagegen .img-layout{grid-template-columns:1fr 1fr}
+}
+@media (max-width:1024px){
+  #panel-imagegen .img-layout{grid-template-columns:1fr}
+  #panel-imagegen .img-pane,#panel-imagegen .img-results{min-height:420px}
+}
+.page-header + .tool-card > h3.ui-card-title{font-size:16px!important;font-weight:600!important}
+#panel-videogen .page-header{margin-bottom:20px}
+#panel-upscale .page-shell{max-width:880px;margin:0 auto}
+.tool-tile,.qa-card,.dash-stat,.img-pane,.vr-sec{padding:20px!important}
+.dash-stat{padding:20px!important}
+.img-pane{padding:24px!important}
 .card-pad-20{padding:20px!important}
 .card-pad-24{padding:24px!important}
 </style>
@@ -2089,6 +2172,7 @@ input:focus,textarea:focus,select:focus,
           <div id="vr-cards"></div>
         </div>
 
+        <div class="vr-sticky-spacer" aria-hidden="true" style="height:8px"></div>
         <div class="vr-sticky-bar">
           <button class="btn btn-primary btn-lg" id="vr-generate-btn" style="width:100%" onclick="vrGenerate()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -2495,9 +2579,16 @@ input:focus,textarea:focus,select:focus,
             <div class="field">
               <label>Narrator voice</label>
               <div class="fv-voice-row">
-                <select id="fv-voice" class="cm-input" onchange="fvOnVoiceChange()">
-                  <option value="">Loading voices…</option>
-                </select>
+                <div class="fv-voice-wrap">
+                  <select id="fv-voice" class="cm-input" onchange="fvOnVoiceChange()" aria-label="Narrator voice">
+                    <option value="">Loading voices…</option>
+                  </select>
+                  <div class="fv-voice-skel ui-skeleton" id="fv-voice-skel" hidden aria-hidden="true"></div>
+                  <div class="fv-voice-error" id="fv-voice-error" hidden>
+                    <span>Voices unavailable</span>
+                    <button type="button" class="btn btn-ghost btn-sm" id="fv-voice-retry" onclick="loadVoices()">Retry</button>
+                  </div>
+                </div>
                 <button type="button" class="btn btn-ghost" id="fv-voice-preview-btn" onclick="fvPreviewVoice()" disabled title="Preview voice">
                   <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5z"/></svg>
                   Preview
@@ -2826,7 +2917,7 @@ input:focus,textarea:focus,select:focus,
     </div>
 
     <div class="panel active content-glow" id="panel-dashboard">
-      <div class="page-shell">
+      <div class="page-shell dash-shell">
         <div class="page-header dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
           <p>Your usage and shortcuts in one place.</p>
@@ -2866,7 +2957,7 @@ input:focus,textarea:focus,select:focus,
         </div>
         <div class="section-label">Recent</div>
         <div class="dash-recent-wrap" id="dash-recent">
-          <div class="ui-empty" style="min-height:160px;border:none;background:transparent">
+          <div class="ui-empty" style="min-height:108px;border:none;background:transparent">
             <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
             <div class="ui-empty-title">No recent files</div>
             <div class="ui-empty-sub">Uploads and exports will show up here.</div>
@@ -3053,10 +3144,15 @@ window.doLogout = async () => {
 }
 
 function populateUser() {
-  document.getElementById('user-email').textContent = currentUser.email
+  document.getElementById('user-email').textContent = currentUser.email || ''
   const nameEl = document.getElementById('user-name')
-  if (nameEl) nameEl.textContent = 'Your account'
-  document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.email)[0].toUpperCase()
+  const displayName = ((currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || '').trim()
+  if (nameEl) nameEl.textContent = displayName || 'Your account'
+  const av = document.getElementById('user-avatar')
+  if (av) {
+    const initial = (currentUser.name || currentUser.email || '').trim().charAt(0)
+    av.textContent = initial ? initial.toUpperCase() : '?'
+  }
   const creditsCount = document.getElementById('credits-count')
   if (creditsCount) creditsCount.textContent = String(currentUser.credits ?? 0)
   else document.getElementById('credits-pill').textContent = `${currentUser.credits} credits`
@@ -3108,7 +3204,8 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    titleEl.classList.toggle('is-hidden', id === 'clipper')
+    const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen','upscale'].includes(id)
+    titleEl.classList.toggle('is-hidden', hasPageHeader)
   }
   document.body.classList.remove('nav-open')
   if (id === 'voiceover') loadVoiceLibrary()
@@ -3164,12 +3261,20 @@ async function loadUsage() {
 // ── VOICES ───────────────────────────────────────────────────────────────────
 let voicesLoadState = 'idle' // idle | loading | ready | error
 let voicesLoadError = ''
-async function loadVoices() {
+let voicesLoadStatus = null
+window.loadVoices = async function loadVoices() {
   voicesLoadState = 'loading'
   voicesLoadError = ''
+  voicesLoadStatus = null
   fvPopulateVoices()
   try {
+    if (!getToken()) {
+      const err = new Error('Missing token')
+      err.status = 401
+      throw err
+    }
     voices = await api.tts.voices()
+    if (!Array.isArray(voices)) voices = (voices && voices.voices) || []
     voicesLoadState = 'ready'
     const grid = document.getElementById('voices-grid')
     if (grid) {
@@ -3187,9 +3292,11 @@ async function loadVoices() {
   } catch(e) {
     voices = []
     voicesLoadState = 'error'
+    voicesLoadStatus = e && e.status != null ? e.status : null
     voicesLoadError = (e && e.message) ? String(e.message) : 'Failed to load voices'
+    console.warn('[voices]', voicesLoadStatus || '', voicesLoadError)
     const grid = document.getElementById('voices-grid')
-    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Could not load voices. Sign in and retry.</div>'
+    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Voices unavailable. <button type="button" class="btn btn-ghost btn-sm" onclick="loadVoices()">Retry</button></div>'
     fvPopulateVoices()
   }
 }
@@ -3293,24 +3400,35 @@ function fvPopulateVoices() {
   const sel = document.getElementById('fv-voice')
   if (!sel) return
   const btn = document.getElementById('fv-voice-preview-btn')
+  const skel = document.getElementById('fv-voice-skel')
+  const errBox = document.getElementById('fv-voice-error')
+  const show = (mode) => {
+    if (skel) skel.hidden = mode !== 'loading'
+    if (errBox) errBox.hidden = mode !== 'error'
+    sel.hidden = mode !== 'ready' && mode !== 'empty'
+  }
   if (voicesLoadState === 'loading' || voicesLoadState === 'idle') {
     sel.innerHTML = '<option value="">Loading voices…</option>'
     sel.disabled = true
     if (btn) btn.disabled = true
+    show('loading')
     return
   }
   if (voicesLoadState === 'error') {
-    sel.innerHTML = '<option value="">Could not load voices</option>'
+    sel.innerHTML = '<option value="">Voices unavailable</option>'
     sel.disabled = true
     if (btn) btn.disabled = true
+    show('error')
     return
   }
   if (!voices.length) {
     sel.innerHTML = '<option value="">No voices returned</option>'
     sel.disabled = true
     if (btn) btn.disabled = true
+    show('empty')
     return
   }
+  show('ready')
   sel.disabled = false
   const prev = fvState.voiceId || selectedVoiceId || voices[0].id
   sel.innerHTML = voices.map(v => {
