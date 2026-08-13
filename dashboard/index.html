@@ -54,6 +54,8 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 /* SIDEBAR */
 .sidebar{width:240px;height:100vh;max-height:100vh;background:rgba(11,11,12,.88);backdrop-filter:blur(20px) saturate(1.3);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;flex-shrink:0;overflow:hidden}
 .sidebar-logo{height:64px;padding:0 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sidebar-logo-link{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px}
+.sidebar-logo-link:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
 .sidebar-logo img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
 .brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase}
 .sidebar-nav{flex:1;min-height:0;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
@@ -108,7 +110,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .page-shell{max-width:var(--page-max);margin:0 auto;width:100%}
 .page-shell-wide{max-width:var(--page-max-wide);margin:0 auto;width:100%}
 .content-glow{position:relative}
-.content-glow::before{content:'';position:absolute;top:-40px;left:10%;right:10%;height:180px;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(var(--glow),.10),transparent 70%)}
+.content-glow::before{content:'';position:absolute;top:80px;left:15%;right:15%;height:160px;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 40%,rgba(var(--glow),.05),transparent 72%)}
 .content-glow > *{position:relative;z-index:1}
 
 /* PANELS */
@@ -926,14 +928,11 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 ::selection{background:rgba(var(--glow),.35);color:var(--ink)}
 html{color-scheme:dark}
 body{position:relative}
-body::before,body::after{content:'';position:fixed;pointer-events:none;z-index:0}
-body::before{
-  top:-220px;left:120px;right:0;height:560px;
-  background:radial-gradient(ellipse 70% 55% at 42% 0%,rgba(var(--glow),.12),transparent 70%)
-}
+/* Soft bottom ambient only — aggressive top red glow removed */
 body::after{
+  content:'';position:fixed;pointer-events:none;z-index:0;
   bottom:-120px;left:-80px;width:520px;height:480px;
-  background:radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.045),transparent 68%)
+  background:radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.03),transparent 68%)
 }
 .sidebar,.main{position:relative;z-index:1}
 .main{isolation:isolate}
@@ -1265,7 +1264,7 @@ input:focus,textarea:focus,select:focus,
     background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;order:3
   }
   .sidebar-logo{gap:8px}
-  .sidebar-logo .brand{order:2}
+  .sidebar-logo-link{order:2;gap:8px}
   .topbar{
     padding:8px 12px;min-height:56px;gap:10px;
     display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center
@@ -1415,8 +1414,10 @@ input:focus,textarea:focus,select:focus,
     <button type="button" class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
-    <img data-vidso-logo width="30" height="30" alt="Vidso" decoding="async">
-    <span class="brand">vidso</span>
+    <a href="/landing" class="sidebar-logo-link" aria-label="Vidso home">
+      <img data-vidso-logo width="30" height="30" alt="" decoding="async">
+      <span class="brand">vidso</span>
+    </a>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section"><span class="nav-section-label">Create</span></div>
