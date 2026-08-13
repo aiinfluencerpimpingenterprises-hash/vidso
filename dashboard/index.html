@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>(function(){try{var t=localStorage.getItem('vidso-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Vidso · Dashboard</title>
@@ -47,22 +46,7 @@
   --page-max:880px;--page-max-wide:1280px;
   /* Status */
   --ok:#6fcf97;--err:#eb5757;
-}
-html[data-theme="dark"],:root{color-scheme:dark}
-html[data-theme="light"]{
-  color-scheme:light;
-  --bg:#F2F3F5;--surface:#FFFFFF;--card:#FFFFFF;
-  --panel:#FFFFFF;--panel-2:#EBEDF0;
-  --card-grad:linear-gradient(180deg,rgba(22,22,24,.02) 0%,rgba(22,22,24,0) 48%),#FFFFFF;
-  --ink:#161618;--text:#161618;--text-body:rgba(22,22,24,.72);--text-label:rgba(22,22,24,.48);
-  --muted:rgba(22,22,24,.72);--faint:rgba(22,22,24,.48);
-  --a1:#D92D3A;--a2:#E94B58;--a3:#9A1826;
-  --blue:#D92D3A;--deep:#9A1826;
-  --grad:linear-gradient(135deg,#E94B58 0%,#B31D2C 100%);
-  --grad-hover:linear-gradient(135deg,#F0606C 0%,#C42232 100%);
-  --grad-pressed:linear-gradient(135deg,#D93A48 0%,#9A1826 100%);
-  --glow:217,45,58;
-  --border:rgba(22,22,24,.12);--line:rgba(22,22,24,.10);--line-2:rgba(22,22,24,.16);
+  color-scheme:dark;
 }
 
 /* Viewport-locked shell: the sidebar + topbar stay fixed and only .content
@@ -124,23 +108,6 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .credits-pill-count{font-variant-numeric:tabular-nums}
 .credits-pill-label{color:var(--text-body);font-weight:500}
 .topbar-actions{display:inline-flex;align-items:center;gap:10px}
-.theme-toggle{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
-.theme-toggle:hover{background:rgba(255,255,255,.07);border-color:var(--line-2)}
-.theme-toggle:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
-.theme-toggle svg{width:17px;height:17px;display:none}
-html[data-theme="dark"] .theme-toggle .icon-sun{display:block}
-html[data-theme="light"] .theme-toggle .icon-moon{display:block}
-html[data-theme="light"] .theme-toggle{background:rgba(22,22,24,.04)}
-html[data-theme="light"] .theme-toggle:hover{background:rgba(22,22,24,.07)}
-html[data-theme="light"] .sidebar{background:rgba(255,255,255,.92);border-right-color:var(--line)}
-html[data-theme="light"] .tool-card,.ui-card,html[data-theme="light"] .tool-card,html[data-theme="light"] .ui-card{background:var(--card-grad)}
-html[data-theme="light"] .credits-pill{color:var(--ink);background:rgba(22,22,24,.04);border-color:var(--line)}
-html[data-theme="light"] .modal-bg{background:rgba(22,22,24,.45)}
-html[data-theme="light"] .auth-google{background:#161618;color:#fff;border-color:rgba(22,22,24,.2)}
-html[data-theme="light"] .auth-google:hover{background:#000;color:#fff}
-html[data-theme="light"] body::after{background:radial-gradient(ellipse at 30% 70%,rgba(217,45,58,.06),transparent 68%)}
-html[data-theme="light"] .main::after{background:radial-gradient(ellipse at center,transparent 48%,rgba(22,22,24,.06) 100%)}
-html[data-theme="light"] .topbar::after{background:linear-gradient(90deg,transparent,rgba(22,22,24,.1),transparent)}
 
 
 .content{flex:1;padding:28px;overflow-y:auto;min-height:0}
@@ -1519,10 +1486,6 @@ input:focus,textarea:focus,select:focus,
     </button>
     <span class="topbar-title" id="topbar-title">Dashboard</span>
     <div class="topbar-actions">
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light theme">
-      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 11.5z"/></svg>
-    </button>
       <span class="credits-pill" id="credits-pill" title="Credits">
         <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
         <span class="credits-pill-count" id="credits-count">10</span>
@@ -8465,7 +8428,6 @@ if (typeof _origSwitchPanel === 'function') {
   }
 }
 </script>
-<script src="/theme.js"></script>
 <script src="/dot-grid.js"></script>
 </body>
 </html>
