@@ -478,11 +478,11 @@
   .fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:48px;align-items:stretch}
   .fmt-card{
     position:relative;border-radius:22px;padding:28px 26px 24px;border:1px solid var(--line);
-    background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:18px;min-width:0
+    background:var(--panel);display:flex;flex-direction:column;gap:18px;min-width:0;box-shadow:none
   }
-  .fmt-card.is-muted{opacity:.92;background:#08080a}
+  .fmt-card.is-muted{opacity:1;background:var(--panel);border-color:var(--line)}
   .fmt-card.is-focus{
-    border-color:var(--line-2);
+    border-color:var(--line);
     background:var(--panel);
     box-shadow:none
   }
@@ -533,10 +533,10 @@
   .ypp-block{margin-top:36px}
   .ypp-block .ypp-title{text-align:center;font-size:18px;font-weight:700;color:#fff;margin:0 0 18px;letter-spacing:-.02em}
   .ypp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .ypp-card{padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .ypp-card{padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:var(--panel);box-shadow:none}
   .ypp-card strong{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
-  .ypp-card p{margin:0;font-size:15px;color:rgba(255,255,255,.84);line-height:1.45;font-weight:550}
-  .ypp-card.is-focus{border-color:var(--line-2);background:var(--panel);box-shadow:none}
+  .ypp-card p{margin:0;font-size:15px;color:var(--muted);line-height:1.45;font-weight:550}
+  .ypp-card.is-focus{border-color:var(--line);background:var(--panel);box-shadow:none}
 
   .format-bridge{margin:56px auto 0;max-width:720px;display:flex;flex-direction:column;align-items:center;text-align:center}
   .format-bridge .bridge-q{font-size:15px;color:var(--muted);margin:0 0 14px;font-weight:550;text-align:center;width:100%}
