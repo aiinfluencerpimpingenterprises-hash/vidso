@@ -35,9 +35,9 @@
     var cssH = 0;
 
     // Brand red strokes; landing a touch more present, app/legal fainter.
-    var strokeA = subtle ? 0.055 : 0.11;
-    var strokeASoft = subtle ? 0.028 : 0.055;
-    var lineW = subtle ? 0.85 : 1.05;
+    var strokeA = subtle ? 0.07 : 0.18;
+    var strokeASoft = subtle ? 0.035 : 0.09;
+    var lineW = subtle ? 0.9 : 1.15;
 
     function seeded(n) {
       var x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
