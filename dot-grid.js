@@ -89,15 +89,10 @@
       drawStaticOrFrame(true);
     }
 
-    function isLight() {
-      return document.documentElement.getAttribute('data-theme') === 'light';
-    }
-
     function drawStaticOrFrame(forceStatic) {
       ctx.clearRect(0, 0, cssW, cssH);
-      var light = isLight();
-      var baseA = light ? (subtle ? 0.09 : 0.13) : baseAlpha;
-      var inflA = light ? (subtle ? 0.22 : 0.34) : inflAlpha;
+      var baseA = baseAlpha;
+      var inflA = inflAlpha;
       var n = dots.length;
       for (var i = 0; i < n; i++) {
         var d = dots[i];
@@ -105,17 +100,9 @@
         var a = baseA + infl * inflA;
         var rr = baseR * (1 + infl * 0.85);
         var redMix = infl * redMixMax;
-        var r, g, b;
-        if (light) {
-          // Dark dots with warm brand tint near cursor
-          r = Math.round(28 + redMix * 190);
-          g = Math.round(28 + redMix * 20);
-          b = Math.round(32 + redMix * 20);
-        } else {
-          r = 245;
-          g = Math.round(245 - redMix * 170);
-          b = Math.round(244 - redMix * 156);
-        }
+        var r = 245;
+        var g = Math.round(245 - redMix * 170);
+        var b = Math.round(244 - redMix * 156);
         ctx.beginPath();
         ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')';
         ctx.arc(d.x, d.y, rr, 0, Math.PI * 2);
@@ -272,15 +259,6 @@
       document.addEventListener('mouseleave', onLeave, { passive: true });
     }
 
-    window.addEventListener('vidso:theme', function () {
-      drawStaticOrFrame(!interactive);
-      kick();
-    });
-    if (typeof MutationObserver !== 'undefined') {
-      new MutationObserver(function () {
-        drawStaticOrFrame(!interactive);
-      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    }
   }
 
   if (document.readyState === 'loading') {
