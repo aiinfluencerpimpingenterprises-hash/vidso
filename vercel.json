@@ -1,48 +1,143 @@
 {
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/overview", "destination": "/dashboard/index.html" },
-    { "source": "/clipping", "destination": "/dashboard/index.html" },
-    { "source": "/ranking", "destination": "/dashboard/index.html" },
-    { "source": "/image-generation", "destination": "/dashboard/index.html" },
-    { "source": "/video-generation", "destination": "/dashboard/index.html" },
-    { "source": "/upscale", "destination": "/dashboard/index.html" },
-    { "source": "/tools", "destination": "/dashboard/index.html" },
-    { "source": "/analytics", "destination": "/dashboard/index.html" },
-    { "source": "/captions", "destination": "/dashboard/index.html" },
-    { "source": "/voiceover", "destination": "/dashboard/index.html" },
-    { "source": "/editor", "destination": "/dashboard/index.html" },
-    { "source": "/reframe", "destination": "/dashboard/index.html" },
-    { "source": "/downloader", "destination": "/dashboard/index.html" },
-    { "source": "/files", "destination": "/dashboard/index.html" },
-    { "source": "/commentary", "destination": "/dashboard/index.html" },
-    { "source": "/login", "destination": "/dashboard/index.html" },
-    { "source": "/signup", "destination": "/dashboard/index.html" }
+    {
+      "source": "/overview",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/clipping",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/ranking",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/image-generation",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/video-generation",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/upscale",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/tools",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/captions",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/voiceover",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/editor",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/reframe",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/downloader",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/files",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/commentary",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/dashboard/index.html"
+    }
   ],
   "redirects": [
-    { "source": "/overview", "destination": "/analytics", "permanent": false },
-    { "source": "/overview/", "destination": "/analytics", "permanent": false },
-    { "source": "/dashboard", "destination": "/analytics", "permanent": false },
-    { "source": "/dashboard/", "destination": "/analytics", "permanent": false },
-    { "source": "/index.html", "destination": "/landing", "permanent": false }
+    {
+      "source": "/landing",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/landing/",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/landing/:path*",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/home",
+      "permanent": false
+    },
+    {
+      "source": "/overview",
+      "destination": "/analytics",
+      "permanent": false
+    },
+    {
+      "source": "/overview/",
+      "destination": "/analytics",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/analytics",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/analytics",
+      "permanent": false
+    }
   ],
   "headers": [
     {
       "source": "/(.*)\\.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/dashboard/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/(.*)\\.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ]
