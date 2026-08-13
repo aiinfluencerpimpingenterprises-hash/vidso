@@ -13,8 +13,8 @@
 
   // ONE place to tune resting opacity.
   var OPACITY = {
-    landing: 0.6,
-    subtle: 0.35
+    landing: 0.65,
+    subtle: 0.45
   };
 
   if (document.getElementById('topo-bg-style')) return;
@@ -109,7 +109,7 @@
     var targetGlow = 0;
 
     // Parallax (opposite cursor), max ~18px
-    var parallaxMax = subtle ? 12 : 18;
+    var parallaxMax = subtle ? 14 : 20;
     var px = 0;
     var py = 0;
     var tpx = 0;
@@ -173,11 +173,11 @@
       ctx.clearRect(0, 0, cssW, cssH);
 
       // Smooth toward targets
-      smx += (mx - smx) * 0.12;
-      smy += (my - smy) * 0.12;
-      glow += (targetGlow - glow) * 0.1;
-      px += (tpx - px) * 0.08;
-      py += (tpy - py) * 0.08;
+      smx += (mx - smx) * 0.18;
+      smy += (my - smy) * 0.18;
+      glow += (targetGlow - glow) * 0.16;
+      px += (tpx - px) * 0.12;
+      py += (tpy - py) * 0.12;
 
       var pad = tile._pad;
 
@@ -192,18 +192,17 @@
       ctx.restore();
 
       if (glow > 0.01) {
-        var radius = subtle ? 140 : 180;
-        var lensScale = 1.045 + glow * 0.035;
+        var radius = subtle ? 160 : 210;
+        var lensScale = 1.07 + glow * 0.06;
 
         // --- Soft red brighten under cursor (lines feel "lit") ---
         ctx.save();
-        ctx.globalAlpha = baseOpacity * (0.55 + glow * 0.7);
         ctx.beginPath();
         ctx.arc(smx, smy, radius, 0, Math.PI * 2);
         ctx.clip();
-        // slight additive feel via lighter draw
+        // Additive brighten so contours feel lit under the cursor
         ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.18 * glow * baseOpacity;
+        ctx.globalAlpha = (0.35 + 0.4 * glow) * baseOpacity;
         ctx.drawImage(
           tile,
           0, 0, tile.width, tile.height,
@@ -248,8 +247,8 @@
         // Soft circular alpha mask
         lctx.globalCompositeOperation = 'destination-in';
         var lg = lctx.createRadialGradient(side / 2, side / 2, radius * 0.2, side / 2, side / 2, radius);
-        lg.addColorStop(0, 'rgba(0,0,0,' + (0.55 + glow * 0.35).toFixed(3) + ')');
-        lg.addColorStop(0.65, 'rgba(0,0,0,' + (0.28 * glow).toFixed(3) + ')');
+        lg.addColorStop(0, 'rgba(0,0,0,' + (0.75 + glow * 0.2).toFixed(3) + ')');
+        lg.addColorStop(0.55, 'rgba(0,0,0,' + (0.4 * glow + 0.15).toFixed(3) + ')');
         lg.addColorStop(1, 'rgba(0,0,0,0)');
         lctx.fillStyle = lg;
         lctx.fillRect(0, 0, side, side);
