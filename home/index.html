@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vidso · AI Long-Form Video Generator for YouTube</title>
 <meta name="description" content="Vidso is an AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
-<link rel="canonical" href="https://vidso.pro/landing">
+<link rel="canonical" href="https://vidso.pro/home">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vidso">
-<meta property="og:url" content="https://vidso.pro/landing">
+<meta property="og:url" content="https://vidso.pro/home">
 <meta property="og:title" content="Vidso · AI Long-Form Video Generator for YouTube">
 <meta property="og:description" content="Build a faceless YouTube channel with an automated production workflow: script to final cut using real footage, B-roll, voiceover, and captions.">
 <!-- TODO: add og:image (and twitter:image) once a long-form brand preview asset exists after this media strip -->
@@ -105,7 +105,7 @@
   html[data-theme="light"] .theme-toggle .icon-moon{display:block}
   html[data-theme="light"] nav.scrolled{background:rgba(255,255,255,.94)}
   html[data-theme="light"] .btn-ghost:hover{background:var(--hover-fill);border-color:var(--line-2)}
-  html[data-theme="light"] .final-box{background:radial-gradient(110% 130% at 50% 0%,rgba(var(--glow),.08),var(--panel) 55%);border-color:var(--line)}
+  html[data-theme="light"] .final-box{background:var(--panel);border-color:var(--line)}
   html[data-theme="light"] .browser,html[data-theme="light"] .hero-grid .hero-visual .browser{box-shadow:0 24px 60px rgba(22,22,24,.14)}
 
   /* ---------- nav ---------- */
@@ -283,7 +283,7 @@
   .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:30px;position:relative;overflow:hidden;cursor:pointer;transition:background-color .25s,border-color .25s,transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
   .card:hover{border-color:var(--line-2);background:var(--panel-2);transform:translateY(-2px)}
-  .card.popped{border-color:rgba(255,59,74,.75);background:var(--panel-2);transform:scale(1.025);box-shadow:0 0 0 1px rgba(255,59,74,.45),0 16px 48px rgba(196,16,40,.22)}
+  .card.popped{border-color:rgba(var(--glow),.55);background:var(--panel-2);transform:scale(1.025);box-shadow:none}
   .card .ico{width:42px;height:42px;border-radius:12px;background:var(--soft-fill);border:1px solid var(--line);display:grid;place-items:center;margin-bottom:20px}
   .card .ico svg{width:20px;height:20px;color:var(--txt)}
   .card h3{font-size:19px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
@@ -323,7 +323,7 @@
   .compare{padding:40px 0 100px}
   .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px}
   .cmp{border-radius:var(--r);padding:34px;border:1px solid var(--line)}
-  .cmp.good{background:linear-gradient(180deg,rgba(var(--glow),.14),var(--panel-2));color:var(--txt);border-color:rgba(var(--glow),.38);box-shadow:0 0 0 1px rgba(var(--glow),.12),0 18px 44px rgba(var(--glow),.10)}
+  .cmp.good{background:linear-gradient(180deg,rgba(var(--glow),.12),var(--panel-2));color:var(--txt);border-color:rgba(var(--glow),.38);box-shadow:none}
   .cmp.bad{background:var(--panel)}
   .cmp h3{font-size:17px;font-weight:700;margin-bottom:24px;letter-spacing:-.02em;color:var(--txt)}
   .cmp ul{list-style:none;display:flex;flex-direction:column;gap:16px}
@@ -361,7 +361,7 @@
   .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;align-items:stretch}
   .plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:34px;position:relative;display:flex;flex-direction:column;transition:border-color .25s}
   .plan:hover{border-color:var(--line-2)}
-  .plan.pop{border-color:var(--blue);box-shadow:0 20px 50px rgba(var(--glow),.14)}
+  .plan.pop{border-color:var(--blue);box-shadow:none}
   .plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;border:none;font-size:11px;font-weight:700;padding:5px 15px;border-radius:99px;letter-spacing:.05em}
   .plan .pn{font-size:16px;font-weight:700;letter-spacing:-.01em}
   .plan .pd{font-size:13px;color:var(--faint);margin-top:2px}
@@ -398,11 +398,14 @@
 
   /* ---------- final cta ---------- */
   .final{padding:40px 0 110px}
-  .final-box{position:relative;overflow:hidden;border-radius:32px;border:1px solid var(--line-2);background:radial-gradient(110% 130% at 50% 0%,rgba(255,255,255,.12),#050505 55%);text-align:center;padding:84px 30px}
+  .final-box{position:relative;overflow:hidden;border-radius:32px;border:1px solid var(--line);background:var(--panel);text-align:center;padding:84px 30px}
   .final-box h2{position:relative;z-index:2}
   .final-box p{color:var(--muted);margin:14px auto 0;max-width:420px;position:relative;z-index:2;line-height:1.55}
   .final-box .hero-cta{margin-top:28px;margin-bottom:0}
   .final-box .microcopy{margin-top:28px;justify-content:center;gap:22px}
+  .final-box .microcopy span{background:transparent!important;box-shadow:none;border:none;padding:0;color:var(--faint)}
+  .final-box .hero-cta .btn-primary{box-shadow:0 6px 20px rgba(var(--glow),.22)!important}
+  .final-box .hero-cta .btn-primary:hover{box-shadow:0 10px 28px rgba(var(--glow),.28)!important}
 
   /* ---------- footer ---------- */
   footer{border-top:1px solid var(--line);padding:72px 0 36px;overflow:hidden}
@@ -446,7 +449,7 @@
   }
   .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:grab;transform:scale(.96);opacity:.72;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s,box-shadow .35s,border-color .35s}
   .rs-card .media-ph{position:absolute;inset:0;z-index:0}
-  .rs-card.feat{transform:scale(1.04);opacity:1;z-index:2;box-shadow:0 24px 60px rgba(0,0,0,.55);border-color:rgba(255,59,74,.5)}
+  .rs-card.feat{transform:scale(1.04);opacity:1;z-index:2;box-shadow:0 24px 60px rgba(0,0,0,.45);border-color:var(--line-2)}
   .media-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 12px;text-align:center;background:linear-gradient(165deg,#1a2238 0%,#0a0c14 55%,#14101c 100%)}
   .media-ph-play{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(91,140,255,.12);color:rgba(255,255,255,.78);display:grid;place-items:center;flex-shrink:0}
   .media-ph-label{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:-.01em;color:rgba(255,255,255,.55);max-width:11em}
@@ -516,9 +519,9 @@
   }
   .fmt-card.is-muted{opacity:.92;background:#08080a}
   .fmt-card.is-focus{
-    border-color:rgba(255,59,74,.45);
-    background:linear-gradient(180deg,rgba(255,59,74,.1),rgba(255,255,255,.02) 42%);
-    box-shadow:0 0 0 1px rgba(255,59,74,.12),0 24px 80px rgba(196,16,40,.18),0 0 60px rgba(255,59,74,.1)
+    border-color:rgba(var(--glow),.45);
+    background:linear-gradient(180deg,rgba(var(--glow),.08),var(--panel) 48%);
+    box-shadow:none
   }
   .fmt-pill{
     align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
@@ -544,9 +547,9 @@
   .fmt-example .approx{color:var(--faint);font-size:13px;margin:0 6px}
 
   .sixty-block{
-    margin-top:28px;padding:32px 28px;border-radius:24px;border:1px solid rgba(255,59,74,.28);
-    background:radial-gradient(120% 140% at 50% 0%,rgba(255,59,74,.14),rgba(8,8,10,.96) 55%);
-    box-shadow:0 30px 90px rgba(0,0,0,.45),0 0 80px rgba(255,59,74,.08);text-align:center
+    margin-top:28px;padding:32px 28px;border-radius:24px;border:1px solid var(--line);
+    background:var(--panel);
+    box-shadow:none;text-align:center
   }
   .sixty-block .sixty-num{
     font-family:'Bricolage Grotesque','Inter',sans-serif;font-size:clamp(42px,8vw,72px);
@@ -559,7 +562,7 @@
   .view-bar-row .name{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
   .view-bar-track{height:18px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);overflow:hidden}
   .view-bar-fill{display:block;height:100%;border-radius:999px}
-  .view-bar-fill.lf{width:calc(100% / 60);min-width:12px;background:var(--grad);box-shadow:0 0 18px rgba(255,59,74,.45)}
+  .view-bar-fill.lf{width:calc(100% / 60);min-width:12px;background:var(--grad);box-shadow:none}
   .view-bar-fill.sf{width:100%;background:rgba(255,255,255,.18)}
   .view-bar-row .amt{font-size:13px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
   .sixty-note{margin:18px auto 0;max-width:46em;font-size:12px;line-height:1.5;color:var(--faint)}
@@ -645,7 +648,7 @@
   .comp-foot{margin:14px 0 0;font-size:12px;color:var(--faint);line-height:1.45;text-align:center}
   .comp-cta{
     margin:36px auto 0;max-width:760px;text-align:center;padding:36px 28px;border-radius:24px;
-    border:1px solid rgba(255,59,74,.28);background:radial-gradient(120% 140% at 50% 0%,rgba(255,59,74,.12),rgba(8,8,10,.96) 60%)
+    border:1px solid var(--line);background:var(--panel);box-shadow:none
   }
   .comp-cta h3{margin:0 0 10px;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;font-weight:800;color:#fff}
   .comp-cta p{margin:0 auto 22px;max-width:34em;color:var(--muted);font-size:15px;line-height:1.55}
@@ -660,7 +663,7 @@
       "name": "Vidso",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web",
-      "url": "https://vidso.pro/landing",
+      "url": "https://vidso.pro/home",
       "description": "AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions for faceless channel automation.",
       "offers": [
         {
@@ -746,7 +749,7 @@
 <header>
   <div class="wrap" style="position:relative">
     <nav>
-      <a href="/landing" class="logo">
+      <a href="/home" class="logo">
         <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
         Vidso
       </a>
@@ -1556,7 +1559,7 @@ window.VIDSO_COMPETITORS = [
   <div class="wrap">
     <div class="foot">
       <div>
-        <a href="/landing" class="logo">
+        <a href="/home" class="logo">
           <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
           Vidso
         </a>
