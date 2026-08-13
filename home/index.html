@@ -578,6 +578,8 @@
   .comp-yes{color:#ff6b78;font-weight:700}
   .comp-no{color:rgba(255,255,255,.28)}
   .comp-soft{color:rgba(255,255,255,.55);font-size:13px}
+  .comp-feat-label{display:inline-flex;align-items:center;gap:8px}
+  .comp-feat-ico{width:14px;height:14px;flex:0 0 auto;color:rgba(255,255,255,.42)}
   .comp-price{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em}
   .comp-price .start{display:block;font-size:10px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
   .comp-save{
@@ -694,7 +696,7 @@
         Vidso
       </a>
       <div class="nav-links">
-        <a href="#formats">Features</a>
+        <a href="#why-vidso">Features</a>
         <a href="#how">How it works</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
@@ -708,7 +710,7 @@
       </button>
     </nav>
     <div class="nav-drawer" id="navDrawer">
-      <a href="#formats" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
+      <a href="#why-vidso" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
       <a href="#how" onclick="document.querySelector('header').classList.remove('menu-open')">How it works</a>
       <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing</a>
       <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
@@ -1155,7 +1157,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Claude MCP integration</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-no">✕</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
+          <tr><td><span class="comp-feat-label"><svg class="comp-feat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8z"/></svg>Claude MCP integration</span></td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-no">✕</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
           <tr><td>Built specifically around faceless YouTube</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Partial</span></td><td><span class="comp-no">✕</span></td><td><span class="comp-soft">Partial</span></td></tr>
           <tr><td>Long-form-first workflow</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Mixed</span></td><td><span class="comp-soft">Mixed</span></td><td><span class="comp-soft">Mixed</span></td></tr>
           <tr><td>Script → finished video</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
@@ -1336,7 +1338,7 @@
       <div class="fcol">
         <h4>Product</h4>
         <a href="#how">Workflow</a>
-        <a href="#formats">Product</a>
+        <a href="#why-vidso">Product</a>
         <a href="#pricing">Plans</a>
         <a href="#faq">Help</a>
       </div>
