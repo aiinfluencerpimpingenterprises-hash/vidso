@@ -295,7 +295,7 @@
   .cmp.good li{color:var(--muted)}
   .cmp.good li svg{color:var(--check)}
   .cmp.bad li{color:var(--faint)}
-  .cmp.bad li svg{color:var(--xmark)}
+  .cmp.bad li svg{color:var(--a1)}
   @media(max-width:720px){.cmp-grid{grid-template-columns:1fr}}
 
   /* ---------- testimonials ---------- */
@@ -509,34 +509,10 @@
   .fmt-card.is-focus .fmt-example .cash{color:#ff7a86}
   .fmt-example .approx{color:var(--faint);font-size:13px;margin:0 6px}
 
-  .sixty-block{
-    margin-top:28px;padding:32px 28px;border-radius:24px;border:1px solid var(--line);
-    background:var(--panel);
-    box-shadow:none;text-align:center
+  .fmt-footnote{
+    margin:18px auto 0;max-width:46em;text-align:center;
+    font-size:12px;line-height:1.5;color:var(--faint)
   }
-  .sixty-block .sixty-num{
-    font-family:'Bricolage Grotesque','Inter',sans-serif;font-size:clamp(42px,8vw,72px);
-    font-weight:800;letter-spacing:-.045em;line-height:1;margin:0 0 12px;
-    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent
-  }
-  .sixty-block .sixty-copy{max-width:40em;margin:0 auto 28px;color:var(--muted);font-size:16px;line-height:1.55}
-  .view-bars{display:grid;gap:14px;max-width:720px;margin:0 auto;text-align:left}
-  .view-bar-row{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center}
-  .view-bar-row .name{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
-  .view-bar-track{height:18px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);overflow:hidden}
-  .view-bar-fill{display:block;height:100%;border-radius:999px}
-  .view-bar-fill.lf{width:calc(100% / 60);min-width:12px;background:var(--grad);box-shadow:none}
-  .view-bar-fill.sf{width:100%;background:rgba(255,255,255,.18)}
-  .view-bar-row .amt{font-size:13px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .sixty-note{margin:18px auto 0;max-width:46em;font-size:12px;line-height:1.5;color:var(--faint)}
-
-  .ypp-block{margin-top:36px}
-  .ypp-block .ypp-title{text-align:center;font-size:18px;font-weight:700;color:#fff;margin:0 0 18px;letter-spacing:-.02em}
-  .ypp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .ypp-card{padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:#121214;box-shadow:none;isolation:isolate;opacity:1}
-  .ypp-card strong{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
-  .ypp-card p{margin:0;font-size:15px;color:var(--muted);line-height:1.45;font-weight:550}
-  .ypp-card.is-focus{border-color:var(--line);background:#121214;box-shadow:none;opacity:1}
 
   .format-bridge{margin:56px auto 0;max-width:720px;display:flex;flex-direction:column;align-items:center;text-align:center}
   .format-bridge .bridge-q{font-size:15px;color:var(--muted);margin:0 0 14px;font-weight:550;text-align:center;width:100%}
@@ -545,10 +521,8 @@
   .format-bridge .btn{margin-left:auto;margin-right:auto}
 
   @media(max-width:820px){
-    .fmt-grid,.ypp-grid{grid-template-columns:1fr}
+    .fmt-grid{grid-template-columns:1fr}
     .fmt-card.is-focus{order:-1}
-    .view-bar-row{grid-template-columns:88px 1fr auto;gap:8px}
-    .sixty-block{padding:26px 18px}
   }
 
   /* Why Vidso workflow */
@@ -809,7 +783,7 @@
       <div class="browser">
         <div class="browser-bar">
           <span class="d"></span><span class="d"></span><span class="d"></span>
-          <span class="url">vidso.pro/new</span>
+          <span class="url">vidso.pro</span>
         </div>
         <div class="browser-body">
           <div class="bb-left">
@@ -872,79 +846,48 @@
   <div class="wrap">
     <div class="s-head center">
       <div class="eyebrow">Why long-form</div>
-      <h2>Short-form gets views. <span class="accent">Long-form builds revenue.</span></h2>
+      <h2>Short-form gets views? <span class="accent">Long-form builds revenue.</span></h2>
       <p>A million views isn't worth the same on every format. Long-form gives creators more ways to turn attention into meaningful watch time and revenue.</p>
     </div>
 
     <div class="fmt-grid">
       <article class="fmt-card is-muted">
-        <span class="fmt-pill">Shorts</span>
+        <span class="fmt-pill">Everyone else</span>
         <h3>Short-form</h3>
         <div class="fmt-stats">
-          <div class="fmt-stat"><span class="k">Revenue share</span><span class="v">45%</span><span class="s">Creator share of Shorts ad revenue pool</span></div>
-          <div class="fmt-stat"><span class="k">Full YPP ad-revenue path</span><span class="v">10M</span><span class="s">Shorts views within 90 days</span></div>
-          <div class="fmt-stat"><span class="k">Illustrative RPM</span><span class="v">$0.05</span><span class="s">per 1K views (example)</span></div>
+          <div class="fmt-stat"><span class="k">Channel Monetization requirement</span><span class="v">10M</span><span class="s">Shorts views within 90 days</span></div>
+          <div class="fmt-stat"><span class="k">Estimated revenue</span><span class="v">$0.04</span><span class="s">per 1K views (Average)</span></div>
         </div>
         <div class="fmt-example">
           <div class="lbl">Example</div>
           <div class="row">
-            <span class="views">6,000,000 Shorts views</span>
+            <span class="views">500,000 Shorts views</span>
             <span class="approx">≈</span>
-            <span class="cash">$300</span>
+            <span class="cash">$20</span>
           </div>
         </div>
       </article>
 
       <article class="fmt-card is-focus">
-        <span class="fmt-pill">Vidso focus</span>
+        <span class="fmt-pill">Vidso</span>
         <h3>Long-form</h3>
         <div class="fmt-stats">
-          <div class="fmt-stat"><span class="k">Revenue share</span><span class="v">55%</span><span class="s">Creator share of long-form ad revenue</span></div>
-          <div class="fmt-stat"><span class="k">Full YPP ad-revenue path</span><span class="v">4,000</span><span class="s">public watch hours within 12 months</span></div>
-          <div class="fmt-stat"><span class="k">Illustrative RPM</span><span class="v">$3.00</span><span class="s">per 1K views (example)</span></div>
+          <div class="fmt-stat"><span class="k">Channel Monetization requirement</span><span class="v">4,000</span><span class="s">public watch hours within 12 months</span></div>
+          <div class="fmt-stat"><span class="k">Estimated revenue</span><span class="v">$6.50</span><span class="s">per 1K views (Average)</span></div>
         </div>
         <div class="fmt-example">
           <div class="lbl">Example</div>
           <div class="row">
-            <span class="views">100,000 long-form views</span>
+            <span class="views">500,000 long-form views</span>
             <span class="approx">≈</span>
-            <span class="cash">$300</span>
+            <span class="cash">$3,250</span>
           </div>
         </div>
       </article>
     </div>
 
-    <div class="sixty-block">
-      <p class="sixty-num">~60× more views</p>
-      <p class="sixty-copy">At a $3 long-form RPM versus a $0.05 Shorts RPM, Shorts would need roughly 60× the views to generate the same ad revenue.</p>
-      <div class="view-bars" aria-hidden="true">
-        <div class="view-bar-row">
-          <span class="name">Long-form</span>
-          <span class="view-bar-track"><span class="view-bar-fill lf"></span></span>
-          <span class="amt">100K views</span>
-        </div>
-        <div class="view-bar-row">
-          <span class="name">Shorts</span>
-          <span class="view-bar-track"><span class="view-bar-fill sf"></span></span>
-          <span class="amt">6M views</span>
-        </div>
-      </div>
-      <p class="sixty-note">Illustrative example only. Actual RPM varies significantly by niche, audience location, watch time, seasonality and advertiser demand.</p>
-    </div>
+    <p class="fmt-footnote">Estimates only. Actual revenue varies by niche, audience location, watch time, and advertiser demand.</p>
 
-    <div class="ypp-block">
-      <p class="ypp-title">Two paths to monetization. Very different numbers.</p>
-      <div class="ypp-grid">
-        <div class="ypp-card is-focus">
-          <strong>Long-form</strong>
-          <p>1,000 subscribers + 4,000 public watch hours</p>
-        </div>
-        <div class="ypp-card">
-          <strong>Shorts</strong>
-          <p>1,000 subscribers + 10,000,000 qualified Shorts views in 90 days</p>
-        </div>
-      </div>
-    </div>
 
     <div class="format-bridge">
       <p class="bridge-q">So why are most creator tools still optimized for short clips?</p>
