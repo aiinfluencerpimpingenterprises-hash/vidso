@@ -113,7 +113,7 @@
 
   /* ---------- hero ---------- */
   .hero{margin-top:-95px;padding:140px 0 40px;text-align:center;overflow:hidden}
-  .hero::before{content:'';position:absolute;top:-340px;left:50%;transform:translateX(-50%);width:960px;height:680px;background:radial-gradient(ellipse at center,rgba(var(--glow),.14),rgba(var(--glow),.06) 45%,transparent 68%);pointer-events:none}
+  /* Top hero glow removed — header sits clean on near-black + dot-grid */
   .hero .wrap{max-width:1220px}
   .hero-grid{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center;position:relative;z-index:2}
   .hero-copy{display:flex;flex-direction:column;align-items:center;max-width:760px;width:100%;margin:0 auto;text-align:center}
@@ -385,9 +385,6 @@
   /* headline word-mask reveal */
   .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.02em}
   .wi{display:inline-block;will-change:transform}
-  /* breathing hero glow */
-  .hero::before{animation:breathe 7s ease-in-out infinite}
-  @keyframes breathe{0%,100%{opacity:.75;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.08)}}
   /* hover spotlight on cards/steps/plans */
   .card,.step,.plan{--mx:50%;--my:50%}
   .card::after,.step::after,.plan:not(.pop)::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(240px circle at var(--mx) var(--my),rgba(var(--glow),.10),transparent 62%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:0}
