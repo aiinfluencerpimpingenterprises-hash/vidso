@@ -113,16 +113,14 @@
   .hero-copy{display:flex;flex-direction:column;align-items:center;max-width:760px;width:100%;margin:0 auto;text-align:center}
   .hero-brand{display:none}
 
-  .trust-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);font-size:12.5px;font-weight:500;color:var(--muted);margin-bottom:22px}
-  .trust-badge .stars{display:inline-flex;gap:2px;color:#ff3b4a}
-  .trust-badge .stars svg{width:13px;height:13px}
+  .trust-badge{display:inline-flex;align-items:center;justify-content:center;gap:0;padding:8px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);font-size:12.5px;font-weight:500;color:var(--muted);margin-bottom:22px;text-align:center;line-height:1.3}
   .trust-badge b{color:#ff3b4a;font-weight:700}
   .hero-cta .btn-primary{padding:16px 34px;font-size:16px;border-radius:14px;box-shadow:0 0 0 1px rgba(255,59,74,.4),0 14px 44px rgba(196,16,40,.55),0 0 90px rgba(255,59,74,.28)!important}
   .hero-platforms{margin-top:32px}
   .hero-proof .lbl b{color:#ff3b4a}
   .hero-grid .hero-visual{margin-top:52px}
   .hero-grid .hero-visual .browser{border-radius:18px;border:1px solid rgba(255,59,74,.35);box-shadow:0 0 0 1px rgba(255,59,74,.2),0 40px 100px rgba(0,0,0,.85),0 0 100px rgba(255,59,74,.22)}
-  .hero-grid h1{font-size:clamp(28px,5vw,46px);text-align:center;max-width:18ch;margin:0 auto;line-height:1.1}
+  .hero-grid h1{font-size:clamp(28px,5vw,46px);text-align:center;max-width:14em;margin:0 auto;line-height:1.1;text-wrap:balance}
   .hero-copy .sub{margin:18px auto 0;max-width:38em;text-align:center;font-size:15.5px;line-height:1.55}
   .hero-copy .hero-cta{align-self:center;display:flex;justify-content:center;width:100%;margin:28px auto 0;position:relative;z-index:5;min-height:56px}
   .hero-copy .hero-cta .btn{margin-left:auto;margin-right:auto;min-width:240px;opacity:1!important;visibility:visible!important;transform:none;box-shadow:0 0 0 1px rgba(255,59,74,.35),0 12px 40px rgba(196,16,40,.55),0 0 80px rgba(255,59,74,.25)}
@@ -209,14 +207,11 @@
   .prow .check svg{width:11px;height:11px}
   .prow.pending{color:var(--faint)}
   .prow.pending .check{background:rgba(255,255,255,.04);color:var(--faint)}
-  .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;background:#050505;align-items:start}
-  .clip{aspect-ratio:16/9;border-radius:12px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;transition:border-color .25s}
-  .clip:hover{border-color:var(--line-2)}
+  .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;align-items:stretch;justify-items:stretch;background:#050505}
+  .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s;transform:none!important}
+  .bb-right .clip:hover{border-color:var(--line-2)}
+  .bb-right .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0;background:#0c0c0c}
   .clip .media-ph{position:absolute;inset:0;z-index:0}
-  .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:block;border:0;background:#0c0c0c}
-  .clip .clip-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.08) 35%,rgba(0,0,0,.62) 100%)}
-  .clip .score{position:absolute;top:9px;right:9px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;z-index:2}
-  .clip .cap{position:relative;z-index:2;align-self:flex-start;font-size:11px;font-weight:600;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:4px 7px;border-radius:6px;line-height:1.25;color:#fff}
   @media(max-width:720px){.browser-body{grid-template-columns:1fr}.bb-left{border-right:none;border-bottom:1px solid var(--line)}}
 
   /* ---------- section heads ---------- */
@@ -563,10 +558,15 @@
    <div class="hero-grid">
             <div class="hero-copy">
     <div class="trust-badge">
-      <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8 5.5 21.7l1.8-7.2L1.7 9.7l7.4-.6L12 2.2z"/></svg></span>
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
-    <h1>AI long-form YouTube videos on autopilot</h1>
+    <!--
+      H1 alternatives (swap the visible line below if preferred):
+      - Build a YouTube empire, one prompt at a time
+      - Your faceless YouTube empire starts here
+      - Build the YouTube channel that builds your income
+    -->
+    <h1>Build your YouTube empire on autopilot</h1>
     <p class="sub">Vidso is an AI long-form video generator: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel, ship consistent uploads, and grow watch hours toward monetization.</p>
     <div class="hero-cta">
       <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
@@ -632,28 +632,16 @@
           </div>
           <div class="bb-right" id="mockup-clips">
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="12-min faceless explainer preview"></video>
-              <div class="clip-scrim" aria-hidden="true"></div>
-              <span class="score">98</span>
-              <span class="cap">12-min faceless explainer</span>
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 1"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Documentary deep dive preview"></video>
-              <div class="clip-scrim" aria-hidden="true"></div>
-              <span class="score">94</span>
-              <span class="cap">Documentary deep dive</span>
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 2"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Listicle with chapters preview"></video>
-              <div class="clip-scrim" aria-hidden="true"></div>
-              <span class="score">91</span>
-              <span class="cap">Listicle with chapters</span>
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 3"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Evergreen tutorial preview"></video>
-              <div class="clip-scrim" aria-hidden="true"></div>
-              <span class="score">89</span>
-              <span class="cap">Evergreen tutorial</span>
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 4"></video>
             </div>
           </div>
         </div>
@@ -1168,8 +1156,7 @@
   // ---------- continuous loops (life at rest) ----------
   // rotating "loading" clock in the hero pipeline
   gsap.to('.prow.pending .check svg',{rotation:360,transformOrigin:'50% 50%',duration:3,repeat:-1,ease:'none'});
-  // gentle float on the top clip cards
-  gsap.to('.bb-right .clip',{y:'-=6',duration:2.4,repeat:-1,yoyo:true,ease:'sine.inOut',stagger:{each:.3,from:'random'},delay:2});
+  // mockup cards stay top-aligned in a fixed 2x2 grid (no float offset)
 
   // ---------- section headings ----------
   gsap.utils.toArray('.s-head').forEach(function(el){
