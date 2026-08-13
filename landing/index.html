@@ -6,6 +6,10 @@
 <title>Vidso · AI Long-Form Video Generator for YouTube</title>
 <meta name="description" content="Vidso is an AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
 <link rel="canonical" href="https://vidso.pro/landing">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vidso">
 <meta property="og:url" content="https://vidso.pro/landing">
@@ -387,19 +391,25 @@
   .card::after,.step::after,.plan:not(.pop)::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(240px circle at var(--mx) var(--my),rgba(196,16,40,.16),transparent 62%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:0}
   .card:hover::after,.step:hover::after,.plan:not(.pop):hover::after{opacity:1}
   .card>*,.step>*,.plan>*{position:relative;z-index:1}
-  /* ---------- reel showcase (coverflow carousel) ---------- */
+  /* ---------- reel showcase (infinite marquee) ---------- */
   .reelshow{padding:60px 0 90px;text-align:center;overflow:hidden}
-  .rs-viewport{overflow:hidden;padding:44px 0}
-  .rs-row{display:flex;gap:20px;align-items:center;transition:transform .45s cubic-bezier(.4,0,.2,1);touch-action:pan-y;user-select:none;will-change:transform}
-  .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:pointer;transform:scale(.86);opacity:.5;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s,box-shadow .4s,border-color .4s}
+  .rs-viewport{overflow:hidden;padding:44px 0;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+  .rs-row{display:flex;gap:20px;align-items:center;width:max-content;touch-action:pan-y;user-select:none;will-change:transform}
+  .rs-row.is-marquee{animation:rsMarquee 70s linear infinite}
+  .rs-row.is-paused{animation-play-state:paused}
+  @keyframes rsMarquee{
+    from{transform:translate3d(0,0,0)}
+    to{transform:translate3d(-50%,0,0)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .rs-row.is-marquee{animation:none}
+  }
+  .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:grab;transform:scale(.96);opacity:.72;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s,box-shadow .35s,border-color .35s}
   .rs-card .media-ph{position:absolute;inset:0;z-index:0}
-  .rs-card.feat{transform:scale(1.08);opacity:1;z-index:2;box-shadow:0 30px 80px rgba(0,0,0,.62);border-color:rgba(255,59,74,.5)}
+  .rs-card.feat{transform:scale(1.04);opacity:1;z-index:2;box-shadow:0 24px 60px rgba(0,0,0,.55);border-color:rgba(255,59,74,.5)}
   .media-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 12px;text-align:center;background:linear-gradient(165deg,#1a2238 0%,#0a0c14 55%,#14101c 100%)}
   .media-ph-play{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(91,140,255,.12);color:rgba(255,255,255,.78);display:grid;place-items:center;flex-shrink:0}
   .media-ph-label{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:-.01em;color:rgba(255,255,255,.55);max-width:11em}
-  .rs-dots{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
-  .rs-dot{width:8px;height:8px;padding:0;border:none;border-radius:99px;background:rgba(255,255,255,.2);cursor:pointer;transition:.25s}
-  .rs-dot.on{width:26px;background:var(--blue)}
   /* ---------- ai generate promo ---------- */
   .gen-promo{padding:20px 0 100px}
   .gen-promo .s-head{margin-bottom:52px}
@@ -805,16 +815,16 @@
           </div>
           <div class="bb-right" id="mockup-clips">
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 1"></video>
+              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard1.mp4" aria-label="Preview video 1"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 2"></video>
+              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard2.mp4" aria-label="Preview video 2"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 3"></video>
+              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard3.mp4" aria-label="Preview video 3"></video>
             </div>
             <div class="clip">
-              <video muted autoplay loop playsinline preload="metadata" aria-label="Preview video 4"></video>
+              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard4.mp4" aria-label="Preview video 4"></video>
             </div>
           </div>
         </div>
@@ -829,9 +839,9 @@
   <div class="wrap s-head center">
     <div class="eyebrow">Long-form output</div>
     <h2>AI long-form built for retention</h2>
-    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, RPM, and the Partner Program. Drag to browse.</p>
+    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, RPM, and the Partner Program.</p>
   </div>
-  <div class="rs-viewport"><div class="rs-row" id="rsRow">
+  <div class="rs-viewport"><div class="rs-row is-marquee" id="rsRow">
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div></div>
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Documentary deep dive"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Documentary deep dive</span></div></div>
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Story with chapters"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Story with chapters</span></div></div>
@@ -845,7 +855,6 @@
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Script-to-video sample"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Script-to-video sample</span></div></div>
     <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Faceless channel draft"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Faceless channel draft</span></div></div>
   </div></div>
-  <div class="rs-dots" id="rsDots"></div>
 </section>
 
 
@@ -1139,31 +1148,107 @@
 
 <script>
 (function(){
-  var vp=document.querySelector('.rs-viewport'), row=document.getElementById('rsRow');
-  if(!vp||!row) return;
-  var cards=[].slice.call(row.querySelectorAll('.rs-card'));
-  var dotsWrap=document.getElementById('rsDots');
-  var idx=5, dragged=false;
-  cards.forEach(function(c,i){
-    c.addEventListener('click',function(){ if(dragged) return; go(i); });
-    var d=document.createElement('button'); d.className='rs-dot'; d.setAttribute('aria-label','Long-form preview '+(i+1));
-    d.addEventListener('click',function(){go(i);}); dotsWrap.appendChild(d);
+  var vp = document.querySelector('.rs-viewport');
+  var row = document.getElementById('rsRow');
+  if (!vp || !row) return;
+
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  // Duplicate children once for a seamless -50% loop.
+  var originals = [].slice.call(row.children);
+  originals.forEach(function(node){
+    var clone = node.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    row.appendChild(clone);
   });
-  var dots=[].slice.call(dotsWrap.children);
-  function baseX(){ var c=cards[idx]; return vp.clientWidth/2 - (c.offsetLeft + c.offsetWidth/2); }
-  function render(){
-    row.style.transform='translateX('+baseX()+'px)';
-    cards.forEach(function(c,i){ c.classList.toggle('feat', i===idx); });
-    dots.forEach(function(d,i){d.classList.toggle('on',i===idx);});
+
+  var cards = [].slice.call(row.querySelectorAll('.rs-card'));
+  var dragging = false;
+  var dragged = false;
+  var startX = 0;
+  var dragOrigin = 0;
+  var manualX = 0;
+
+  function pause(){ row.classList.add('is-paused'); }
+  function resume(){
+    if (reduce || dragging) return;
+    row.classList.remove('is-paused');
   }
-  function go(i){ idx=Math.max(0,Math.min(cards.length-1,i)); render(); }
-  var startX=0, dragging=false;
-  row.addEventListener('pointerdown',function(e){ dragging=true; dragged=false; startX=e.clientX; row.style.transition='none'; });
-  window.addEventListener('pointermove',function(e){ if(!dragging)return; var dx=e.clientX-startX; if(Math.abs(dx)>6)dragged=true; row.style.transform='translateX('+(baseX()+dx)+'px)'; });
-  function end(e){ if(!dragging)return; dragging=false; row.style.transition=''; var dx=((e&&e.clientX)||startX)-startX; if(dx<-45)go(idx+1); else if(dx>45)go(idx-1); else render(); }
-  window.addEventListener('pointerup',end); window.addEventListener('pointercancel',end);
-  window.addEventListener('resize',render);
-  render(); setTimeout(render,150); setTimeout(render,600);
+
+  // Highlight the card closest to viewport center (keeps "feat" treatment meaningful).
+  function updateFeat(){
+    var mid = vp.getBoundingClientRect().left + vp.clientWidth / 2;
+    var best = null, bestDist = Infinity;
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      var c = r.left + r.width / 2;
+      var d = Math.abs(c - mid);
+      if (d < bestDist) { bestDist = d; best = cards[i]; }
+    }
+    cards.forEach(function(c){ c.classList.toggle('feat', c === best); });
+  }
+
+  if (!reduce) {
+    row.classList.add('is-marquee');
+    vp.addEventListener('mouseenter', pause);
+    vp.addEventListener('mouseleave', function(){ if (!dragging) resume(); });
+    // Keep feat synced while animating.
+    var raf = 0;
+    function tick(){ updateFeat(); raf = requestAnimationFrame(tick); }
+    raf = requestAnimationFrame(tick);
+  } else {
+    row.classList.remove('is-marquee');
+    updateFeat();
+  }
+
+  function currentTranslate(){
+    var tr = getComputedStyle(row).transform;
+    if (!tr || tr === 'none') return 0;
+    var m = tr.match(/matrix\(([^)]+)\)/);
+    if (!m) return 0;
+    return parseFloat(m[1].split(',')[4]) || 0;
+  }
+
+  row.addEventListener('pointerdown', function(e){
+    dragging = true; dragged = false; startX = e.clientX;
+    pause();
+    dragOrigin = currentTranslate();
+    row.style.animation = 'none';
+    row.style.transform = 'translate3d(' + dragOrigin + 'px,0,0)';
+    try { row.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  row.addEventListener('pointermove', function(e){
+    if (!dragging) return;
+    var dx = e.clientX - startX;
+    if (Math.abs(dx) > 6) dragged = true;
+    manualX = dragOrigin + dx;
+    // Wrap within one loop width (~50% of content)
+    var loopW = row.scrollWidth / 2;
+    if (loopW > 0) {
+      while (manualX <= -loopW) manualX += loopW;
+      while (manualX > 0) manualX -= loopW;
+    }
+    row.style.transform = 'translate3d(' + manualX + 'px,0,0)';
+    updateFeat();
+  });
+  function endDrag(){
+    if (!dragging) return;
+    dragging = false;
+    row.style.animation = '';
+    row.style.transform = '';
+    if (!reduce) {
+      // Restart marquee cleanly from the seamless loop.
+      row.classList.remove('is-marquee');
+      void row.offsetWidth;
+      row.classList.add('is-marquee');
+      resume();
+    }
+  }
+  row.addEventListener('pointerup', endDrag);
+  row.addEventListener('pointercancel', endDrag);
+  window.addEventListener('resize', updateFeat);
+  updateFeat();
 })();
 </script>
 
@@ -1452,7 +1537,12 @@ window.VIDSO_COMPETITORS = [
 </footer>
 
 <script>
-/* Hero mockup hover-audio cards */
+/* Hero mockup hover-audio cards
+   Root cause of ~30s unmute delay: preload="metadata" only fetched
+   headers/keyframes, so the AAC audio track was not buffered until unmute
+   forced a late media download. Fix: preload="auto", keep muted playback
+   running so audio bytes are already in the buffer, then toggle muted
+   synchronously on mouseenter (no debounce). */
 (function(){
   var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
   var FILES = [
@@ -1472,7 +1562,7 @@ window.VIDSO_COMPETITORS = [
   var active = null;
 
   function safeMute(v, muted) {
-    try { v.muted = muted; } catch (e) {}
+    try { v.muted = !!muted; } catch (e) {}
   }
   function safePlay(v) {
     try {
@@ -1480,24 +1570,45 @@ window.VIDSO_COMPETITORS = [
       if (p && typeof p.catch === 'function') p.catch(function(){});
     } catch (e) {}
   }
+  function warm(v) {
+    try {
+      v.preload = 'auto';
+      // Nudge the network stack to keep media (incl. audio) flowing while muted.
+      if (v.readyState < 3) { /* HAVE_FUTURE_DATA */ }
+      safePlay(v);
+    } catch (e) {}
+  }
 
   for (var i = 0; i < clips.length; i++) {
     var clip = clips[i];
     var video = clip.querySelector('video');
     if (!video || !FILES[i]) continue;
-    video.src = R2_BASE + '/' + FILES[i];
-    safeMute(video, true);
-    safePlay(video);
+    video.preload = 'auto';
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.loop = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    // Prefer existing HTML src; only assign if missing. Never re-set on hover.
+    var want = R2_BASE + '/' + FILES[i];
+    if (!video.getAttribute('src')) video.src = want;
+    // Do not call load() if already loading — that aborts and restarts buffering.
+    warm(video);
+    video.addEventListener('canplay', function(){ warm(this); }, { once: true });
+    video.addEventListener('canplaythrough', function(){ warm(this); }, { once: true });
     videos.push(video);
 
     if (!canHover) continue;
     (function(v, el){
       el.addEventListener('mouseenter', function(){
+        // Immediate mute flag flip — no timers/debounce.
         for (var j = 0; j < videos.length; j++) {
           if (videos[j] !== v) safeMute(videos[j], true);
         }
         safeMute(v, false);
-        safePlay(v);
+        // If the element paused while buffering, resume; do not await.
+        if (v.paused) safePlay(v);
         active = v;
       });
       el.addEventListener('mouseleave', function(){
