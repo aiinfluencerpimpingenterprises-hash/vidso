@@ -213,8 +213,10 @@
   .clip{aspect-ratio:16/9;border-radius:12px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;transition:border-color .25s}
   .clip:hover{border-color:var(--line-2)}
   .clip .media-ph{position:absolute;inset:0;z-index:0}
+  .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:block;border:0;background:#0c0c0c}
+  .clip .clip-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.08) 35%,rgba(0,0,0,.62) 100%)}
   .clip .score{position:absolute;top:9px;right:9px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;z-index:2}
-  .clip .cap{font-size:11px;font-weight:600;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:4px 7px;border-radius:6px;line-height:1.25}
+  .clip .cap{position:relative;z-index:2;align-self:flex-start;font-size:11px;font-weight:600;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:4px 7px;border-radius:6px;line-height:1.25;color:#fff}
   @media(max-width:720px){.browser-body{grid-template-columns:1fr}.bb-left{border-right:none;border-bottom:1px solid var(--line)}}
 
   /* ---------- section heads ---------- */
@@ -628,11 +630,31 @@
               <div class="prow"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span> Packaging a monetizable upload</div>
             </div>
           </div>
-          <div class="bb-right">
-            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div><span class="score">98</span></div>
-            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Documentary deep dive"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Documentary deep dive</span></div><span class="score">94</span></div>
-            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Listicle with chapters"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Listicle with chapters</span></div><span class="score">91</span></div>
-            <div class="clip"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Evergreen tutorial"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Evergreen tutorial</span></div><span class="score">89</span></div>
+          <div class="bb-right" id="mockup-clips">
+            <div class="clip">
+              <video muted autoplay loop playsinline preload="metadata" aria-label="12-min faceless explainer preview"></video>
+              <div class="clip-scrim" aria-hidden="true"></div>
+              <span class="score">98</span>
+              <span class="cap">12-min faceless explainer</span>
+            </div>
+            <div class="clip">
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Documentary deep dive preview"></video>
+              <div class="clip-scrim" aria-hidden="true"></div>
+              <span class="score">94</span>
+              <span class="cap">Documentary deep dive</span>
+            </div>
+            <div class="clip">
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Listicle with chapters preview"></video>
+              <div class="clip-scrim" aria-hidden="true"></div>
+              <span class="score">91</span>
+              <span class="cap">Listicle with chapters</span>
+            </div>
+            <div class="clip">
+              <video muted autoplay loop playsinline preload="metadata" aria-label="Evergreen tutorial preview"></video>
+              <div class="clip-scrim" aria-hidden="true"></div>
+              <span class="score">89</span>
+              <span class="cap">Evergreen tutorial</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1029,6 +1051,63 @@
   </div>
 </footer>
 
+<script>
+/* Hero mockup hover-audio cards */
+(function(){
+  var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
+  var FILES = [
+    'placeholdercard1.mp4',
+    'placeholdercard2.mp4',
+    'placeholdercard3.mp4',
+    'placeholdercard4.mp4'
+  ];
+  var root = document.getElementById('mockup-clips');
+  if (!root) return;
+  var clips = root.querySelectorAll('.clip');
+  var videos = [];
+  var canHover = false;
+  try {
+    canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  } catch (e) { canHover = false; }
+  var active = null;
+
+  function safeMute(v, muted) {
+    try { v.muted = muted; } catch (e) {}
+  }
+  function safePlay(v) {
+    try {
+      var p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(function(){});
+    } catch (e) {}
+  }
+
+  for (var i = 0; i < clips.length; i++) {
+    var clip = clips[i];
+    var video = clip.querySelector('video');
+    if (!video || !FILES[i]) continue;
+    video.src = R2_BASE + '/' + FILES[i];
+    safeMute(video, true);
+    safePlay(video);
+    videos.push(video);
+
+    if (!canHover) continue;
+    (function(v, el){
+      el.addEventListener('mouseenter', function(){
+        for (var j = 0; j < videos.length; j++) {
+          if (videos[j] !== v) safeMute(videos[j], true);
+        }
+        safeMute(v, false);
+        safePlay(v);
+        active = v;
+      });
+      el.addEventListener('mouseleave', function(){
+        safeMute(v, true);
+        if (active === v) active = null;
+      });
+    })(video, clip);
+  }
+})();
+</script>
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script src="/vendor/gsap/MotionPathPlugin.min.js"></script>
