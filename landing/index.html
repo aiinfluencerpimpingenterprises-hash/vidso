@@ -438,17 +438,10 @@
     .gen-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:100%}
   }
 
-  /* Cursor spotlight (fine pointer only; disabled via JS for touch / reduced-motion) */
-  #cursor-spotlight{
-    position:fixed;top:0;left:0;width:820px;height:820px;margin:-410px 0 0 -410px;
-    border-radius:50%;pointer-events:none;z-index:0;opacity:0;
-    background:radial-gradient(circle,rgba(var(--glow),.11) 0%,rgba(var(--glow),.05) 32%,transparent 68%);
-    transform:translate3d(-50vw,-50vh,0);will-change:transform;
-    transition:opacity .45s ease;contain:layout style paint;
-  }
-  #cursor-spotlight.is-on{opacity:1}
-  @media (prefers-reduced-motion:reduce){
-    #cursor-spotlight{display:none!important}
+  /* Magnetic dot grid — ambient canvas behind content */
+  #dot-grid{
+    position:fixed;inset:0;width:100%;height:100%;
+    pointer-events:none;z-index:0;display:block;
   }
   /* DrawSVG underline under headline */
   .draw-underline{display:block;width:min(340px,64vw);height:18px;margin:8px auto 0;position:relative;z-index:2}
@@ -714,7 +707,7 @@
 <script src="/brand.js"></script>
 </head>
 <body>
-<div id="cursor-spotlight" aria-hidden="true"></div>
+<canvas id="dot-grid" aria-hidden="true"></canvas>
 <div class="scroll-prog" id="scrollProg"></div>
 
 <header>
@@ -1802,40 +1795,216 @@ window.VIDSO_COMPETITORS = [
 </script>
 
 <script>
-/* Soft cursor spotlight — transform-only, rAF-smoothed, landing only */
+/* Magnetic dot grid — single canvas, rAF, landing only */
 (function(){
-  var el = document.getElementById('cursor-spotlight');
-  if (!el) return;
+  var canvas = document.getElementById('dot-grid');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return;
+
   var fine = false, reduce = false;
   try {
     fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   } catch (e) {}
-  if (!fine || reduce) { el.style.display = 'none'; return; }
 
-  var tx = window.innerWidth * 0.5, ty = window.innerHeight * 0.28;
-  var x = tx, y = ty;
-  var visible = false;
+  var interactive = fine && !reduce;
+  var dpr = 1, cssW = 0, cssH = 0;
+  var dots = [];
+  var spacing = 34;
+  var baseR = 1.05;
+  var radius = 140;
+  var radius2 = radius * radius;
+  var maxPush = 18;
+  var mx = -9999, my = -9999;
+  var smx = -9999, smy = -9999;
+  var hasPointer = false;
   var raf = 0;
+  var running = false;
+  var pageVisible = true;
+  var canvasVisible = true;
+  var settling = false;
 
-  function onMove(e){
-    tx = e.clientX; ty = e.clientY;
-    if (!visible) { visible = true; el.classList.add('is-on'); }
-    if (!raf) raf = requestAnimationFrame(tick);
+  function pickSpacing(){
+    var w = window.innerWidth || 1200;
+    if (w < 480) return 40;
+    if (w < 900) return 36;
+    return 32;
   }
-  function tick(){
-    // ease / lag
-    x += (tx - x) * 0.12;
-    y += (ty - y) * 0.12;
-    el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
-    if (Math.abs(tx - x) > 0.4 || Math.abs(ty - y) > 0.4) {
-      raf = requestAnimationFrame(tick);
-    } else {
-      raf = 0;
+
+  function rebuild(){
+    cssW = window.innerWidth || 1;
+    cssH = window.innerHeight || 1;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    spacing = pickSpacing();
+    var cols = Math.ceil(cssW / spacing) + 1;
+    var rows = Math.ceil(cssH / spacing) + 1;
+    var maxDots = 1100;
+    while (cols * rows > maxDots) {
+      spacing += 2;
+      cols = Math.ceil(cssW / spacing) + 1;
+      rows = Math.ceil(cssH / spacing) + 1;
+    }
+    var ox = (cssW - (cols - 1) * spacing) * 0.5;
+    var oy = (cssH - (rows - 1) * spacing) * 0.5;
+    dots.length = 0;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var hx = ox + c * spacing;
+        var hy = oy + r * spacing;
+        dots.push({ hx: hx, hy: hy, x: hx, y: hy, vx: 0, vy: 0, influence: 0 });
+      }
+    }
+    radius = Math.max(110, Math.min(170, spacing * 4.2));
+    radius2 = radius * radius;
+    maxPush = Math.max(14, Math.min(22, spacing * 0.55));
+    baseR = cssW < 480 ? 1.15 : 1.05;
+    drawStaticOrFrame(true);
+  }
+
+  function drawStaticOrFrame(forceStatic){
+    ctx.clearRect(0, 0, cssW, cssH);
+    var n = dots.length;
+    for (var i = 0; i < n; i++) {
+      var d = dots[i];
+      var infl = forceStatic || !interactive ? 0 : d.influence;
+      var a = 0.14 + infl * 0.42;
+      var rr = baseR * (1 + infl * 0.85);
+      var redMix = infl * 0.55;
+      var g = Math.round(245 - redMix * 170);
+      var b = Math.round(244 - redMix * 156);
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(245,' + g + ',' + b + ',' + a.toFixed(3) + ')';
+      ctx.arc(d.x, d.y, rr, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
-  window.addEventListener('pointermove', onMove, { passive: true });
-  window.addEventListener('pointerleave', function(){ el.classList.remove('is-on'); visible = false; }, { passive: true });
+
+  function tick(){
+    raf = 0;
+    if (!pageVisible || !canvasVisible) { running = false; return; }
+
+    // Smooth pointer
+    if (hasPointer) {
+      smx += (mx - smx) * 0.18;
+      smy += (my - smy) * 0.18;
+    } else {
+      smx += (mx - smx) * 0.08;
+      smy += (my - smy) * 0.08;
+    }
+
+    var moving = false;
+    var n = dots.length;
+    var spring = 0.14;
+    var damp = 0.78;
+
+    for (var i = 0; i < n; i++) {
+      var d = dots[i];
+      var dx = d.hx - smx;
+      var dy = d.hy - smy;
+      var dist2 = dx * dx + dy * dy;
+      var infl = 0;
+      var tx = d.hx, ty = d.hy;
+
+      if (hasPointer && dist2 < radius2 && dist2 > 0.0001) {
+        var dist = Math.sqrt(dist2);
+        var t = 1 - dist / radius;
+        // smooth falloff
+        var fall = t * t * (3 - 2 * t);
+        infl = fall;
+        var push = fall * maxPush;
+        tx = d.hx + (dx / dist) * push;
+        ty = d.hy + (dy / dist) * push;
+      }
+
+      // spring toward target
+      d.vx += (tx - d.x) * spring;
+      d.vy += (ty - d.y) * spring;
+      d.vx *= damp;
+      d.vy *= damp;
+      d.x += d.vx;
+      d.y += d.vy;
+      d.influence += (infl - d.influence) * 0.22;
+
+      if (Math.abs(d.vx) > 0.02 || Math.abs(d.vy) > 0.02 || Math.abs(d.influence - infl) > 0.01 || Math.abs(d.x - d.hx) > 0.15 || Math.abs(d.y - d.hy) > 0.15) {
+        moving = true;
+      } else if (!hasPointer) {
+        d.x = d.hx; d.y = d.hy; d.vx = 0; d.vy = 0; d.influence = 0;
+      }
+    }
+
+    drawStaticOrFrame(false);
+    settling = moving || hasPointer || Math.abs(mx - smx) > 0.5 || Math.abs(my - smy) > 0.5;
+    if (settling) {
+      running = true;
+      raf = requestAnimationFrame(tick);
+    } else {
+      running = false;
+    }
+  }
+
+  function kick(){
+    if (!interactive) return;
+    if (!pageVisible || !canvasVisible) return;
+    if (!running) {
+      running = true;
+      raf = requestAnimationFrame(tick);
+    }
+  }
+
+  function onMove(e){
+    mx = e.clientX; my = e.clientY;
+    if (!hasPointer) {
+      hasPointer = true;
+      smx = mx; smy = my;
+    }
+    kick();
+  }
+  function onLeave(){
+    hasPointer = false;
+    mx = -9999; my = -9999;
+    kick();
+  }
+
+  function onVisibility(){
+    pageVisible = document.visibilityState !== 'hidden';
+    if (pageVisible) kick();
+    else if (raf) { cancelAnimationFrame(raf); raf = 0; running = false; }
+  }
+
+  rebuild();
+
+  var resizeTimer = 0;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){
+      rebuild();
+      kick();
+    }, 120);
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', onVisibility);
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      canvasVisible = !!(entries[0] && entries[0].isIntersecting);
+      if (canvasVisible) kick();
+      else if (raf) { cancelAnimationFrame(raf); raf = 0; running = false; }
+    }, { threshold: 0 });
+    io.observe(canvas);
+  }
+
+  if (interactive) {
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerleave', onLeave, { passive: true });
+    document.addEventListener('mouseleave', onLeave, { passive: true });
+  }
 })();
 </script>
 </body>
