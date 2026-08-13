@@ -120,7 +120,14 @@
   .hero-proof .lbl b{color:#ff3b4a}
   .hero-grid .hero-visual{margin-top:52px}
   .hero-grid .hero-visual .browser{border-radius:18px;border:1px solid rgba(255,59,74,.35);box-shadow:0 0 0 1px rgba(255,59,74,.2),0 40px 100px rgba(0,0,0,.85),0 0 100px rgba(255,59,74,.22)}
-  .hero-grid h1{font-size:clamp(28px,5vw,46px);text-align:center;max-width:14em;margin:0 auto;line-height:1.1;text-wrap:balance}
+  .hero-grid h1{font-size:clamp(32px,5.6vw,50px);text-align:center;max-width:15em;margin:0 auto;line-height:1.06;letter-spacing:-.035em;text-wrap:balance}
+  .hero-grid h1 .h1-accent,
+  .hero-grid h1 .h1-accent .wi{
+    background:var(--grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
   .hero-copy .sub{margin:18px auto 0;max-width:38em;text-align:center;font-size:15.5px;line-height:1.55}
   .hero-copy .hero-cta{align-self:center;display:flex;justify-content:center;width:100%;margin:28px auto 0;position:relative;z-index:5;min-height:56px}
   .hero-copy .hero-cta .btn{margin-left:auto;margin-right:auto;min-width:240px;opacity:1!important;visibility:visible!important;transform:none;box-shadow:0 0 0 1px rgba(255,59,74,.35),0 12px 40px rgba(196,16,40,.55),0 0 80px rgba(255,59,74,.25)}
@@ -144,14 +151,14 @@
   }
   @media(min-width:901px){
     .hero{margin-top:-95px;padding:120px 0 56px}
-    .hero-grid h1{font-size:clamp(36px,4.2vw,52px)}
+    .hero-grid h1{font-size:clamp(42px,4.8vw,60px)}
     .hero-copy .sub{margin:22px auto 0;font-size:16px}
     .hero-grid .hero-visual{margin:56px auto 0}
   }
   @media(max-width:520px){
     .hero{padding:88px 0 20px}
     .badge{font-size:11.5px;padding:6px 11px;margin-bottom:18px;max-width:100%;white-space:normal;line-height:1.35;text-align:center}
-    .hero-grid h1{font-size:clamp(30px,9.2vw,40px);line-height:1.08}
+    .hero-grid h1{font-size:clamp(34px,9.6vw,44px);line-height:1.05}
     .hero-copy .sub{font-size:13.5px;margin-top:12px}
     .hero-cta .btn{width:100%;max-width:320px;justify-content:center}
     .browser{border-radius:16px}
@@ -208,7 +215,7 @@
   .prow.pending{color:var(--faint)}
   .prow.pending .check{background:rgba(255,255,255,.04);color:var(--faint)}
   .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;align-items:stretch;justify-items:stretch;background:#050505}
-  .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s;transform:none!important}
+  .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s;align-self:start}
   .bb-right .clip:hover{border-color:var(--line-2)}
   .bb-right .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0;background:#0c0c0c}
   .clip .media-ph{position:absolute;inset:0;z-index:0}
@@ -560,13 +567,8 @@
     <div class="trust-badge">
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
-    <!--
-      H1 alternatives (swap the visible line below if preferred):
-      - Build a YouTube empire, one prompt at a time
-      - Your faceless YouTube empire starts here
-      - Build the YouTube channel that builds your income
-    -->
-    <h1>Build your YouTube empire on autopilot</h1>
+    <!-- Selected H1: Your faceless YouTube empire starts here -->
+    <h1>Your <span class="h1-accent">faceless YouTube empire</span> starts here</h1>
     <p class="sub">Vidso is an AI long-form video generator: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel, ship consistent uploads, and grow watch hours toward monetization.</p>
     <div class="hero-cta">
       <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
