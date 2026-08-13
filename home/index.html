@@ -1140,7 +1140,7 @@
     <div class="s-head center">
       <div class="eyebrow">Compare</div>
       <h2>Not every video tool is built for <span class="accent">YouTube</span>.</h2>
-      <p>Compare Vidso with general-purpose video generators and see what you're actually paying for.</p>
+      <p>Compare Vidso with general-purpose video generators and see what you're actually built for.</p>
     </div>
 
     <div class="comp-table-wrap">
@@ -1155,7 +1155,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Built specifically around faceless YouTube</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Partial</span></td><td><span class="comp-no">—</span></td><td><span class="comp-soft">Partial</span></td></tr>
+          <tr><td>Claude MCP integration</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-no">✕</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
+          <tr><td>Built specifically around faceless YouTube</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Partial</span></td><td><span class="comp-no">✕</span></td><td><span class="comp-soft">Partial</span></td></tr>
           <tr><td>Long-form-first workflow</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Mixed</span></td><td><span class="comp-soft">Mixed</span></td><td><span class="comp-soft">Mixed</span></td></tr>
           <tr><td>Script → finished video</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
           <tr><td>Real footage / B-roll workflow</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Varies</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
@@ -1163,18 +1164,10 @@
           <tr><td>Automatic captions</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
           <tr><td>Complete long-form timeline</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Limited</span></td><td><span class="comp-soft">Varies</span></td><td><span class="comp-soft">Varies</span></td></tr>
           <tr><td>Designed for repeat YouTube publishing</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-soft">Partial</span></td><td><span class="comp-soft">Partial</span></td><td><span class="comp-soft">Partial</span></td></tr>
-          <tr><td>Short-form support</td><td class="col-vidso"><span class="comp-soft">Secondary</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
-          <tr id="compPriceRow">
-            <td>Starting monthly price</td>
-            <td class="col-vidso" id="compVidsoPrice"></td>
-            <td id="compPrice-VidAI"></td>
-            <td id="compPrice-InVideo"></td>
-            <td id="compPrice-Pictory"></td>
-          </tr>
+          <tr><td>Short-form support</td><td class="col-vidso"><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td><td><span class="comp-yes">✓</span></td></tr>
         </tbody>
       </table>
     </div>
-    <p class="comp-foot">Competitor pricing can change. Comparison based on publicly listed plans. “Starting at” uses each product’s lowest publicly listed monthly plan.</p>
 
     <div class="comp-cta">
       <h3>One subscription. Your entire YouTube workflow.</h3>
@@ -1186,59 +1179,6 @@
 
 <!-- PRICING -->
 
-<script>
-/* Central competitor pricing — edit here only.
-   startingMonthly: number | null (null = do not show a price; needs verification)
-   verified: mark false if the figure still needs owner confirmation */
-window.VIDSO_PRICING = {
-  /* Keep in sync with #pricing Starter .amt data-m */
-  starterMonthly: 15,
-  starterAnnualMonthly: 9
-};
-window.VIDSO_COMPETITORS = [
-  {
-    name: 'VidAI',
-    startingMonthly: 99,
-    verified: true,
-    sourceNote: 'Plus plan monthly list price on vid.ai/pricing (promo first-month discounts ignored)'
-  },
-  {
-    name: 'InVideo',
-    startingMonthly: 20,
-    verified: true,
-    sourceNote: 'Plus plan monthly, publicly listed ~$20/mo'
-  },
-  {
-    name: 'Pictory',
-    startingMonthly: 29,
-    verified: true,
-    sourceNote: 'Starter monthly list price on pictory.ai/pricing ($25/mo annual ignored for monthly starting-at)'
-  }
-];
-
-(function renderCompetitorPrices(){
-  var vidso = window.VIDSO_PRICING && window.VIDSO_PRICING.starterMonthly;
-  var list = window.VIDSO_COMPETITORS || [];
-  var vidsoCell = document.getElementById('compVidsoPrice');
-  if (vidsoCell && typeof vidso === 'number') {
-    vidsoCell.innerHTML = '<div class="comp-price"><span class="start">Starting at</span>$' + vidso + '<span class="per" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.45)">/mo</span></div>';
-  }
-  list.forEach(function(c){
-    var cell = document.getElementById('compPrice-' + c.name);
-    if (!cell) return;
-    if (c.startingMonthly == null || !c.verified) {
-      cell.innerHTML = '<span class="comp-na">Price needs verification</span>';
-      return;
-    }
-    var html = '<div class="comp-price"><span class="start">Starting at</span>$' + c.startingMonthly + '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,.45)">/mo</span></div>';
-    if (typeof vidso === 'number' && c.startingMonthly > vidso) {
-      var save = c.startingMonthly - vidso;
-      html += '<div class="comp-save">Save $' + save + '/mo with Vidso</div>';
-    }
-    cell.innerHTML = html;
-  });
-})();
-</script>
 <section class="pricing" id="pricing">
   <div class="wrap">
     <div class="s-head center">
