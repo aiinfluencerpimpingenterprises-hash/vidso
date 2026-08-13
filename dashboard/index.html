@@ -447,6 +447,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 /* AUTH MODAL: premium two-panel */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
 .modal-bg.hidden{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .modal.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
 .auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
 .auth-showcase::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(var(--glow),.08),transparent 60%);pointer-events:none}
@@ -1235,6 +1236,124 @@ input:focus,textarea:focus,select:focus,
 .settings-row-label{font-size:.85rem;font-weight:550;color:rgba(255,255,255,.82)}
 .settings-row-value{font-size:.85rem;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
 .settings-signout{width:calc(100% - 36px);margin:16px 18px 18px;min-height:44px}
+.settings-row-btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:48px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);cursor:pointer;font-family:inherit;text-align:left;color:inherit
+}
+.settings-row-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+.settings-row-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.settings-row-btn .settings-row-value{color:rgba(255,255,255,.4);font-weight:500;font-size:.78rem}
+
+/* ── Onboarding modal ─────────────────────────────────────────────────── */
+.onboarding-shell{
+  max-width:560px;width:min(560px,100%);max-height:min(720px,calc(100vh - 32px));
+  padding:0;overflow:hidden;display:flex;flex-direction:column;
+  background:#121214;border:1px solid var(--border);border-radius:var(--radius-modal);
+  box-shadow:0 28px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.03);
+  isolation:isolate
+}
+.ob-top{
+  display:flex;align-items:center;gap:10px;padding:14px 16px 10px;
+  border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0
+}
+.ob-progress{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.ob-dot{
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.14);
+  transition:background .25s var(--ease-out),transform .25s var(--ease-out)
+}
+.ob-dot.is-active{background:var(--a1);transform:scale(1.15);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
+.ob-dot.is-done{background:rgba(var(--glow),.55)}
+.ob-step-label{font-size:.72rem;font-weight:650;color:rgba(255,255,255,.4);letter-spacing:.04em;margin-left:6px;white-space:nowrap}
+.ob-skip,.ob-close{
+  min-width:44px;min-height:44px;border:none;border-radius:12px;background:transparent;
+  color:rgba(255,255,255,.65);display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;padding:0 10px
+}
+.ob-skip:hover,.ob-close:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.ob-skip:focus-visible,.ob-close:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.ob-body{position:relative;flex:1;min-height:0;overflow:auto;padding:28px 28px 8px}
+.ob-step{display:none;flex-direction:column;align-items:stretch;gap:18px;animation:obIn .32s var(--ease-out)}
+.ob-step.is-active{display:flex}
+@keyframes obIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .ob-step{animation:none}
+  .ob-dot{transition:none}
+}
+.ob-brand{display:flex;align-items:center;justify-content:center;gap:10px}
+.ob-brand img{width:40px;height:40px;object-fit:contain;border-radius:10px}
+.ob-kicker{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:center}
+.ob-title{margin:0;font-size:clamp(1.35rem,3.2vw,1.7rem);font-weight:800;letter-spacing:-.03em;color:var(--ink);text-align:center;line-height:1.2}
+.ob-sub{margin:0 auto;max-width:36em;font-size:.92rem;line-height:1.55;color:rgba(255,255,255,.58);text-align:center}
+.ob-step[data-ob-step="2"] .ob-title,.ob-step[data-ob-step="3"] .ob-title,
+.ob-step[data-ob-step="4"] .ob-title,.ob-step[data-ob-step="5"] .ob-title{text-align:left}
+.ob-step[data-ob-step="2"] .ob-sub,.ob-step[data-ob-step="3"] .ob-sub,
+.ob-step[data-ob-step="4"] .ob-sub,.ob-step[data-ob-step="5"] .ob-sub{text-align:left;margin:0}
+.ob-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob-option{
+  display:flex;align-items:flex-start;gap:10px;min-height:52px;padding:14px 14px;
+  border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.78);font-size:.86rem;font-weight:600;font-family:inherit;
+  cursor:pointer;text-align:left;line-height:1.35;transition:background .15s,border-color .15s,color .15s,box-shadow .15s
+}
+.ob-option:hover{border-color:rgba(var(--glow),.45);color:var(--ink);background:rgba(var(--glow),.06)}
+.ob-option:focus-visible{outline:2px solid rgba(var(--glow),.7);outline-offset:1px}
+.ob-option.is-selected{
+  border-color:var(--a1);background:rgba(var(--glow),.14);color:var(--ink);
+  box-shadow:0 0 0 1px rgba(var(--glow),.25)
+}
+.ob-option .ob-check{
+  width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);
+  flex:0 0 auto;margin-top:1px;display:grid;place-items:center;color:transparent;font-size:.65rem;font-weight:800
+}
+.ob-option.is-selected .ob-check{background:var(--a1);border-color:var(--a1);color:#fff}
+.ob-other{display:none;margin-top:2px}
+.ob-other.is-open{display:block}
+.ob-other input{
+  width:100%;min-height:44px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.03);color:var(--ink);font-size:.88rem;font-family:inherit
+}
+.ob-other input:focus{outline:none;border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.12)}
+.ob-rail{
+  display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:8px;margin-top:4px
+}
+.ob-rail-step{
+  flex:1 1 88px;min-width:84px;max-width:110px;padding:14px 10px;border-radius:14px;
+  border:1px solid var(--border);background:rgba(255,255,255,.03);text-align:center
+}
+.ob-rail-step .ico{
+  width:32px;height:32px;margin:0 auto 8px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(var(--glow),.1);border:1px solid rgba(var(--glow),.28);color:#ff7a86
+}
+.ob-rail-step .ico svg{width:16px;height:16px}
+.ob-rail-step .t{font-size:.72rem;font-weight:700;color:var(--ink);line-height:1.3}
+.ob-rail-arrow{display:flex;align-items:center;color:rgba(var(--glow),.55);padding:0 2px}
+.ob-rail-arrow svg{width:16px;height:16px}
+.ob-activate{
+  margin-top:4px;padding:18px;border-radius:16px;border:1px solid rgba(var(--glow),.28);
+  background:linear-gradient(180deg,rgba(var(--glow),.12),rgba(255,255,255,.02))
+}
+.ob-activate h3{margin:0 0 6px;font-size:1.05rem;font-weight:750;color:var(--ink);letter-spacing:-.02em}
+.ob-activate p{margin:0;font-size:.86rem;line-height:1.5;color:rgba(255,255,255,.55)}
+.ob-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0
+}
+.ob-foot .btn{min-height:44px}
+.ob-foot-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.ob-hint{font-size:.75rem;color:rgba(255,255,255,.38);min-height:1.1em}
+@media (max-width:560px){
+  #onboarding-modal{padding:0;align-items:stretch}
+  .onboarding-shell{
+    width:100%;max-width:none;max-height:none;height:100%;min-height:100%;
+    border-radius:0;border-left:none;border-right:none
+  }
+  .ob-body{padding:22px 18px 10px}
+  .ob-options{grid-template-columns:1fr}
+  .ob-rail-arrow{display:none}
+  .ob-rail-step{max-width:none;flex:1 1 calc(50% - 8px)}
+  .ob-foot{padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+}
 
 /* Mobile chrome (drawer) — desktop unchanged */
 .mobile-nav-toggle,.mobile-nav-close{display:none}
@@ -1332,6 +1451,10 @@ input:focus,textarea:focus,select:focus,
         <span class="settings-row-label">Credits</span>
         <span class="settings-row-value" id="settings-credits">—</span>
       </div>
+      <button type="button" class="settings-row-btn" onclick="closeAccountSettings();openOnboarding({fromMenu:true})" aria-label="Open getting started onboarding">
+        <span class="settings-row-label">Getting started</span>
+        <span class="settings-row-value">Onboarding →</span>
+      </button>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Billing</span>
         <span class="badge-soon">Coming soon</span>
@@ -1346,6 +1469,108 @@ input:focus,textarea:focus,select:focus,
       </div>
     </div>
     <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="modal-bg hidden" id="onboarding-modal" onclick="if(event.target===this)skipOnboarding()">
+  <div class="modal onboarding-shell" role="dialog" aria-modal="true" aria-labelledby="ob-title" tabindex="-1">
+    <div class="ob-top">
+      <div class="ob-progress" aria-label="Onboarding progress">
+        <span class="ob-dot is-active" data-ob-dot="1"></span>
+        <span class="ob-dot" data-ob-dot="2"></span>
+        <span class="ob-dot" data-ob-dot="3"></span>
+        <span class="ob-dot" data-ob-dot="4"></span>
+        <span class="ob-dot" data-ob-dot="5"></span>
+        <span class="ob-step-label" id="ob-step-label">Step 1 of 5</span>
+      </div>
+      <button type="button" class="ob-skip" id="ob-skip-btn" onclick="skipOnboarding()">Skip</button>
+      <button type="button" class="ob-close" onclick="skipOnboarding()" aria-label="Close onboarding">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="ob-body">
+      <!-- Step 1: Welcome -->
+      <div class="ob-step is-active" data-ob-step="1">
+        <div class="ob-brand">
+          <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async">
+        </div>
+        <p class="ob-kicker">Welcome</p>
+        <h2 class="ob-title" id="ob-title">Welcome to Vidso</h2>
+        <p class="ob-sub">Turn a topic into a full long-form YouTube video with script, voiceover, real footage, B-roll, and captions, all in one place.</p>
+      </div>
+
+      <!-- Step 2: Niche -->
+      <div class="ob-step" data-ob-step="2">
+        <p class="ob-kicker" style="text-align:left">About your channel</p>
+        <h2 class="ob-title">What is your channel about?</h2>
+        <p class="ob-sub">Pick the closest fit. You can change direction anytime.</p>
+        <div class="ob-options" id="ob-niche-options" role="listbox" aria-label="Channel type">
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="explainers"><span class="ob-check" aria-hidden="true">✓</span>Explainers</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="documentaries"><span class="ob-check" aria-hidden="true">✓</span>Documentaries</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="listicles"><span class="ob-check" aria-hidden="true">✓</span>Listicles / Countdowns</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="stories"><span class="ob-check" aria-hidden="true">✓</span>Stories</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="tutorials"><span class="ob-check" aria-hidden="true">✓</span>Tutorials</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="other"><span class="ob-check" aria-hidden="true">✓</span>Other</button>
+        </div>
+        <div class="ob-other" id="ob-niche-other">
+          <label class="sr-only" for="ob-niche-other-input">Describe your niche</label>
+          <input id="ob-niche-other-input" type="text" maxlength="80" placeholder="e.g. true crime, finance, airport secrets" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Step 3: Goal -->
+      <div class="ob-step" data-ob-step="3">
+        <p class="ob-kicker" style="text-align:left">Your goal</p>
+        <h2 class="ob-title">What do you want from Vidso?</h2>
+        <p class="ob-sub">One pick is enough. This just helps us point you in the right direction.</p>
+        <div class="ob-options" id="ob-goal-options" role="listbox" aria-label="Primary goal" style="grid-template-columns:1fr">
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="watch_time"><span class="ob-check" aria-hidden="true">✓</span>Grow watch time toward monetization</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="publish"><span class="ob-check" aria-hidden="true">✓</span>Publish consistently</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="repurpose"><span class="ob-check" aria-hidden="true">✓</span>Repurpose ideas into long-form</button>
+          <button type="button" class="ob-option" role="option" aria-selected="false" data-value="exploring"><span class="ob-check" aria-hidden="true">✓</span>Just exploring</button>
+        </div>
+      </div>
+
+      <!-- Step 4: How it works -->
+      <div class="ob-step" data-ob-step="4">
+        <p class="ob-kicker" style="text-align:left">How it works</p>
+        <h2 class="ob-title">One workflow. Finished YouTube videos.</h2>
+        <p class="ob-sub">Everything happens here. No stitching script tools, stock libraries, and editors together.</p>
+        <div class="ob-rail" aria-label="Faceless YouTube production workflow">
+          <div class="ob-rail-step"><div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div><div class="t">Idea / Script</div></div>
+          <div class="ob-rail-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+          <div class="ob-rail-step"><div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div><div class="t">Voiceover</div></div>
+          <div class="ob-rail-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+          <div class="ob-rail-step"><div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg></div><div class="t">Real footage + B-roll</div></div>
+          <div class="ob-rail-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+          <div class="ob-rail-step"><div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h12M4 17h8"/></svg></div><div class="t">Captions</div></div>
+          <div class="ob-rail-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+          <div class="ob-rail-step"><div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="t">Finished video</div></div>
+        </div>
+      </div>
+
+      <!-- Step 5: Activate -->
+      <div class="ob-step" data-ob-step="5">
+        <p class="ob-kicker" style="text-align:left">Ready</p>
+        <h2 class="ob-title">Create your first video</h2>
+        <p class="ob-sub">Jump into the faceless long-form generator and turn a topic into a publish-ready YouTube video.</p>
+        <div class="ob-activate">
+          <h3 id="ob-activate-hint">Start with a topic that fits your niche</h3>
+          <p>We will open Video Generation for you. You can edit anything before you generate.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ob-foot">
+      <button type="button" class="btn btn-ghost" id="ob-back-btn" onclick="onboardingBack()" hidden>Back</button>
+      <div class="ob-foot-right">
+        <span class="ob-hint" id="ob-hint" aria-live="polite"></span>
+        <button type="button" class="btn btn-secondary" id="ob-secondary-btn" onclick="finishOnboarding('dashboard')" hidden>Explore dashboard</button>
+        <button type="button" class="btn btn-primary" id="ob-next-btn" onclick="onboardingNext()">Get started</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1468,6 +1693,10 @@ input:focus,textarea:focus,select:focus,
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
       </div>
+      <button type="button" class="user-signout-btn" onclick="openOnboarding({fromMenu:true})" aria-label="Open getting started onboarding">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19h14"/></svg>
+        Getting started
+      </button>
       <button type="button" class="user-signout-btn" onclick="doLogout()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign out
@@ -3219,6 +3448,7 @@ async function checkAuth() {
   loadVoices()
   loadFiles()
   restorePanelFromHash() // path routes + legacy #hash bookmarks
+  maybeShowOnboarding()
 }
 
 function showModal() { document.getElementById('auth-modal').classList.remove('hidden') }
@@ -3313,6 +3543,7 @@ window.doLogin = async () => {
     loadUsage()
     loadVoices()
     loadFiles()
+    maybeShowOnboarding()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
   finally { setAuthCtaLoading(btn, false) }
 }
@@ -3334,6 +3565,7 @@ window.doSignup = async () => {
     loadUsage()
     loadVoices()
     loadFiles()
+    maybeShowOnboarding()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
   finally { setAuthCtaLoading(btn, false) }
 }
@@ -3403,6 +3635,11 @@ window.closeAccountSettings = () => {
 }
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return
+  const onboarding = document.getElementById('onboarding-modal')
+  if (onboarding && !onboarding.classList.contains('hidden')) {
+    skipOnboarding()
+    return
+  }
   const settings = document.getElementById('settings-modal')
   if (settings && !settings.classList.contains('hidden')) {
     closeAccountSettings()
@@ -3410,6 +3647,289 @@ document.addEventListener('keydown', (e) => {
   }
   if (document.body.classList.contains('nav-open')) closeMobileNav()
 })
+
+// ── ONBOARDING (localStorage until backend profile fields exist) ───────────
+// Persistence:
+//   vidso_onboarding_seen:<userKey>     -> "1" when completed or skipped (no auto re-open)
+//   vidso_onboarding_answers:<userKey>  -> JSON { niche, nicheOther, goal, topicHint, updatedAt }
+// userKey = currentUser.email || currentUser.id || 'anon'
+// No /api/user profile write endpoint exists in this repo; do not invent a silent backend save.
+const OB_NICHE_HINTS = {
+  explainers: 'How [topic] actually works (and why most people get it wrong)',
+  documentaries: 'The untold story behind [subject]',
+  listicles: '12 secrets about [niche] nobody talks about',
+  stories: 'The day everything changed: a story worth watching',
+  tutorials: 'How to [skill] from scratch, step by step',
+  other: ''
+}
+let _obStep = 1
+let _obPrevFocus = null
+let _obNiche = ''
+let _obGoal = ''
+let _obOpening = false
+
+function obUserKey() {
+  const u = currentUser || {}
+  return String(u.email || u.id || u.user_id || 'anon').trim().toLowerCase() || 'anon'
+}
+function obSeenKey() { return 'vidso_onboarding_seen:' + obUserKey() }
+function obAnswersKey() { return 'vidso_onboarding_answers:' + obUserKey() }
+function obHasSeen() {
+  try { return localStorage.getItem(obSeenKey()) === '1' } catch (_) { return false }
+}
+function obMarkSeen() {
+  try { localStorage.setItem(obSeenKey(), '1') } catch (_) {}
+}
+function obLoadAnswers() {
+  try { return JSON.parse(localStorage.getItem(obAnswersKey()) || 'null') || {} } catch (_) { return {} }
+}
+function obSaveAnswers(patch) {
+  const next = Object.assign({}, obLoadAnswers(), patch || {}, { updatedAt: Date.now() })
+  try { localStorage.setItem(obAnswersKey(), JSON.stringify(next)) } catch (_) {}
+  return next
+}
+function obTopicHint() {
+  if (_obNiche === 'other') {
+    const custom = (document.getElementById('ob-niche-other-input')?.value || '').trim()
+    return custom ? `A long-form video about ${custom}` : ''
+  }
+  return OB_NICHE_HINTS[_obNiche] || ''
+}
+
+function obBindOptionGroup(rootId, onPick) {
+  const root = document.getElementById(rootId)
+  if (!root || root.dataset.obBound === '1') return
+  root.dataset.obBound = '1'
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ob-option')
+    if (!btn || !root.contains(btn)) return
+    root.querySelectorAll('.ob-option').forEach(b => {
+      b.classList.toggle('is-selected', b === btn)
+      b.setAttribute('aria-selected', b === btn ? 'true' : 'false')
+    })
+    onPick(btn.getAttribute('data-value') || '')
+  })
+  root.addEventListener('keydown', (e) => {
+    const opts = [...root.querySelectorAll('.ob-option')]
+    const i = opts.indexOf(document.activeElement)
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault(); opts[Math.min(opts.length - 1, Math.max(0, i) + 1)]?.focus()
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); opts[Math.max(0, (i < 0 ? 0 : i) - 1)]?.focus()
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      if (document.activeElement?.classList?.contains('ob-option')) {
+        e.preventDefault(); document.activeElement.click()
+      }
+    }
+  })
+}
+
+function obSyncUI() {
+  const modal = document.getElementById('onboarding-modal')
+  if (!modal) return
+  modal.querySelectorAll('.ob-step').forEach(el => {
+    el.classList.toggle('is-active', Number(el.getAttribute('data-ob-step')) === _obStep)
+  })
+  modal.querySelectorAll('[data-ob-dot]').forEach(dot => {
+    const n = Number(dot.getAttribute('data-ob-dot'))
+    dot.classList.toggle('is-active', n === _obStep)
+    dot.classList.toggle('is-done', n < _obStep)
+  })
+  const label = document.getElementById('ob-step-label')
+  if (label) label.textContent = 'Step ' + _obStep + ' of 5'
+  const back = document.getElementById('ob-back-btn')
+  if (back) back.hidden = _obStep <= 1
+  const next = document.getElementById('ob-next-btn')
+  const secondary = document.getElementById('ob-secondary-btn')
+  const hint = document.getElementById('ob-hint')
+  if (hint) hint.textContent = ''
+  if (secondary) secondary.hidden = _obStep !== 5
+  if (next) {
+    if (_obStep === 1) next.textContent = 'Get started'
+    else if (_obStep === 5) next.textContent = 'Create your first video'
+    else next.textContent = 'Continue'
+  }
+  const otherWrap = document.getElementById('ob-niche-other')
+  if (otherWrap) otherWrap.classList.toggle('is-open', _obNiche === 'other')
+  const activateHint = document.getElementById('ob-activate-hint')
+  if (activateHint) {
+    const t = obTopicHint()
+    activateHint.textContent = t
+      ? ('Suggested topic: ' + t)
+      : 'Start with a topic that fits your niche'
+  }
+}
+
+function obRestoreFromStorage() {
+  const a = obLoadAnswers()
+  _obNiche = a.niche || ''
+  _obGoal = a.goal || ''
+  const nicheRoot = document.getElementById('ob-niche-options')
+  nicheRoot?.querySelectorAll('.ob-option').forEach(b => {
+    const on = b.getAttribute('data-value') === _obNiche
+    b.classList.toggle('is-selected', on)
+    b.setAttribute('aria-selected', on ? 'true' : 'false')
+  })
+  const goalRoot = document.getElementById('ob-goal-options')
+  goalRoot?.querySelectorAll('.ob-option').forEach(b => {
+    const on = b.getAttribute('data-value') === _obGoal
+    b.classList.toggle('is-selected', on)
+    b.setAttribute('aria-selected', on ? 'true' : 'false')
+  })
+  const otherInput = document.getElementById('ob-niche-other-input')
+  if (otherInput) otherInput.value = a.nicheOther || ''
+}
+
+window.openOnboarding = (opts = {}) => {
+  if (!currentUser) { showModal(); return }
+  const modal = document.getElementById('onboarding-modal')
+  if (!modal || _obOpening) return
+  _obOpening = true
+  _obPrevFocus = document.activeElement
+  _obStep = 1
+  obBindOptionGroup('ob-niche-options', (v) => {
+    _obNiche = v
+    const otherWrap = document.getElementById('ob-niche-other')
+    otherWrap?.classList.toggle('is-open', v === 'other')
+    if (v === 'other') document.getElementById('ob-niche-other-input')?.focus()
+    const hint = document.getElementById('ob-hint')
+    if (hint) hint.textContent = ''
+  })
+  obBindOptionGroup('ob-goal-options', (v) => {
+    _obGoal = v
+    const hint = document.getElementById('ob-hint')
+    if (hint) hint.textContent = ''
+  })
+  obRestoreFromStorage()
+  obSyncUI()
+  window.closeMobileNav?.()
+  window.closeAccountSettings?.()
+  modal.classList.remove('hidden')
+  try { window.applyVidsoLogos?.() } catch (_) {}
+  const shell = modal.querySelector('.onboarding-shell')
+  shell?.focus?.()
+  _obOpening = false
+  if (opts.fromMenu) {
+    // Re-open from menu does not change the seen flag.
+  }
+}
+
+window.closeOnboarding = () => {
+  const modal = document.getElementById('onboarding-modal')
+  if (!modal) return
+  modal.classList.add('hidden')
+  if (_obPrevFocus && typeof _obPrevFocus.focus === 'function') {
+    try { _obPrevFocus.focus() } catch (_) {}
+  }
+  _obPrevFocus = null
+}
+
+window.skipOnboarding = () => {
+  // Skip closes forever for auto-open, but remains available from the menu.
+  if (_obNiche || _obGoal) {
+    obSaveAnswers({
+      niche: _obNiche || null,
+      nicheOther: (document.getElementById('ob-niche-other-input')?.value || '').trim() || null,
+      goal: _obGoal || null,
+      topicHint: obTopicHint() || null,
+      status: 'skipped'
+    })
+  } else {
+    obSaveAnswers({ status: 'skipped' })
+  }
+  obMarkSeen()
+  closeOnboarding()
+}
+
+window.onboardingBack = () => {
+  if (_obStep <= 1) return
+  _obStep -= 1
+  obSyncUI()
+}
+
+window.onboardingNext = () => {
+  const hint = document.getElementById('ob-hint')
+  if (_obStep === 2) {
+    if (!_obNiche) {
+      if (hint) hint.textContent = 'Pick one option to continue'
+      return
+    }
+    if (_obNiche === 'other') {
+      const custom = (document.getElementById('ob-niche-other-input')?.value || '').trim()
+      if (!custom) {
+        if (hint) hint.textContent = 'Add a short niche description'
+        document.getElementById('ob-niche-other-input')?.focus()
+        return
+      }
+    }
+    obSaveAnswers({
+      niche: _obNiche,
+      nicheOther: (document.getElementById('ob-niche-other-input')?.value || '').trim() || null,
+      topicHint: obTopicHint() || null
+    })
+  }
+  if (_obStep === 3) {
+    if (!_obGoal) {
+      if (hint) hint.textContent = 'Pick one goal to continue'
+      return
+    }
+    obSaveAnswers({ goal: _obGoal })
+  }
+  if (_obStep >= 5) {
+    finishOnboarding('videogen')
+    return
+  }
+  _obStep += 1
+  obSyncUI()
+}
+
+window.finishOnboarding = (dest) => {
+  const topicHint = obTopicHint()
+  obSaveAnswers({
+    niche: _obNiche || obLoadAnswers().niche || null,
+    nicheOther: (document.getElementById('ob-niche-other-input')?.value || '').trim() || null,
+    goal: _obGoal || obLoadAnswers().goal || null,
+    topicHint: topicHint || null,
+    status: 'completed'
+  })
+  obMarkSeen()
+  closeOnboarding()
+  if (dest === 'videogen') {
+    try { switchPanel('videogen', null) } catch (_) { location.href = '/video-generation' }
+    // Prefill topic when empty so we never overwrite an in-progress draft.
+    requestAnimationFrame(() => {
+      const topic = document.getElementById('fv-topic')
+      if (topic && !String(topic.value || '').trim() && topicHint) {
+        topic.value = topicHint
+        try { topic.dispatchEvent(new Event('input', { bubbles: true })) } catch (_) {}
+      }
+    })
+  } else {
+    try { switchPanel('dashboard', null) } catch (_) {}
+  }
+}
+
+window.maybeShowOnboarding = () => {
+  if (!currentUser) return
+  const auth = document.getElementById('auth-modal')
+  if (auth && !auth.classList.contains('hidden')) return
+  // Preview helper: ?onboarding=1 force-opens (does not clear seen flag until skip/complete)
+  const force = /(?:\?|&)onboarding=1(?:&|$)/.test(location.search || '')
+  if (!force && obHasSeen()) return
+  // Defer so auth shell / panel restore settle first.
+  setTimeout(() => {
+    if (!currentUser) return
+    if (!force && obHasSeen()) return
+    if (force) {
+      try {
+        const url = new URL(location.href)
+        url.searchParams.delete('onboarding')
+        history.replaceState({}, '', url.pathname + url.search + url.hash)
+      } catch (_) {}
+    }
+    openOnboarding({ auto: true })
+  }, 220)
+}
 
 function populateUser() {
   document.getElementById('user-email').textContent = currentUser.email || ''
