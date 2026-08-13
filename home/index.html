@@ -286,7 +286,7 @@
   .compare{padding:40px 0 100px}
   .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px}
   .cmp{border-radius:var(--r);padding:34px;border:1px solid var(--line)}
-  .cmp.good{background:linear-gradient(180deg,rgba(var(--glow),.06),var(--panel));color:var(--txt);border-color:var(--line);box-shadow:none}
+  .cmp.good{background:var(--panel);color:var(--txt);border-color:var(--line);box-shadow:none}
   .cmp.bad{background:var(--panel)}
   .cmp h3{font-size:17px;font-weight:700;margin-bottom:24px;letter-spacing:-.02em;color:var(--txt)}
   .cmp ul{list-style:none;display:flex;flex-direction:column;gap:16px}
@@ -483,7 +483,7 @@
   .fmt-card.is-muted{opacity:.92;background:#08080a}
   .fmt-card.is-focus{
     border-color:var(--line-2);
-    background:linear-gradient(180deg,rgba(var(--glow),.05),var(--panel) 48%);
+    background:var(--panel);
     box-shadow:none
   }
   .fmt-pill{
@@ -536,7 +536,7 @@
   .ypp-card{padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
   .ypp-card strong{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
   .ypp-card p{margin:0;font-size:15px;color:rgba(255,255,255,.84);line-height:1.45;font-weight:550}
-  .ypp-card.is-focus{border-color:rgba(255,59,74,.35);background:rgba(255,59,74,.06)}
+  .ypp-card.is-focus{border-color:var(--line-2);background:var(--panel);box-shadow:none}
 
   .format-bridge{margin-top:56px;text-align:center;max-width:720px;margin-left:auto;margin-right:auto}
   .format-bridge .bridge-q{font-size:15px;color:var(--muted);margin:0 0 14px;font-weight:550}
@@ -590,7 +590,7 @@
   .comp-table th,.comp-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:middle}
   .comp-table th:first-child,.comp-table td:first-child{text-align:left;color:rgba(255,255,255,.78);font-weight:550;min-width:190px}
   .comp-table thead th{font-size:13px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.02em;background:rgba(0,0,0,.25);position:sticky;top:0}
-  .comp-table .col-vidso{background:rgba(255,59,74,.07);border-left:1px solid rgba(255,59,74,.28);border-right:1px solid rgba(255,59,74,.28);min-width:150px}
+  .comp-table .col-vidso{background:rgba(255,255,255,.03);border-left:1px solid var(--line);border-right:1px solid var(--line);min-width:150px}
   .comp-table thead .col-vidso{color:var(--txt);box-shadow:inset 0 3px 0 var(--a1)}
   .comp-table tbody tr:last-child td{border-bottom:none}
   .comp-head{display:flex;flex-direction:column;align-items:center;gap:8px}
