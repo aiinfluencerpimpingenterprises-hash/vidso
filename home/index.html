@@ -367,8 +367,14 @@
   .final-box .hero-cta{margin-top:28px;margin-bottom:0}
   .final-box .microcopy{margin-top:28px;justify-content:center;gap:22px}
   .final-box .microcopy span{background:transparent!important;box-shadow:none;border:none;padding:0;color:var(--faint)}
-  .final-box .hero-cta .btn-primary{box-shadow:0 6px 20px rgba(var(--glow),.22)!important}
-  .final-box .hero-cta .btn-primary:hover{box-shadow:0 10px 28px rgba(var(--glow),.28)!important}
+  .final-box .hero-cta .btn-primary{
+    min-height:56px;padding:16px 34px;border-radius:999px;gap:10px;
+    box-shadow:0 0 0 1px rgba(var(--glow),.28),0 12px 36px rgba(var(--glow),.26),0 0 60px rgba(var(--glow),.12)!important
+  }
+  .final-box .hero-cta .btn-primary:hover{
+    box-shadow:0 0 0 1px rgba(var(--glow),.4),0 16px 44px rgba(var(--glow),.32),0 0 72px rgba(var(--glow),.16)!important
+  }
+  .final-box .hero-cta .btn-primary svg{flex-shrink:0}
 
   /* ---------- footer ---------- */
   footer{border-top:1px solid var(--line);padding:72px 0 36px;overflow:hidden}
@@ -1319,9 +1325,12 @@
   <div class="wrap">
     <div class="final-box">
       <h2>Ready to build a YouTube channel that pays?</h2>
-      <p>Generate your first AI long-form video, from script to upload, and start stacking watch hours toward monetization.</p>
+      <p>Generate your first video, from script to upload, and start stacking watch hours toward monetization.</p>
       <div class="hero-cta">
-        <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Generate a long video</button>
+        <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
+          Generate a Video Now
+        </button>
       </div>
       <div class="microcopy">
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Upload-ready MP4s</span>
