@@ -416,12 +416,12 @@
   @media (prefers-reduced-motion:reduce){
     .rs-row.is-marquee{animation:none}
   }
-  .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:linear-gradient(180deg,#141728,#0a0c14);border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:grab;transform:scale(.96);opacity:.72;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s,box-shadow .35s,border-color .35s}
-  .rs-card .media-ph{position:absolute;inset:0;z-index:0}
+  .rs-card{flex:0 0 300px;width:300px;aspect-ratio:16/9;background:#0a0c14;border:1px solid var(--line);border-radius:24px;position:relative;overflow:hidden;cursor:grab;transform:scale(.96);opacity:.72;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s,box-shadow .35s,border-color .35s}
+  .rs-card video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+    background:#0a0c14;pointer-events:none
+  }
   .rs-card.feat{transform:scale(1.04);opacity:1;z-index:2;box-shadow:0 24px 60px rgba(0,0,0,.45);border-color:var(--line-2)}
-  .media-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 12px;text-align:center;background:linear-gradient(165deg,#1a2238 0%,#0a0c14 55%,#14101c 100%)}
-  .media-ph-play{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(91,140,255,.12);color:rgba(255,255,255,.78);display:grid;place-items:center;flex-shrink:0}
-  .media-ph-label{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:-.01em;color:rgba(255,255,255,.55);max-width:11em}
   /* ---------- ai generate promo ---------- */
   .gen-promo{padding:20px 0 100px}
   .format-cards{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;margin-left:auto;margin-right:auto}
@@ -845,22 +845,9 @@
   <div class="wrap s-head center">
     <div class="eyebrow">Long-form output</div>
     <h2>AI long-form built for retention</h2>
-    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, RPM, and the Partner Program.</p>
+    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, earnings, and getting monetized.</p>
   </div>
-  <div class="rs-viewport"><div class="rs-row is-marquee" id="rsRow">
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: 12-min faceless explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">12-min faceless explainer</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Documentary deep dive"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Documentary deep dive</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Story with chapters"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Story with chapters</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Airport secrets listicle"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Airport secrets listicle</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Niche how-to tutorial"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Niche how-to tutorial</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Authority explainer"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Authority explainer</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Narrative long-form"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Narrative long-form</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Searchable evergreen"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Searchable evergreen</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Retention-first cut"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Retention-first cut</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Monetizable upload"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Monetizable upload</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Script-to-video sample"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Script-to-video sample</span></div></div>
-    <div class="rs-card"><div class="media-ph" role="img" aria-label="Long-form preview placeholder: Faceless channel draft"><span class="media-ph-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg></span><span class="media-ph-label">Faceless channel draft</span></div></div>
-  </div></div>
+  <div class="rs-viewport"><div class="rs-row is-marquee" id="rsRow"></div></div>
 </section>
 
 
@@ -1049,8 +1036,35 @@
   var row = document.getElementById('rsRow');
   if (!vp || !row) return;
 
+  var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
+  var RS_FILES = [
+    'videocarousel1.mp4','videocarousel2.mp4','videocarousel3.mp4','videocarousel4.mp4','videocarousel5.mp4',
+    'videocarousel6.mp4','videocarousel7.mp4','videocarousel8.mp4','videocarousel9.mp4','videocarousel10.mp4'
+  ];
+
+  // Build exactly 10 video cards (no labels / play glyphs).
+  RS_FILES.forEach(function(file, i){
+    var card = document.createElement('div');
+    card.className = 'rs-card';
+    var vid = document.createElement('video');
+    vid.src = R2_BASE + '/' + file;
+    vid.muted = true;
+    vid.defaultMuted = true;
+    vid.autoplay = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.setAttribute('webkit-playsinline', '');
+    vid.preload = 'metadata';
+    vid.setAttribute('aria-label', 'Long-form sample video ' + (i + 1));
+    card.appendChild(vid);
+    row.appendChild(card);
+  });
+
   var reduce = false;
   try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  var canHover = false;
+  try { canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e2) {}
 
   // Duplicate children once for a seamless -50% loop.
   var originals = [].slice.call(row.children);
@@ -1061,11 +1075,50 @@
   });
 
   var cards = [].slice.call(row.querySelectorAll('.rs-card'));
+  var videos = [].slice.call(row.querySelectorAll('video'));
   var dragging = false;
   var dragged = false;
   var startX = 0;
   var dragOrigin = 0;
   var manualX = 0;
+  var audible = null;
+
+  function safePlay(v){
+    if (!v) return;
+    try {
+      var p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(function(){});
+    } catch (err) {}
+  }
+
+  function muteAll(){
+    videos.forEach(function(v){
+      try { v.muted = true; } catch (err) {}
+    });
+    audible = null;
+  }
+
+  function unmuteVideo(v){
+    if (!v || !canHover) return;
+    videos.forEach(function(other){
+      if (other === v) return;
+      try { other.muted = true; } catch (err) {}
+    });
+    try {
+      v.muted = false;
+      safePlay(v);
+      audible = v;
+    } catch (err2) {
+      try { v.muted = true; } catch (err3) {}
+      audible = null;
+    }
+  }
+
+  // Kick autoplay after clone (clones may not inherit playing state).
+  videos.forEach(function(v){
+    v.muted = true;
+    safePlay(v);
+  });
 
   function pause(){ row.classList.add('is-paused'); }
   function resume(){
@@ -1089,7 +1142,10 @@
   if (!reduce) {
     row.classList.add('is-marquee');
     vp.addEventListener('mouseenter', pause);
-    vp.addEventListener('mouseleave', function(){ if (!dragging) resume(); });
+    vp.addEventListener('mouseleave', function(){
+      muteAll();
+      if (!dragging) resume();
+    });
     // Keep feat synced while animating.
     var raf = 0;
     function tick(){ updateFeat(); raf = requestAnimationFrame(tick); }
@@ -1097,6 +1153,28 @@
   } else {
     row.classList.remove('is-marquee');
     updateFeat();
+  }
+
+  // Hover = sound (desktop only). One card audible at a time.
+  if (canHover) {
+    row.addEventListener('mouseover', function(e){
+      var card = e.target.closest && e.target.closest('.rs-card');
+      if (!card || !row.contains(card)) return;
+      var v = card.querySelector('video');
+      if (!v || v === audible) return;
+      unmuteVideo(v);
+    });
+    row.addEventListener('mouseout', function(e){
+      var card = e.target.closest && e.target.closest('.rs-card');
+      if (!card) return;
+      var related = e.relatedTarget;
+      if (related && card.contains(related)) return;
+      var v = card.querySelector('video');
+      if (v && v === audible) {
+        try { v.muted = true; } catch (err) {}
+        audible = null;
+      }
+    });
   }
 
   function currentTranslate(){
@@ -1109,6 +1187,7 @@
 
   row.addEventListener('pointerdown', function(e){
     dragging = true; dragged = false; startX = e.clientX;
+    muteAll();
     pause();
     dragOrigin = currentTranslate();
     row.style.animation = 'none';
