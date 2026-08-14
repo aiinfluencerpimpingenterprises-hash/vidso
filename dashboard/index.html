@@ -205,7 +205,8 @@ select option{background:var(--card)}
 .fv-script-box{display:none;margin-top:8px}
 .fv-script-box.show{display:block}
 .fv-script-title{font-size:.95rem;font-weight:700;margin-bottom:6px}
-.fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.fv-script-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 16px}
+.fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:0}
 .fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .fv-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
 .fv-section-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -3125,12 +3126,12 @@ body.tour-active{overflow:hidden}
                 <div class="fv-script-title" id="fv-script-title"></div>
                 <div class="fv-meta" id="fv-script-meta"></div>
               </div>
-              <div class="fv-sections" id="fv-sections"></div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
+              <div class="fv-script-toolbar">
                 <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
                 <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
+              <div class="fv-sections" id="fv-sections"></div>
               <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-help">Use Edit manually on any section, or Regenerate with AI. Then continue to media.</p>
             </div>
           </div>
@@ -4774,7 +4775,8 @@ window.fvEnterEditor = () => {
   fvRebuildFullScriptFromSections()
   fvState.phase = 1
   fvRenderScript(fvState.script)
-  fvSetStatus('Edit the script below, then continue to media', 'ok', 2)
+  fvSetStatus('', null)
+  fvSetStatus('Edit any section, then continue to media', 'ok', 2)
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 
@@ -5602,7 +5604,8 @@ window.fvGenerateScript = async () => {
 
   const btn = document.getElementById('fv-gen-script-btn')
   if (btn) btn.disabled = true
-  fvSetStatus('Writing your script…', 'loading')
+  fvSetStatus('', null)
+  document.getElementById('fv-script-box')?.classList.add('show')
   fvSetStatus('Writing your script…', 'loading', 2)
   try {
     const data = await api.faceless.script({
@@ -5616,10 +5619,10 @@ window.fvGenerateScript = async () => {
     data.topic = topic
     fvState.phase = 1
     fvRenderScript(data)
-    fvSetStatus('Script ready — edit it below, then continue to media', 'ok', 2)
+    fvSetStatus('Script ready', 'ok', 2)
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
-    fvSetStatus(e.message || 'Script generation failed', 'err')
+    fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
   } finally {
     if (btn) btn.disabled = false
