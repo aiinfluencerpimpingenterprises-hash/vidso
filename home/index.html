@@ -230,8 +230,22 @@
   .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;align-items:stretch;justify-items:stretch;background:#050505}
   .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s;align-self:start}
   .bb-right .clip:hover{border-color:var(--line-2)}
-  .bb-right .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0;background:#0c0c0c}
+  .bb-right .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0;background:#0c0c0c;pointer-events:none}
   .clip .media-ph{position:absolute;inset:0;z-index:0}
+  /* Touch-only mute/unmute affordance for mockup + carousel videos */
+  .rs-audio-btn{
+    display:none;position:absolute;right:8px;bottom:8px;z-index:4;width:32px;height:32px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:#fff;align-items:center;justify-content:center;
+    padding:0;margin:0;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:auto
+  }
+  .rs-audio-btn svg{width:16px;height:16px;display:block}
+  .rs-audio-btn .ico-on{display:none}
+  .rs-audio-btn.is-on .ico-off{display:none}
+  .rs-audio-btn.is-on .ico-on{display:block}
+  @media (hover:none), (pointer:coarse){
+    .bb-right .clip .rs-audio-btn,
+    .rs-card .rs-audio-btn{display:inline-flex}
+  }
   @media(max-width:720px){.browser-body{grid-template-columns:1fr}.bb-left{border-right:none;border-bottom:1px solid var(--line)}}
 
   /* ---------- section heads ---------- */
@@ -421,6 +435,7 @@
     position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
     background:#0a0c14;pointer-events:none
   }
+  .rs-card .rs-audio-btn{right:10px;bottom:10px}
   .rs-card.feat{transform:scale(1.04);opacity:1;z-index:2;box-shadow:0 24px 60px rgba(0,0,0,.45);border-color:var(--line-2)}
   /* ---------- ai generate promo ---------- */
   .gen-promo{padding:20px 0 100px}
@@ -1031,6 +1046,80 @@
 </section>
 
 <script>
+/* Shared media-audio unlock: browsers block unmute until a real user gesture.
+   First pointerdown/keydown anywhere silently primes AudioContext + muted videos
+   so later hover/tap unmute is allowed without clicking each card. */
+(function(){
+  if (window.VidsoMediaAudio) return;
+  var primed = false;
+  var waiters = [];
+  function safePlay(v){
+    if (!v) return;
+    try {
+      var p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(function(){});
+    } catch (err) {}
+  }
+  function unlock(){
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        var ctx = window.__vidsoAudioCtx || (window.__vidsoAudioCtx = new AC());
+        if (ctx.state === 'suspended' && ctx.resume) {
+          try { ctx.resume().catch(function(){}); } catch (e0) {}
+        }
+        var buf = ctx.createBuffer(1, 1, 22050);
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.start(0);
+      }
+    } catch (e1) {}
+    // Under the user gesture: briefly unmute at volume 0 so later muted=false is allowed.
+    try {
+      var vids = document.querySelectorAll('video');
+      for (var i = 0; i < vids.length; i++) {
+        (function(v){
+          var prevVol = 1;
+          try { prevVol = v.volume; } catch (e2) {}
+          try {
+            v.volume = 0;
+            v.muted = false;
+            safePlay(v);
+            v.muted = true;
+            v.volume = prevVol;
+          } catch (e3) {
+            try { v.muted = true; v.volume = prevVol; } catch (e4) {}
+          }
+        })(vids[i]);
+      }
+    } catch (e5) {}
+  }
+  function flush(){
+    var q = waiters.splice(0, waiters.length);
+    for (var i = 0; i < q.length; i++) {
+      try { q[i](); } catch (err) {}
+    }
+  }
+  function prime(){
+    if (primed) return;
+    primed = true;
+    unlock();
+    flush();
+  }
+  window.VidsoMediaAudio = {
+    isPrimed: function(){ return primed; },
+    prime: prime,
+    whenPrimed: function(fn){
+      if (primed) { try { fn(); } catch (err) {} }
+      else waiters.push(fn);
+    }
+  };
+  document.addEventListener('pointerdown', prime, true);
+  document.addEventListener('keydown', prime, true);
+})();
+</script>
+<script>
 (function(){
   var vp = document.querySelector('.rs-viewport');
   var row = document.getElementById('rsRow');
@@ -1041,9 +1130,12 @@
     'videocarousel1.mp4','videocarousel2.mp4','videocarousel3.mp4','videocarousel4.mp4','videocarousel5.mp4',
     'videocarousel6.mp4','videocarousel7.mp4','videocarousel8.mp4','videocarousel9.mp4','videocarousel10.mp4'
   ];
+  var AUDIO_BTN_HTML = '<button type="button" class="rs-audio-btn" aria-label="Unmute video" aria-pressed="false">'
+    + '<svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>'
+    + '<svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>'
+    + '</button>';
 
-  // Build exactly 10 video cards (no labels / play glyphs).
-  RS_FILES.forEach(function(file, i){
+  function makeCard(file, i){
     var card = document.createElement('div');
     card.className = 'rs-card';
     var vid = document.createElement('video');
@@ -1055,10 +1147,16 @@
     vid.playsInline = true;
     vid.setAttribute('playsinline', '');
     vid.setAttribute('webkit-playsinline', '');
-    vid.preload = 'metadata';
+    vid.preload = 'auto';
     vid.setAttribute('aria-label', 'Long-form sample video ' + (i + 1));
     card.appendChild(vid);
-    row.appendChild(card);
+    card.insertAdjacentHTML('beforeend', AUDIO_BTN_HTML);
+    return card;
+  }
+
+  // Build exactly 10 video cards (no labels / play glyphs).
+  RS_FILES.forEach(function(file, i){
+    row.appendChild(makeCard(file, i));
   });
 
   var reduce = false;
@@ -1082,6 +1180,8 @@
   var dragOrigin = 0;
   var manualX = 0;
   var audible = null;
+  var pendingUnmute = null;
+  var hoveredCard = null;
 
   function safePlay(v){
     if (!v) return;
@@ -1091,15 +1191,29 @@
     } catch (err) {}
   }
 
+  function syncButtons(){
+    cards.forEach(function(card){
+      var btn = card.querySelector('.rs-audio-btn');
+      var v = card.querySelector('video');
+      if (!btn || !v) return;
+      var on = (v === audible) && !v.muted;
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.setAttribute('aria-label', on ? 'Mute video' : 'Unmute video');
+    });
+  }
+
   function muteAll(){
     videos.forEach(function(v){
       try { v.muted = true; } catch (err) {}
     });
     audible = null;
+    pendingUnmute = null;
+    syncButtons();
   }
 
   function unmuteVideo(v){
-    if (!v || !canHover) return;
+    if (!v) return;
     videos.forEach(function(other){
       if (other === v) return;
       try { other.muted = true; } catch (err) {}
@@ -1112,6 +1226,32 @@
       try { v.muted = true; } catch (err3) {}
       audible = null;
     }
+    syncButtons();
+  }
+
+  function requestUnmute(v){
+    if (!v) return;
+    pendingUnmute = v;
+    var unlock = window.VidsoMediaAudio;
+    if (unlock && !unlock.isPrimed()) {
+      unlock.whenPrimed(function(){
+        if (pendingUnmute === v || (canHover && hoveredCard && hoveredCard.querySelector('video') === v)) {
+          unmuteVideo(v);
+        }
+      });
+    }
+    unmuteVideo(v);
+  }
+
+  function toggleVideo(v){
+    if (!v) return;
+    if (audible === v && !v.muted) {
+      try { v.muted = true; } catch (err) {}
+      audible = null;
+      syncButtons();
+      return;
+    }
+    requestUnmute(v);
   }
 
   // Kick autoplay after clone (clones may not inherit playing state).
@@ -1119,6 +1259,7 @@
     v.muted = true;
     safePlay(v);
   });
+  syncButtons();
 
   function pause(){ row.classList.add('is-paused'); }
   function resume(){
@@ -1143,7 +1284,8 @@
     row.classList.add('is-marquee');
     vp.addEventListener('mouseenter', pause);
     vp.addEventListener('mouseleave', function(){
-      muteAll();
+      if (canHover) muteAll();
+      hoveredCard = null;
       if (!dragging) resume();
     });
     // Keep feat synced while animating.
@@ -1155,25 +1297,30 @@
     updateFeat();
   }
 
-  // Hover = sound (desktop only). One card audible at a time.
+  // Desktop: hover = sound. One card audible at a time. No click-to-play.
   if (canHover) {
     row.addEventListener('mouseover', function(e){
       var card = e.target.closest && e.target.closest('.rs-card');
       if (!card || !row.contains(card)) return;
+      if (card === hoveredCard) return;
+      hoveredCard = card;
       var v = card.querySelector('video');
-      if (!v || v === audible) return;
-      unmuteVideo(v);
+      if (!v) return;
+      requestUnmute(v);
     });
     row.addEventListener('mouseout', function(e){
       var card = e.target.closest && e.target.closest('.rs-card');
       if (!card) return;
       var related = e.relatedTarget;
       if (related && card.contains(related)) return;
+      if (hoveredCard === card) hoveredCard = null;
       var v = card.querySelector('video');
       if (v && v === audible) {
         try { v.muted = true; } catch (err) {}
         audible = null;
+        syncButtons();
       }
+      if (pendingUnmute === v) pendingUnmute = null;
     });
   }
 
@@ -1187,7 +1334,8 @@
 
   row.addEventListener('pointerdown', function(e){
     dragging = true; dragged = false; startX = e.clientX;
-    muteAll();
+    // Desktop drag silences; touch keeps current audio until a real drag moves.
+    if (canHover) muteAll();
     pause();
     dragOrigin = currentTranslate();
     row.style.animation = 'none';
@@ -1197,7 +1345,10 @@
   row.addEventListener('pointermove', function(e){
     if (!dragging) return;
     var dx = e.clientX - startX;
-    if (Math.abs(dx) > 6) dragged = true;
+    if (Math.abs(dx) > 6) {
+      if (!dragged && !canHover) muteAll();
+      dragged = true;
+    }
     manualX = dragOrigin + dx;
     // Wrap within one loop width (~50% of content)
     var loopW = row.scrollWidth / 2;
@@ -1208,8 +1359,9 @@
     row.style.transform = 'translate3d(' + manualX + 'px,0,0)';
     updateFeat();
   });
-  function endDrag(){
+  function endDrag(e){
     if (!dragging) return;
+    var wasDragged = dragged;
     dragging = false;
     row.style.animation = '';
     row.style.transform = '';
@@ -1220,9 +1372,21 @@
       row.classList.add('is-marquee');
       resume();
     }
+    // Touch / no-hover: tap toggles audio (no drag).
+    if (!canHover && !wasDragged && e) {
+      var card = e.target && e.target.closest && e.target.closest('.rs-card');
+      if (card && row.contains(card)) {
+        var v = card.querySelector('video');
+        toggleVideo(v);
+      }
+    } else if (canHover && hoveredCard) {
+      // Restore hover audio after a drag that muted mid-hover.
+      var hv = hoveredCard.querySelector('video');
+      if (hv) requestUnmute(hv);
+    }
   }
   row.addEventListener('pointerup', endDrag);
-  row.addEventListener('pointercancel', endDrag);
+  row.addEventListener('pointercancel', function(){ endDrag(null); });
   window.addEventListener('resize', updateFeat);
   updateFeat();
 })();
@@ -1456,12 +1620,9 @@
 </footer>
 
 <script>
-/* Hero mockup hover-audio cards
-   Root cause of ~30s unmute delay: preload="metadata" only fetched
-   headers/keyframes, so the AAC audio track was not buffered until unmute
-   forced a late media download. Fix: preload="auto", keep muted playback
-   running so audio bytes are already in the buffer, then toggle muted
-   synchronously on mouseenter (no debounce). */
+/* Hero mockup hover/tap audio cards.
+   Uses VidsoMediaAudio priming so desktop hover-unmute works after any page
+   gesture (not only a click on the card). Touch: tap toggles unmute + icon. */
 (function(){
   var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
   var FILES = [
@@ -1470,32 +1631,87 @@
     'placeholdercard3.mp4',
     'placeholdercard4.mp4'
   ];
+  var AUDIO_BTN_HTML = '<button type="button" class="rs-audio-btn" aria-label="Unmute video" aria-pressed="false">'
+    + '<svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>'
+    + '<svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>'
+    + '</button>';
   var root = document.getElementById('mockup-clips');
   if (!root) return;
   var clips = root.querySelectorAll('.clip');
   var videos = [];
+  var buttons = [];
   var canHover = false;
   try {
     canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   } catch (e) { canHover = false; }
   var active = null;
+  var pendingUnmute = null;
+  var hoveredClip = null;
 
   function safeMute(v, muted) {
-    try { v.muted = !!muted; } catch (e) {}
+    try { v.muted = !!muted; } catch (err) {}
   }
   function safePlay(v) {
     try {
       var p = v.play();
       if (p && typeof p.catch === 'function') p.catch(function(){});
-    } catch (e) {}
+    } catch (err) {}
   }
   function warm(v) {
     try {
       v.preload = 'auto';
-      // Nudge the network stack to keep media (incl. audio) flowing while muted.
-      if (v.readyState < 3) { /* HAVE_FUTURE_DATA */ }
       safePlay(v);
-    } catch (e) {}
+    } catch (err) {}
+  }
+  function syncButtons(){
+    for (var i = 0; i < videos.length; i++) {
+      var v = videos[i];
+      var btn = buttons[i];
+      if (!btn) continue;
+      var on = (v === active) && v && !v.muted;
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.setAttribute('aria-label', on ? 'Mute video' : 'Unmute video');
+    }
+  }
+  function muteAll(){
+    for (var i = 0; i < videos.length; i++) safeMute(videos[i], true);
+    active = null;
+    pendingUnmute = null;
+    syncButtons();
+  }
+  function unmuteVideo(v){
+    if (!v) return;
+    for (var i = 0; i < videos.length; i++) {
+      if (videos[i] !== v) safeMute(videos[i], true);
+    }
+    safeMute(v, false);
+    if (v.paused) safePlay(v);
+    active = v;
+    syncButtons();
+  }
+  function requestUnmute(v){
+    if (!v) return;
+    pendingUnmute = v;
+    var unlock = window.VidsoMediaAudio;
+    if (unlock && !unlock.isPrimed()) {
+      unlock.whenPrimed(function(){
+        if (pendingUnmute === v || (canHover && hoveredClip && hoveredClip.querySelector('video') === v)) {
+          unmuteVideo(v);
+        }
+      });
+    }
+    unmuteVideo(v);
+  }
+  function toggleVideo(v){
+    if (!v) return;
+    if (active === v && !v.muted) {
+      safeMute(v, true);
+      active = null;
+      syncButtons();
+      return;
+    }
+    requestUnmute(v);
   }
 
   for (var i = 0; i < clips.length; i++) {
@@ -1509,33 +1725,42 @@
     video.loop = true;
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
-    // Prefer existing HTML src; only assign if missing. Never re-set on hover.
     var want = R2_BASE + '/' + FILES[i];
     if (!video.getAttribute('src')) video.src = want;
-    // Do not call load() if already loading — that aborts and restarts buffering.
     warm(video);
     video.addEventListener('canplay', function(){ warm(this); }, { once: true });
     video.addEventListener('canplaythrough', function(){ warm(this); }, { once: true });
     videos.push(video);
 
-    if (!canHover) continue;
-    (function(v, el){
-      el.addEventListener('mouseenter', function(){
-        // Immediate mute flag flip — no timers/debounce.
-        for (var j = 0; j < videos.length; j++) {
-          if (videos[j] !== v) safeMute(videos[j], true);
-        }
-        safeMute(v, false);
-        // If the element paused while buffering, resume; do not await.
-        if (v.paused) safePlay(v);
-        active = v;
-      });
-      el.addEventListener('mouseleave', function(){
-        safeMute(v, true);
-        if (active === v) active = null;
-      });
-    })(video, clip);
+    if (!clip.querySelector('.rs-audio-btn')) {
+      clip.insertAdjacentHTML('beforeend', AUDIO_BTN_HTML);
+    }
+    buttons.push(clip.querySelector('.rs-audio-btn'));
+
+    if (canHover) {
+      (function(v, el){
+        el.addEventListener('mouseenter', function(){
+          hoveredClip = el;
+          requestUnmute(v);
+        });
+        el.addEventListener('mouseleave', function(){
+          if (hoveredClip === el) hoveredClip = null;
+          safeMute(v, true);
+          if (active === v) active = null;
+          if (pendingUnmute === v) pendingUnmute = null;
+          syncButtons();
+        });
+      })(video, clip);
+    } else {
+      (function(v, el){
+        el.addEventListener('click', function(e){
+          e.preventDefault();
+          toggleVideo(v);
+        });
+      })(video, clip);
+    }
   }
+  syncButtons();
 })();
 </script>
 <script src="/vendor/gsap/gsap.min.js"></script>
