@@ -206,6 +206,8 @@ select option{background:var(--card)}
 .fv-script-box.show{display:block}
 .fv-script-title{font-size:.95rem;font-weight:700;margin-bottom:6px}
 .fv-script-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 16px}
+.fv-script-actions{display:none;gap:10px;flex-wrap:wrap;align-items:center}
+.fv-script-actions.show{display:flex}
 .fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:0}
 .fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .fv-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
@@ -3127,12 +3129,14 @@ body.tour-active{overflow:hidden}
                 <div class="fv-meta" id="fv-script-meta"></div>
               </div>
               <div class="fv-script-toolbar">
-                <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
-                <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
+                <div class="fv-script-actions" id="fv-script-actions">
+                  <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
+                  <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
+                </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
               <div class="fv-sections" id="fv-sections"></div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted)" id="fv-help">Use Edit manually on any section, or Regenerate with AI. Then continue to media.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">Use Edit manually on any section, or Regenerate with AI. Then continue to media.</p>
             </div>
           </div>
 
@@ -4573,6 +4577,12 @@ window.fvState = {
   inited: false,
 }
 
+function fvSetScriptActionsVisible(show) {
+  document.getElementById('fv-script-actions')?.classList.toggle('show', !!show)
+  const help = document.getElementById('fv-help')
+  if (help) help.style.display = show ? '' : 'none'
+}
+
 function fvSetStatus(msg, kind, which) {
   const el = document.getElementById(which === 2 ? 'fv-status-2' : 'fv-status')
   if (!el) return
@@ -4768,6 +4778,7 @@ function fvRenderScript(script) {
 
   const help = document.getElementById('fv-help')
   if (help) help.textContent = 'Use Edit manually on any section, or Regenerate with AI. Then continue to media.'
+  fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
 }
 
 window.fvEnterEditor = () => {
@@ -5605,6 +5616,7 @@ window.fvGenerateScript = async () => {
   const btn = document.getElementById('fv-gen-script-btn')
   if (btn) btn.disabled = true
   fvSetStatus('', null)
+  fvSetScriptActionsVisible(false)
   document.getElementById('fv-script-box')?.classList.add('show')
   fvSetStatus('Writing your script…', 'loading', 2)
   try {
@@ -5624,6 +5636,7 @@ window.fvGenerateScript = async () => {
   } catch (e) {
     fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
+    fvSetScriptActionsVisible(!!fvState.script)
   } finally {
     if (btn) btn.disabled = false
   }
