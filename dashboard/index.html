@@ -259,6 +259,10 @@ select option{background:var(--card)}
 .fv-seg-actions{display:flex;flex-direction:column;gap:4px}
 .fv-seg-actions button{border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:.65rem;padding:3px 6px;border-radius:5px;cursor:pointer;line-height:1.2}
 .fv-seg-actions button:hover{border-color:var(--a2);color:var(--ink)}
+.fv-seg-actions button.replace{color:var(--ink);border-color:rgba(var(--glow),.45)}
+.fv-clip-pick.replace-mode{outline:1px dashed rgba(var(--glow),.55);outline-offset:4px;border-radius:10px;padding:6px}
+.fv-music-item .fv-music-preview-btn{border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:.65rem;padding:4px 8px;border-radius:6px;cursor:pointer;flex-shrink:0}
+.fv-music-item .fv-music-preview-btn:hover{border-color:var(--a2);color:var(--ink)}
 .fv-clip-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;max-height:200px;overflow-y:auto;margin-top:8px}
 .fv-clip-pick .pick{position:relative;aspect-ratio:9/16;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#000}
 .fv-clip-pick .pick.landscape{aspect-ratio:16/9}
@@ -3217,7 +3221,7 @@ body.tour-active{overflow:hidden}
 
                   <div class="fv-side-pane active" id="fv-pane-broll">
                     <div class="result-label" style="margin-bottom:8px">Timeline clips</div>
-                    <p style="font-size:.72rem;color:var(--muted);margin:0 0 10px">Select a segment, then pick a replacement from the library or search.</p>
+                    <p style="font-size:.72rem;color:var(--muted);margin:0 0 10px">Click <b>Replace</b> on a segment, then pick a new clip from the library, search, or upload.</p>
                     <div class="fv-seg-list" id="fv-seg-list"></div>
                     <div class="fv-broll-tools">
                       <button type="button" class="btn btn-ghost btn-sm" onclick="fvShuffleBroll()">Shuffle all</button>
@@ -3244,13 +3248,20 @@ body.tour-active{overflow:hidden}
                       <option value="Anton, Impact, sans-serif">Anton</option>
                       <option value="Bangers, cursive" selected>Bangers</option>
                       <option value="'Montserrat', sans-serif">Montserrat</option>
+                      <option value="'Baloo 2', cursive">Baloo 2</option>
+                      <option value="'Luckiest Guy', cursive">Luckiest Guy</option>
+                      <option value="'Permanent Marker', cursive">Permanent Marker</option>
+                      <option value="'TikTok Sans 18pt', sans-serif">TikTok Sans</option>
+                      <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                      <option value="'Oswald', sans-serif">Oswald</option>
                       <option value="'Inter', sans-serif">Inter</option>
+                      <option value="'Press Start 2P', monospace">Press Start 2P</option>
                       <option value="Georgia, serif">Georgia</option>
                     </select>
                   </div>
                   <div class="field">
                     <label>Size <span id="fv-cap-size-val">42</span>px</label>
-                    <input type="range" id="fv-cap-size" min="22" max="72" value="42" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
+                    <input type="range" id="fv-cap-size" min="12" max="96" value="42" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
                   <div class="cm-grid-2">
                     <div class="field" style="margin:0">
@@ -3275,6 +3286,7 @@ body.tour-active{overflow:hidden}
                     <label>Music volume <span id="fv-music-vol-val">25</span>%</label>
                     <input type="range" id="fv-music-vol" min="0" max="100" value="25" oninput="fvSetMusicVol(this.value)">
                   </div>
+                  <p style="font-size:.7rem;color:var(--muted);margin:8px 0 0">Hit Play on the preview to hear music with the voiceover, or tap Hear to audition a track.</p>
                   </div>
                 </div>
               </div>
@@ -4963,11 +4975,12 @@ window.fvBackToMedia = () => {
 
 const FV_MUSIC = [
   { id: 'none', name: 'No music', url: '' },
-  { id: 'tech', name: 'Tech House Vibes', url: 'https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3' },
-  { id: 'hiphop', name: 'Hip Hop 02', url: 'https://assets.mixkit.co/music/preview/mixkit-hip-hop-02-738.mp3' },
-  { id: 'dreamy', name: 'Dreaming Big', url: 'https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3' },
-  { id: 'deep', name: 'Deep Urban', url: 'https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3' },
-  { id: 'games', name: 'Games Worldbeat', url: 'https://assets.mixkit.co/music/preview/mixkit-games-worldbeat-466.mp3' },
+  { id: 'pulse', name: 'Pulse Drive', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 'groove', name: 'Night Groove', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 'energy', name: 'High Energy', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 'chill', name: 'Chill Wave', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+  { id: 'cinematic', name: 'Cinematic Rise', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3' },
+  { id: 'algorithms', name: 'Algorithms', url: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Chad_Crouch/Arps/Chad_Crouch_-_Algorithms.mp3' },
 ]
 
 function fvFmtTime(s) {
@@ -5011,6 +5024,24 @@ function fvPersistPreviewSettings() {
   } catch {}
 }
 
+function fvMusicEl() {
+  return document.getElementById('fv-prev-music')
+}
+
+function fvMusicTrackSrc() {
+  return (fvMusicEl()?.getAttribute('src') || '').trim()
+}
+
+function fvSyncMusicToVoice() {
+  const voice = document.getElementById('fv-prev-voice')
+  const music = fvMusicEl()
+  if (!fvMusicTrackSrc() || !voice || !music) return
+  const t = voice.currentTime || 0
+  const md = music.duration
+  if (Number.isFinite(md) && md > 0) music.currentTime = t % md
+  else music.currentTime = 0
+}
+
 function fvRenderMusicList() {
   const list = document.getElementById('fv-music-list')
   if (!list) return
@@ -5019,21 +5050,57 @@ function fvRenderMusicList() {
     <button type="button" class="fv-music-item${m.id === active ? ' active' : ''}" onclick="fvSelectMusic('${m.id}')">
       <span>${m.id === 'none' ? '∅' : '♪'}</span>
       <span style="flex:1;text-align:left">${fvEsc(m.name)}</span>
+      ${m.url ? `<span class="fv-music-preview-btn" onclick="event.stopPropagation();fvAuditionMusic('${m.id}')">Hear</span>` : ''}
     </button>`).join('')
+}
+
+window.fvAuditionMusic = (id) => {
+  const track = FV_MUSIC.find(m => m.id === id)
+  if (!track?.url) return
+  if (!fvState.preview) fvState.preview = {}
+  // Select the track, then play a short audition even if main preview is paused
+  fvSelectMusic(id)
+  const music = fvMusicEl()
+  if (!music) return
+  music.volume = fvState.preview.musicVol ?? 0.25
+  music.currentTime = 0
+  music.play().catch(() => {})
+  // If full preview isn't running, stop audition after a few seconds so it doesn't loop forever
+  if (!fvState.preview.playing) {
+    clearTimeout(fvState.preview._auditionTimer)
+    fvState.preview._auditionTimer = setTimeout(() => {
+      if (!fvState.preview?.playing) music.pause()
+    }, 6000)
+  }
 }
 
 window.fvSelectMusic = (id) => {
   const track = FV_MUSIC.find(m => m.id === id) || FV_MUSIC[0]
   if (!fvState.preview) fvState.preview = {}
   fvState.preview.musicId = track.id
-  const music = document.getElementById('fv-prev-music')
+  const music = fvMusicEl()
+  if (!music) return
+  clearTimeout(fvState.preview._auditionTimer)
   if (!track.url) {
     music.pause()
     music.removeAttribute('src')
+    music.load()
   } else {
-    music.src = track.url
+    const needLoad = music.getAttribute('src') !== track.url
+    if (needLoad) {
+      music.src = track.url
+      music.load()
+    }
     music.volume = fvState.preview.musicVol ?? 0.25
-    if (fvState.preview.playing) music.play().catch(() => {})
+    music.loop = true
+    if (fvState.preview.playing) {
+      const start = () => {
+        fvSyncMusicToVoice()
+        music.play().catch(() => {})
+      }
+      if (needLoad) music.oncanplay = () => { music.oncanplay = null; start() }
+      else start()
+    }
   }
   fvRenderMusicList()
   fvRenderPreviewTimeline()
@@ -5044,7 +5111,7 @@ window.fvSetMusicVol = (v) => {
   document.getElementById('fv-music-vol-val').textContent = v
   if (!fvState.preview) fvState.preview = {}
   fvState.preview.musicVol = Number(v) / 100
-  const music = document.getElementById('fv-prev-music')
+  const music = fvMusicEl()
   if (music) music.volume = fvState.preview.musicVol
   fvPersistPreviewSettings()
 }
@@ -5134,16 +5201,29 @@ window.fvTogglePreview = () => {
 
 window.fvPlayPreview = () => {
   const voice = document.getElementById('fv-prev-voice')
-  const music = document.getElementById('fv-prev-music')
+  const music = fvMusicEl()
   const video = document.getElementById('fv-prev-video')
   if (!voice?.src) return
   if (!fvState.preview) fvState.preview = {}
+  clearTimeout(fvState.preview._auditionTimer)
   fvState.preview.playing = true
   document.getElementById('fv-prev-play').textContent = '⏸ Pause'
   fvEnsureClip(voice.currentTime || 0)
   voice.play().catch(() => {})
   video?.play().catch(() => {})
-  if (music?.src) { music.volume = fvState.preview.musicVol ?? 0.25; music.play().catch(() => {}) }
+  if (fvMusicTrackSrc() && music) {
+    music.volume = fvState.preview.musicVol ?? 0.25
+    music.loop = true
+    const startMusic = () => {
+      fvSyncMusicToVoice()
+      music.play().catch(() => {})
+    }
+    if (music.readyState >= 2) startMusic()
+    else {
+      music.oncanplay = () => { music.oncanplay = null; startMusic() }
+      music.load()
+    }
+  }
   if (fvState.preview.raf) cancelAnimationFrame(fvState.preview.raf)
   const loop = () => {
     fvTickPreview()
@@ -5167,8 +5247,7 @@ window.fvSeekPreview = (v) => {
   const dur = fvState.media?.duration || voice?.duration || 1
   const t = (Number(v) / 1000) * dur
   if (voice) voice.currentTime = t
-  const music = document.getElementById('fv-prev-music')
-  if (music?.src) music.currentTime = t % (music.duration || t || 1)
+  if (fvMusicTrackSrc()) fvSyncMusicToVoice()
   fvState.preview && (fvState.preview.clipUrl = null)
   fvEnsureClip(t)
   fvUpdateCaptions(t)
@@ -5233,6 +5312,7 @@ function fvRenderBrollEditor() {
         <div class="s">${fvFmtTime(seg.start)} – ${fvFmtTime(seg.end)} · ${Math.max(0.1, (seg.end - seg.start)).toFixed(1)}s</div>
       </div>
       <div class="fv-seg-actions" onclick="event.stopPropagation()">
+        <button type="button" class="replace" title="Replace this clip" onclick="fvReplaceSeg(${i})">Replace</button>
         <button type="button" title="Move up" onclick="fvMoveSeg(${i},-1)">↑</button>
         <button type="button" title="Move down" onclick="fvMoveSeg(${i},1)">↓</button>
         <button type="button" title="Remove" onclick="fvRemoveSeg(${i})">✕</button>
@@ -5241,6 +5321,8 @@ function fvRenderBrollEditor() {
 
   fvRenderClipPicker()
   fvRenderPreviewTimeline()
+  const pick = document.getElementById('fv-clip-pick')
+  if (pick) pick.classList.toggle('replace-mode', !!fvState.preview?.replaceMode)
 }
 
 function fvRenderClipPicker(extraClips) {
@@ -5274,11 +5356,34 @@ function fvRenderClipPicker(extraClips) {
 window.fvSelectSeg = (i) => {
   if (!fvState.preview) fvState.preview = {}
   fvState.preview.segIdx = i
+  fvState.preview.replaceMode = false
   fvRenderBrollEditor()
   const seg = fvState.media?.timeline?.[i]
   if (seg) {
     const voice = document.getElementById('fv-prev-voice')
-    const dur = fvState.media.duration || 1
+    if (voice) {
+      voice.currentTime = seg.start
+      fvState.preview.clipUrl = null
+      fvEnsureClip(seg.start)
+      fvUpdateCaptions(seg.start)
+      fvTickPreview()
+    }
+  }
+}
+
+window.fvReplaceSeg = (i) => {
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.segIdx = i
+  fvState.preview.replaceMode = true
+  fvSideTab('broll')
+  fvRenderBrollEditor()
+  const pick = document.getElementById('fv-clip-pick')
+  pick?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  document.getElementById('fv-broll-query')?.focus()
+  fvSetBrollStatus('Replace mode: pick a library clip or search/upload a new one for segment ' + (i + 1), 'ok')
+  const seg = fvState.media?.timeline?.[i]
+  if (seg) {
+    const voice = document.getElementById('fv-prev-voice')
     if (voice) {
       voice.currentTime = seg.start
       fvState.preview.clipUrl = null
@@ -5338,10 +5443,11 @@ window.fvApplyLibraryClip = (libIdx) => {
   if (!fvState.media.clips) fvState.media.clips = []
   if (clip.id && !fvState.media.clips.some(c => c.id === clip.id)) fvState.media.clips.unshift(clip)
   fvState.preview.clipUrl = null
+  fvState.preview.replaceMode = false
   fvPersistMedia()
   fvRenderBrollEditor()
   fvEnsureClip(tl[i].start)
-  fvSetBrollStatus('Clip applied to segment ' + (i + 1), 'ok')
+  fvSetBrollStatus('Replaced segment ' + (i + 1), 'ok')
 }
 
 window.fvShuffleBroll = () => {
@@ -5431,6 +5537,7 @@ window.fvUploadBroll = async (input) => {
       fvState.media.timeline[i] = { ...prev, ...clip, start: prev.start, end: prev.end, clip_start: 0 }
     }
     fvState.preview.clipUrl = null
+    fvState.preview.replaceMode = false
     input.value = ''
     fvPersistMedia()
     fvRenderBrollEditor()
