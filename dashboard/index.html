@@ -1355,6 +1355,71 @@ input:focus,textarea:focus,select:focus,
   .ob-foot{padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px))}
 }
 
+/* ── UI guided tour (coachmarks) ──────────────────────────────────────── */
+#ui-tour{
+  position:fixed;inset:0;z-index:90;pointer-events:none;
+  isolation:isolate;contain:layout style
+}
+#ui-tour.hidden{display:none!important}
+#ui-tour.is-active{pointer-events:auto}
+.tour-highlight{
+  position:fixed;z-index:91;pointer-events:none;border-radius:14px;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.78),0 0 0 2px rgba(var(--glow),.85),0 12px 40px rgba(0,0,0,.45);
+  background:transparent;transition:top .28s var(--ease-out),left .28s var(--ease-out),width .28s var(--ease-out),height .28s var(--ease-out),border-radius .28s var(--ease-out),opacity .2s;
+  opacity:0
+}
+.tour-highlight.is-on{opacity:1}
+.tour-tooltip{
+  position:fixed;z-index:92;width:min(340px,calc(100vw - 32px));
+  background:#121214;border:1px solid rgba(255,255,255,.12);border-radius:16px;
+  box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);
+  color:var(--ink);padding:16px 16px 14px;pointer-events:auto;
+  display:flex;flex-direction:column;gap:12px;
+  transition:top .28s var(--ease-out),left .28s var(--ease-out),opacity .2s,transform .28s var(--ease-out);
+  opacity:0;transform:translateY(6px);
+  /* Solid surface — no topo bleed-through */
+  isolation:isolate;backdrop-filter:none;-webkit-backdrop-filter:none
+}
+.tour-tooltip.is-on{opacity:1;transform:none}
+.tour-tooltip::before{
+  content:'';position:absolute;width:12px;height:12px;background:#121214;
+  border-left:1px solid rgba(255,255,255,.12);border-top:1px solid rgba(255,255,255,.12);
+  transform:rotate(45deg);pointer-events:none
+}
+.tour-tooltip[data-placement="bottom"]::before{top:-7px;left:var(--tour-arrow-x,24px)}
+.tour-tooltip[data-placement="top"]::before{bottom:-7px;left:var(--tour-arrow-x,24px);transform:rotate(225deg)}
+.tour-tooltip[data-placement="right"]::before{left:-7px;top:var(--tour-arrow-y,22px);transform:rotate(-45deg)}
+.tour-tooltip[data-placement="left"]::before{right:-7px;top:var(--tour-arrow-y,22px);transform:rotate(135deg)}
+.tour-tooltip[data-placement="center"]::before{display:none}
+.tour-tooltip-top{display:flex;align-items:flex-start;gap:10px}
+.tour-tooltip-copy{flex:1;min-width:0}
+.tour-kicker{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42);margin:0 0 4px}
+.tour-title{margin:0;font-size:1rem;font-weight:750;letter-spacing:-.02em;line-height:1.25;color:var(--ink)}
+.tour-body{margin:6px 0 0;font-size:.86rem;line-height:1.45;color:rgba(255,255,255,.62)}
+.tour-close{
+  width:44px;height:44px;margin:-8px -8px 0 0;border:none;border-radius:12px;background:transparent;
+  color:rgba(255,255,255,.65);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0
+}
+.tour-close:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.tour-close:focus-visible,.tour-btn:focus-visible{outline:2px solid rgba(var(--glow),.7);outline-offset:1px}
+.tour-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tour-step{font-size:.72rem;font-weight:650;color:rgba(255,255,255,.42);margin-right:auto;letter-spacing:.02em}
+.tour-btn{
+  min-height:44px;min-width:44px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:.82rem;font-weight:650;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center
+}
+.tour-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+.tour-btn-ghost{border-color:transparent;background:transparent;color:rgba(255,255,255,.55)}
+.tour-btn-ghost:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.tour-btn-primary{background:var(--grad);border-color:transparent;color:#fff}
+.tour-btn-primary:hover{filter:brightness(1.06)}
+.tour-card-mode .tour-highlight{display:none}
+@media (prefers-reduced-motion:reduce){
+  .tour-highlight,.tour-tooltip{transition:none}
+}
+body.tour-active{overflow:hidden}
+
 /* Mobile chrome (drawer) — desktop unchanged */
 .mobile-nav-toggle,.mobile-nav-close{display:none}
 .nav-backdrop{display:none}
@@ -1451,9 +1516,9 @@ input:focus,textarea:focus,select:focus,
         <span class="settings-row-label">Credits</span>
         <span class="settings-row-value" id="settings-credits">—</span>
       </div>
-      <button type="button" class="settings-row-btn" onclick="closeAccountSettings();openOnboarding({fromMenu:true})" aria-label="Open getting started onboarding">
+      <button type="button" class="settings-row-btn" id="settings-getting-started" onclick="closeAccountSettings();openUiTour({fromMenu:true})" aria-label="Open app tour">
         <span class="settings-row-label">Getting started</span>
-        <span class="settings-row-value">Onboarding →</span>
+        <span class="settings-row-value">App tour →</span>
       </button>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Billing</span>
@@ -1574,6 +1639,29 @@ input:focus,textarea:focus,select:focus,
   </div>
 </div>
 
+<!-- UI TOUR -->
+<div id="ui-tour" class="hidden" aria-hidden="true">
+  <div class="tour-highlight" id="tour-highlight" aria-hidden="true"></div>
+  <div class="tour-tooltip" id="tour-tooltip" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-body" tabindex="-1">
+    <div class="tour-tooltip-top">
+      <div class="tour-tooltip-copy">
+        <p class="tour-kicker" id="tour-kicker">Tour</p>
+        <h2 class="tour-title" id="tour-title">Welcome</h2>
+        <p class="tour-body" id="tour-body"></p>
+      </div>
+      <button type="button" class="tour-close" id="tour-close-btn" onclick="skipUiTour()" aria-label="Close tour">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="tour-foot">
+      <span class="tour-step" id="tour-step-label">1 of 1</span>
+      <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-btn" onclick="skipUiTour()">Skip tour</button>
+      <button type="button" class="tour-btn" id="tour-back-btn" onclick="uiTourBack()">Back</button>
+      <button type="button" class="tour-btn tour-btn-primary" id="tour-next-btn" onclick="uiTourNext()">Next</button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH MODAL -->
 <div class="modal-bg hidden" id="auth-modal">
   <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -1650,33 +1738,33 @@ input:focus,textarea:focus,select:focus,
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section"><span class="nav-section-label">Create</span></div>
-    <button class="nav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">
+    <button class="nav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
       <span class="nav-item-label">Clipping</span>
     </button>
-    <button class="nav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">
+    <button class="nav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/><path d="M5 4h2M17 4h2"/><path d="M12 8v4"/></svg></span>
       <span class="nav-item-label">Ranking</span>
     </button>
-    <button class="nav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
+    <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
       <span class="nav-item-label">Image Generation</span>
     </button>
-    <button class="nav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">
+    <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
       <span class="nav-item-label">Video Generation</span>
     </button>
-    <button class="nav-item" data-panel="upscale" onclick="switchPanel('upscale',this)">
+    <button class="nav-item" id="nav-upscale" data-panel="upscale" onclick="switchPanel('upscale',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
       <span class="nav-item-label">Upscale</span>
       <span class="badge-soon">Soon</span>
     </button>
     <div class="nav-section"><span class="nav-section-label">Workspace</span></div>
-    <button class="nav-item" data-panel="tools" onclick="switchPanel('tools',this)">
+    <button class="nav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
       <span class="nav-item-label">Tools</span>
     </button>
-    <button class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
+    <button class="nav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       <span class="nav-item-label">Dashboard</span>
     </button>
@@ -1693,7 +1781,7 @@ input:focus,textarea:focus,select:focus,
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
       </div>
-      <button type="button" class="user-signout-btn" onclick="openOnboarding({fromMenu:true})" aria-label="Open getting started onboarding">
+      <button type="button" class="user-signout-btn" id="user-getting-started-btn" onclick="openUiTour({fromMenu:true})" aria-label="Open app tour">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19h14"/></svg>
         Getting started
       </button>
@@ -1717,7 +1805,7 @@ input:focus,textarea:focus,select:focus,
     <div class="topbar-actions">
       <span class="credits-pill" id="credits-pill" title="Credits">
         <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-        <span class="credits-pill-count" id="credits-count">10</span>
+        <span class="credits-pill-count" id="credits-count">0</span>
         <span class="credits-pill-label">credits</span>
       </span>
     </div>
@@ -3640,6 +3728,10 @@ document.addEventListener('keydown', (e) => {
     skipOnboarding()
     return
   }
+  if (window.isUiTourActive?.()) {
+    skipUiTour()
+    return
+  }
   const settings = document.getElementById('settings-modal')
   if (settings && !settings.classList.contains('hidden')) {
     closeAccountSettings()
@@ -3839,6 +3931,7 @@ window.skipOnboarding = () => {
   }
   obMarkSeen()
   closeOnboarding()
+  maybeStartUiTour()
 }
 
 window.onboardingBack = () => {
@@ -3907,6 +4000,7 @@ window.finishOnboarding = (dest) => {
   } else {
     try { switchPanel('dashboard', null) } catch (_) {}
   }
+  maybeStartUiTour()
 }
 
 window.maybeShowOnboarding = () => {
@@ -3915,11 +4009,17 @@ window.maybeShowOnboarding = () => {
   if (auth && !auth.classList.contains('hidden')) return
   // Preview helper: ?onboarding=1 force-opens (does not clear seen flag until skip/complete)
   const force = /(?:\?|&)onboarding=1(?:&|$)/.test(location.search || '')
-  if (!force && obHasSeen()) return
+  if (!force && obHasSeen()) {
+    maybeStartUiTour()
+    return
+  }
   // Defer so auth shell / panel restore settle first.
   setTimeout(() => {
     if (!currentUser) return
-    if (!force && obHasSeen()) return
+    if (!force && obHasSeen()) {
+      maybeStartUiTour()
+      return
+    }
     if (force) {
       try {
         const url = new URL(location.href)
@@ -3930,6 +4030,349 @@ window.maybeShowOnboarding = () => {
     openOnboarding({ auto: true })
   }, 220)
 }
+
+// ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
+// Persistence: vidso_ui_tour_seen:<userKey> -> "1" when completed or skipped (no auto re-open).
+// Re-open anytime via Getting started. Preview: ?tour=1
+let _tourStep = 0
+let _tourActive = false
+let _tourPrevFocus = null
+let _tourResizeTimer = 0
+let _tourFromMenu = false
+
+function tourSeenKey() { return 'vidso_ui_tour_seen:' + obUserKey() }
+function tourHasSeen() {
+  try { return localStorage.getItem(tourSeenKey()) === '1' } catch (_) { return false }
+}
+function tourMarkSeen() {
+  try { localStorage.setItem(tourSeenKey(), '1') } catch (_) {}
+}
+function tourIsMobile() {
+  try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
+}
+function tourReduceMotion() {
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (_) { return false }
+}
+
+const UI_TOUR_STEPS = [
+  {
+    id: 'welcome',
+    kicker: 'App tour',
+    title: 'A quick walk through Vidso',
+    body: 'We will highlight the real controls you will use. Skip anytime — it will not nag you again.',
+    selector: null,
+    placement: 'center'
+  },
+  {
+    id: 'clipper',
+    kicker: 'Create',
+    title: 'Clipping',
+    body: 'Turn long videos into short clips you can download and post.',
+    selector: '#nav-clipper',
+    needsNav: true
+  },
+  {
+    id: 'ranking',
+    kicker: 'Create',
+    title: 'Ranking',
+    body: 'Score clip candidates so you can pick the strongest moments first.',
+    selector: '#nav-ranking',
+    needsNav: true
+  },
+  {
+    id: 'imagegen',
+    kicker: 'Create',
+    title: 'Image Generation',
+    body: 'Generate still images for thumbnails, frames, and creative assets.',
+    selector: '#nav-imagegen',
+    needsNav: true
+  },
+  {
+    id: 'videogen',
+    kicker: 'Start here',
+    title: 'Video Generation',
+    body: 'This is the core flow: topic to a full narrated long-form YouTube video.',
+    selector: '#nav-videogen',
+    needsNav: true,
+    panel: 'videogen'
+  },
+  {
+    id: 'upscale',
+    kicker: 'Create',
+    title: 'Upscale',
+    body: 'Coming soon — listed here so you know where higher-resolution tools will land.',
+    selector: '#nav-upscale',
+    needsNav: true
+  },
+  {
+    id: 'tools',
+    kicker: 'Workspace',
+    title: 'Tools',
+    body: 'Extra utilities for captions, reframing, and other editing helpers.',
+    selector: '#nav-tools',
+    needsNav: true
+  },
+  {
+    id: 'dashboard',
+    kicker: 'Workspace',
+    title: 'Dashboard',
+    body: 'Your home overview for account activity and quick access back into the app.',
+    selector: '#nav-dashboard',
+    needsNav: true,
+    panel: 'dashboard'
+  },
+  {
+    id: 'credits',
+    kicker: 'Account',
+    title: 'Credits',
+    body: 'Actions spend credits from this balance — buy a plan when you are ready to generate more.',
+    selector: '#credits-pill',
+    needsNav: false
+  },
+  {
+    id: 'account',
+    kicker: 'Account',
+    title: 'Account & Getting started',
+    body: 'Open settings here, and use Getting started anytime to replay this tour.',
+    selector: '#user-getting-started-btn',
+    needsNav: true
+  }
+]
+
+function tourRoot() { return document.getElementById('ui-tour') }
+function tourHighlightEl() { return document.getElementById('tour-highlight') }
+function tourTooltipEl() { return document.getElementById('tour-tooltip') }
+
+window.isUiTourActive = () => !!_tourActive
+
+async function tourPrepareStep(step) {
+  if (step.panel) {
+    try { switchPanel(step.panel, null) } catch (_) {}
+  }
+  if (tourIsMobile()) {
+    if (step.needsNav) {
+      try { openMobileNav() } catch (_) {}
+      await new Promise(r => setTimeout(r, tourReduceMotion() ? 0 : 240))
+    } else {
+      try { closeMobileNav() } catch (_) {}
+      await new Promise(r => setTimeout(r, tourReduceMotion() ? 0 : 160))
+    }
+  } else {
+    try { closeMobileNav() } catch (_) {}
+  }
+}
+
+function tourPosition() {
+  const step = UI_TOUR_STEPS[_tourStep]
+  const root = tourRoot()
+  const tip = tourTooltipEl()
+  const hi = tourHighlightEl()
+  if (!step || !root || !tip || !hi) return
+
+  const pad = 8
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  let target = step.selector ? document.querySelector(step.selector) : null
+
+  tip.classList.toggle('is-on', true)
+  root.classList.toggle('tour-card-mode', !target || step.placement === 'center')
+
+  if (!target || step.placement === 'center') {
+    hi.classList.remove('is-on')
+    tip.dataset.placement = 'center'
+    const tw = tip.offsetWidth || 320
+    const th = tip.offsetHeight || 180
+    tip.style.left = Math.max(16, (vw - tw) / 2) + 'px'
+    tip.style.top = Math.max(16, (vh - th) / 2) + 'px'
+    tip.style.setProperty('--tour-arrow-x', '24px')
+    return
+  }
+
+  try { target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: tourReduceMotion() ? 'auto' : 'smooth' }) } catch (_) {}
+  const rect = target.getBoundingClientRect()
+  const r = {
+    top: Math.max(6, rect.top - pad),
+    left: Math.max(6, rect.left - pad),
+    width: Math.min(vw - 12, rect.width + pad * 2),
+    height: Math.min(vh - 12, rect.height + pad * 2)
+  }
+  hi.style.top = r.top + 'px'
+  hi.style.left = r.left + 'px'
+  hi.style.width = r.width + 'px'
+  hi.style.height = r.height + 'px'
+  hi.style.borderRadius = (getComputedStyle(target).borderRadius || '14px')
+  hi.classList.add('is-on')
+
+  // Measure tip after content set
+  const tw = tip.offsetWidth || 320
+  const th = tip.offsetHeight || 180
+  const gap = 14
+  const spaceBelow = vh - (r.top + r.height)
+  const spaceAbove = r.top
+  let placement = 'bottom'
+  if (spaceBelow < th + gap + 12 && spaceAbove > spaceBelow) placement = 'top'
+  // Prefer side placement on desktop if target is in the left sidebar.
+  if (!tourIsMobile() && r.left < 320 && vw - (r.left + r.width) > tw + gap + 24) {
+    placement = 'right'
+  }
+
+  let left = r.left
+  let top = r.top + r.height + gap
+  if (placement === 'top') top = r.top - th - gap
+  if (placement === 'right') {
+    left = r.left + r.width + gap
+    top = r.top + Math.max(0, (r.height - th) / 2)
+  }
+  if (placement === 'left') {
+    left = r.left - tw - gap
+    top = r.top + Math.max(0, (r.height - th) / 2)
+  }
+
+  left = Math.min(Math.max(16, left), vw - tw - 16)
+  top = Math.min(Math.max(16, top), vh - th - 16)
+  tip.dataset.placement = placement
+  tip.style.left = left + 'px'
+  tip.style.top = top + 'px'
+
+  if (placement === 'bottom' || placement === 'top') {
+    const arrowX = Math.min(tw - 28, Math.max(18, (r.left + r.width / 2) - left - 6))
+    tip.style.setProperty('--tour-arrow-x', arrowX + 'px')
+  } else {
+    const arrowY = Math.min(th - 28, Math.max(18, (r.top + r.height / 2) - top - 6))
+    tip.style.setProperty('--tour-arrow-y', arrowY + 'px')
+  }
+}
+
+function tourRender() {
+  const step = UI_TOUR_STEPS[_tourStep]
+  const tip = tourTooltipEl()
+  if (!step || !tip) return
+  document.getElementById('tour-kicker').textContent = step.kicker || 'Tour'
+  document.getElementById('tour-title').textContent = step.title || ''
+  document.getElementById('tour-body').textContent = step.body || ''
+  document.getElementById('tour-step-label').textContent = (_tourStep + 1) + ' of ' + UI_TOUR_STEPS.length
+  const back = document.getElementById('tour-back-btn')
+  const next = document.getElementById('tour-next-btn')
+  if (back) {
+    back.hidden = _tourStep === 0
+    back.disabled = _tourStep === 0
+  }
+  if (next) next.textContent = _tourStep >= UI_TOUR_STEPS.length - 1 ? 'Done' : 'Next'
+  tourPrepareStep(step).then(() => {
+    requestAnimationFrame(() => {
+      tourPosition()
+      tip.focus?.({ preventScroll: true })
+    })
+  })
+}
+
+window.openUiTour = (opts = {}) => {
+  if (!currentUser && !opts.force) { showModal(); return }
+  const root = tourRoot()
+  const tip = tourTooltipEl()
+  if (!root || !tip) return
+  _tourFromMenu = !!opts.fromMenu
+  _tourPrevFocus = document.activeElement
+  _tourStep = 0
+  _tourActive = true
+  window.closeAccountSettings?.()
+  window.closeOnboarding?.()
+  root.classList.remove('hidden')
+  root.classList.add('is-active')
+  root.setAttribute('aria-hidden', 'false')
+  document.body.classList.add('tour-active')
+  tourRender()
+}
+
+window.closeUiTour = () => {
+  const root = tourRoot()
+  if (!root) return
+  _tourActive = false
+  root.classList.add('hidden')
+  root.classList.remove('is-active', 'tour-card-mode')
+  root.setAttribute('aria-hidden', 'true')
+  document.body.classList.remove('tour-active')
+  tourHighlightEl()?.classList.remove('is-on')
+  try { closeMobileNav() } catch (_) {}
+  if (_tourPrevFocus && typeof _tourPrevFocus.focus === 'function') {
+    try { _tourPrevFocus.focus() } catch (_) {}
+  }
+  _tourPrevFocus = null
+}
+
+window.skipUiTour = () => {
+  tourMarkSeen()
+  closeUiTour()
+}
+
+window.finishUiTour = () => {
+  tourMarkSeen()
+  closeUiTour()
+}
+
+window.uiTourBack = () => {
+  if (!_tourActive || _tourStep <= 0) return
+  _tourStep -= 1
+  tourRender()
+}
+
+window.uiTourNext = () => {
+  if (!_tourActive) return
+  if (_tourStep >= UI_TOUR_STEPS.length - 1) {
+    finishUiTour()
+    return
+  }
+  _tourStep += 1
+  tourRender()
+}
+
+window.maybeStartUiTour = () => {
+  if (!currentUser) return
+  if (_tourActive) return
+  const auth = document.getElementById('auth-modal')
+  if (auth && !auth.classList.contains('hidden')) return
+  const onboarding = document.getElementById('onboarding-modal')
+  if (onboarding && !onboarding.classList.contains('hidden')) return
+  const force = /(?:\?|&)tour=1(?:&|$)/.test(location.search || '')
+  if (!force && tourHasSeen()) return
+  if (!force && !obHasSeen()) return // wait until welcome onboarding is done/skipped
+  setTimeout(() => {
+    if (!currentUser || _tourActive) return
+    if (!force && tourHasSeen()) return
+    const ob = document.getElementById('onboarding-modal')
+    if (ob && !ob.classList.contains('hidden')) return
+    if (force) {
+      try {
+        const url = new URL(location.href)
+        url.searchParams.delete('tour')
+        history.replaceState({}, '', url.pathname + url.search + url.hash)
+      } catch (_) {}
+    }
+    openUiTour({ auto: true, force })
+  }, 280)
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!_tourActive) return
+  if (e.key === 'ArrowRight' || e.key === 'Enter') {
+    // Don't steal Enter from buttons that already handle click
+    if (e.key === 'Enter' && e.target && e.target.closest && e.target.closest('.tour-btn, .tour-close')) return
+    e.preventDefault()
+    uiTourNext()
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault()
+    uiTourBack()
+  }
+})
+window.addEventListener('resize', () => {
+  if (!_tourActive) return
+  clearTimeout(_tourResizeTimer)
+  _tourResizeTimer = setTimeout(() => tourPosition(), 80)
+})
+window.addEventListener('scroll', () => {
+  if (!_tourActive) return
+  tourPosition()
+}, true)
 
 function populateUser() {
   document.getElementById('user-email').textContent = currentUser.email || ''
