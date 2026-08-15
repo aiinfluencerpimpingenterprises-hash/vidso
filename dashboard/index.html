@@ -3823,6 +3823,12 @@ window.openAccountSettings = () => {
   if (emailEl) emailEl.textContent = email
   const creditsEl = document.getElementById('settings-credits')
   if (creditsEl) creditsEl.textContent = String(currentUser.credits ?? 0)
+  const planEl = document.getElementById('settings-plan-label')
+  if (planEl) {
+    planEl.textContent = hasActivePlan()
+      ? `${String(currentUser.plan || 'Plan')} · active →`
+      : 'Choose a plan →'
+  }
   modal.classList.remove('hidden')
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
