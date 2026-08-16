@@ -4686,7 +4686,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if (PAYWALL_ENABLED && currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
     openPaywall({ force: true })
     return
   }
@@ -9766,6 +9766,7 @@ if (typeof _origSwitchPanel === 'function') {
 
 // Any paid-feature 402 should open the hard paywall so users can't poke around unpaid.
 window.addEventListener('unhandledrejection', (ev) => {
+  if (!PAYWALL_ENABLED) return
   const err = ev?.reason
   if (err && err.needsPlan) {
     try { openPaywall({ force: true }) } catch (_) {}
