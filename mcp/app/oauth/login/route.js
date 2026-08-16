@@ -58,7 +58,8 @@ export async function POST(req) {
   const password = String(form.get('password') || '');
   try {
     const redirectTo = await completeLogin(session, email, password);
-    return NextResponse.redirect(redirectTo);
+    // 303 avoids POST method preservation on Claude's callback (claude-ai-mcp#109).
+    return NextResponse.redirect(redirectTo, 303);
   } catch (err) {
     const msg = encodeURIComponent(err instanceof VidsoApiError ? err.message : err.message || 'Login failed');
     return NextResponse.redirect(new URL(`/oauth/login?session=${encodeURIComponent(session)}&error=${msg}`, req.url));
