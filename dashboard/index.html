@@ -4488,6 +4488,9 @@ window.maybeStartUiTour = () => {
 }
 
 // ── PAYWALL (hard gate — no feature access without an active plan) ───────
+// TEMP: set PAYWALL_ENABLED back to true to restore the hard paywall modal.
+// Keeping all paywall UI/logic intact so re-enabling is a one-line flip.
+const PAYWALL_ENABLED = false
 let _paywallCycle = 'monthly'
 let _paywallOpening = false
 
@@ -4546,6 +4549,7 @@ window.refreshPlanStatus = async () => {
 }
 
 window.openPaywall = (opts = {}) => {
+  if (!PAYWALL_ENABLED) { closePaywall(); return }
   if (_paywallOpening) return
   if (!opts.force && hasActivePlan()) { closePaywall(); return }
   const modal = document.getElementById('paywall-modal')
@@ -4571,6 +4575,7 @@ window.closePaywall = () => {
 }
 
 window.maybeShowPaywall = () => {
+  if (!PAYWALL_ENABLED) { closePaywall(); return }
   if (!currentUser) return
   if (hasActivePlan()) { closePaywall(); return }
   const auth = document.getElementById('auth-modal')
@@ -4592,6 +4597,7 @@ window.maybeShowPaywall = () => {
 }
 
 document.addEventListener('visibilitychange', () => {
+  if (!PAYWALL_ENABLED) return
   if (document.visibilityState !== 'visible') return
   const modal = document.getElementById('paywall-modal')
   if (!modal || modal.classList.contains('hidden')) return
@@ -4599,6 +4605,7 @@ document.addEventListener('visibilitychange', () => {
 })
 
 window.requireActivePlan = (opts = {}) => {
+  if (!PAYWALL_ENABLED) return true
   if (hasActivePlan()) return true
   openPaywall({ force: true, reason: opts.reason || 'plan_required' })
   return false
@@ -4679,7 +4686,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if (PAYWALL_ENABLED && currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
     openPaywall({ force: true })
     return
   }
@@ -9759,6 +9766,7 @@ if (typeof _origSwitchPanel === 'function') {
 
 // Any paid-feature 402 should open the hard paywall so users can't poke around unpaid.
 window.addEventListener('unhandledrejection', (ev) => {
+  if (!PAYWALL_ENABLED) return
   const err = ev?.reason
   if (err && err.needsPlan) {
     try { openPaywall({ force: true }) } catch (_) {}
