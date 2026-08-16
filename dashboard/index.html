@@ -3234,6 +3234,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </div>
               <div class="fv-script-toolbar">
                 <div class="fv-script-actions" id="fv-script-actions">
+                  <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
                   <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                 </div>
@@ -4850,6 +4851,46 @@ function fvSetScriptActionsVisible(show) {
   if (help) help.style.display = show ? '' : 'none'
 }
 
+/** Wipe the generated script UI and return to the Generate Script form. */
+window.fvClearScript = () => {
+  try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
+  try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
+  fvState.script = null
+  fvState.media = null
+  fvState.mediaJobId = null
+  fvState.mediaPoll = null
+  fvState.preview = null
+  fvState.renderJobId = null
+  fvState.renderPoll = null
+  fvState.renderUrl = null
+  fvState.phase = 1
+
+  const box = document.getElementById('fv-script-box')
+  if (box) box.classList.remove('show')
+  document.getElementById('fv-media-box')?.classList.remove('show')
+  document.getElementById('fv-preview-box')?.classList.remove('show')
+  document.getElementById('fv-export-box')?.classList.remove('show')
+  document.getElementById('fv-setup')?.classList.remove('collapsed')
+
+  const title = document.getElementById('fv-script-title')
+  if (title) title.textContent = ''
+  const meta = document.getElementById('fv-script-meta')
+  if (meta) meta.innerHTML = ''
+  const sections = document.getElementById('fv-sections')
+  if (sections) sections.innerHTML = ''
+
+  fvSetScriptActionsVisible(false)
+  fvSetStatus('', null)
+  fvSetStatus('', null, 2)
+  fvSetPills(1)
+
+  try { sessionStorage.removeItem('vidso_faceless_draft') } catch (_) {}
+  try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
+  try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
+
+  document.getElementById('fv-topic')?.focus?.()
+}
+
 function fvSetStatus(msg, kind, which) {
   const el = document.getElementById(which === 2 ? 'fv-status-2' : 'fv-status')
   if (!el) return
@@ -6004,6 +6045,7 @@ window.fvGenerateScript = async () => {
     fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
     fvSetScriptActionsVisible(!!fvState.script)
+    if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
     if (btn) btn.disabled = false
   }
