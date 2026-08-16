@@ -217,10 +217,7 @@ export const api = {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
     checkoutUrl: (tier, interval) => WHOP_CHECKOUT[`${tier}_${interval}`] || WHOP_CHECKOUT.creator_monthly,
     // True when the user has an active paid plan with quota remaining.
-    // TEMP: PLAN_GATE_ENABLED=false skips the client pre-check (Railway may still 402).
     canClip: async () => {
-      const PLAN_GATE_ENABLED = false // TEMP: flip true with PAYWALL_ENABLED to restore
-      if (!PLAN_GATE_ENABLED) return true
       try {
         const me = await req('GET', '/api/user/me')
         return me.plan_status === 'active' && (me.videos_remaining ?? 0) > 0
