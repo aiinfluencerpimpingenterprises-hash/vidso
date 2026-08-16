@@ -30,7 +30,7 @@
       "destination": "/dashboard/index.html"
     },
     {
-      "source": "/analytics",
+      "source": "/dashboard",
       "destination": "/dashboard/index.html"
     },
     {
@@ -93,22 +93,22 @@
     },
     {
       "source": "/overview",
-      "destination": "/analytics",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
       "source": "/overview/",
-      "destination": "/analytics",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
-      "source": "/dashboard",
-      "destination": "/analytics",
+      "source": "/analytics",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
-      "source": "/dashboard/",
-      "destination": "/analytics",
+      "source": "/analytics/",
+      "destination": "/dashboard",
       "permanent": false
     }
   ],
