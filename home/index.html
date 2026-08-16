@@ -1142,9 +1142,9 @@
       <div class="eyebrow">Integrations</div>
       <h2>Turn Claude into your video engine</h2>
       <p>Connect Vidso to Claude and generate full long-form YouTube videos right from your conversation.</p>
-      <div class="mcp-badge" title="MCP connector backend is not live yet">
+      <div class="mcp-badge" title="MCP server code is ready; host it at the URL below (Railway) and connect from Claude">
         <span class="dot" aria-hidden="true"></span>
-        In setup
+        Ready
       </div>
     </div>
 
@@ -1230,11 +1230,11 @@
             <h3>Add the Vidso connector</h3>
             <p>Add a new connector named <strong>Vidso</strong> and paste the MCP URL below.</p>
             <div class="mcp-url-row">
-              <!-- TODO(AI): replace placeholder with live Railway MCP URL once the server is deployed -->
+              <!-- Production MCP URL: deploy mcp/ to Railway (or similar) and point DNS here -->
               <code id="mcpUrlValue">https://api.vidso.pro/mcp</code>
               <button type="button" id="mcpCopyUrl" data-copy-target="mcpUrlValue">Copy</button>
             </div>
-            <p class="mcp-url-hint">Placeholder URL until the MCP server is live on Railway.</p>
+            <p class="mcp-url-hint">Remote MCP endpoint (Streamable HTTP). Sign in with your Vidso account when Claude prompts.</p>
           </div>
           <div class="mcp-step">
             <div class="num">03</div>
@@ -1256,11 +1256,11 @@
             <h3>Add the Vidso connector</h3>
             <p>Register a connector named <strong>Vidso</strong> with the same MCP URL used for Claude.</p>
             <div class="mcp-url-row">
-              <!-- TODO(AI): replace placeholder with live Railway MCP URL once the server is deployed -->
+              <!-- Production MCP URL: deploy mcp/ to Railway (or similar) and point DNS here -->
               <code id="mcpUrlValueCursor">https://api.vidso.pro/mcp</code>
               <button type="button" data-copy-target="mcpUrlValueCursor">Copy</button>
             </div>
-            <p class="mcp-url-hint">Placeholder URL until the MCP server is live on Railway.</p>
+            <p class="mcp-url-hint">Same endpoint as Claude. Cursor may also accept a Bearer Vidso JWT via request headers.</p>
           </div>
           <div class="mcp-step">
             <div class="num">03</div>
@@ -1271,10 +1271,8 @@
       </div>
 
       <p class="mcp-setup-note">
-        <!-- TODO(AI): point this to the real MCP docs page once published -->
         CLI and other MCP clients may use a different config format.
-        <a href="/docs/mcp" id="mcpDocsLink">Read the setup docs</a>
-        <span style="opacity:.7"> (docs link placeholder).</span>
+        <a href="/docs/mcp" id="mcpDocsLink">Read the setup docs</a>.
       </p>
     </div>
 
@@ -1282,14 +1280,11 @@
       <div class="s-head center">
         <div class="eyebrow">Tools</div>
         <h2>What Claude can do with Vidso</h2>
-        <p>Planned MCP tools mapped to Vidso's real long-form pipeline. Names may settle as the server ships.</p>
+        <p>MCP tools mapped to Vidso's real long-form pipeline.</p>
       </div>
       <div class="mcp-tool-grid">
         <div class="mcp-tool">
-          <div class="row">
-            <code>generate_video</code>
-            <span class="soon">Coming soon</span>
-          </div>
+          <div class="row"><code>generate_video</code></div>
           <p>Topic → full long-form video (script, voiceover, B-roll, captions, MP4).</p>
         </div>
         <div class="mcp-tool">
@@ -1317,11 +1312,12 @@
           <p>List available narrator voices for TTS.</p>
         </div>
         <div class="mcp-tool">
-          <div class="row">
-            <code>list_models</code>
-            <span class="soon">Coming soon</span>
-          </div>
-          <p>Expose script or generation options once the MCP surface is finalized.</p>
+          <div class="row"><code>list_presets</code></div>
+          <p>List duration / faceless presets for script generation.</p>
+        </div>
+        <div class="mcp-tool">
+          <div class="row"><code>whoami</code></div>
+          <p>Authenticated Vidso profile, plan, and credits.</p>
         </div>
       </div>
     </div>

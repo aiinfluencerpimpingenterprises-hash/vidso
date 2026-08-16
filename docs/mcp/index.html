@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Vidso MCP setup · Connect Claude</title>
+  <meta name="description" content="Connect the Vidso MCP connector to Claude Desktop, claude.ai, or Cursor."/>
+  <link rel="canonical" href="https://www.vidso.pro/docs/mcp"/>
+  <style>
+    :root{
+      --bg:#0B0B0C;--panel:#121214;--line:rgba(245,245,244,.09);--line-2:rgba(245,245,244,.15);
+      --txt:#F5F5F4;--muted:rgba(245,245,244,.7);--faint:rgba(245,245,244,.45);
+      --grad:linear-gradient(135deg,#F0606C 0%,#B31D2C 100%);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.55;padding:48px 20px 80px}
+    .wrap{max-width:720px;margin:0 auto}
+    a{color:#F5A0A8}
+    h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.04em;margin:12px 0 12px;font-weight:800}
+    h2{font-size:20px;margin:36px 0 12px;letter-spacing:-.02em}
+    p,li{color:var(--muted);font-size:15px}
+    .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);font-weight:600}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px;margin:16px 0}
+    code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+    pre{white-space:pre-wrap;word-break:break-all;color:var(--txt)}
+    ol{padding-left:20px;display:flex;flex-direction:column;gap:10px}
+    .btn{display:inline-flex;margin-top:20px;padding:12px 20px;border-radius:999px;background:var(--grad);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
+    .muted{color:var(--faint);font-size:13px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Docs</div>
+    <h1>Connect Vidso to Claude</h1>
+    <p>Vidso exposes a remote MCP server so Claude (and Cursor) can run the long-form video pipeline: script, voiceover, B-roll, captions, and MP4 export. MCP is an open standard. This is a Vidso connector, not an Anthropic product.</p>
+
+    <h2>Connector URL</h2>
+    <div class="card"><pre id="mcpUrl">https://api.vidso.pro/mcp</pre></div>
+    <p class="muted">If your team hosts the MCP service on another domain, use that HTTPS origin plus <code>/mcp</code>. Set <code>PUBLIC_BASE_URL</code> on the server to match.</p>
+
+    <h2>Claude Desktop / claude.ai</h2>
+    <ol>
+      <li>Open Settings → Connectors.</li>
+      <li>Add a custom connector named <strong>Vidso</strong>.</li>
+      <li>Paste the MCP URL above.</li>
+      <li>Connect and sign in with your Vidso account (email/password).</li>
+      <li>Ask Claude to generate a long-form video. Requires Vidso credits or an active plan.</li>
+    </ol>
+
+    <h2>Cursor</h2>
+    <ol>
+      <li>Open Cursor MCP / connector settings.</li>
+      <li>Add a connector named <strong>Vidso</strong> with the same MCP URL.</li>
+      <li>Authenticate with your Vidso account, then prompt the agent to generate a video.</li>
+    </ol>
+    <p class="muted">CLI and other MCP clients may use a different config format. Prefer Streamable HTTP to <code>/mcp</code> with OAuth or a Bearer Vidso JWT.</p>
+
+    <h2>Tools</h2>
+    <div class="card">
+      <pre>whoami
+list_voices
+list_presets
+create_script
+search_broll
+start_media
+render_video
+get_job_status
+generate_video</pre>
+    </div>
+
+    <h2>Self-host / Railway</h2>
+    <p>The server lives in the <code>mcp/</code> folder of the Vidso repo. Deploy that service, set <code>PUBLIC_BASE_URL</code> to the public HTTPS origin, then point <code>api.vidso.pro</code> (or update this docs URL) at it.</p>
+
+    <a class="btn" href="/home#claude-mcp">Back to marketing section</a>
+  </div>
+</body>
+</html>
