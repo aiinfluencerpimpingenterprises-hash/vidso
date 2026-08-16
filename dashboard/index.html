@@ -3681,7 +3681,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/analytics'
+  if (path === '/login' || path === '/signup') return location.origin + '/dashboard'
   return location.origin + location.pathname + location.search
 }
 
@@ -4661,19 +4661,19 @@ const titles = {
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
-  home:'/analytics', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', upscale:'/upscale', tools:'/tools', dashboard:'/analytics',
+  home:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  videogen:'/video-generation', upscale:'/upscale', tools:'/tools', dashboard:'/dashboard',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
-PATH_TO_PANEL['/dashboard'] = 'dashboard'
+PATH_TO_PANEL['/analytics'] = 'dashboard'
 PATH_TO_PANEL['/overview'] = 'dashboard'
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
-function pathForPanel(id) { return PANEL_PATHS[id] || '/analytics' }
+function pathForPanel(id) { return PANEL_PATHS[id] || '/dashboard' }
 function panelFromPath() { return PATH_TO_PANEL[normalizePath(location.pathname)] || 'dashboard' }
 function isAuthPath() {
   const p = normalizePath(location.pathname)
@@ -4723,8 +4723,8 @@ function restorePanelFromPath() {
     return
   }
   const p = normalizePath(location.pathname)
-  if (p === '/overview' || p === '/dashboard' || p === '/') {
-    history.replaceState(null, '', '/analytics')
+  if (p === '/overview' || p === '/analytics' || p === '/') {
+    history.replaceState(null, '', '/dashboard')
   }
   switchPanel(panelFromPath(), null, { silent: true })
 }
