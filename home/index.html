@@ -1142,7 +1142,7 @@
       <div class="eyebrow">Integrations</div>
       <h2>Turn Claude into your video engine</h2>
       <p>Connect Vidso to Claude and generate full long-form YouTube videos right from your conversation.</p>
-      <div class="mcp-badge" title="MCP server code is ready; host it at the URL below (Railway) and connect from Claude">
+      <div class="mcp-badge" title="MCP server runs on Vercel; connect from Claude with your Vidso account">
         <span class="dot" aria-hidden="true"></span>
         Ready
       </div>
@@ -1230,11 +1230,11 @@
             <h3>Add the Vidso connector</h3>
             <p>Add a new connector named <strong>Vidso</strong> and paste the MCP URL below.</p>
             <div class="mcp-url-row">
-              <!-- Production MCP URL: deploy mcp/ to Railway (or similar) and point DNS here -->
+              <!-- Production MCP URL on Vercel (attach custom domain api.vidso.pro to the mcp project) -->
               <code id="mcpUrlValue">https://api.vidso.pro/mcp</code>
               <button type="button" id="mcpCopyUrl" data-copy-target="mcpUrlValue">Copy</button>
             </div>
-            <p class="mcp-url-hint">Remote MCP endpoint (Streamable HTTP). Sign in with your Vidso account when Claude prompts.</p>
+            <p class="mcp-url-hint">Remote MCP endpoint on Vercel (Streamable HTTP). Sign in with your Vidso account when Claude prompts.</p>
           </div>
           <div class="mcp-step">
             <div class="num">03</div>
@@ -1256,7 +1256,7 @@
             <h3>Add the Vidso connector</h3>
             <p>Register a connector named <strong>Vidso</strong> with the same MCP URL used for Claude.</p>
             <div class="mcp-url-row">
-              <!-- Production MCP URL: deploy mcp/ to Railway (or similar) and point DNS here -->
+              <!-- Production MCP URL on Vercel (attach custom domain api.vidso.pro to the mcp project) -->
               <code id="mcpUrlValueCursor">https://api.vidso.pro/mcp</code>
               <button type="button" data-copy-target="mcpUrlValueCursor">Copy</button>
             </div>

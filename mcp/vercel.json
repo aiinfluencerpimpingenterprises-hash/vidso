@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/mcp/route.js": {
+      "maxDuration": 300
+    }
+  }
+}

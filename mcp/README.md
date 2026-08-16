@@ -1,59 +1,54 @@
-# Vidso MCP Server
+# Vidso MCP Server (Vercel)
 
-Remote MCP connector for **Claude Desktop / claude.ai / Cursor**. Wraps the existing Vidso Railway API (script → voiceover → B-roll → captions → MP4).
+Remote MCP connector for **Claude Desktop / claude.ai / Cursor**. Hosted on **Vercel**. Wraps the existing Vidso HTTP API (script → voiceover → B-roll → captions → MP4).
 
-## Quick start (local)
+## Local
 
 ```bash
 cd mcp
 npm install
-PUBLIC_BASE_URL=http://127.0.0.1:8787 npm start
+cp .env.example .env.local   # set OAUTH_SIGNING_SECRET
+npm run dev                  # http://127.0.0.1:8787
 ```
 
-Health: `GET /health`  
-MCP: `POST/GET/DELETE /mcp` (Bearer Vidso JWT or OAuth)
+- Health: `GET /health`
+- MCP: `/mcp` (Streamable HTTP)
+- Docs: https://www.vidso.pro/docs/mcp
 
 ## Auth
 
-1. **OAuth (Claude Connectors)** — Add custom connector URL `https://<host>/mcp`. Claude runs OAuth; users sign in with their Vidso email/password on `/oauth/login`.
-2. **Bearer JWT** — Send `Authorization: Bearer <vidso_access_token>` (same token the dashboard stores). Useful for Cursor request headers / e2e.
+1. **OAuth (Claude Connectors)** — Add custom connector named **Vidso**, URL `https://<host>/mcp`, sign in with Vidso email/password.
+2. **Bearer JWT** — `Authorization: Bearer <vidso_access_token>` (same token as the dashboard).
+
+OAuth codes/sessions are **stateless signed JWTs** (safe on Vercel serverless). Set `OAUTH_SIGNING_SECRET` in the Vercel project env.
 
 ## Tools
 
-| Tool | Maps to |
-|------|---------|
-| `whoami` | `GET /api/user/me` |
-| `list_voices` | `GET /api/tts/voices` |
-| `list_presets` | `GET /api/faceless/presets` |
-| `create_script` | `POST /api/faceless/script` |
-| `search_broll` | `POST /api/faceless/broll/search` |
-| `start_media` | `POST /api/faceless/media` |
-| `render_video` | `POST /api/faceless/render` |
-| `get_job_status` | media/render poll |
-| `generate_video` | full pipeline orchestrator |
+`whoami`, `list_voices`, `list_presets`, `create_script`, `search_broll`, `start_media`, `render_video`, `get_job_status`, `generate_video`
 
 ## Env
 
-| Var | Default | Notes |
-|-----|---------|-------|
-| `PORT` | `8787` | Listen port |
-| `PUBLIC_BASE_URL` | `http://127.0.0.1:$PORT` | **Must** be the public HTTPS origin in production (OAuth metadata) |
-| `VIDSO_API_BASE` | Railway production URL | Existing Vidso API |
-| `DASHBOARD_URL` | `https://www.vidso.pro/dashboard` | Deep link in tool results |
+| Var | Notes |
+|-----|-------|
+| `PUBLIC_BASE_URL` | Public HTTPS origin (e.g. `https://api.vidso.pro`). Required in production for OAuth metadata. |
+| `OAUTH_SIGNING_SECRET` | Long random secret for signed OAuth codes |
+| `VIDSO_API_BASE` | Vidso API origin (defaults to current production API) |
+| `DASHBOARD_URL` | Deep link in tool results |
 
-## Railway deploy
+## Deploy (Vercel)
 
-From the `mcp/` directory (or set Railway root to `mcp`):
-
-1. Create a new Railway service from this repo, root directory `mcp`.
-2. Set `PUBLIC_BASE_URL=https://<your-railway-domain>` (or custom `https://api.vidso.pro`).
-3. Deploy. Point DNS / landing page MCP URL at `https://<host>/mcp`.
-
-## E2E test
+From `mcp/`:
 
 ```bash
-# server running locally
-VIDSO_EMAIL=you@example.com VIDSO_PASSWORD='...' npm run test:e2e
-# or
-VIDSO_TOKEN='eyJ...' npm run test:e2e
+npx vercel --prod
+```
+
+Set env vars in the Vercel project, then attach custom domain `api.vidso.pro` (or update the landing MCP URL).
+
+`vercel.json` sets `maxDuration: 300` on `/mcp` so `generate_video` can finish within Claude's timeout.
+
+## E2E
+
+```bash
+VIDSO_EMAIL=you@example.com VIDSO_PASSWORD='...' MCP_URL=http://127.0.0.1:8787/mcp npm run test:e2e
 ```

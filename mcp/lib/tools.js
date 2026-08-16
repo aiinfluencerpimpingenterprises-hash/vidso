@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { api, pollUntil, getVidsoToken, VidsoApiError } from './vidso-api.js';
+import { api, pollUntil, getVidsoToken, VidsoApiError, authStore } from './vidso-api.js';
 import { DASHBOARD_URL } from './config.js';
 
 function textResult(payload) {
@@ -21,27 +21,24 @@ function errResult(err) {
 }
 
 const durationId = z
-  .enum(['1min', '2min', '3min', '5min', '8min', '10min'])
+  .enum(['1min', '2min', '3min', '5min', '8min', '10min', 'shorts_30', 'shorts_45', 'shorts_60'])
   .default('2min')
   .describe('Target duration preset id used by Vidso script generation');
 
 const aspect = z.enum(['16:9', '9:16', '1:1']).default('16:9').describe('Output aspect ratio');
 
-export function registerTools(server) {
+/** Register Vidso tools on an MCP server instance (mcp-handler / SDK v2). */
+export function registerVidsoTools(server) {
   server.registerTool(
     'whoami',
     {
       title: 'Who am I',
       description: 'Return the authenticated Vidso user profile and remaining credits/quota.',
-      inputSchema: {},
+      inputSchema: z.object({}),
     },
     async () => {
       try {
-        const me = await api.me();
-        return textResult({
-          ...me,
-          dashboard: DASHBOARD_URL,
-        });
+        return textResult({ ...(await api.me()), dashboard: DASHBOARD_URL });
       } catch (err) {
         return errResult(err);
       }
@@ -53,7 +50,7 @@ export function registerTools(server) {
     {
       title: 'List voices',
       description: 'List available narrator voices for Vidso TTS / long-form voiceover.',
-      inputSchema: {},
+      inputSchema: z.object({}),
     },
     async () => {
       try {
@@ -79,7 +76,7 @@ export function registerTools(server) {
     {
       title: 'List presets',
       description: 'List Vidso faceless duration / style presets available for script generation.',
-      inputSchema: {},
+      inputSchema: z.object({}),
     },
     async () => {
       try {
@@ -95,16 +92,15 @@ export function registerTools(server) {
     {
       title: 'Create script',
       description: 'Generate a long-form video script from a topic (Vidso faceless script API).',
-      inputSchema: {
+      inputSchema: z.object({
         topic: z.string().min(3).describe('Video topic / idea'),
         duration_id: durationId,
         aspect,
-      },
+      }),
     },
     async ({ topic, duration_id, aspect: aspectRatio }) => {
       try {
-        const script = await api.createScript({ topic, duration_id, aspect: aspectRatio });
-        return textResult(script);
+        return textResult(await api.createScript({ topic, duration_id, aspect: aspectRatio }));
       } catch (err) {
         return errResult(err);
       }
@@ -115,12 +111,12 @@ export function registerTools(server) {
     'search_broll',
     {
       title: 'Search B-roll',
-      description: 'Search stock B-roll clips for a query (Vidso Pexels-backed search).',
-      inputSchema: {
-        query: z.string().min(2).describe('Search query'),
+      description: 'Search stock B-roll clips for a query.',
+      inputSchema: z.object({
+        query: z.string().min(2),
         aspect,
-        per_page: z.number().int().min(1).max(40).optional().describe('Optional result count'),
-      },
+        per_page: z.number().int().min(1).max(40).optional(),
+      }),
     },
     async ({ query, aspect: aspectRatio, per_page }) => {
       try {
@@ -137,15 +133,12 @@ export function registerTools(server) {
     'start_media',
     {
       title: 'Start media assembly',
-      description:
-        'Start voiceover + B-roll assembly for a script. Returns a media jobId. Poll with get_job_status (kind=media).',
-      inputSchema: {
-        script: z
-          .any()
-          .describe('Script object from create_script (title, sections, full_script, etc.)'),
-        voice_id: z.string().min(3).describe('Narrator voice id from list_voices'),
+      description: 'Start voiceover + B-roll assembly for a script. Returns a media jobId.',
+      inputSchema: z.object({
+        script: z.any(),
+        voice_id: z.string().min(3),
         aspect,
-      },
+      }),
     },
     async ({ script, voice_id, aspect: aspectRatio }) => {
       try {
@@ -153,7 +146,7 @@ export function registerTools(server) {
         return textResult({
           ...started,
           kind: 'media',
-          next: 'Call get_job_status with kind=media and this jobId, or use generate_video for the full pipeline.',
+          next: 'Call get_job_status with kind=media, or use generate_video for the full pipeline.',
         });
       } catch (err) {
         return errResult(err);
@@ -165,17 +158,16 @@ export function registerTools(server) {
     'render_video',
     {
       title: 'Render video',
-      description:
-        'Start final MP4 render from media assembly outputs (voiceover_url, words, timeline). Poll with get_job_status (kind=render).',
-      inputSchema: {
+      description: 'Start final MP4 render from media assembly outputs.',
+      inputSchema: z.object({
         voiceover_url: z.string().url(),
         duration: z.number().positive(),
         words: z.array(z.any()),
         timeline: z.array(z.any()),
         aspect,
-        caption_style: z.string().default('karaoke').describe('Caption style preset'),
+        caption_style: z.string().default('karaoke'),
         music_enabled: z.boolean().default(false),
-      },
+      }),
     },
     async (args) => {
       try {
@@ -188,11 +180,7 @@ export function registerTools(server) {
           caption: { enabled: true, style: args.caption_style || 'karaoke' },
           music: { enabled: Boolean(args.music_enabled) },
         });
-        return textResult({
-          ...started,
-          kind: 'render',
-          next: 'Call get_job_status with kind=render and this jobId.',
-        });
+        return textResult({ ...started, kind: 'render' });
       } catch (err) {
         return errResult(err);
       }
@@ -204,14 +192,11 @@ export function registerTools(server) {
     {
       title: 'Get job status',
       description: 'Check media or render job progress by job id.',
-      inputSchema: {
-        kind: z.enum(['media', 'render']).describe('Which pipeline stage to poll'),
-        job_id: z.string().min(4).describe('Job id returned by start_media or render_video'),
-        wait: z
-          .boolean()
-          .default(false)
-          .describe('If true, poll until done/ready (or timeout ~4.5 minutes)'),
-      },
+      inputSchema: z.object({
+        kind: z.enum(['media', 'render']),
+        job_id: z.string().min(4),
+        wait: z.boolean().default(false),
+      }),
     },
     async ({ kind, job_id, wait }) => {
       try {
@@ -246,26 +231,19 @@ export function registerTools(server) {
     {
       title: 'Generate video',
       description:
-        'Run the full Vidso long-form pipeline: script → voiceover/B-roll assembly → captions/render → MP4. May take several minutes.',
-      inputSchema: {
-        topic: z.string().min(3).describe('Video topic'),
+        'Run the full Vidso long-form pipeline: script → voiceover/B-roll → captions/render → MP4. May take several minutes.',
+      inputSchema: z.object({
+        topic: z.string().min(3),
         duration_id: durationId,
         aspect,
-        voice_id: z
-          .string()
-          .optional()
-          .describe('Optional voice id from list_voices; defaults to the first available voice'),
+        voice_id: z.string().optional(),
         caption_style: z.string().default('karaoke'),
-        wait: z
-          .boolean()
-          .default(true)
-          .describe('If true (default), wait for the finished MP4. If false, return early job ids.'),
-      },
+        wait: z.boolean().default(true),
+      }),
     },
     async ({ topic, duration_id, aspect: aspectRatio, voice_id, caption_style, wait }) => {
       try {
         const script = await api.createScript({ topic, duration_id, aspect: aspectRatio });
-
         let voice = voice_id;
         if (!voice) {
           const voices = await api.voices();
@@ -281,7 +259,6 @@ export function registerTools(server) {
             script_title: script.title,
             media_job_id: mediaStart.jobId,
             voice_id: voice,
-            next: 'Poll get_job_status kind=media, then render_video, then get_job_status kind=render.',
           });
         }
 
@@ -316,4 +293,9 @@ export function registerTools(server) {
       }
     },
   );
+}
+
+/** Run a tool callback with the Vidso token available via AsyncLocalStorage. */
+export function withVidsoAuth(token, fn) {
+  return authStore.run({ token }, fn);
 }
