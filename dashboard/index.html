@@ -4489,16 +4489,12 @@ window.maybeStartUiTour = () => {
 }
 
 // ── PAYWALL (hard gate — no feature access without an active plan) ───────
-// TEMP: set PAYWALL_ENABLED back to true to restore the hard paywall modal.
-// Keeping all paywall UI/logic intact so re-enabling is a one-line flip.
-const PAYWALL_ENABLED = false
+// Flip PAYWALL_ENABLED to false only for temporary testing; keep true in production.
+const PAYWALL_ENABLED = true
 let _paywallCycle = 'monthly'
 let _paywallOpening = false
 
 function hasActivePlan() {
-  // TEMP: while the paywall is disabled, treat every signed-in user as entitled
-  // for client-side gates. Server-side 402 plan checks still live on Railway.
-  if (!PAYWALL_ENABLED && currentUser) return true
   return !!(currentUser && currentUser.plan_status === 'active')
 }
 
