@@ -4,7 +4,12 @@ import { protectedResourceMetadata } from '../../../../lib/oauth.js';
 export const dynamic = 'force-dynamic';
 
 export function GET() {
-  return NextResponse.json(protectedResourceMetadata());
+  return NextResponse.json(protectedResourceMetadata(), {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-store',
+    },
+  });
 }
 
 export function OPTIONS() {

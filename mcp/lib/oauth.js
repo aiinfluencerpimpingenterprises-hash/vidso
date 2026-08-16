@@ -23,11 +23,14 @@ export async function verifyPayload(token) {
 export function isAllowedRedirect(uri) {
   try {
     const u = new URL(uri);
-    if (u.href === 'https://claude.ai/api/mcp/auth_callback') return true;
-    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+    const host = u.hostname;
+    // Claude.ai / Anthropic MCP OAuth callbacks (path may change; host is the signal).
+    if (host === 'claude.ai' || host.endsWith('.claude.ai')) return true;
+    if (host === 'anthropic.com' || host.endsWith('.anthropic.com')) return true;
+    if (host === 'localhost' || host === '127.0.0.1') {
       return u.pathname === '/callback' || u.pathname.endsWith('/callback');
     }
-    if (u.hostname === 'cursor.com' || u.hostname.endsWith('.cursor.sh')) return true;
+    if (host === 'cursor.com' || host.endsWith('.cursor.sh')) return true;
     return false;
   } catch {
     return false;
@@ -56,7 +59,7 @@ export function registerClient(meta) {
 
 export function oauthAuthorizationServerMetadata() {
   return {
-    issuer: PUBLIC_BASE_URL + '/',
+    issuer: PUBLIC_BASE_URL,
     authorization_endpoint: absoluteUrl('/authorize'),
     token_endpoint: absoluteUrl('/token'),
     registration_endpoint: absoluteUrl('/register'),
@@ -65,7 +68,8 @@ export function oauthAuthorizationServerMetadata() {
     code_challenge_methods_supported: ['S256'],
     token_endpoint_auth_methods_supported: ['none', 'client_secret_post', 'client_secret_basic'],
     scopes_supported: SCOPES,
-    client_id_metadata_document_supported: true,
+    // Do NOT advertise CIMD unless we fully implement client_id metadata documents.
+    // Advertising it made Claude skip DCR and fail with "Authentication service was unavailable".
     service_documentation: 'https://www.vidso.pro/docs/mcp',
   };
 }
@@ -73,7 +77,7 @@ export function oauthAuthorizationServerMetadata() {
 export function protectedResourceMetadata() {
   return {
     resource: mcpResourceUrl(),
-    authorization_servers: [PUBLIC_BASE_URL + '/'],
+    authorization_servers: [PUBLIC_BASE_URL],
     scopes_supported: SCOPES,
     bearer_methods_supported: ['header'],
     resource_name: 'Vidso',

@@ -3,7 +3,6 @@ import { registerVidsoTools, withVidsoAuth } from '../../lib/tools.js';
 import { verifyAccessToken } from '../../lib/oauth.js';
 import { mcpResourceUrl } from '../../lib/config.js';
 
-export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 
 const rawHandler = createMcpHandler(
