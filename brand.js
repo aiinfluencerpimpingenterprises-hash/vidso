@@ -4,6 +4,7 @@
 
   global.VIDSO_R2_BASE = R2_BASE;
   global.VIDSO_LOGO_URL = R2_BASE + '/vidso-logo.png';
+  global.CLAUDE_ICON_URL = R2_BASE + '/claude-ai-icon.png';
   global.VIDSO_TRUSTED_CREATOR_FILES = [
     'trustedcreators1.png',
     'trustedcreators2.png',
@@ -19,6 +20,12 @@
       var img = imgs[i];
       img.src = global.VIDSO_LOGO_URL;
       if (!img.getAttribute('alt')) img.setAttribute('alt', 'Vidso');
+    }
+    var claude = document.querySelectorAll('img[data-claude-logo]');
+    for (var j = 0; j < claude.length; j++) {
+      var c = claude[j];
+      c.src = global.CLAUDE_ICON_URL;
+      if (!c.getAttribute('alt')) c.setAttribute('alt', 'Claude');
     }
   };
 

@@ -299,59 +299,64 @@
 
   /* ---------- Claude MCP (marketing) ---------- */
   .claude-mcp{padding:100px 0;position:relative}
-  .claude-mcp .s-head{max-width:720px}
-  .mcp-badge{
-    display:inline-flex;align-items:center;gap:8px;margin-top:18px;
-    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--faint);background:var(--panel);border:1px solid var(--line);
-    border-radius:999px;padding:7px 14px
+  .mcp-feature{
+    position:relative;overflow:hidden;border-radius:28px;
+    border:1px solid var(--line-2);background:var(--panel);
+    padding:clamp(28px,4vw,48px);display:grid;grid-template-columns:1.2fr .8fr;
+    gap:clamp(28px,4vw,48px);align-items:center
   }
-  .mcp-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
-  .mcp-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-top:48px;align-items:start}
-  .mcp-chat.browser{background:var(--panel)}
-  .mcp-chat .browser-bar .url{max-width:none;flex:1}
-  .mcp-chat-body{padding:22px 20px 24px;background:var(--panel);display:flex;flex-direction:column;gap:16px;min-height:320px}
-  .mcp-msg{display:flex;gap:12px;align-items:flex-start;max-width:100%}
-  .mcp-msg .ava{
-    width:28px;height:28px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;
-    background:var(--soft-fill);border:1px solid var(--line);color:var(--muted)
+  .mcp-feature::before{
+    content:'';position:absolute;inset:0;pointer-events:none;opacity:.35;
+    background-image:
+      linear-gradient(rgba(245,245,244,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,245,244,.045) 1px, transparent 1px);
+    background-size:28px 28px;
+    mask-image:radial-gradient(ellipse 80% 70% at 70% 40%, #000 20%, transparent 75%)
   }
-  .mcp-msg .ava svg{width:14px;height:14px}
-  .mcp-msg.user .ava{background:rgba(var(--glow),.12);border-color:rgba(var(--glow),.28);color:#F5A0A8}
-  .mcp-bubble{
-    flex:1;background:var(--bg);border:1px solid var(--line);border-radius:14px;
-    padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--muted)
+  .mcp-feature-copy{position:relative;z-index:1;max-width:34em}
+  .mcp-pill-badge{
+    display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);background:rgba(0,0,0,.35);border:1px solid var(--line);
+    border-radius:999px;padding:7px 12px
   }
-  .mcp-msg.user .mcp-bubble{color:var(--txt);border-color:var(--line-2)}
-  .mcp-result{
-    margin-top:10px;display:flex;gap:12px;align-items:center;
-    background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px;max-width:340px
+  .mcp-feature h2{
+    font-size:clamp(28px,3.8vw,42px);line-height:1.08;letter-spacing:-.035em;
+    margin:0 0 14px;font-weight:800;text-wrap:balance
   }
-  .mcp-thumb{
-    width:88px;aspect-ratio:16/9;border-radius:8px;flex-shrink:0;position:relative;overflow:hidden;
-    background:linear-gradient(145deg,#1a1a1f 0%,#0c0c0c 100%);border:1px solid var(--line)
+  .mcp-feature-copy > p{margin:0;color:var(--muted);font-size:16px;line-height:1.55;max-width:36em}
+  .mcp-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .mcp-tags span{
+    display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;color:var(--muted);
+    background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:999px;padding:7px 12px
   }
-  .mcp-thumb::after{
-    content:'';position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M9 7.5v9l8-4.5-8-4.5z'/%3E%3C/svg%3E") 55% 50%/12px 12px no-repeat
+  .mcp-pair{
+    position:relative;z-index:1;justify-self:center;display:flex;flex-direction:column;
+    align-items:center;gap:14px;text-align:center
   }
-  .mcp-result .meta{min-width:0}
-  .mcp-result .meta strong{display:block;font-size:13px;font-weight:600;color:var(--txt);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mcp-result .meta span{display:block;font-size:12px;color:var(--faint);margin-top:3px}
-  .mcp-values{display:flex;flex-direction:column;gap:14px}
-  .mcp-val{
-    padding:22px 22px 20px;border:1px solid var(--line);border-radius:var(--r);
-    background:var(--panel);transition:border-color .2s,background-color .2s
+  .mcp-pair-logos{display:flex;align-items:center;gap:14px}
+  .mcp-pair-tile{
+    width:88px;height:88px;border-radius:22px;display:grid;place-items:center;
+    border:1px solid var(--line-2);background:#0c0c0e;overflow:hidden;
+    box-shadow:0 18px 40px rgba(0,0,0,.45)
   }
-  .mcp-val:hover{border-color:var(--line-2);background:var(--panel-2)}
-  .mcp-val .num{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--icon-muted);line-height:1;font-family:'Bricolage Grotesque','Inter',sans-serif}
-  .mcp-val h3{font-size:17px;font-weight:600;margin:10px 0 6px;letter-spacing:-.02em}
-  .mcp-val p{font-size:14px;color:var(--muted);line-height:1.5}
-  .mcp-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;justify-content:center}
-  .mcp-setup{margin-top:72px}
+  .mcp-pair-tile.vidso{background:#0a0a0a}
+  .mcp-pair-tile.claude{background:#D97757;border-color:rgba(217,119,87,.55)}
+  .mcp-pair-tile img{width:100%;height:100%;object-fit:cover;display:block}
+  .mcp-pair-tile.vidso img{width:58%;height:58%;object-fit:contain}
+  .mcp-pair-x{
+    width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:700;color:var(--faint);background:rgba(0,0,0,.45);
+    border:1px solid var(--line)
+  }
+  .mcp-pair-label{
+    font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)
+  }
+  .mcp-setup{margin-top:22px}
   .mcp-tabs{
     display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--panel);
-    border:1px solid var(--line);margin:0 auto 28px;justify-content:center
+    border:1px solid var(--line);margin:0 auto 18px;justify-content:center;width:max-content;
+    position:relative;left:50%;transform:translateX(-50%)
   }
   .mcp-tabs[hidden]{display:none}
   .mcp-tab{
@@ -360,17 +365,29 @@
   }
   .mcp-tab[aria-selected="true"]{background:var(--soft-fill);color:var(--txt)}
   .mcp-tab:hover{color:var(--txt)}
-  .mcp-setup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .mcp-setup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .mcp-step{
-    padding:28px 24px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);
-    transition:border-color .2s
+    padding:24px 22px 22px;border:1px solid var(--line);border-radius:22px;background:var(--panel);
+    transition:border-color .2s;display:flex;flex-direction:column;gap:10px;min-height:100%
   }
   .mcp-step:hover{border-color:var(--line-2)}
-  .mcp-step .num{font-size:36px;font-weight:800;letter-spacing:-.04em;color:var(--icon-muted);line-height:1;font-family:'Bricolage Grotesque','Inter',sans-serif}
-  .mcp-step h3{font-size:18px;font-weight:600;margin:16px 0 8px;letter-spacing:-.02em}
-  .mcp-step p{font-size:14px;color:var(--muted);line-height:1.55}
+  .mcp-step .n{
+    width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:700;color:var(--txt);background:rgba(255,255,255,.06);
+    border:1px solid var(--line);flex-shrink:0
+  }
+  .mcp-step h3{font-size:17px;font-weight:650;margin:2px 0 0;letter-spacing:-.02em;line-height:1.25}
+  .mcp-step h3 .hl{color:#F5A0A8}
+  .mcp-step p{font-size:14px;color:var(--muted);line-height:1.55;margin:0}
+  .mcp-step p strong{color:var(--txt);font-weight:650}
+  .mcp-settings-chip{
+    display:inline-flex;align-items:center;gap:6px;margin-top:auto;align-self:flex-start;
+    font-size:13px;font-weight:600;color:var(--txt);text-decoration:none;
+    border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;background:rgba(0,0,0,.25)
+  }
+  .mcp-settings-chip:hover{background:var(--hover-fill);border-color:var(--line-2)}
   .mcp-url-row{
-    display:flex;align-items:stretch;gap:8px;margin-top:16px;background:var(--bg);
+    display:flex;align-items:stretch;gap:8px;margin-top:4px;background:rgba(0,0,0,.35);
     border:1px solid var(--line-2);border-radius:12px;padding:6px 6px 6px 14px
   }
   .mcp-url-row code{
@@ -383,7 +400,6 @@
     cursor:pointer;background:var(--soft-fill);color:var(--txt);transition:background .2s
   }
   .mcp-url-row button:hover{background:var(--hover-fill)}
-  .mcp-url-hint{margin-top:8px;font-size:12px;color:var(--faint)}
   .mcp-setup-note{margin-top:18px;text-align:center;font-size:13.5px;color:var(--faint)}
   .mcp-setup-note a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
   .mcp-setup-note a:hover{color:var(--txt)}
@@ -399,20 +415,16 @@
     font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:600;
     color:var(--txt);letter-spacing:-.01em
   }
-  .mcp-tool .soon{
-    font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-    color:#F5A0A8;background:rgba(var(--glow),.12);border:1px solid rgba(var(--glow),.22);
-    border-radius:999px;padding:3px 8px;white-space:nowrap
-  }
   .mcp-tool p{font-size:13.5px;color:var(--muted);line-height:1.45;margin:0}
   @media(max-width:900px){
-    .mcp-hero{grid-template-columns:1fr}
+    .mcp-feature{grid-template-columns:1fr;padding:28px 22px}
+    .mcp-pair{order:-1;margin-bottom:8px}
     .mcp-setup-grid,.mcp-tool-grid{grid-template-columns:1fr}
     .claude-mcp{padding:64px 0}
   }
   @media(max-width:520px){
     .mcp-tool-grid{grid-template-columns:1fr}
-    .mcp-cta .btn{width:100%}
+    .mcp-pair-tile{width:72px;height:72px;border-radius:18px}
   }
 
   /* ---------- compare ---------- */
@@ -1138,81 +1150,32 @@
 <!-- CLAUDE MCP (marketing; connector backend ships separately) -->
 <section class="claude-mcp" id="claude-mcp">
   <div class="wrap">
-    <div class="s-head center">
-      <div class="eyebrow">Integrations</div>
-      <h2>Turn Claude into your video engine</h2>
-      <p>Connect Vidso to Claude and generate full long-form YouTube videos right from your conversation.</p>
-      <div class="mcp-badge" title="MCP connector backend is not live yet">
-        <span class="dot" aria-hidden="true"></span>
-        In setup
-      </div>
-    </div>
-
-    <div class="mcp-hero">
-      <div class="browser mcp-chat" aria-label="Sample Claude conversation with Vidso">
-        <div class="browser-bar">
-          <span class="d" aria-hidden="true"></span>
-          <span class="d" aria-hidden="true"></span>
-          <span class="d" aria-hidden="true"></span>
-          <div class="url">Claude · Vidso connector</div>
+    <div class="mcp-feature" aria-label="Vidso MCP connector for Claude">
+      <div class="mcp-feature-copy">
+        <div class="mcp-pill-badge">MCP connector</div>
+        <h2>Claude, meet your studio. Generate from the chat.</h2>
+        <p>Connect Vidso via MCP and ask Claude for long-form YouTube videos—script, voiceover, B-roll, and captions without leaving the conversation.</p>
+        <div class="mcp-tags" aria-label="What you can generate">
+          <span>Script</span>
+          <span>Voiceover</span>
+          <span>Long-form MP4</span>
         </div>
-        <div class="mcp-chat-body">
-          <div class="mcp-msg user">
-            <div class="ava" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
-            </div>
-            <div class="mcp-bubble">Make a 4-minute 16:9 video about how airports make more money than airlines</div>
+      </div>
+      <div class="mcp-pair">
+        <div class="mcp-pair-logos">
+          <div class="mcp-pair-tile vidso" aria-hidden="true">
+            <img data-vidso-logo width="52" height="52" alt="" decoding="async">
           </div>
-          <div class="mcp-msg assistant">
-            <div class="ava" aria-hidden="true">
-              <!-- Neutral connector glyph (not an Anthropic logo) -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 7h2a3 3 0 0 1 0 6H9"/><path d="M15 17h-2a3 3 0 0 1 0-6h2"/><path d="M11 10h2"/><circle cx="7" cy="10" r="1.5"/><circle cx="17" cy="14" r="1.5"/></svg>
-            </div>
-            <div class="mcp-bubble">
-              Generating your long-form video: script, voiceover, B-roll, and captions...
-              <div class="mcp-result">
-                <div class="mcp-thumb" aria-hidden="true"></div>
-                <div class="meta">
-                  <strong>Airport Revenue Explained</strong>
-                  <span>4:00 · 16:9 MP4 · Open in Vidso</span>
-                </div>
-              </div>
-            </div>
+          <div class="mcp-pair-x" aria-hidden="true">×</div>
+          <div class="mcp-pair-tile claude" aria-hidden="true">
+            <img data-claude-logo width="88" height="88" alt="" decoding="async">
           </div>
         </div>
+        <div class="mcp-pair-label">Vidso × Claude</div>
       </div>
-
-      <div class="mcp-values">
-        <div class="mcp-val">
-          <div class="num">01</div>
-          <h3>One prompt, full video</h3>
-          <p>Describe a topic and Claude runs Vidso's whole pipeline: script through finished MP4.</p>
-        </div>
-        <div class="mcp-val">
-          <div class="num">02</div>
-          <h3>Long-form, not just clips</h3>
-          <p>Script, narration, B-roll, and captions assemble into a finished 16:9 upload.</p>
-        </div>
-        <div class="mcp-val">
-          <div class="num">03</div>
-          <h3>Pick up in the app</h3>
-          <p>Open the result in Vidso to preview, edit, or export when you want more control.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mcp-cta">
-      <a class="btn btn-primary" href="#mcp-setup">Connect Claude</a>
-      <a class="btn btn-ghost" href="#mcp-tools">See how it works</a>
     </div>
 
     <div class="mcp-setup" id="mcp-setup">
-      <div class="s-head center">
-        <div class="eyebrow">Setup</div>
-        <h2>Connect Vidso in three steps</h2>
-        <p>Works with Claude Desktop, claude.ai, and Cursor. MCP is an open standard. CLI and other clients may differ.</p>
-      </div>
-
       <div class="mcp-tabs" role="tablist" aria-label="Works with">
         <button type="button" class="mcp-tab" role="tab" id="mcp-tab-claude" aria-selected="true" aria-controls="mcp-panel-claude" data-mcp-tab="claude">Claude</button>
         <button type="button" class="mcp-tab" role="tab" id="mcp-tab-cursor" aria-selected="false" aria-controls="mcp-panel-cursor" data-mcp-tab="cursor">Cursor</button>
@@ -1221,25 +1184,24 @@
       <div id="mcp-panel-claude" role="tabpanel" aria-labelledby="mcp-tab-claude" data-mcp-panel="claude">
         <div class="mcp-setup-grid">
           <div class="mcp-step">
-            <div class="num">01</div>
+            <div class="n" aria-hidden="true">1</div>
             <h3>Open Claude settings</h3>
-            <p>Launch Claude Desktop or claude.ai and go to Settings → Connectors.</p>
+            <p>Launch the app or open claude.ai and go to</p>
+            <a class="mcp-settings-chip" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">Settings → Connectors ↗</a>
           </div>
           <div class="mcp-step">
-            <div class="num">02</div>
-            <h3>Add the Vidso connector</h3>
-            <p>Add a new connector named <strong>Vidso</strong> and paste the MCP URL below.</p>
+            <div class="n" aria-hidden="true">2</div>
+            <h3>Add the <span class="hl">Vidso</span> custom connector</h3>
+            <p>Name it <strong>Vidso</strong> and paste the URL:</p>
             <div class="mcp-url-row">
-              <!-- TODO(AI): replace placeholder with live Railway MCP URL once the server is deployed -->
               <code id="mcpUrlValue">https://api.vidso.pro/mcp</code>
-              <button type="button" id="mcpCopyUrl" data-copy-target="mcpUrlValue">Copy</button>
+              <button type="button" id="mcpCopyUrl" data-copy-target="mcpUrlValue" aria-label="Copy MCP URL">Copy</button>
             </div>
-            <p class="mcp-url-hint">Placeholder URL until the MCP server is live on Railway.</p>
           </div>
           <div class="mcp-step">
-            <div class="num">03</div>
-            <h3>Connect and generate</h3>
-            <p>Sign in with your Vidso account, then ask Claude to make a video. Requires an active Vidso plan and credits.</p>
+            <div class="n" aria-hidden="true">3</div>
+            <h3>Connect and sign in</h3>
+            <p>Click <strong>Add → Connect</strong>, sign in with your Vidso account — then ask Claude to <strong>generate a video</strong>.</p>
           </div>
         </div>
       </div>
@@ -1247,34 +1209,30 @@
       <div id="mcp-panel-cursor" role="tabpanel" aria-labelledby="mcp-tab-cursor" data-mcp-panel="cursor" hidden>
         <div class="mcp-setup-grid">
           <div class="mcp-step">
-            <div class="num">01</div>
+            <div class="n" aria-hidden="true">1</div>
             <h3>Open Cursor MCP settings</h3>
-            <p>In Cursor, open Settings and find the MCP / connectors configuration for your project or user.</p>
+            <p>In Cursor, open Settings and find MCP / connectors for your project or user.</p>
           </div>
           <div class="mcp-step">
-            <div class="num">02</div>
-            <h3>Add the Vidso connector</h3>
-            <p>Register a connector named <strong>Vidso</strong> with the same MCP URL used for Claude.</p>
+            <div class="n" aria-hidden="true">2</div>
+            <h3>Add the <span class="hl">Vidso</span> connector</h3>
+            <p>Register a connector named <strong>Vidso</strong> with the same MCP URL:</p>
             <div class="mcp-url-row">
-              <!-- TODO(AI): replace placeholder with live Railway MCP URL once the server is deployed -->
               <code id="mcpUrlValueCursor">https://api.vidso.pro/mcp</code>
-              <button type="button" data-copy-target="mcpUrlValueCursor">Copy</button>
+              <button type="button" data-copy-target="mcpUrlValueCursor" aria-label="Copy MCP URL">Copy</button>
             </div>
-            <p class="mcp-url-hint">Placeholder URL until the MCP server is live on Railway.</p>
           </div>
           <div class="mcp-step">
-            <div class="num">03</div>
+            <div class="n" aria-hidden="true">3</div>
             <h3>Connect and generate</h3>
-            <p>Authenticate with Vidso, then prompt Cursor's agent to generate a long-form video. Same plan and credits apply.</p>
+            <p>Authenticate with Vidso, then prompt Cursor’s agent to generate a long-form video. Same plan and credits apply.</p>
           </div>
         </div>
       </div>
 
       <p class="mcp-setup-note">
-        <!-- TODO(AI): point this to the real MCP docs page once published -->
-        CLI and other MCP clients may use a different config format.
-        <a href="/docs/mcp" id="mcpDocsLink">Read the setup docs</a>
-        <span style="opacity:.7"> (docs link placeholder).</span>
+        Requires an active Vidso plan or credits. CLI and other MCP clients may use a different config format.
+        <a href="/docs/mcp" id="mcpDocsLink">Read the setup docs</a>.
       </p>
     </div>
 
@@ -1282,19 +1240,16 @@
       <div class="s-head center">
         <div class="eyebrow">Tools</div>
         <h2>What Claude can do with Vidso</h2>
-        <p>Planned MCP tools mapped to Vidso's real long-form pipeline. Names may settle as the server ships.</p>
+        <p>MCP tools mapped to Vidso’s real long-form pipeline.</p>
       </div>
       <div class="mcp-tool-grid">
         <div class="mcp-tool">
-          <div class="row">
-            <code>generate_video</code>
-            <span class="soon">Coming soon</span>
-          </div>
+          <div class="row"><code>generate_video</code></div>
           <p>Topic → full long-form video (script, voiceover, B-roll, captions, MP4).</p>
         </div>
         <div class="mcp-tool">
           <div class="row"><code>create_script</code></div>
-          <p>Topic → long-form script via Vidso's script API.</p>
+          <p>Topic → long-form script via Vidso’s script API.</p>
         </div>
         <div class="mcp-tool">
           <div class="row"><code>search_broll</code></div>
@@ -1317,11 +1272,12 @@
           <p>List available narrator voices for TTS.</p>
         </div>
         <div class="mcp-tool">
-          <div class="row">
-            <code>list_models</code>
-            <span class="soon">Coming soon</span>
-          </div>
-          <p>Expose script or generation options once the MCP surface is finalized.</p>
+          <div class="row"><code>list_presets</code></div>
+          <p>List duration / faceless presets for script generation.</p>
+        </div>
+        <div class="mcp-tool">
+          <div class="row"><code>whoami</code></div>
+          <p>Authenticated Vidso profile, plan, and credits.</p>
         </div>
       </div>
     </div>
