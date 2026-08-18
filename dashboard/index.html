@@ -1455,12 +1455,21 @@ body.tour-active{overflow:hidden}
 .paywall-plan .tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--grad);color:#fff;padding:3px 10px;border-radius:999px;white-space:nowrap}
 .paywall-plan .pn{font-size:1rem;font-weight:750;color:var(--ink)}
 .paywall-plan .pd{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.35;min-height:2.4em}
-.paywall-plan .price{font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);display:flex;align-items:baseline;gap:4px}
+.paywall-plan .price{font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.paywall-plan .price .was{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.35);text-decoration:line-through;display:none}
+.paywall-plan.is-annual .price .was{display:inline}
 .paywall-plan .price .per{font-size:.78rem;font-weight:500;color:rgba(255,255,255,.45)}
+.paywall-plan .price .pct{display:none;font-size:.62rem;font-weight:700;color:#4ade80;background:rgba(34,197,94,.14);padding:2px 7px;border-radius:99px}
+.paywall-plan.is-annual .price .pct{display:inline-flex}
 .paywall-plan .bill{font-size:.7rem;color:rgba(255,255,255,.4)}
+.paywall-plan .metrics{display:flex;flex-direction:column;gap:6px;padding:8px 0;margin:2px 0 2px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.paywall-plan .metric{display:flex;justify-content:space-between;gap:8px;font-size:.7rem;color:rgba(255,255,255,.48)}
+.paywall-plan .metric strong{color:rgba(255,255,255,.88);font-weight:700}
 .paywall-plan ul{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;flex:1}
 .paywall-plan li{font-size:.75rem;color:rgba(255,255,255,.72);display:flex;gap:7px;align-items:flex-start;line-height:1.35}
+.paywall-plan li.off{color:rgba(255,255,255,.32)}
 .paywall-plan li svg{width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--a1)}
+.paywall-plan li.off svg{color:rgba(255,255,255,.28)}
 .paywall-plan .btn{width:100%;margin-top:8px;justify-content:center}
 .paywall-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding-top:4px}
 .paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
@@ -1728,38 +1737,67 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <div class="paywall-plans" id="paywall-plans">
       <div class="paywall-plan">
         <div class="pn">Plus</div>
-        <div class="pd">Make your first AI long videos</div>
-        <div class="price"><span class="amt" data-m="70" data-y="49">$70</span><span class="per">/mo</span></div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed annually">Billed monthly</div>
+        <div class="pd">Steady faceless YouTube workflow</div>
+        <div class="price">
+          <span class="was">$70</span>
+          <span class="amt" data-m="70" data-y="49">$70</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $588 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>30 / mo</strong></div>
+          <div class="metric"><span>Credits</span><strong>300 / mo</strong></div>
+        </div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> 30 long videos / month</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> AI voiceover + captions</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Clipping &amp; B-roll tools</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Script, voiceover, B-roll, captions</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Clipping &amp; ranking tools</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> AI Image Generation</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> AI Video Generation</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Priority generation</li>
         </ul>
         <button type="button" class="btn btn-secondary" onclick="startCheckout('starter')">Get Plus →</button>
       </div>
       <div class="paywall-plan pop">
         <span class="tag">Most popular</span>
         <div class="pn">Pro</div>
-        <div class="pd">For weekly YouTube uploads</div>
-        <div class="price"><span class="amt" data-m="99" data-y="69">$99</span><span class="per">/mo</span></div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed annually">Billed monthly</div>
+        <div class="pd">Weekly uploads &amp; more volume</div>
+        <div class="price">
+          <span class="was">$99</span>
+          <span class="amt" data-m="99" data-y="69">$99</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $828 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>100 / mo</strong></div>
+          <div class="metric"><span>Credits</span><strong>1,000 / mo</strong></div>
+        </div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> 90 long videos / month</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Plus</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> AI Video Generation</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Priority generation</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Viral moment clipping</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Retention score</li>
         </ul>
         <button type="button" class="btn btn-primary" onclick="startCheckout('creator')">Get Pro →</button>
       </div>
       <div class="paywall-plan">
         <div class="pn">Studio</div>
-        <div class="pd">For channels chasing monetization</div>
-        <div class="price"><span class="amt" data-m="150" data-y="105">$150</span><span class="per">/mo</span></div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed annually">Billed monthly</div>
+        <div class="pd">High-volume monetization</div>
+        <div class="price">
+          <span class="was">$150</span>
+          <span class="amt" data-m="150" data-y="105">$150</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $1,260 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>Unlimited</strong></div>
+          <div class="metric"><span>Credits</span><strong>Unlimited*</strong></div>
+        </div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> 200 long videos / month</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Pro</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Highest output volume</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Fastest generation queue</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Retention score on long-form</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> High-volume workflow</li>
         </ul>
         <button type="button" class="btn btn-secondary" onclick="startCheckout('business')">Get Studio →</button>
       </div>
@@ -4509,15 +4547,17 @@ function setPaywallStatus(msg, kind) {
 
 window.setPaywallCycle = (cycle) => {
   _paywallCycle = cycle === 'yearly' ? 'yearly' : 'monthly'
+  const yearly = _paywallCycle === 'yearly'
   document.querySelectorAll('.paywall-tg').forEach(b => b.classList.toggle('active', b.dataset.cycle === _paywallCycle))
   document.querySelectorAll('#paywall-plans .paywall-plan').forEach(card => {
+    card.classList.toggle('is-annual', yearly)
     const amt = card.querySelector('.amt')
     const bill = card.querySelector('.bill')
     if (amt) {
-      const v = _paywallCycle === 'yearly' ? amt.dataset.y : amt.dataset.m
+      const v = yearly ? amt.dataset.y : amt.dataset.m
       amt.textContent = '$' + v
     }
-    if (bill) bill.textContent = _paywallCycle === 'yearly' ? bill.dataset.y : bill.dataset.m
+    if (bill) bill.textContent = yearly ? bill.dataset.y : bill.dataset.m
   })
 }
 
