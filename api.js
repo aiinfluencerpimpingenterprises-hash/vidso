@@ -44,12 +44,15 @@ async function req(method, path, body, isFormData = false) {
 // Your 6 Whop checkout links. After creating the plans in Whop, copy each plan's
 // public checkout URL and paste it here. Used by the pricing buttons + upgrade prompts.
 const WHOP_CHECKOUT = {
-  starter_monthly:  'https://whop.com/checkout/plan_Qk5UKuHDvvjq4', // $29.99/mo
-  starter_yearly:   'https://whop.com/checkout/plan_H6ZitU3lkTM8g', // $149.99/yr
-  creator_monthly:  'https://whop.com/checkout/plan_gghoT9UzJUjIJ', // $49.99/mo
-  creator_yearly:   'https://whop.com/checkout/plan_ePC34XsWeqHFB', // $294.99/yr
-  business_monthly: 'https://whop.com/checkout/plan_tzNBvuv4dEl9e', // $99.99/mo
-  business_yearly:  'https://whop.com/checkout/plan_lwshiUS61ibEa', // $594.99/yr
+  // Display prices (landing + paywall): Plus $70/mo · $49/mo annual; Pro $99/$69; Studio $150/$105.
+  // Yearly Whop charges should be $588 / $828 / $1260 (12× the annual /mo rate).
+  // Update these plan prices in Whop (or replace URLs) so checkout matches the UI.
+  starter_monthly:  'https://whop.com/checkout/plan_Qk5UKuHDvvjq4', // Plus $70/mo
+  starter_yearly:   'https://whop.com/checkout/plan_H6ZitU3lkTM8g', // Plus $588/yr ($49/mo)
+  creator_monthly:  'https://whop.com/checkout/plan_gghoT9UzJUjIJ', // Pro $99/mo
+  creator_yearly:   'https://whop.com/checkout/plan_ePC34XsWeqHFB', // Pro $828/yr ($69/mo)
+  business_monthly: 'https://whop.com/checkout/plan_tzNBvuv4dEl9e', // Studio $150/mo
+  business_yearly:  'https://whop.com/checkout/plan_lwshiUS61ibEa', // Studio $1260/yr ($105/mo)
 }
 
 export const api = {
