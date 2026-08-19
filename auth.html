@@ -143,7 +143,7 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
 })()
 </script>
 <script type="module">
-import { api, setSession, getToken } from '/api.js'
+import { api, setSession, clearSession } from '/api.js'
 
 const APP = '/dashboard'
 
@@ -179,12 +179,11 @@ function consumeOAuthError() {
   return String(desc).replace(/\+/g, ' ')
 }
 
-if (getToken()) {
-  location.replace(APP)
-} else {
-  const oauthErr = consumeOAuthError()
-  if (oauthErr) showError(oauthErr)
-}
+// Always stay here until they actually sign in or create an account.
+// A leftover session used to skip this page and dump unpaid users on the paywall.
+clearSession()
+const oauthErr = consumeOAuthError()
+if (oauthErr) showError(oauthErr)
 
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')
 document.getElementById('tab-btn-signup').onclick = () => switchTab('signup')
