@@ -3217,7 +3217,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <label>Video length</label>
               <div class="fv-seg" id="fv-format-seg" role="tablist">
                 <button type="button" class="fv-seg-btn" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30-60s</button>
-                <button type="button" class="fv-seg-btn active" data-format="long" onclick="fvSetFormat('long')">Long-form · 3-5 min</button>
+                <button type="button" class="fv-seg-btn active" data-format="long" onclick="fvSetFormat('long')">Long-form · up to 30 min</button>
               </div>
               <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px"></div>
             </div>
@@ -4858,8 +4858,11 @@ const FV_DURATIONS = {
   ],
   long: [
     { id: 'long_180', label: '3 min', seconds: 180 },
-    { id: 'long_240', label: '4 min', seconds: 240 },
     { id: 'long_300', label: '5 min', seconds: 300 },
+    { id: 'long_600', label: '10 min', seconds: 600 },
+    { id: 'long_900', label: '15 min', seconds: 900 },
+    { id: 'long_1200', label: '20 min', seconds: 1200 },
+    { id: 'long_1800', label: '30 min', seconds: 1800 },
   ],
 }
 
