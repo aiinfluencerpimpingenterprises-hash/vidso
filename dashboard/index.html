@@ -3695,8 +3695,8 @@ function revealAppShell() {
 function applyAuthTabFromRoute() {
   const path = normalizePath(location.pathname)
   const fromData = document.documentElement.dataset.authTab
-  if (path === '/signup' || fromData === 'signup') switchTab('signup')
-  else if (path === '/login' || fromData === 'login') switchTab('login')
+  const tab = (path === '/signup' || fromData === 'signup') ? 'signup' : 'login'
+  if (typeof window.switchTab === 'function') window.switchTab(tab)
 }
 
 async function checkAuth() {
