@@ -1,0 +1,15 @@
+*.mp4 binary
+*.MP4 binary
+*.webm binary
+*.mov binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.min.js linguist-generated

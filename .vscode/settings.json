@@ -1,0 +1,27 @@
+{
+  "files.associations": {
+    "*.min.js": "plaintext"
+  },
+  "files.watcherExclude": {
+    "**/*.mp4": true,
+    "**/*.MP4": true,
+    "**/*.webm": true,
+    "**/*.mov": true,
+    "**/clips/**": true,
+    "**/assets/**": true,
+    "**/fonts/**": true,
+    "**/vendor/**": true
+  },
+  "search.exclude": {
+    "**/*.mp4": true,
+    "**/*.MP4": true,
+    "**/clips/**": true,
+    "**/assets/**": true,
+    "**/fonts/**": true,
+    "**/vendor/**": true
+  },
+  "html.validate.scripts": false,
+  "javascript.validate.enable": true,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "git.repositoryScanMaxDepth": 0
+}
