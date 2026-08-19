@@ -1,0 +1,26 @@
+# Binary media — do not index or pull into agent context.
+# These files made Cursor search, Tab, and chat slow without helping code edits.
+*.mp4
+*.MP4
+*.webm
+*.mov
+*.woff2
+*.ttf
+*.otf
+*.ico
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.avif
+*.gif
+
+assets/
+clips/
+avatars/
+toolimg/
+fonts/
+vendor/
+
+.vercel/
+node_modules/

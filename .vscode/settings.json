@@ -1,0 +1,19 @@
+{
+  "files.watcherExclude": {
+    "**/*.mp4": true,
+    "**/*.MP4": true,
+    "**/*.webm": true,
+    "**/*.mov": true,
+    "**/clips/**": true,
+    "**/assets/**": true,
+    "**/fonts/**": true
+  },
+  "search.exclude": {
+    "**/*.mp4": true,
+    "**/*.MP4": true,
+    "**/clips/**": true,
+    "**/assets/**": true,
+    "**/fonts/**": true,
+    "**/vendor/**": true
+  }
+}
