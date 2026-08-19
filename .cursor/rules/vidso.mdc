@@ -3,7 +3,7 @@ description: Vidso is a small static site — do not spawn subagents
 alwaysApply: true
 ---
 
-Vidso is a small static HTML/JS site (about 15 source files). Never spawn subagents, explore agents, or background Task agents. Search and edit files directly.
+Vidso is a small static HTML/JS site (about 15 source files). Never spawn subagents, explore agents, background Task agents, computer-use agents, or screen recordings. Do not open a browser to "verify" UI. Search and edit files directly.
 
 Do not read, index, or open: `vendor/`, `assets/`, `clips/`, `fonts/`, `avatars/`, `toolimg/`, or any `.mp4` / `.png` / `.woff2`.
 
