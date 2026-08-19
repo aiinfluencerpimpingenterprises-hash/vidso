@@ -9,21 +9,23 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <script>
-/* Block dashboard chrome before first paint so /login|/signup (and logged-out
-   visits) never flash the in-app shell. Removed after checkAuth succeeds. */
+/* Show auth UI before first paint on /login|/signup (and logged-out visits).
+   Dashboard stays visible behind the modal; chrome is non-interactive until signed in. */
 (function () {
   try {
     var path = (location.pathname || '/').replace(/\/+$/, '') || '/'
     var authPath = path === '/login' || path === '/signup'
     var hasToken = false
     try { hasToken = !!localStorage.getItem('clipzo_token') } catch (e) {}
-    document.documentElement.classList.add('auth-boot')
     if (authPath || !hasToken) {
       document.documentElement.classList.add('auth-gate')
       document.documentElement.dataset.authTab = path === '/signup' ? 'signup' : 'login'
+    } else {
+      // Token present — hold interaction until checkAuth confirms the session.
+      document.documentElement.classList.add('auth-boot')
     }
   } catch (e) {
-    document.documentElement.classList.add('auth-boot', 'auth-gate')
+    document.documentElement.classList.add('auth-gate')
   }
 })()
 </script>
@@ -477,16 +479,20 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 /* AUTH MODAL: premium two-panel */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
 .modal-bg.hidden{display:none}
-/* Auth boot: hide app chrome until session is confirmed (prevents pricing→signup flash). */
+/* Auth gate: modal on top instantly; dashboard visible but locked behind it. */
+html.auth-gate #app-sidebar,
+html.auth-gate main.main,
+html.auth-gate #nav-backdrop,
 html.auth-boot #app-sidebar,
 html.auth-boot main.main,
 html.auth-boot #nav-backdrop{
-  opacity:0!important;visibility:hidden!important;pointer-events:none!important;
+  pointer-events:none!important;user-select:none!important;
 }
 html.auth-gate #auth-modal.modal-bg,
 html.auth-gate #auth-modal.modal-bg.hidden{
   display:flex!important;
 }
+html.auth-gate body{overflow:hidden}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .modal.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
 .auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
@@ -3741,7 +3747,8 @@ async function checkAuth() {
 }
 
 function showModal() {
-  document.documentElement.classList.add('auth-boot', 'auth-gate')
+  document.documentElement.classList.add('auth-gate')
+  document.documentElement.classList.remove('auth-boot')
   applyAuthTabFromRoute()
   document.getElementById('auth-modal')?.classList.remove('hidden')
 }
@@ -4253,13 +4260,16 @@ window.maybeShowOnboarding = () => {
 }
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
-// Persistence: vidso_ui_tour_seen:<userKey> -> "1" when completed or skipped (no auto re-open).
+// Persistence: vidso_ui_tour_seen:<userKey> -> "1" when completed or skipped.
+// Unpaid users still auto-see the tour every visit until they buy a plan.
 // Re-open anytime via Getting started. Preview: ?tour=1
 let _tourStep = 0
 let _tourActive = false
 let _tourPrevFocus = null
 let _tourResizeTimer = 0
 let _tourFromMenu = false
+/** Set when tour is finished/skipped this page load — then unpaid users see the paywall. */
+let _tourCompletedThisSession = false
 
 function tourSeenKey() { return 'vidso_ui_tour_seen:' + obUserKey() }
 function tourHasSeen() {
@@ -4267,6 +4277,12 @@ function tourHasSeen() {
 }
 function tourMarkSeen() {
   try { localStorage.setItem(tourSeenKey(), '1') } catch (_) {}
+}
+/** Unpaid users keep getting the interactive tour until they buy a plan. */
+function tourShouldAutoShow() {
+  if (!currentUser) return false
+  if (hasActivePlan()) return !tourHasSeen()
+  return true
 }
 function tourIsMobile() {
   try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
@@ -4523,12 +4539,14 @@ window.closeUiTour = () => {
 
 window.skipUiTour = () => {
   tourMarkSeen()
+  _tourCompletedThisSession = true
   closeUiTour()
   maybeShowPaywall()
 }
 
 window.finishUiTour = () => {
   tourMarkSeen()
+  _tourCompletedThisSession = true
   closeUiTour()
   maybeShowPaywall()
 }
@@ -4557,14 +4575,14 @@ window.maybeStartUiTour = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   const force = /(?:\?|&)tour=1(?:&|$)/.test(location.search || '')
-  if (!force && tourHasSeen()) {
+  if (!force && !tourShouldAutoShow()) {
     maybeShowPaywall()
     return
   }
   if (!force && !obHasSeen()) return // wait until welcome onboarding is done/skipped
   setTimeout(() => {
     if (!currentUser || _tourActive) return
-    if (!force && tourHasSeen()) {
+    if (!force && !tourShouldAutoShow()) {
       maybeShowPaywall()
       return
     }
@@ -4678,8 +4696,9 @@ window.maybeShowPaywall = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   if (_tourActive) return
-  // Wait until both welcome onboarding and interactive tour are done/skipped
-  if (!obHasSeen() || !tourHasSeen()) return
+  if (!obHasSeen()) return
+  // Unpaid: run interactive tour first each visit; paywall only after they finish/skip it.
+  if (!_tourCompletedThisSession && tourShouldAutoShow()) return
   const force = /(?:\?|&)paywall=1(?:&|$)/.test(location.search || '')
   if (force) {
     try {
@@ -4777,11 +4796,15 @@ function isAuthPath() {
 window.switchPanel = (id, btn, opts = {}) => {
   if (id === 'home') id = 'dashboard'
   if (!titles[id]) id = 'dashboard'
-  // Hard gate: after signup onboarding + tour, block every tool until a plan is active.
+  // Hard gate: after onboarding + tour this session, block tools until a plan is active.
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (PAYWALL_ENABLED && currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if (PAYWALL_ENABLED && currentUser && !hasActivePlan() && obHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
+    if (!_tourCompletedThisSession && tourShouldAutoShow()) {
+      maybeStartUiTour()
+      return
+    }
     openPaywall({ force: true })
     return
   }
