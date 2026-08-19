@@ -4,6 +4,27 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Vidso · Dashboard</title>
+<script>
+(function(){
+  var hash = location.hash || ''
+  var oauthReturn = hash.indexOf('access_token') !== -1
+  var token = ''
+  var paid = false
+  try {
+    token = localStorage.getItem('clipzo_token') || ''
+    paid = localStorage.getItem('vidso_plan_active') === '1'
+  } catch (e) {}
+  if (oauthReturn) {
+    document.documentElement.classList.add('needs-gate')
+    return
+  }
+  if (!token) {
+    location.replace('/login')
+    return
+  }
+  if (!paid) document.documentElement.classList.add('needs-gate')
+})()
+</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -458,6 +479,16 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 /* AUTH MODAL: premium two-panel */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
 .modal-bg.hidden{display:none}
+/* Instant auth / unpaid gate: cover the app before JS and /user/me finish. */
+html.needs-auth,html.needs-gate{background:#0B0B0C}
+html.needs-auth body::before,html.needs-gate body::before{
+  content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
+}
+html.needs-auth #app-sidebar,html.needs-auth main,
+html.needs-gate #app-sidebar,html.needs-gate main{visibility:hidden}
+#auth-modal{z-index:20000}
+html.needs-auth #auth-modal{display:flex!important}
+#onboarding-modal{z-index:20000}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .modal.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
 .auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
@@ -1432,7 +1463,7 @@ input:focus,textarea:focus,select:focus,
 body.tour-active{overflow:hidden}
 
 /* ── Paywall (hard gate after onboarding + tour) ───────────────────────── */
-#paywall-modal{z-index:12000;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(0,0,0,.72)}
+#paywall-modal{z-index:20001;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(0,0,0,.72)}
 #paywall-modal.hidden{display:none!important}
 .paywall-shell{
   width:min(920px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;
@@ -1556,6 +1587,81 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 </head>
 <body>
 <div id="topo-bg" data-mode="subtle" aria-hidden="true"></div>
+
+<!-- AUTH MODAL (first so /login and /signup paint immediately) -->
+<div class="modal-bg hidden" id="auth-modal">
+  <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <aside class="auth-showcase" aria-hidden="true">
+      <div class="auth-preview">
+        <div class="auth-preview-play" aria-hidden="true">
+          <span>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
+          </span>
+        </div>
+        <span class="auth-preview-score">98</span>
+        <div class="auth-preview-cap">12-min faceless explainer</div>
+      </div>
+      <h3>Long-form YouTube videos on autopilot</h3>
+      <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
+      <div class="auth-chips">
+        <span>Faceless explainer</span>
+        <span>Documentary</span>
+        <span>Listicle</span>
+        <span>Tutorial</span>
+      </div>
+    </aside>
+    <div class="auth-panel">
+      <div class="auth-brand">
+        <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+      </div>
+      <h2 id="auth-title">Welcome to Vidso</h2>
+      <p class="auth-lead">Sign in to access your AI content tools.</p>
+      <div class="modal-tabs">
+        <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button type="button" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      <div class="auth-social">
+        <button type="button" class="btn auth-google" id="google-cta" onclick="doGoogleLogin()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span class="auth-cta-label">Continue with Google</span>
+          <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
+        </button>
+      </div>
+      <div class="auth-or">or continue with email</div>
+      <div id="tab-login">
+        <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
+        <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
+        <button type="button" class="btn btn-primary auth-cta" id="login-cta" onclick="doLogin()"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+        <div class="modal-error" id="login-err"></div>
+      </div>
+      <div id="tab-signup" style="display:none">
+        <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
+        <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
+        <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
+        <button type="button" class="btn btn-primary auth-cta" id="signup-cta" onclick="doSignup()"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+        <div class="modal-error" id="signup-err"></div>
+      </div>
+      <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!document.documentElement.classList.contains('auth-signup')) return
+  var login = document.getElementById('tab-login')
+  var signup = document.getElementById('tab-signup')
+  if (login) login.style.display = 'none'
+  if (signup) signup.style.display = ''
+  document.querySelectorAll('#auth-modal .tab-btn').forEach(function(b, i){
+    b.classList.toggle('active', i === 1)
+  })
+})()
+</script>
 
 <!-- ACCOUNT SETTINGS -->
 <div class="modal-bg hidden" id="settings-modal" onclick="if(event.target===this)closeAccountSettings()">
@@ -1807,69 +1913,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
       <p class="paywall-note">Checkout opens on Whop. After you pay, come back and tap refresh — access unlocks automatically.</p>
-    </div>
-  </div>
-</div>
-
-<!-- AUTH MODAL -->
-<div class="modal-bg hidden" id="auth-modal">
-  <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <aside class="auth-showcase" aria-hidden="true">
-      <div class="auth-preview">
-        <div class="auth-preview-play" aria-hidden="true">
-          <span>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
-          </span>
-        </div>
-        <span class="auth-preview-score">98</span>
-        <div class="auth-preview-cap">12-min faceless explainer</div>
-      </div>
-      <h3>Long-form YouTube videos on autopilot</h3>
-      <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
-      <div class="auth-chips">
-        <span>Faceless explainer</span>
-        <span>Documentary</span>
-        <span>Listicle</span>
-        <span>Tutorial</span>
-      </div>
-    </aside>
-    <div class="auth-panel">
-      <div class="auth-brand">
-        <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
-      </div>
-      <h2 id="auth-title">Welcome to Vidso</h2>
-      <p class="auth-lead">Sign in to access your AI content tools.</p>
-      <div class="modal-tabs">
-        <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
-        <button type="button" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
-      </div>
-      <div class="auth-social">
-        <button type="button" class="btn auth-google" id="google-cta" onclick="doGoogleLogin()">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          <span class="auth-cta-label">Continue with Google</span>
-          <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
-        </button>
-      </div>
-      <div class="auth-or">or continue with email</div>
-      <div id="tab-login">
-        <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
-        <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
-        <button type="button" class="btn btn-primary auth-cta" id="login-cta" onclick="doLogin()"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-        <div class="modal-error" id="login-err"></div>
-      </div>
-      <div id="tab-signup" style="display:none">
-        <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
-        <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
-        <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
-        <button type="button" class="btn btn-primary auth-cta" id="signup-cta" onclick="doSignup()"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-        <div class="modal-error" id="signup-err"></div>
-      </div>
-      <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
     </div>
   </div>
 </div>
@@ -3657,15 +3700,46 @@ let selectedVoiceId = null
 let selectedVoicePreview = null
 let captionJobId = null
 let captionPollTimer = null
+let _obDoneThisSession = false
+let _tourDoneThisSession = false
+const PLAN_ACTIVE_KEY = 'vidso_plan_active'
+
+function persistPlanActive(active) {
+  try {
+    if (active) localStorage.setItem(PLAN_ACTIVE_KEY, '1')
+    else localStorage.removeItem(PLAN_ACTIVE_KEY)
+  } catch (_) {}
+}
+
+function applyAuthRouteTab() {
+  const path = (location.pathname || '').replace(/\/+$/, '') || '/'
+  if (path === '/signup') switchTab('signup')
+  else if (path === '/login') switchTab('login')
+}
+
+function afterAuthReady(opts = {}) {
+  persistPlanActive(hasActivePlan())
+  if (hasActivePlan()) document.documentElement.classList.remove('needs-gate')
+  else document.documentElement.classList.add('needs-gate')
+  hideModal()
+  populateUser()
+  loadUsage()
+  loadVoices()
+  loadFiles()
+  if (opts.restoreRoute) restorePanelFromHash()
+  if (hasActivePlan()) closePaywall()
+  maybeShowOnboarding()
+}
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 async function checkAuth() {
   // Finish Google OAuth return (tokens in hash/query) before session checks.
   consumeOAuthReturn()
+  applyAuthRouteTab()
   const oauthErr = consumeOAuthError()
   if (oauthErr) {
-    showModal()
-    showAuthError(oauthErr)
+    persistPlanActive(false)
+    location.replace('/login?error=' + encodeURIComponent(oauthErr))
     return
   }
   if (!getToken()) { showModal(); return }
@@ -3676,26 +3750,26 @@ async function checkAuth() {
     // refresh_token before giving up — without this, every hard-refresh past
     // the 1h mark dumps the user back at the sign-in modal.
     const rt = localStorage.getItem('clipzo_refresh')
-    if (!rt) { clearSession(); showModal(); return }
+    if (!rt) { persistPlanActive(false); clearSession(); showModal(); return }
     try {
       const { session } = await api.auth.refresh(rt)
       if (!session?.access_token) throw new Error('refresh returned no session')
       setSession(session)
       currentUser = await api.user.me()
-    } catch { clearSession(); showModal(); return }
+    } catch { persistPlanActive(false); clearSession(); showModal(); return }
   }
-  hideModal()
-  populateUser()
-  loadUsage()
-  loadVoices()
-  loadFiles()
-  restorePanelFromHash() // path routes + legacy #hash bookmarks
-  if (hasActivePlan()) closePaywall()
-  maybeShowOnboarding()
+  afterAuthReady({ restoreRoute: true })
 }
 
-function showModal() { document.getElementById('auth-modal').classList.remove('hidden') }
-function hideModal() { document.getElementById('auth-modal').classList.add('hidden') }
+function showModal() {
+  persistPlanActive(false)
+  location.replace('/login')
+}
+function hideModal() {
+  document.documentElement.classList.remove('needs-auth', 'auth-signup')
+  const modal = document.getElementById('auth-modal')
+  if (modal) modal.classList.add('hidden')
+}
 
 window.switchTab = (tab) => {
   document.getElementById('tab-login').style.display  = tab === 'login'  ? '' : 'none'
@@ -3781,12 +3855,7 @@ window.doLogin = async () => {
     const data = await api.auth.login(email, pass)
     setSession(data.session)
     currentUser = await api.user.me()
-    hideModal()
-    populateUser()
-    loadUsage()
-    loadVoices()
-    loadFiles()
-    maybeShowOnboarding()
+    afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
   finally { setAuthCtaLoading(btn, false) }
 }
@@ -3803,12 +3872,7 @@ window.doSignup = async () => {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
     currentUser = await api.user.me()
-    hideModal()
-    populateUser()
-    loadUsage()
-    loadVoices()
-    loadFiles()
-    maybeShowOnboarding()
+    afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
   finally { setAuthCtaLoading(btn, false) }
 }
@@ -3817,7 +3881,8 @@ window.doLogout = async () => {
   await api.auth.logout().catch(()=>{})
   clearSession()
   currentUser = null
-  showModal()
+  persistPlanActive(false)
+  location.replace('/login')
 }
 
 window.closeMobileNav = () => {
@@ -3908,8 +3973,9 @@ document.addEventListener('keydown', (e) => {
 
 // ── ONBOARDING (localStorage until backend profile fields exist) ───────────
 // Persistence:
-//   vidso_onboarding_seen:<userKey>     -> "1" when completed or skipped (no auto re-open)
+//   vidso_onboarding_seen:<userKey>     -> "1" when completed or skipped (paid users only)
 //   vidso_onboarding_answers:<userKey>  -> JSON { niche, nicheOther, goal, topicHint, updatedAt }
+// Unpaid users re-run onboarding + tour + paywall every session until they buy.
 // userKey = currentUser.email || currentUser.id || 'anon'
 // No /api/user profile write endpoint exists in this repo; do not invent a silent backend save.
 const OB_NICHE_HINTS = {
@@ -3937,6 +4003,14 @@ function obHasSeen() {
 }
 function obMarkSeen() {
   try { localStorage.setItem(obSeenKey(), '1') } catch (_) {}
+}
+function obFinishStep() {
+  _obDoneThisSession = true
+  if (hasActivePlan()) obMarkSeen()
+}
+function obShouldAutoOpen() {
+  if (funnelLocked()) return !_obDoneThisSession
+  return !obHasSeen()
 }
 function obLoadAnswers() {
   try { return JSON.parse(localStorage.getItem(obAnswersKey()) || 'null') || {} } catch (_) { return {} }
@@ -4083,7 +4157,7 @@ window.closeOnboarding = () => {
 }
 
 window.skipOnboarding = () => {
-  // Skip closes forever for auto-open, but remains available from the menu.
+  // Skip advances this session. Unpaid users still see the funnel again until they buy.
   if (_obNiche || _obGoal) {
     obSaveAnswers({
       niche: _obNiche || null,
@@ -4095,7 +4169,7 @@ window.skipOnboarding = () => {
   } else {
     obSaveAnswers({ status: 'skipped' })
   }
-  obMarkSeen()
+  obFinishStep()
   closeOnboarding()
   maybeStartUiTour()
 }
@@ -4151,7 +4225,7 @@ window.finishOnboarding = (dest) => {
     topicHint: topicHint || null,
     status: 'completed'
   })
-  obMarkSeen()
+  obFinishStep()
   closeOnboarding()
   if (dest === 'videogen') {
     try { switchPanel('videogen', null) } catch (_) { location.href = '/video-generation' }
@@ -4175,14 +4249,13 @@ window.maybeShowOnboarding = () => {
   if (auth && !auth.classList.contains('hidden')) return
   // Preview helper: ?onboarding=1 force-opens (does not clear seen flag until skip/complete)
   const force = /(?:\?|&)onboarding=1(?:&|$)/.test(location.search || '')
-  if (!force && obHasSeen()) {
+  if (!force && !obShouldAutoOpen()) {
     maybeStartUiTour()
     return
   }
-  // Defer so auth shell / panel restore settle first.
-  setTimeout(() => {
+  const run = () => {
     if (!currentUser) return
-    if (!force && obHasSeen()) {
+    if (!force && !obShouldAutoOpen()) {
       maybeStartUiTour()
       return
     }
@@ -4194,7 +4267,10 @@ window.maybeShowOnboarding = () => {
       } catch (_) {}
     }
     openOnboarding({ auto: true })
-  }, 220)
+  }
+  // Paid users keep a short settle delay; unpaid funnel should appear immediately.
+  if (funnelLocked()) run()
+  else setTimeout(run, 220)
 }
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
@@ -4213,6 +4289,18 @@ function tourHasSeen() {
 function tourMarkSeen() {
   try { localStorage.setItem(tourSeenKey(), '1') } catch (_) {}
 }
+function tourFinishStep() {
+  _tourDoneThisSession = true
+  if (hasActivePlan()) tourMarkSeen()
+}
+function tourShouldAutoOpen() {
+  if (funnelLocked()) return !_tourDoneThisSession
+  return !tourHasSeen()
+}
+function tourObReady() {
+  if (funnelLocked()) return _obDoneThisSession
+  return obHasSeen()
+}
 function tourIsMobile() {
   try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
 }
@@ -4225,7 +4313,7 @@ const UI_TOUR_STEPS = [
     id: 'welcome',
     kicker: 'App tour',
     title: 'A quick walk through Vidso',
-    body: 'We will highlight the real controls you will use. Skip anytime — it will not nag you again.',
+    body: 'We will highlight the real controls you will use. Skip anytime — unpaid accounts will see this again until you subscribe.',
     selector: null,
     placement: 'center'
   },
@@ -4447,6 +4535,7 @@ window.openUiTour = (opts = {}) => {
   root.classList.add('is-active')
   root.setAttribute('aria-hidden', 'false')
   document.body.classList.add('tour-active')
+  document.documentElement.classList.remove('needs-gate')
   tourRender()
 }
 
@@ -4460,6 +4549,7 @@ window.closeUiTour = () => {
   document.body.classList.remove('tour-active')
   tourHighlightEl()?.classList.remove('is-on')
   try { closeMobileNav() } catch (_) {}
+  if (funnelLocked()) document.documentElement.classList.add('needs-gate')
   if (_tourPrevFocus && typeof _tourPrevFocus.focus === 'function') {
     try { _tourPrevFocus.focus() } catch (_) {}
   }
@@ -4467,13 +4557,13 @@ window.closeUiTour = () => {
 }
 
 window.skipUiTour = () => {
-  tourMarkSeen()
+  tourFinishStep()
   closeUiTour()
   maybeShowPaywall()
 }
 
 window.finishUiTour = () => {
-  tourMarkSeen()
+  tourFinishStep()
   closeUiTour()
   maybeShowPaywall()
 }
@@ -4502,14 +4592,14 @@ window.maybeStartUiTour = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   const force = /(?:\?|&)tour=1(?:&|$)/.test(location.search || '')
-  if (!force && tourHasSeen()) {
+  if (!force && !tourShouldAutoOpen()) {
     maybeShowPaywall()
     return
   }
-  if (!force && !obHasSeen()) return // wait until welcome onboarding is done/skipped
-  setTimeout(() => {
+  if (!force && !tourObReady()) return
+  const run = () => {
     if (!currentUser || _tourActive) return
-    if (!force && tourHasSeen()) {
+    if (!force && !tourShouldAutoOpen()) {
       maybeShowPaywall()
       return
     }
@@ -4523,7 +4613,9 @@ window.maybeStartUiTour = () => {
       } catch (_) {}
     }
     openUiTour({ auto: true, force })
-  }, 280)
+  }
+  if (funnelLocked()) run()
+  else setTimeout(run, 280)
 }
 
 // ── PAYWALL (hard gate — no feature access without an active plan) ───────
@@ -4534,6 +4626,10 @@ let _paywallOpening = false
 
 function hasActivePlan() {
   return !!(currentUser && currentUser.plan_status === 'active')
+}
+
+function funnelLocked() {
+  return PAYWALL_ENABLED && !!currentUser && !hasActivePlan()
 }
 
 function setPaywallStatus(msg, kind) {
@@ -4577,10 +4673,17 @@ window.refreshPlanStatus = async () => {
   try {
     currentUser = await api.user.me()
     populateUser()
+    persistPlanActive(hasActivePlan())
     if (hasActivePlan()) {
+      obMarkSeen()
+      tourMarkSeen()
+      _obDoneThisSession = true
+      _tourDoneThisSession = true
+      document.documentElement.classList.remove('needs-gate')
       setPaywallStatus('Plan active — unlocking Vidso…', 'ok')
       setTimeout(() => closePaywall(), 500)
     } else {
+      document.documentElement.classList.add('needs-gate')
       setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
     }
   } catch (e) {
@@ -4602,6 +4705,7 @@ window.openPaywall = (opts = {}) => {
   setPaywallStatus('', null)
   modal.classList.remove('hidden')
   document.body.classList.add('paywalled')
+  if (funnelLocked()) document.documentElement.classList.add('needs-gate')
   modal.querySelector('.paywall-shell')?.focus?.()
   _paywallOpening = false
 }
@@ -4609,8 +4713,15 @@ window.openPaywall = (opts = {}) => {
 window.closePaywall = () => {
   const modal = document.getElementById('paywall-modal')
   if (!modal) return
+  if (PAYWALL_ENABLED && currentUser && !hasActivePlan()) {
+    modal.classList.remove('hidden')
+    document.body.classList.add('paywalled')
+    document.documentElement.classList.add('needs-gate')
+    return
+  }
   modal.classList.add('hidden')
   document.body.classList.remove('paywalled')
+  document.documentElement.classList.remove('needs-gate')
   setPaywallStatus('', null)
 }
 
@@ -4623,8 +4734,13 @@ window.maybeShowPaywall = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   if (_tourActive) return
-  // Wait until both welcome onboarding and interactive tour are done/skipped
-  if (!obHasSeen() || !tourHasSeen()) return
+  // Wait until welcome onboarding and interactive tour finish this session (unpaid
+  // users re-run both every visit). Paid users use the persisted seen flags.
+  if (funnelLocked()) {
+    if (!_obDoneThisSession || !_tourDoneThisSession) return
+  } else if (!obHasSeen() || !tourHasSeen()) {
+    return
+  }
   const force = /(?:\?|&)paywall=1(?:&|$)/.test(location.search || '')
   if (force) {
     try {
