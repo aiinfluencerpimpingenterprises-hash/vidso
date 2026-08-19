@@ -8,21 +8,36 @@
 (function(){
   var hash = location.hash || ''
   var oauthReturn = hash.indexOf('access_token') !== -1
+  var host = location.hostname
+  var path = (location.pathname || '').replace(/\/+$/, '') || '/'
+  var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]'
   var token = ''
   var paid = false
+  var ui = false
   try {
     token = localStorage.getItem('clipzo_token') || ''
     paid = localStorage.getItem('vidso_plan_active') === '1'
+    var q = location.search || ''
+    var on = /(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui'
+    var off = /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
+    if (isLocal && off) localStorage.removeItem('vidso_ui_preview')
+    else if (isLocal && on) {
+      localStorage.setItem('vidso_ui_preview', '1')
+      ui = true
+    } else if (isLocal && localStorage.getItem('vidso_ui_preview') === '1') {
+      ui = true
+    }
   } catch (e) {}
+  if (ui) return
   if (oauthReturn) {
-    document.documentElement.classList.add('needs-gate')
+    document.documentElement.classList.add('needs-paywall')
     return
   }
   if (!token) {
     location.replace('/login')
     return
   }
-  if (!paid) document.documentElement.classList.add('needs-gate')
+  if (!paid) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -480,14 +495,16 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
 .modal-bg.hidden{display:none}
 /* Instant auth / unpaid gate: cover the app before JS and /user/me finish. */
-html.needs-auth,html.needs-gate{background:#0B0B0C}
-html.needs-auth body::before,html.needs-gate body::before{
+html.needs-auth,html.needs-gate,html.needs-paywall{background:#0B0B0C}
+html.needs-auth body::before,html.needs-gate body::before,html.needs-paywall body::before{
   content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
 }
 html.needs-auth #app-sidebar,html.needs-auth main,
-html.needs-gate #app-sidebar,html.needs-gate main{visibility:hidden}
+html.needs-gate #app-sidebar,html.needs-gate main,
+html.needs-paywall #app-sidebar,html.needs-paywall main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
+html.needs-paywall #paywall-modal{display:flex!important;z-index:20001}
 #onboarding-modal{z-index:20000}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .modal.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
@@ -1588,7 +1605,94 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 <body>
 <div id="topo-bg" data-mode="subtle" aria-hidden="true"></div>
 
-<!-- AUTH MODAL (first so /login and /signup paint immediately) -->
+<!-- PAYWALL (early so unpaid logins paint it instead of a black screen) -->
+<div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+  <div class="paywall-shell" tabindex="-1">
+    <p class="paywall-kicker">Unlock Vidso</p>
+    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
+    <p class="paywall-sub">Pick a plan to unlock clipping, video tools, captions, and every other tool.</p>
+    <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
+      <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
+      <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save 30%</span></button>
+    </div>
+    <div class="paywall-plans" id="paywall-plans">
+      <div class="paywall-plan">
+        <div class="pn">Plus</div>
+        <div class="pd">Steady faceless YouTube workflow</div>
+        <div class="price">
+          <span class="was">$70</span>
+          <span class="amt" data-m="70" data-y="49">$70</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $588 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>30 / mo</strong></div>
+          <div class="metric"><span>Credits</span><strong>300 / mo</strong></div>
+        </div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Script, voiceover, B-roll, captions</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Clipping &amp; ranking tools</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Image tools</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Video tools</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Priority queue</li>
+        </ul>
+        <button type="button" class="btn btn-secondary" onclick="startCheckout('starter')">Get Plus →</button>
+      </div>
+      <div class="paywall-plan pop">
+        <span class="tag">Most popular</span>
+        <div class="pn">Pro</div>
+        <div class="pd">Weekly uploads &amp; more volume</div>
+        <div class="price">
+          <span class="was">$99</span>
+          <span class="amt" data-m="99" data-y="69">$99</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $828 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>100 / mo</strong></div>
+          <div class="metric"><span>Credits</span><strong>1,000 / mo</strong></div>
+        </div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Plus</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Video tools</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Priority queue</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Viral moment clipping</li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Retention score</li>
+        </ul>
+        <button type="button" class="btn btn-primary" onclick="startCheckout('creator')">Get Pro →</button>
+      </div>
+      <div class="paywall-plan">
+        <div class="pn">Studio</div>
+        <div class="pd">High-volume monetization</div>
+        <div class="price">
+          <span class="was">$150</span>
+          <span class="amt" data-m="150" data-y="105">$150</span><span class="per">/mo</span>
+          <span class="pct">30% off</span>
+        </div>
+        <div class="bill" data-m="Billed monthly" data-y="Billed $1,260 yearly">Billed monthly</div>
+        <div class="metrics">
+          <div class="metric"><span>Long-form</span><strong>Unlimited</strong></div>
+          <div class="metric"><span>Credits</span><strong>Unlimited*</strong></div>
+        </div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Pro</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Fastest queue</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Retention score on long-form</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> High-volume workflow</li>
+        </ul>
+        <button type="button" class="btn btn-secondary" onclick="startCheckout('business')">Get Studio →</button>
+      </div>
+    </div>
+    <div class="paywall-status" id="paywall-status"></div>
+    <div class="paywall-foot">
+      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
+      <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
+      <p class="paywall-note">Checkout opens on Whop. After you pay, come back and tap refresh — access unlocks automatically.</p>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
 <div class="modal-bg hidden" id="auth-modal">
   <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
     <aside class="auth-showcase" aria-hidden="true">
@@ -1826,93 +1930,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-btn" onclick="skipUiTour()">Skip tour</button>
       <button type="button" class="tour-btn" id="tour-back-btn" onclick="uiTourBack()">Back</button>
       <button type="button" class="tour-btn tour-btn-primary" id="tour-next-btn" onclick="uiTourNext()">Next</button>
-    </div>
-  </div>
-</div>
-
-<!-- PAYWALL -->
-<div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
-  <div class="paywall-shell" tabindex="-1">
-    <p class="paywall-kicker">Unlock Vidso</p>
-    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
-    <p class="paywall-sub">Finish signup and the tour — next, pick a plan to unlock clipping, video tools, captions, and every other tool.</p>
-    <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
-      <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
-      <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save 30%</span></button>
-    </div>
-    <div class="paywall-plans" id="paywall-plans">
-      <div class="paywall-plan">
-        <div class="pn">Plus</div>
-        <div class="pd">Steady faceless YouTube workflow</div>
-        <div class="price">
-          <span class="was">$70</span>
-          <span class="amt" data-m="70" data-y="49">$70</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed $588 yearly">Billed monthly</div>
-        <div class="metrics">
-          <div class="metric"><span>Long-form</span><strong>30 / mo</strong></div>
-          <div class="metric"><span>Credits</span><strong>300 / mo</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Script, voiceover, B-roll, captions</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Clipping &amp; ranking tools</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Image tools</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Video tools</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Priority queue</li>
-        </ul>
-        <button type="button" class="btn btn-secondary" onclick="startCheckout('starter')">Get Plus →</button>
-      </div>
-      <div class="paywall-plan pop">
-        <span class="tag">Most popular</span>
-        <div class="pn">Pro</div>
-        <div class="pd">Weekly uploads &amp; more volume</div>
-        <div class="price">
-          <span class="was">$99</span>
-          <span class="amt" data-m="99" data-y="69">$99</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed $828 yearly">Billed monthly</div>
-        <div class="metrics">
-          <div class="metric"><span>Long-form</span><strong>100 / mo</strong></div>
-          <div class="metric"><span>Credits</span><strong>1,000 / mo</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Plus</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Video tools</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Priority queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Viral moment clipping</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Retention score</li>
-        </ul>
-        <button type="button" class="btn btn-primary" onclick="startCheckout('creator')">Get Pro →</button>
-      </div>
-      <div class="paywall-plan">
-        <div class="pn">Studio</div>
-        <div class="pd">High-volume monetization</div>
-        <div class="price">
-          <span class="was">$150</span>
-          <span class="amt" data-m="150" data-y="105">$150</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-y="Billed $1,260 yearly">Billed monthly</div>
-        <div class="metrics">
-          <div class="metric"><span>Long-form</span><strong>Unlimited</strong></div>
-          <div class="metric"><span>Credits</span><strong>Unlimited*</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Pro</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Fastest queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Retention score on long-form</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> High-volume workflow</li>
-        </ul>
-        <button type="button" class="btn btn-secondary" onclick="startCheckout('business')">Get Studio →</button>
-      </div>
-    </div>
-    <div class="paywall-status" id="paywall-status"></div>
-    <div class="paywall-foot">
-      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
-      <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout opens on Whop. After you pay, come back and tap refresh — access unlocks automatically.</p>
     </div>
   </div>
 </div>
@@ -3703,6 +3720,50 @@ let captionPollTimer = null
 let _obDoneThisSession = false
 let _tourDoneThisSession = false
 const PLAN_ACTIVE_KEY = 'vidso_plan_active'
+const UI_PREVIEW_KEY = 'vidso_ui_preview'
+
+function isLocalHost() {
+  const h = location.hostname
+  return h === 'localhost' || h === '127.0.0.1' || h === '[::1]'
+}
+
+function uiPreviewMode() {
+  if (!isLocalHost()) return false
+  try {
+    const q = new URLSearchParams(location.search || '')
+    const path = (location.pathname || '').replace(/\/+$/, '') || '/'
+    if (q.get('ui') === '0' || q.get('dev') === '0') {
+      localStorage.removeItem(UI_PREVIEW_KEY)
+      return false
+    }
+    if (q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui') {
+      localStorage.setItem(UI_PREVIEW_KEY, '1')
+      return true
+    }
+    return localStorage.getItem(UI_PREVIEW_KEY) === '1'
+  } catch (_) { return false }
+}
+
+function paywallDevBypass() {
+  return uiPreviewMode()
+}
+
+function enterUiPreview() {
+  currentUser = {
+    id: 'local-preview',
+    email: 'preview@localhost',
+    name: 'Preview',
+    credits: 9999,
+    plan_status: 'active'
+  }
+  document.documentElement.classList.remove('needs-gate', 'needs-auth', 'needs-paywall')
+  hideModal()
+  closePaywall()
+  try { closeOnboarding() } catch (_) {}
+  try { closeUiTour() } catch (_) {}
+  populateUser()
+  restorePanelFromHash()
+}
 
 function persistPlanActive(active) {
   try {
@@ -3719,20 +3780,29 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan())
-  if (hasActivePlan()) document.documentElement.classList.remove('needs-gate')
-  else document.documentElement.classList.add('needs-gate')
   hideModal()
   populateUser()
   loadUsage()
   loadVoices()
   loadFiles()
   if (opts.restoreRoute) restorePanelFromHash()
-  if (hasActivePlan()) closePaywall()
-  maybeShowOnboarding()
+  if (hasActivePlan() || paywallDevBypass()) {
+    document.documentElement.classList.remove('needs-gate', 'needs-paywall')
+    closePaywall()
+    maybeShowOnboarding()
+    return
+  }
+  document.documentElement.classList.remove('needs-gate')
+  document.documentElement.classList.add('needs-paywall')
+  openPaywall({ force: true })
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 async function checkAuth() {
+  if (uiPreviewMode()) {
+    enterUiPreview()
+    return
+  }
   // Finish Google OAuth return (tokens in hash/query) before session checks.
   consumeOAuthReturn()
   applyAuthRouteTab()
@@ -3762,6 +3832,7 @@ async function checkAuth() {
 }
 
 function showModal() {
+  if (uiPreviewMode()) { enterUiPreview(); return }
   persistPlanActive(false)
   location.replace('/login')
 }
@@ -3878,6 +3949,7 @@ window.doSignup = async () => {
 }
 
 window.doLogout = async () => {
+  if (uiPreviewMode()) { enterUiPreview(); return }
   await api.auth.logout().catch(()=>{})
   clearSession()
   currentUser = null
@@ -4009,6 +4081,7 @@ function obFinishStep() {
   if (hasActivePlan()) obMarkSeen()
 }
 function obShouldAutoOpen() {
+  if (paywallDevBypass()) return false
   if (funnelLocked()) return !_obDoneThisSession
   return !obHasSeen()
 }
@@ -4294,6 +4367,7 @@ function tourFinishStep() {
   if (hasActivePlan()) tourMarkSeen()
 }
 function tourShouldAutoOpen() {
+  if (paywallDevBypass()) return false
   if (funnelLocked()) return !_tourDoneThisSession
   return !tourHasSeen()
 }
@@ -4549,7 +4623,7 @@ window.closeUiTour = () => {
   document.body.classList.remove('tour-active')
   tourHighlightEl()?.classList.remove('is-on')
   try { closeMobileNav() } catch (_) {}
-  if (funnelLocked()) document.documentElement.classList.add('needs-gate')
+  if (funnelLocked()) document.documentElement.classList.add('needs-paywall')
   if (_tourPrevFocus && typeof _tourPrevFocus.focus === 'function') {
     try { _tourPrevFocus.focus() } catch (_) {}
   }
@@ -4628,8 +4702,12 @@ function hasActivePlan() {
   return !!(currentUser && currentUser.plan_status === 'active')
 }
 
+function paywallOn() {
+  return PAYWALL_ENABLED && !paywallDevBypass()
+}
+
 function funnelLocked() {
-  return PAYWALL_ENABLED && !!currentUser && !hasActivePlan()
+  return paywallOn() && !!currentUser && !hasActivePlan()
 }
 
 function setPaywallStatus(msg, kind) {
@@ -4679,11 +4757,12 @@ window.refreshPlanStatus = async () => {
       tourMarkSeen()
       _obDoneThisSession = true
       _tourDoneThisSession = true
-      document.documentElement.classList.remove('needs-gate')
+      document.documentElement.classList.remove('needs-gate', 'needs-paywall')
       setPaywallStatus('Plan active — unlocking Vidso…', 'ok')
       setTimeout(() => closePaywall(), 500)
     } else {
-      document.documentElement.classList.add('needs-gate')
+      document.documentElement.classList.add('needs-paywall')
+      document.documentElement.classList.remove('needs-gate')
       setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
     }
   } catch (e) {
@@ -4692,7 +4771,7 @@ window.refreshPlanStatus = async () => {
 }
 
 window.openPaywall = (opts = {}) => {
-  if (!PAYWALL_ENABLED) { closePaywall(); return }
+  if (!paywallOn()) { closePaywall(); return }
   if (_paywallOpening) return
   if (!opts.force && hasActivePlan()) { closePaywall(); return }
   const modal = document.getElementById('paywall-modal')
@@ -4705,7 +4784,8 @@ window.openPaywall = (opts = {}) => {
   setPaywallStatus('', null)
   modal.classList.remove('hidden')
   document.body.classList.add('paywalled')
-  if (funnelLocked()) document.documentElement.classList.add('needs-gate')
+  document.documentElement.classList.add('needs-paywall')
+  document.documentElement.classList.remove('needs-gate')
   modal.querySelector('.paywall-shell')?.focus?.()
   _paywallOpening = false
 }
@@ -4713,20 +4793,21 @@ window.openPaywall = (opts = {}) => {
 window.closePaywall = () => {
   const modal = document.getElementById('paywall-modal')
   if (!modal) return
-  if (PAYWALL_ENABLED && currentUser && !hasActivePlan()) {
+  if (paywallOn() && currentUser && !hasActivePlan()) {
     modal.classList.remove('hidden')
     document.body.classList.add('paywalled')
-    document.documentElement.classList.add('needs-gate')
+    document.documentElement.classList.add('needs-paywall')
+    document.documentElement.classList.remove('needs-gate')
     return
   }
   modal.classList.add('hidden')
   document.body.classList.remove('paywalled')
-  document.documentElement.classList.remove('needs-gate')
+  document.documentElement.classList.remove('needs-gate', 'needs-paywall')
   setPaywallStatus('', null)
 }
 
 window.maybeShowPaywall = () => {
-  if (!PAYWALL_ENABLED) { closePaywall(); return }
+  if (!paywallOn()) { closePaywall(); return }
   if (!currentUser) return
   if (hasActivePlan()) { closePaywall(); return }
   const auth = document.getElementById('auth-modal')
@@ -4753,7 +4834,7 @@ window.maybeShowPaywall = () => {
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (!PAYWALL_ENABLED) return
+  if (!paywallOn()) return
   if (document.visibilityState !== 'visible') return
   const modal = document.getElementById('paywall-modal')
   if (!modal || modal.classList.contains('hidden')) return
@@ -4761,7 +4842,7 @@ document.addEventListener('visibilitychange', () => {
 })
 
 window.requireActivePlan = (opts = {}) => {
-  if (!PAYWALL_ENABLED) return true
+  if (!paywallOn()) return true
   if (hasActivePlan()) return true
   openPaywall({ force: true, reason: opts.reason || 'plan_required' })
   return false
@@ -4842,7 +4923,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (PAYWALL_ENABLED && currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if (paywallOn() && currentUser && !hasActivePlan() && obHasSeen() && tourHasSeen() && !tourOpen && !obOpen && !opts.allowLocked) {
     openPaywall({ force: true })
     return
   }
@@ -9966,7 +10047,7 @@ if (typeof _origSwitchPanel === 'function') {
 
 // Any paid-feature 402 should open the hard paywall so users can't poke around unpaid.
 window.addEventListener('unhandledrejection', (ev) => {
-  if (!PAYWALL_ENABLED) return
+  if (!paywallOn()) return
   const err = ev?.reason
   if (err && err.needsPlan) {
     try { openPaywall({ force: true }) } catch (_) {}
