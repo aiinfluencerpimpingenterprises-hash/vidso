@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "lib": ["ES2022", "DOM"],
+    "allowJs": true,
+    "checkJs": false,
+    "maxNodeModuleJsDepth": 0,
+    "noEmit": true
+  },
+  "include": [
+    "*.js",
+    "dashboard/**/*.js",
+    "home/**/*.js"
+  ],
+  "exclude": [
+    "vendor",
+    "node_modules"
+  ]
+}
