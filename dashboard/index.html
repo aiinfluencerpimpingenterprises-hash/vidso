@@ -449,9 +449,12 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .fv-step-pill.done + .fv-step-line,.fv-step-pill.active + .fv-step-line{background:linear-gradient(90deg,rgba(var(--glow),.7),rgba(var(--glow),.25))}
 .fv-seg{border-radius:12px;padding:3px;background:rgba(255,255,255,.04)}
 .fv-seg-btn.active{background:var(--grad)!important;box-shadow:0 4px 14px rgba(196,16,40,.3)}
-.fv-chip{border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out)}
+.fv-chip{border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),opacity var(--dur-hover) var(--ease-out)}
 .fv-chip:hover{color:var(--ink);border-color:rgba(255,255,255,.2)}
 .fv-chip.active{background:rgba(var(--glow),.14);border-color:rgba(var(--glow),.5);color:var(--ink)}
+.fv-chip.locked{opacity:.48;color:var(--muted)}
+.fv-chip.locked:hover{opacity:.72;border-color:rgba(var(--glow),.4);color:var(--ink)}
+.fv-chip .fv-lock-hint{font-size:.65rem;font-weight:700;letter-spacing:.02em;opacity:.85;margin-left:4px}
 #panel-videogen > .tool-card,#panel-imagegen .img-pane{max-width:none}
 #panel-videogen{max-width:var(--page-max);margin:0 auto;width:100%}
 
@@ -1746,6 +1749,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <div class="bill" data-m="Billed monthly" data-y="Billed $588 yearly">Billed monthly</div>
         <div class="metrics">
           <div class="metric"><span>Long-form</span><strong>30 / mo</strong></div>
+          <div class="metric"><span>Max length</span><strong>15 min</strong></div>
           <div class="metric"><span>Credits</span><strong>300 / mo</strong></div>
         </div>
         <ul>
@@ -1769,6 +1773,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <div class="bill" data-m="Billed monthly" data-y="Billed $828 yearly">Billed monthly</div>
         <div class="metrics">
           <div class="metric"><span>Long-form</span><strong>100 / mo</strong></div>
+          <div class="metric"><span>Max length</span><strong>20 min</strong></div>
           <div class="metric"><span>Credits</span><strong>1,000 / mo</strong></div>
         </div>
         <ul>
@@ -1791,6 +1796,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <div class="bill" data-m="Billed monthly" data-y="Billed $1,260 yearly">Billed monthly</div>
         <div class="metrics">
           <div class="metric"><span>Long-form</span><strong>Unlimited</strong></div>
+          <div class="metric"><span>Max length</span><strong>30 min</strong></div>
           <div class="metric"><span>Credits</span><strong>Unlimited*</strong></div>
         </div>
         <ul>
@@ -3652,6 +3658,12 @@ window._clearSession = clearSession
 window._getToken = getToken
 
 let currentUser = null
+// Mirror onto window so DevTools / automation can read & set the same binding.
+Object.defineProperty(window, 'currentUser', {
+  configurable: true,
+  get() { return currentUser },
+  set(v) { currentUser = v },
+})
 let voices = []
 let selectedVoiceId = null
 let selectedVoicePreview = null
@@ -4691,6 +4703,8 @@ function populateUser() {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
     welcome.textContent = display ? `, ${display}` : ''
   }
+  // Re-apply plan duration caps after /me (or refresh) so chips match the purchased plan.
+  try { if (typeof fvRenderDurationChips === 'function') fvRenderDurationChips() } catch (_) {}
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
@@ -4866,6 +4880,74 @@ const FV_DURATIONS = {
   ],
 }
 
+/** Max long-form length by checkout tier — matches pricing: Plus 15 / Pro 20 / Studio 30. */
+const FV_PLAN_MAX_SECONDS = {
+  starter: 900,
+  creator: 1200,
+  business: 1800,
+}
+
+function fvNormalizePlanTier(raw) {
+  const s = String(raw || '').toLowerCase().trim()
+  if (!s) return null
+  if (/\b(studio|business)\b/.test(s)) return 'business'
+  if (/\b(pro|creator)\b/.test(s)) return 'creator'
+  if (/\b(plus|starter)\b/.test(s)) return 'starter'
+  return null
+}
+
+/** Active paid tier: starter (Plus) | creator (Pro) | business (Studio). Null if no plan. */
+function fvPlanTier() {
+  if (!hasActivePlan() || !currentUser) return null
+  const raw = currentUser.plan_tier || currentUser.tier || currentUser.plan_name || currentUser.plan
+  // Unknown active plan → Plus caps (never unlock Studio lengths by accident)
+  return fvNormalizePlanTier(raw) || 'starter'
+}
+
+function fvMaxLongSeconds() {
+  const tier = fvPlanTier()
+  if (!tier) return FV_PLAN_MAX_SECONDS.starter
+  return FV_PLAN_MAX_SECONDS[tier] || FV_PLAN_MAX_SECONDS.starter
+}
+
+function fvDurationAllowed(d) {
+  if (!d) return false
+  if (fvState.format !== 'long') return true
+  return d.seconds <= fvMaxLongSeconds()
+}
+
+function fvUpgradeTierForSeconds(seconds) {
+  if (seconds <= FV_PLAN_MAX_SECONDS.starter) return 'starter'
+  if (seconds <= FV_PLAN_MAX_SECONDS.creator) return 'creator'
+  return 'business'
+}
+
+function fvUpgradePlanLabel(seconds) {
+  const t = fvUpgradeTierForSeconds(seconds)
+  return t === 'business' ? 'Studio' : t === 'creator' ? 'Pro' : 'Plus'
+}
+
+function fvUpdateFormatLabel() {
+  const btn = document.querySelector('#fv-format-seg .fv-seg-btn[data-format="long"]')
+  if (!btn) return
+  const maxSec = fvMaxLongSeconds()
+  const mins = Math.max(1, Math.round(maxSec / 60))
+  btn.textContent = `Long-form · up to ${mins} min`
+}
+
+function fvClampDurationToPlan() {
+  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  const cur = list.find(d => d.id === fvState.durationId)
+  if (cur && fvDurationAllowed(cur)) return true
+  const allowed = list.filter(fvDurationAllowed)
+  if (!allowed.length) {
+    fvState.durationId = list[0].id
+    return false
+  }
+  fvState.durationId = allowed[allowed.length - 1].id
+  return true
+}
+
 window.fvState = {
   format: 'long',
   durationId: 'long_180',
@@ -4954,25 +5036,50 @@ function fvRenderDurationChips() {
   const row = document.getElementById('fv-duration-chips')
   if (!row) return
   const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
-  if (!list.some(d => d.id === fvState.durationId)) {
-    fvState.durationId = list[list.length - 1].id
-  }
-  row.innerHTML = list.map(d =>
-    `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
-  ).join('')
+  fvClampDurationToPlan()
+  fvUpdateFormatLabel()
+  row.innerHTML = list.map(d => {
+    const allowed = fvDurationAllowed(d)
+    const active = d.id === fvState.durationId
+    if (allowed) {
+      return `<button type="button" class="fv-chip${active ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
+    }
+    const need = fvUpgradePlanLabel(d.seconds)
+    return `<button type="button" class="fv-chip locked" data-dur="${d.id}" title="Included on ${need}" onclick="fvSetDuration('${d.id}')">${d.label}<span class="fv-lock-hint">${need}</span></button>`
+  }).join('')
 }
+window.fvRenderDurationChips = fvRenderDurationChips
+window.fvPlanTier = fvPlanTier
+window.fvMaxLongSeconds = fvMaxLongSeconds
 
 window.fvSetFormat = (format) => {
   fvState.format = format === 'long' ? 'long' : 'shorts'
   document.querySelectorAll('#fv-format-seg .fv-seg-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.format === fvState.format)
   })
-  fvState.durationId = FV_DURATIONS[fvState.format][fvState.format === 'shorts' ? 2 : 0].id
+  const list = FV_DURATIONS[fvState.format]
+  if (fvState.format === 'shorts') {
+    fvState.durationId = list[2].id
+  } else {
+    fvState.durationId = list[0].id
+    fvClampDurationToPlan()
+  }
   fvRenderDurationChips()
 }
 
 window.fvSetDuration = (id) => {
+  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  const d = list.find(x => x.id === id)
+  if (!d) return
+  if (!fvDurationAllowed(d)) {
+    const need = fvUpgradePlanLabel(d.seconds)
+    const tier = fvUpgradeTierForSeconds(d.seconds)
+    fvSetStatus(`${d.label} needs ${need}. Upgrade to unlock.`, 'err')
+    openPaywall({ force: true, reason: 'duration_plan', upgradeTier: tier })
+    return
+  }
   fvState.durationId = id
+  fvSetStatus('', null)
   fvRenderDurationChips()
 }
 
@@ -6059,6 +6166,17 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
+  if (!fvClampDurationToPlan()) {
+    return fvSetStatus('That length is not on your plan. Upgrade to unlock longer videos.', 'err')
+  }
+  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  const picked = list.find(d => d.id === fvState.durationId)
+  if (picked && !fvDurationAllowed(picked)) {
+    const need = fvUpgradePlanLabel(picked.seconds)
+    openPaywall({ force: true, reason: 'duration_plan' })
+    return fvSetStatus(`${picked.label} needs ${need}. Upgrade to unlock.`, 'err')
+  }
+  fvRenderDurationChips()
 
   const btn = document.getElementById('fv-gen-script-btn')
   if (btn) btn.disabled = true
