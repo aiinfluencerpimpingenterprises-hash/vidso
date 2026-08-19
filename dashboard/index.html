@@ -3658,6 +3658,12 @@ window._clearSession = clearSession
 window._getToken = getToken
 
 let currentUser = null
+// Mirror onto window so DevTools / automation can read & set the same binding.
+Object.defineProperty(window, 'currentUser', {
+  configurable: true,
+  get() { return currentUser },
+  set(v) { currentUser = v },
+})
 let voices = []
 let selectedVoiceId = null
 let selectedVoicePreview = null
@@ -5042,6 +5048,9 @@ function fvRenderDurationChips() {
     return `<button type="button" class="fv-chip locked" data-dur="${d.id}" title="Included on ${need}" onclick="fvSetDuration('${d.id}')">${d.label}<span class="fv-lock-hint">${need}</span></button>`
   }).join('')
 }
+window.fvRenderDurationChips = fvRenderDurationChips
+window.fvPlanTier = fvPlanTier
+window.fvMaxLongSeconds = fvMaxLongSeconds
 
 window.fvSetFormat = (format) => {
   fvState.format = format === 'long' ? 'long' : 'shorts'
