@@ -5,8 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Vidso</title>
 <link rel="canonical" href="/home"/>
-<meta http-equiv="refresh" content="0; url=/home"/>
-<script>location.replace('/home' + location.hash);</script>
+<script>
+(function(){
+  var h = location.hash || ''
+  var s = location.search || ''
+  var oauth = /access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)
+  location.replace((oauth ? '/login' : '/home') + s + h)
+})()
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=/home"/></noscript>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">

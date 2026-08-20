@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  var h = location.hash || ''
+  var s = location.search || ''
+  if (/access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)) {
+    location.replace('/login' + s + h)
+  }
+})()
+</script>
 <title>Vidso · AI Long-Form Video Generator for YouTube</title>
 <meta name="description" content="Vidso is an AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
 <link rel="canonical" href="https://vidso.pro/home">

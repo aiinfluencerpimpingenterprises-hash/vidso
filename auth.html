@@ -387,7 +387,7 @@ document.getElementById('tg-yearly').onclick = () => setPaywallCycle('yearly')
 document.getElementById('google-cta').onclick = () => {
   const btn = document.getElementById('google-cta')
   setLoading(btn, true)
-  const here = location.origin + ((location.pathname || '').replace(/\/+$/, '') || '/login')
+  const here = location.origin + '/login'
   location.href = api.auth.googleStartUrl(here)
 }
 
