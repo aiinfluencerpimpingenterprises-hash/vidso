@@ -1687,7 +1687,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout opens on Whop. After you pay, come back and tap refresh — access unlocks automatically.</p>
+      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks with your plan credits.</p>
     </div>
   </div>
 </div>
@@ -3829,6 +3829,10 @@ async function checkAuth() {
     } catch { persistPlanActive(false); clearSession(); showModal(); return }
   }
   afterAuthReady({ restoreRoute: true })
+  if (billingReturnPending()) {
+    clearBillingReturn()
+    watchForPurchase()
+  }
 }
 
 function showModal() {
@@ -3998,7 +4002,7 @@ window.openAccountSettings = () => {
   const emailEl = document.getElementById('settings-email')
   if (emailEl) emailEl.textContent = email
   const creditsEl = document.getElementById('settings-credits')
-  if (creditsEl) creditsEl.textContent = String(currentUser.credits ?? 0)
+  if (creditsEl) creditsEl.textContent = api.billing.formatCredits(currentUser)
   const planEl = document.getElementById('settings-plan-label')
   if (planEl) {
     planEl.textContent = hasActivePlan()
@@ -4735,40 +4739,96 @@ window.setPaywallCycle = (cycle) => {
   })
 }
 
+function billingReturnPending() {
+  try {
+    const q = new URLSearchParams(location.search || '')
+    return q.get('billing') === 'success' || q.get('status') === 'success'
+  } catch (_) { return false }
+}
+
+function clearBillingReturn() {
+  try {
+    const url = new URL(location.href)
+    url.searchParams.delete('billing')
+    url.searchParams.delete('status')
+    history.replaceState({}, '', url.pathname + url.search + url.hash)
+  } catch (_) {}
+}
+
+function pendingCheckoutTier(tier) {
+  try {
+    if (tier) sessionStorage.setItem('vidso_pending_tier', tier)
+    return sessionStorage.getItem('vidso_pending_tier') || ''
+  } catch (_) { return tier || '' }
+}
+
+let _planPoll = null
+async function watchForPurchase(opts = {}) {
+  if (_planPoll) return _planPoll
+  const tier = pendingCheckoutTier(opts.tier)
+  setPaywallStatus('Activating your plan and credits…', 'loading')
+  _planPoll = api.billing.waitForProvisioned({
+    expectedTier: tier,
+    timeoutMs: opts.timeoutMs || 120000,
+    onTick(me) {
+      if (!me) return
+      currentUser = me
+      populateUser()
+      if (me.plan_status === 'active') {
+        const label = api.billing.formatCredits(me)
+        setPaywallStatus(`Unlocking ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'}…`, 'loading')
+      }
+    },
+  }).then((me) => {
+    _planPoll = null
+    if (me) {
+      currentUser = me
+      populateUser()
+      persistPlanActive(hasActivePlan())
+    }
+    if (hasActivePlan()) {
+      try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
+      const label = api.billing.formatCredits(currentUser)
+      obMarkSeen()
+      tourMarkSeen()
+      _obDoneThisSession = true
+      _tourDoneThisSession = true
+      document.documentElement.classList.remove('needs-gate', 'needs-paywall')
+      setPaywallStatus(`Plan active — ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'} unlocked.`, 'ok')
+      setTimeout(() => closePaywall(), 700)
+      return true
+    }
+    document.documentElement.classList.add('needs-paywall')
+    document.documentElement.classList.remove('needs-gate')
+    setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
+    return false
+  }).catch((e) => {
+    _planPoll = null
+    setPaywallStatus(e.message || 'Could not refresh plan status', 'err')
+    return false
+  })
+  return _planPoll
+}
+
 window.startCheckout = (tier) => {
-  const url = api.billing.checkoutUrl(tier, _paywallCycle) || WHOP_CHECKOUT[`${tier}_${_paywallCycle}`]
+  pendingCheckoutTier(tier)
+  const url = api.billing.checkoutUrl(tier, _paywallCycle, {
+    email: currentUser?.email,
+    userId: currentUser?.id || currentUser?.user_id,
+  }) || WHOP_CHECKOUT[`${tier}_${_paywallCycle}`]
   if (!url) {
     setPaywallStatus('Checkout link missing for this plan', 'err')
     return
   }
   setPaywallStatus('Opening checkout…', 'loading')
   window.open(url, '_blank', 'noopener,noreferrer')
-  setTimeout(() => setPaywallStatus('After paying, come back and tap “I’ve subscribed — refresh”.', null), 800)
+  setTimeout(() => {
+    setPaywallStatus('Pay in the Whop tab — this page will unlock when your credits land.', null)
+    watchForPurchase({ tier })
+  }, 600)
 }
 
-window.refreshPlanStatus = async () => {
-  setPaywallStatus('Checking your subscription…', 'loading')
-  try {
-    currentUser = await api.user.me()
-    populateUser()
-    persistPlanActive(hasActivePlan())
-    if (hasActivePlan()) {
-      obMarkSeen()
-      tourMarkSeen()
-      _obDoneThisSession = true
-      _tourDoneThisSession = true
-      document.documentElement.classList.remove('needs-gate', 'needs-paywall')
-      setPaywallStatus('Plan active — unlocking Vidso…', 'ok')
-      setTimeout(() => closePaywall(), 500)
-    } else {
-      document.documentElement.classList.add('needs-paywall')
-      document.documentElement.classList.remove('needs-gate')
-      setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
-    }
-  } catch (e) {
-    setPaywallStatus(e.message || 'Could not refresh plan status', 'err')
-  }
-}
+window.refreshPlanStatus = () => watchForPurchase({ timeoutMs: 45000 })
 
 window.openPaywall = (opts = {}) => {
   if (!paywallOn()) { closePaywall(); return }
@@ -4838,7 +4898,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return
   const modal = document.getElementById('paywall-modal')
   if (!modal || modal.classList.contains('hidden')) return
-  refreshPlanStatus()
+  watchForPurchase()
 })
 
 window.requireActivePlan = (opts = {}) => {
@@ -4880,9 +4940,10 @@ function populateUser() {
     const initial = (currentUser.name || currentUser.email || '').trim().charAt(0)
     av.textContent = initial ? initial.toUpperCase() : '?'
   }
+  const creditsLabel = api.billing.formatCredits(currentUser)
   const creditsCount = document.getElementById('credits-count')
-  if (creditsCount) creditsCount.textContent = String(currentUser.credits ?? 0)
-  else document.getElementById('credits-pill').textContent = `${currentUser.credits} credits`
+  if (creditsCount) creditsCount.textContent = creditsLabel
+  else document.getElementById('credits-pill').textContent = `${creditsLabel} credits`
   const welcome = document.getElementById('dash-welcome-name')
   if (welcome) {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''

@@ -252,7 +252,7 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" id="paywall-refresh">I've subscribed — refresh</button>
       <button type="button" class="btn btn-ghost" id="paywall-signout">Sign out</button>
-      <p class="paywall-note">Checkout opens on Whop. After you pay, come back and tap refresh — access unlocks automatically.</p>
+      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks with your plan credits.</p>
     </div>
   </div>
 </div>
@@ -272,6 +272,8 @@ import { api, setSession, clearSession, WHOP_CHECKOUT } from '/api.js'
 
 const APP = '/dashboard'
 let paywallCycle = 'monthly'
+let currentUser = null
+let _planPoll = null
 
 function switchTab(tab) {
   document.getElementById('tab-login').style.display = tab === 'login' ? '' : 'none'
@@ -350,8 +352,8 @@ function setPaywallCycle(cycle) {
 
 async function goToAppIfPaid() {
   try {
-    const me = await api.user.me()
-    if (me && me.plan_status === 'active') {
+    currentUser = await api.user.me()
+    if (currentUser && currentUser.plan_status === 'active') {
       try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
       location.replace(APP)
       return true
@@ -359,6 +361,42 @@ async function goToAppIfPaid() {
   } catch (_) {}
   try { localStorage.removeItem('vidso_plan_active') } catch (_) {}
   return false
+}
+
+async function watchForPurchase(tier) {
+  if (_planPoll) return _planPoll
+  try { if (tier) sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
+  const expectedTier = tier || (sessionStorage.getItem('vidso_pending_tier') || '')
+  setPaywallStatus('Activating your plan and credits…', 'loading')
+  _planPoll = api.billing.waitForProvisioned({
+    expectedTier,
+    onTick(me) {
+      if (!me) return
+      currentUser = me
+      if (me.plan_status === 'active') {
+        const label = api.billing.formatCredits(me)
+        setPaywallStatus(`Unlocking ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'}…`, 'loading')
+      }
+    },
+  }).then(async (me) => {
+    _planPoll = null
+    if (me) currentUser = me
+    if (me && me.plan_status === 'active') {
+      try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
+      const label = api.billing.formatCredits(me)
+      setPaywallStatus(`Plan active — ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'} unlocked.`, 'ok')
+      try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
+      setTimeout(() => location.replace(APP), 600)
+      return true
+    }
+    setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
+    return false
+  }).catch((e) => {
+    _planPoll = null
+    setPaywallStatus(e.message || 'Could not refresh plan status', 'err')
+    return false
+  })
+  return _planPoll
 }
 
 function afterAuth() {
@@ -429,21 +467,27 @@ document.getElementById('signup-cta').onclick = async () => {
 }
 
 document.querySelectorAll('#paywall-plans [data-tier]').forEach(btn => {
-  btn.onclick = () => {
+  btn.onclick = async () => {
     const tier = btn.dataset.tier
-    const url = api.billing.checkoutUrl(tier, paywallCycle) || WHOP_CHECKOUT[`${tier}_${paywallCycle}`]
+    if (!currentUser) {
+      try { currentUser = await api.user.me() } catch (_) {}
+    }
+    const url = api.billing.checkoutUrl(tier, paywallCycle, {
+      email: currentUser?.email,
+      userId: currentUser?.id || currentUser?.user_id,
+    }) || WHOP_CHECKOUT[`${tier}_${paywallCycle}`]
     if (!url) { setPaywallStatus('Checkout link missing for this plan', 'err'); return }
+    try { sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
     setPaywallStatus('Opening checkout…', 'loading')
     window.open(url, '_blank', 'noopener,noreferrer')
-    setTimeout(() => setPaywallStatus('After paying, come back and tap “I’ve subscribed — refresh”.', null), 800)
+    setTimeout(() => {
+      setPaywallStatus('Pay in the Whop tab — this page will unlock when your credits land.', null)
+      watchForPurchase(tier)
+    }, 600)
   }
 })
 
-document.getElementById('paywall-refresh').onclick = async () => {
-  setPaywallStatus('Checking your subscription…', 'loading')
-  const paid = await goToAppIfPaid()
-  if (!paid) setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
-}
+document.getElementById('paywall-refresh').onclick = () => watchForPurchase()
 
 document.getElementById('paywall-signout').onclick = async () => {
   await api.auth.logout().catch(() => {})
@@ -462,7 +506,7 @@ document.getElementById('su-pass').addEventListener('keydown', (e) => {
 document.addEventListener('visibilitychange', () => {
   const modal = document.getElementById('paywall-modal')
   if (document.visibilityState === 'visible' && modal && !modal.classList.contains('hidden')) {
-    goToAppIfPaid()
+    watchForPurchase()
   }
 })
 </script>

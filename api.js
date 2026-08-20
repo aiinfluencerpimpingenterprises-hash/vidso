@@ -53,6 +53,96 @@ const WHOP_CHECKOUT = {
   business_yearly:  'https://whop.com/checkout/plan_7HLlhKgRF0XfQ', // Vidso Studio $1260/yr
 }
 
+// Monthly allotment the paywall advertises. Railway should grant these on
+// membership.went_valid / payment.succeeded for the matching Whop plan ID.
+const PLAN_QUOTAS = {
+  starter:  { name: 'Plus',   credits: 300,  videos: 30 },
+  creator:  { name: 'Pro',    credits: 1000, videos: 100 },
+  business: { name: 'Studio', credits: null, videos: null },
+}
+
+function appOrigin() {
+  try { return location.origin } catch { return 'https://vidso.pro' }
+}
+
+function emailFromToken() {
+  try {
+    const token = getToken()
+    if (!token) return ''
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return String(payload.email || payload.user_email || '').trim()
+  } catch { return '' }
+}
+
+function quotaFor(plan) {
+  const p = String(plan || '').toLowerCase()
+  if (PLAN_QUOTAS[p]) return PLAN_QUOTAS[p]
+  if (p.includes('plus') || p.includes('starter')) return PLAN_QUOTAS.starter
+  if (p.includes('pro') || p.includes('creator')) return PLAN_QUOTAS.creator
+  if (p.includes('studio') || p.includes('business')) return PLAN_QUOTAS.business
+  return null
+}
+
+function formatCredits(me) {
+  if (!me) return '0'
+  const q = quotaFor(me.plan || me.plan_tier)
+  const n = Number(me.credits)
+  const unlimited = me.plan_status === 'active' && (
+    (q && q.credits == null) || n < 0 || n >= 99999
+  )
+  if (unlimited) return 'Unlimited'
+  if (!Number.isFinite(n)) return String(me.credits ?? 0)
+  return String(Math.max(0, Math.floor(n)))
+}
+
+function creditsGranted(me, expectedTier) {
+  if (!me || me.plan_status !== 'active') return false
+  const q = quotaFor(expectedTier) || quotaFor(me.plan || me.plan_tier)
+  if (!q || q.credits == null) return true
+  const n = Number(me.credits)
+  if (!Number.isFinite(n)) return true
+  if (n < 0 || n >= 99999) return true
+  return n >= q.credits
+}
+
+function checkoutUrl(tier, interval, opts = {}) {
+  const base = WHOP_CHECKOUT[`${tier}_${interval}`]
+  if (!base) return ''
+  const u = new URL(base)
+  const email = String(opts.email || emailFromToken() || '').trim()
+  const userId = opts.userId ? String(opts.userId) : ''
+  if (email) {
+    u.searchParams.set('email', email)
+    u.searchParams.set('email.disabled', '1')
+  }
+  const ret = `${opts.origin || appOrigin()}/dashboard?billing=success`
+  u.searchParams.set('redirect', ret)
+  u.searchParams.set('return_url', ret)
+  if (userId) u.searchParams.set('metadata[user_id]', userId)
+  if (email) u.searchParams.set('metadata[email]', email)
+  if (tier) u.searchParams.set('metadata[tier]', String(tier))
+  return u.toString()
+}
+
+async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
+  const started = Date.now()
+  let last = null
+  while (Date.now() - started < timeoutMs) {
+    try {
+      last = await req('GET', '/api/user/me')
+      if (typeof onTick === 'function') onTick(last)
+      const active = last?.plan_status === 'active'
+      const ready = creditsGranted(last, expectedTier)
+      const late = active && Date.now() - started > timeoutMs - 10000
+      if (ready || late) return last
+    } catch (e) {
+      if (typeof onTick === 'function') onTick(null, e)
+    }
+    await new Promise(r => setTimeout(r, intervalMs))
+  }
+  return last
+}
+
 export const api = {
   auth: {
     signup:  (email, password, name) => req('POST', '/api/auth/signup',  { email, password, name }),
@@ -216,7 +306,10 @@ export const api = {
   },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
-    checkoutUrl: (tier, interval) => WHOP_CHECKOUT[`${tier}_${interval}`] || WHOP_CHECKOUT.creator_monthly,
+    checkoutUrl: (tier, interval, opts) => checkoutUrl(tier, interval, opts) || WHOP_CHECKOUT.creator_monthly,
+    waitForProvisioned,
+    formatCredits,
+    quotaFor,
     // True when the user has an active paid plan with quota remaining.
     canClip: async () => {
       try {
@@ -227,4 +320,4 @@ export const api = {
   },
 }
 
-export { getToken, setSession, clearSession, WHOP_CHECKOUT }
+export { getToken, setSession, clearSession, WHOP_CHECKOUT, PLAN_QUOTAS }

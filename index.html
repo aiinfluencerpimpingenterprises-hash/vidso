@@ -10,7 +10,8 @@
   var h = location.hash || ''
   var s = location.search || ''
   var oauth = /access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)
-  location.replace((oauth ? '/login' : '/home') + s + h)
+  var billing = /(?:[?&])(?:billing=success|status=success)/.test(s)
+  location.replace((oauth ? '/login' : billing ? '/dashboard' : '/home') + s + h)
 })()
 </script>
 <noscript><meta http-equiv="refresh" content="0; url=/home"/></noscript>
