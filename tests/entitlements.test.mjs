@@ -12,10 +12,18 @@ import {
 import { FEATURE_ROWS, rowIncluded } from '../lib/pricing.js'
 import {
   evaluateFeature,
+  evaluateGeneration,
   evaluateLength,
   evaluateQuota,
   resolveAccess,
 } from '../lib/enforce.js'
+import {
+  generationKindFromSeconds,
+  parseUsageCounts,
+  quotaView,
+  ROUTE_POLICY,
+  SHORT_FORM_MAX_SECONDS,
+} from '../lib/quota.js'
 import { resolveWhopPlan, WHOP_PLAN_ENV_DEFAULTS, expectedPrice } from '../lib/whop-map.js'
 
 const plusUser = { plan_status: 'active', plan: 'plus' }
@@ -216,3 +224,52 @@ test('env override remaps a plan id without changing business logic', () => {
   const old = resolveWhopPlan(WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PLUS_MONTHLY, env)
   assert.equal(old.legacy, true)
 })
+
+test('60s is short-form, 61s is long-form', () => {
+  assert.equal(SHORT_FORM_MAX_SECONDS, 60)
+  assert.equal(generationKindFromSeconds(60), 'short_form')
+  assert.equal(generationKindFromSeconds(61), 'long_form')
+  assert.equal(generationKindFromSeconds(1800), 'long_form')
+})
+
+test('usage parser never treats credits as video counts', () => {
+  const parsed = parseUsageCounts({ credits: 300, videos_remaining: 30 })
+  assert.equal(parsed.known, false)
+  assert.equal(parsed.long_form_used, 0)
+  const withCounters = parseUsageCounts({ credits: 300, long_form_used: 3, short_form_used: 4 })
+  assert.equal(withCounters.known, true)
+  assert.equal(withCounters.long_form_used, 3)
+  assert.equal(withCounters.short_form_used, 4)
+})
+
+test('quota display matches advertised counts, not credits', () => {
+  const view = quotaView({ plan_status: 'active', plan: 'plus', credits: 300 })
+  assert.equal(view.compact, '10 LF · 15 SF')
+  assert.doesNotMatch(view.compact, /300/)
+  assert.doesNotMatch(view.longText, /credit/i)
+  const remaining = quotaView(
+    { plan_status: 'active', plan: 'plus' },
+    { long_form_used: 3, short_form_used: 5 },
+  )
+  assert.equal(remaining.compact, '7 LF · 10 SF')
+})
+
+test('faceless render is the only quota consumer; captions are plan-only', () => {
+  assert.ok(ROUTE_POLICY.consumeQuota['POST /api/faceless/render'])
+  assert.equal(ROUTE_POLICY.consumeQuota['POST /api/caption/burn'], undefined)
+  assert.ok(ROUTE_POLICY.activePlanOnly.includes('POST /api/caption/burn'))
+  assert.equal(ROUTE_POLICY.featureGate['POST /api/autoclip'], 'viral_moment_clipping')
+})
+
+test('evaluateGeneration refuses Plus over length or over quota', () => {
+  const ok = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 9 })
+  assert.equal(ok.ok, true)
+  assert.equal(ok.kind, 'long_form')
+  const overQuota = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 10 })
+  assert.equal(overQuota.ok, false)
+  assert.equal(overQuota.code, 'quota_exceeded')
+  const overLen = evaluateGeneration({ user: plusUser, durationSeconds: 901, kind: 'long_form', used: 0 })
+  assert.equal(overLen.ok, false)
+  assert.equal(overLen.code, 'length_exceeded')
+})
+

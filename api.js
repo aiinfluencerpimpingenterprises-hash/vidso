@@ -1,4 +1,6 @@
 import { WHOP_CHECKOUT } from '/lib/whop-map.js'
+import { normalizeTier } from '/lib/entitlements.js'
+import { quotaView, unlockCopy } from '/lib/quota.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -45,16 +47,6 @@ async function req(method, path, body, isFormData = false) {
 }
 
 // Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
-// PLAN_QUOTAS is the legacy credit allotment the paywall still polls for.
-// Do not treat these credit numbers as the advertised video counts.
-
-// Monthly allotment the paywall advertises. Railway should grant these on
-// membership.went_valid / payment.succeeded for the matching Whop plan ID.
-const PLAN_QUOTAS = {
-  starter:  { name: 'Plus',   credits: 300,  videos: 30 },
-  creator:  { name: 'Pro',    credits: 1000, videos: 100 },
-  business: { name: 'Studio', credits: null, videos: null },
-}
 
 function appOrigin() {
   try { return location.origin } catch { return 'https://vidso.pro' }
@@ -69,35 +61,17 @@ function emailFromToken() {
   } catch { return '' }
 }
 
-function quotaFor(plan) {
-  const p = String(plan || '').toLowerCase()
-  if (PLAN_QUOTAS[p]) return PLAN_QUOTAS[p]
-  if (p.includes('plus') || p.includes('starter')) return PLAN_QUOTAS.starter
-  if (p.includes('pro') || p.includes('creator')) return PLAN_QUOTAS.creator
-  if (p.includes('studio') || p.includes('business')) return PLAN_QUOTAS.business
-  return null
+function formatQuota(me, usage) {
+  return quotaView(me, usage).compact
 }
 
-function formatCredits(me) {
-  if (!me) return '0'
-  const q = quotaFor(me.plan || me.plan_tier)
-  const n = Number(me.credits)
-  const unlimited = me.plan_status === 'active' && (
-    (q && q.credits == null) || n < 0 || n >= 99999
-  )
-  if (unlimited) return 'Unlimited'
-  if (!Number.isFinite(n)) return String(me.credits ?? 0)
-  return String(Math.max(0, Math.floor(n)))
-}
-
-function creditsGranted(me, expectedTier) {
+function planReady(me, expectedTier) {
   if (!me || me.plan_status !== 'active') return false
-  const q = quotaFor(expectedTier) || quotaFor(me.plan || me.plan_tier)
-  if (!q || q.credits == null) return true
-  const n = Number(me.credits)
-  if (!Number.isFinite(n)) return true
-  if (n < 0 || n >= 99999) return true
-  return n >= q.credits
+  const want = normalizeTier(expectedTier)
+  if (!want) return true
+  const got = normalizeTier(me.plan || me.plan_tier)
+  if (!got) return true
+  return got === want
 }
 
 function checkoutUrl(tier, interval, opts = {}) {
@@ -127,7 +101,7 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
       last = await req('GET', '/api/user/me')
       if (typeof onTick === 'function') onTick(last)
       const active = last?.plan_status === 'active'
-      const ready = creditsGranted(last, expectedTier)
+      const ready = planReady(last, expectedTier)
       const late = active && Date.now() - started > timeoutMs - 10000
       if (ready || late) return last
     } catch (e) {
@@ -303,16 +277,16 @@ export const api = {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
     checkoutUrl: (tier, interval, opts) => checkoutUrl(tier, interval, opts) || WHOP_CHECKOUT.creator_monthly,
     waitForProvisioned,
-    formatCredits,
-    quotaFor,
-    // True when the user has an active paid plan with quota remaining.
+    formatQuota,
+    quotaView,
+    unlockCopy,
     canClip: async () => {
       try {
         const me = await req('GET', '/api/user/me')
-        return me.plan_status === 'active' && (me.videos_remaining ?? 0) > 0
+        return me.plan_status === 'active'
       } catch { return false }
     },
   },
 }
 
-export { getToken, setSession, clearSession, WHOP_CHECKOUT, PLAN_QUOTAS }
+export { getToken, setSession, clearSession, WHOP_CHECKOUT }

@@ -1,0 +1,14 @@
+-- Additive Option 1 counters. Do NOT run automatically.
+-- Apply to the table that currently stores plan_status / credits once the
+-- Railway API source is available. Do not drop credits or plan columns.
+--
+-- ALTER TABLE users
+--   ADD COLUMN IF NOT EXISTS long_form_used integer NOT NULL DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS short_form_used integer NOT NULL DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS quota_window_start timestamptz;
+--
+-- ROLLBACK (new columns only):
+-- ALTER TABLE users
+--   DROP COLUMN IF EXISTS long_form_used,
+--   DROP COLUMN IF EXISTS short_form_used,
+--   DROP COLUMN IF EXISTS quota_window_start;

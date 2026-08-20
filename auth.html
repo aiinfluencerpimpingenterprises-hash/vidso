@@ -323,15 +323,14 @@ async function watchForPurchase(tier) {
   if (_planPoll) return _planPoll
   try { if (tier) sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
   const expectedTier = tier || (sessionStorage.getItem('vidso_pending_tier') || '')
-  setPaywallStatus('Activating your plan and credits…', 'loading')
+  setPaywallStatus('Activating your plan…', 'loading')
   _planPoll = api.billing.waitForProvisioned({
     expectedTier,
     onTick(me) {
       if (!me) return
       currentUser = me
       if (me.plan_status === 'active') {
-        const label = api.billing.formatCredits(me)
-        setPaywallStatus(`Unlocking ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'}…`, 'loading')
+        setPaywallStatus(`Unlocking ${api.billing.unlockCopy(me)}…`, 'loading')
       }
     },
   }).then(async (me) => {
@@ -339,8 +338,7 @@ async function watchForPurchase(tier) {
     if (me) currentUser = me
     if (me && me.plan_status === 'active') {
       try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
-      const label = api.billing.formatCredits(me)
-      setPaywallStatus(`Plan active — ${label === 'Unlimited' ? 'unlimited credits' : label + ' credits'} unlocked.`, 'ok')
+      setPaywallStatus(`Plan active — ${api.billing.unlockCopy(me)} unlocked.`, 'ok')
       try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
       setTimeout(() => location.replace(APP), 600)
       return true
