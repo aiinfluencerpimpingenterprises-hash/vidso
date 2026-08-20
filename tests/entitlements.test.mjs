@@ -36,13 +36,13 @@ function user(tier, extra = {}) {
   return { plan_status: 'active', plan: tier, ...extra }
 }
 
-test('max video length marketing row matches the matrix and Plus is baseline', () => {
+test('max video length marketing row matches the matrix and is included on every tier', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Max video length')
   assert.equal(FEATURE_ROWS.length, 17)
   assert.equal(row.plus, '10 min')
   assert.equal(row.pro, '15 min')
   assert.equal(row.studio, '30 min')
-  assert.equal(rowIncluded(row, 'plus'), false)
+  assert.equal(rowIncluded(row, 'plus'), true)
   assert.equal(rowIncluded(row, 'pro'), true)
   assert.equal(rowIncluded(row, 'studio'), true)
   assert.equal(formatMinutes(ENTITLEMENTS.plus.max_video_length_seconds), '10 min')
