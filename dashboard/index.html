@@ -3647,6 +3647,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 <script type="module">
 import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
+import { entitlementsFor, normalizeTier } from '/lib/entitlements.js'
+import { evaluateLength } from '/lib/enforce.js'
 
 window._api = api
 window._setSession = setSession
@@ -4886,6 +4888,7 @@ function populateUser() {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
     welcome.textContent = display ? `, ${display}` : ''
   }
+  try { fvRenderDurationChips() } catch (_) {}
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
@@ -5145,10 +5148,23 @@ function fvSetPills(active) {
   }
 }
 
+function fvDurationCapSeconds() {
+  const tier = normalizeTier(currentUser?.plan || currentUser?.plan_tier)
+  if (!tier) return Infinity
+  return entitlementsFor(tier).max_video_length_seconds
+}
+
+function fvDurationList() {
+  const cap = fvDurationCapSeconds()
+  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  return list.filter((d) => d.seconds <= cap)
+}
+
 function fvRenderDurationChips() {
   const row = document.getElementById('fv-duration-chips')
   if (!row) return
-  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
+  const list = fvDurationList()
+  if (!list.length) return
   if (!list.some(d => d.id === fvState.durationId)) {
     fvState.durationId = list[list.length - 1].id
   }
@@ -5162,7 +5178,11 @@ window.fvSetFormat = (format) => {
   document.querySelectorAll('#fv-format-seg .fv-seg-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.format === fvState.format)
   })
-  fvState.durationId = FV_DURATIONS[fvState.format][fvState.format === 'shorts' ? 2 : 0].id
+  const list = fvDurationList()
+  const pick = fvState.format === 'shorts'
+    ? list[Math.min(2, list.length - 1)]
+    : list[0]
+  if (pick) fvState.durationId = pick.id
   fvRenderDurationChips()
 }
 
@@ -6254,6 +6274,11 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
+  const dur = (FV_DURATIONS[fvState.format] || []).find((d) => d.id === fvState.durationId)
+  const lengthGate = evaluateLength({ user: currentUser, durationSeconds: dur?.seconds })
+  if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
+    return fvSetStatus(lengthGate.message, 'err')
+  }
 
   const btn = document.getElementById('fv-gen-script-btn')
   if (btn) btn.disabled = true

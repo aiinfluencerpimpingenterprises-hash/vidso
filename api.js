@@ -1,3 +1,5 @@
+import { WHOP_CHECKOUT } from '/lib/whop-map.js'
+
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
 // Google OAuth starts here; tokens return to the app via redirect hash/query.
@@ -34,24 +36,17 @@ async function req(method, path, body, isFormData = false) {
     // structured error so the UI can show an upgrade prompt instead of a raw message.
     const err = new Error(data.message || data.error || 'Request failed')
     err.status = res.status
-    err.code = data.error // 'no_active_plan' | 'quota_exceeded' | ...
+    err.code = data.error // 'no_active_plan' | 'quota_exceeded' | 'length_exceeded' | 'feature_locked' | ...
     err.needsPlan = res.status === 402
+    err.needsUpgrade = res.status === 403
     throw err
   }
   return data
 }
 
-// Your 6 Whop checkout links. After creating the plans in Whop, copy each plan's
-// public checkout URL and paste it here. Used by the pricing buttons + upgrade prompts.
-const WHOP_CHECKOUT = {
-  // Plus / Pro / Studio — wired to live Whop checkout plans.
-  starter_monthly:  'https://whop.com/checkout/plan_2PQXzyYrseWZ6', // Vidso Plus $70/mo
-  starter_yearly:   'https://whop.com/checkout/plan_5FMFAYw0z7AbJ', // Vidso Plus $588/yr
-  creator_monthly:  'https://whop.com/checkout/plan_oYn5KJ7Wnv8NA', // Vidso Pro $99/mo
-  creator_yearly:   'https://whop.com/checkout/plan_PBiAm2SiwS0jR', // Vidso Pro $828/yr
-  business_monthly: 'https://whop.com/checkout/plan_pXuKK8Tk1Aj05', // Vidso Studio $150/mo
-  business_yearly:  'https://whop.com/checkout/plan_7HLlhKgRF0XfQ', // Vidso Studio $1260/yr
-}
+// Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
+// PLAN_QUOTAS is the legacy credit allotment the paywall still polls for.
+// Do not treat these credit numbers as the advertised video counts.
 
 // Monthly allotment the paywall advertises. Railway should grant these on
 // membership.went_valid / payment.succeeded for the matching Whop plan ID.
