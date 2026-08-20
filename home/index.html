@@ -371,7 +371,8 @@
   .plan .metric strong.hl{color:#FE0C30}
   .plan .feat{list-style:none;display:grid;grid-template-rows:repeat(17,minmax(2.75em,auto));gap:0;margin-top:18px;margin-bottom:0;flex:1;padding:0}
   .plan .feat-row{display:grid;grid-template-columns:16px minmax(0,1fr) auto;column-gap:10px;align-items:start;font-size:13.5px;color:var(--txt);line-height:1.35;padding-top:10px;min-height:2.75em}
-  .plan .feat-row.off{color:var(--faint)}
+  .plan .feat-row.off{color:var(--faint);opacity:.55}
+  .plan .feat-row.off .feat-label,.plan .feat-row.off .feat-val{text-decoration:line-through}
   .plan .feat-row svg{width:16px;height:16px;color:var(--blue);flex-shrink:0;margin-top:2px}
   .plan .feat-row.off svg{color:var(--faint)}
   .plan .feat-val{text-align:right;font-weight:650;color:var(--txt);padding-left:8px}
