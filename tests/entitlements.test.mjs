@@ -18,12 +18,14 @@ import {
   resolveAccess,
 } from '../lib/enforce.js'
 import {
+  durationFromBody,
   generationKindFromSeconds,
   parseUsageCounts,
   quotaView,
   ROUTE_POLICY,
   SHORT_FORM_MAX_SECONDS,
 } from '../lib/quota.js'
+import { incrementUsage, readUsage, _resetStoreForTests } from '../lib/usage-store.js'
 import { resolveWhopPlan, WHOP_PLAN_ENV_DEFAULTS, expectedPrice } from '../lib/whop-map.js'
 
 const plusUser = { plan_status: 'active', plan: 'plus' }
@@ -272,4 +274,26 @@ test('evaluateGeneration refuses Plus over length or over quota', () => {
   assert.equal(overLen.ok, false)
   assert.equal(overLen.code, 'length_exceeded')
 })
+
+test('Whop yearly charges match the live whole-dollar prices', () => {
+  assert.equal(expectedPrice('plus', 'yearly'), 179)
+  assert.equal(expectedPrice('pro', 'yearly'), 299)
+  assert.equal(expectedPrice('studio', 'yearly'), 359)
+})
+
+test('duration_id long_600 is 600 seconds', () => {
+  assert.equal(durationFromBody({ duration_id: 'long_600' }), 600)
+  assert.equal(durationFromBody({ duration: 45 }), 45)
+})
+
+test('usage store increments and resets on the anniversary window', () => {
+  _resetStoreForTests()
+  const user = { id: 'u1', created_at: '2026-01-15T00:00:00Z' }
+  incrementUsage(user, 'long_form', new Date('2026-01-20T00:00:00Z'))
+  incrementUsage(user, 'long_form', new Date('2026-01-20T00:00:00Z'))
+  assert.equal(readUsage(user, new Date('2026-01-20T00:00:00Z')).long_form_used, 2)
+  assert.equal(readUsage(user, new Date('2026-02-15T00:00:00Z')).long_form_used, 0)
+})
+
+
 

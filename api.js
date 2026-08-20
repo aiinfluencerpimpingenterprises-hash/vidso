@@ -17,14 +17,14 @@ function clearSession() {
   localStorage.removeItem('clipzo_refresh')
 }
 
-async function req(method, path, body, isFormData = false) {
+async function reqTo(url, method, body, isFormData = false) {
   const token = getToken()
   const headers = {}
   if (token) headers['Authorization'] = `Bearer ${token}`
   if (!isFormData) headers['Content-Type'] = 'application/json'
   let res
   try {
-    res = await fetch(BASE + path, {
+    res = await fetch(url, {
       method,
       headers,
       body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
@@ -34,16 +34,36 @@ async function req(method, path, body, isFormData = false) {
   }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    // 402 = paid-only gate (no active plan or monthly quota used up). Surface a
-    // structured error so the UI can show an upgrade prompt instead of a raw message.
     const err = new Error(data.message || data.error || 'Request failed')
     err.status = res.status
-    err.code = data.error // 'no_active_plan' | 'quota_exceeded' | 'length_exceeded' | 'feature_locked' | ...
+    err.code = data.error
     err.needsPlan = res.status === 402
     err.needsUpgrade = res.status === 403
     throw err
   }
   return data
+}
+
+async function req(method, path, body, isFormData = false) {
+  return reqTo(BASE + path, method, body, isFormData)
+}
+
+function gateUrl(path) {
+  const origin = (typeof location !== 'undefined' && /^https?:/.test(location.origin)) ? location.origin : ''
+  if (!origin) return ''
+  return origin + '/api/gate' + String(path || '').replace(/^\/api/, '')
+}
+
+async function gatedReq(method, path, body) {
+  const url = gateUrl(path)
+  if (url) {
+    try {
+      return await reqTo(url, method, body)
+    } catch (e) {
+      if (e.status !== 404) throw e
+    }
+  }
+  return req(method, path, body)
 }
 
 // Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
@@ -123,7 +143,17 @@ export const api = {
       `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}`,
   },
   user: {
-    me:    () => req('GET', '/api/user/me'),
+    me: async () => {
+      const me = await req('GET', '/api/user/me')
+      try {
+        const u = await gatedReq('GET', '/api/usage')
+        if (u && (u.long_form_used != null || u.short_form_used != null)) {
+          me.long_form_used = u.long_form_used
+          me.short_form_used = u.short_form_used
+        }
+      } catch (_) {}
+      return me
+    },
     usage: () => req('GET', '/api/user/usage'),
   },
   upload: {
@@ -147,7 +177,7 @@ export const api = {
   download: {
     info:      (url) => req('POST', '/api/download/info', { url }),
     search:    (q, limit) => req('POST', '/api/download/search', { q, limit }),
-    analyze:   (url) => req('POST', '/api/download/analyze', { url }),
+    analyze:   (url) => gatedReq('POST', '/api/download/analyze', { url }),
     streamUrl: (url) => `${BASE}/api/download/stream?url=${encodeURIComponent(url)}&token=${encodeURIComponent(getToken())}`,
     clipUrl:   (url, start, end, frame, crop) => {
       const params = [
@@ -162,7 +192,7 @@ export const api = {
     },
   },
   autoclip: {
-    start: (file_url) => req('POST', '/api/autoclip', { file_url }),
+    start: (file_url) => gatedReq('POST', '/api/autoclip', { file_url }),
     poll:  (jobId, count, genre) => req('GET',  `/api/autoclip/${jobId}?count=${count || 5}${genre ? `&genre=${encodeURIComponent(genre)}` : ''}`),
   },
   caption: {
@@ -248,16 +278,16 @@ export const api = {
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
     // body: { topic, duration_id, aspect } → structured script
-    script: (body) => req('POST', '/api/faceless/script', body),
+    script: (body) => gatedReq('POST', '/api/faceless/script', body),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
     // body: { script, voice_id, aspect } → { jobId }
-    startMedia: (body) => req('POST', '/api/faceless/media', body),
+    startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
     // body: { query, aspect } → { clips }
     searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
-    startRender: (body) => req('POST', '/api/faceless/render', body),
+    startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
     pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
     downloadRender: async (jobId) => {
       const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
