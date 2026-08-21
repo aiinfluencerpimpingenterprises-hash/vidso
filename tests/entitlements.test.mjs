@@ -1,13 +1,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  DURATION_PRESETS,
   ENTITLEMENTS,
   GATED_FEATURES,
   UNLIMITED,
+  durationPresets,
   entitlementsFor,
   formatMinutes,
   isUnlimited,
   quotaWindow,
+  secondsFromDurationId,
 } from '../lib/entitlements.js'
 import { FEATURE_ROWS, rowIncluded } from '../lib/pricing.js'
 import {
@@ -284,6 +287,33 @@ test('Whop yearly charges match the live whole-dollar prices', () => {
 test('duration_id long_600 is 600 seconds', () => {
   assert.equal(durationFromBody({ duration_id: 'long_600' }), 600)
   assert.equal(durationFromBody({ duration: 45 }), 45)
+  assert.equal(durationFromBody({ duration: 612, duration_id: 'long_600' }), 600)
+  assert.equal(durationFromBody({ script: { duration_id: 'long_900' } }), 900)
+  assert.equal(secondsFromDurationId('long_1200'), 1200)
+})
+
+test('in-app duration chips match advertised 10 / 15 / 30 min caps', () => {
+  assert.equal(DURATION_PRESETS.long.some((d) => d.seconds === 1200), false)
+  assert.deepEqual(durationPresets('long', ENTITLEMENTS.plus.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600])
+  assert.deepEqual(durationPresets('long', ENTITLEMENTS.pro.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900])
+  assert.deepEqual(durationPresets('long', ENTITLEMENTS.studio.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900, 1800])
+})
+
+test('Whop plan ID alone resolves the same length cap as plan name', () => {
+  const plusById = {
+    plan_status: 'active',
+    whop_plan_id: WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PLUS_MONTHLY,
+  }
+  assert.equal(resolveAccess(plusById).tier, 'plus')
+  assert.equal(evaluateLength({ user: plusById, durationSeconds: 600 }).ok, true)
+  assert.equal(evaluateLength({ user: plusById, durationSeconds: 601 }).ok, false)
+  const nested = {
+    plan_status: 'active',
+    membership: { plan_id: WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_YEARLY },
+  }
+  assert.equal(resolveAccess(nested).tier, 'pro')
+  assert.equal(evaluateLength({ user: nested, durationSeconds: 900 }).ok, true)
+  assert.equal(evaluateLength({ user: nested, durationSeconds: 901 }).ok, false)
 })
 
 test('usage store increments and resets on the anniversary window', () => {

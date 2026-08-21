@@ -3647,8 +3647,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 <script type="module">
 import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
-import { entitlementsFor, normalizeTier } from '/lib/entitlements.js'
-import { evaluateLength, evaluateFeature, evaluateGeneration } from '/lib/enforce.js'
+import { durationPresets } from '/lib/entitlements.js'
+import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 
 window._api = api
@@ -5064,22 +5064,6 @@ window.selectVoice = (id, preview, name) => {
 }
 
 // ── FACELESS VIDEO GENERATOR (Phase 1–2) ─────────────────────────────────────
-const FV_DURATIONS = {
-  shorts: [
-    { id: 'shorts_30', label: '30s', seconds: 30 },
-    { id: 'shorts_45', label: '45s', seconds: 45 },
-    { id: 'shorts_60', label: '60s', seconds: 60 },
-  ],
-  long: [
-    { id: 'long_180', label: '3 min', seconds: 180 },
-    { id: 'long_300', label: '5 min', seconds: 300 },
-    { id: 'long_600', label: '10 min', seconds: 600 },
-    { id: 'long_900', label: '15 min', seconds: 900 },
-    { id: 'long_1200', label: '20 min', seconds: 1200 },
-    { id: 'long_1800', label: '30 min', seconds: 1800 },
-  ],
-}
-
 window.fvState = {
   format: 'long',
   durationId: 'long_180',
@@ -5165,15 +5149,26 @@ function fvSetPills(active) {
 }
 
 function fvDurationCapSeconds() {
-  const tier = normalizeTier(currentUser?.plan || currentUser?.plan_tier)
-  if (!tier) return Infinity
-  return entitlementsFor(tier).max_video_length_seconds
+  const access = resolveAccess(currentUser)
+  if (!access.active || access.legacy || !access.entitlements) return Infinity
+  return access.entitlements.max_video_length_seconds
 }
 
 function fvDurationList() {
+  return durationPresets(fvState.format, fvDurationCapSeconds())
+}
+
+function fvPickedDuration() {
+  const list = fvDurationList()
+  return list.find((d) => d.id === fvState.durationId) || durationPresets(fvState.format).find((d) => d.id === fvState.durationId)
+}
+
+function fvSyncLengthLabel() {
+  const btn = document.querySelector('#fv-format-seg [data-format="long"]')
+  if (!btn) return
   const cap = fvDurationCapSeconds()
-  const list = FV_DURATIONS[fvState.format] || FV_DURATIONS.shorts
-  return list.filter((d) => d.seconds <= cap)
+  const mins = Number.isFinite(cap) && cap !== Infinity ? Math.round(cap / 60) : 30
+  btn.textContent = 'Long-form · up to ' + mins + ' min'
 }
 
 function fvRenderDurationChips() {
@@ -5187,6 +5182,7 @@ function fvRenderDurationChips() {
   row.innerHTML = list.map(d =>
     `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
   ).join('')
+  fvSyncLengthLabel()
 }
 
 window.fvSetFormat = (format) => {
@@ -5489,9 +5485,12 @@ window.fvStartMedia = async (force) => {
         sections: fvState.script.sections || [],
         aspect: fvState.script.aspect || fvState.aspect,
         voice_id: voiceId,
+        duration_id: fvState.durationId,
       },
       voice_id: voiceId,
       aspect: fvState.script.aspect || fvState.aspect,
+      duration_id: fvState.durationId,
+      duration: fvPickedDuration()?.seconds,
     })
     fvState.mediaJobId = jobId
     fvState.mediaPoll = setInterval(async () => {
@@ -6188,7 +6187,7 @@ window.fvStartExport = async () => {
   if (!fvState.media?.voiceover_url) return fvSetExportStatus('Missing voiceover', 'err')
   if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
 
-  const seconds = Number(fvState.media.duration) || ((FV_DURATIONS[fvState.format] || []).find((d) => d.id === fvState.durationId)?.seconds)
+  const seconds = fvPickedDuration()?.seconds || Number(fvState.media.duration)
   const counts = parseUsageCounts(currentUser, lastUsage)
   const kind = generationKindFromFormat(fvState.format)
   const used = kind === 'short_form' ? counts.short_form_used : counts.long_form_used
@@ -6216,6 +6215,7 @@ window.fvStartExport = async () => {
     const { jobId } = await api.faceless.startRender({
       voiceover_url: fvState.media.voiceover_url,
       duration: fvState.media.duration,
+      duration_id: fvState.durationId,
       words: fvState.media.words || [],
       timeline: fvState.media.timeline || [],
       aspect: fvState.media.aspect || fvState.aspect,
@@ -6304,7 +6304,7 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
-  const dur = (FV_DURATIONS[fvState.format] || []).find((d) => d.id === fvState.durationId)
+  const dur = fvPickedDuration()
   const lengthGate = evaluateLength({ user: currentUser, durationSeconds: dur?.seconds })
   if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
     return fvSetStatus(lengthGate.message, 'err')
