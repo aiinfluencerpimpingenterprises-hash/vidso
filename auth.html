@@ -354,8 +354,7 @@ async function watchForPurchase(tier) {
 }
 
 function afterAuth() {
-  showPaywall()
-  goToAppIfPaid()
+  location.replace(APP)
 }
 
 function consumeOAuthErrorParams() {
