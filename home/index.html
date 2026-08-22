@@ -276,24 +276,32 @@
   .results.is-single .results-slide{flex:0 1 900px;width:100%;max-width:900px}
   .results.is-multi .results-track{
     overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
-    -webkit-overflow-scrolling:touch;gap:16px;justify-content:flex-start;
-    scrollbar-width:none;padding-bottom:4px
+    -webkit-overflow-scrolling:touch;gap:16px;justify-content:flex-start;align-items:stretch;
+    scrollbar-width:none;padding-bottom:2px;overscroll-behavior-x:contain;cursor:grab;
+    user-select:none;-webkit-user-select:none
   }
+  .results.is-multi .results-track:active{cursor:grabbing}
   .results.is-multi .results-track::-webkit-scrollbar{display:none}
-  .results.is-multi .results-slide{flex:0 0 85%;scroll-snap-align:start;min-width:0}
+  .results.is-multi .results-track:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:4px;border-radius:12px}
+  .results.is-multi .results-slide{
+    flex:0 0 85%;scroll-snap-align:center;scroll-snap-stop:always;min-width:0;display:flex
+  }
   @media(min-width:720px){.results.is-multi .results-slide{flex-basis:calc(50% - 8px)}}
   @media(min-width:1024px){.results.is-multi .results-slide{flex-basis:calc((100% - 32px) / 3)}}
   .results-card{
-    display:block;width:100%;margin:0;padding:0;appearance:none;-webkit-appearance:none;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-    overflow:hidden;cursor:pointer;color:inherit;font:inherit;text-align:left;
+    display:flex;flex-direction:column;width:100%;height:100%;margin:0;padding:0;
+    appearance:none;-webkit-appearance:none;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r);overflow:hidden;cursor:pointer;color:inherit;font:inherit;text-align:left;
     transition:border-color .25s,transform .25s cubic-bezier(.34,1.56,.64,1)
   }
   .results-card:hover{border-color:var(--line-2);transform:translateY(-2px)}
   .results-card:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:3px}
-  .results-card img{display:block;width:100%;height:auto;background:#0f0f0f}
+  .results-shot{display:block;aspect-ratio:1720/914;overflow:hidden;background:#0f0f0f;flex:0 0 auto}
+  .results-shot img{
+    display:block;width:100%;height:100%;object-fit:cover;object-position:top center;pointer-events:none
+  }
   .results-meta{
-    display:flex;flex-wrap:wrap;gap:0 4px;align-items:center;
+    display:flex;flex-wrap:wrap;gap:0 4px;align-items:center;flex:1 0 auto;
     padding:12px 16px 14px;font-size:13px;color:var(--muted);line-height:1.4
   }
   .results-meta-ch{color:var(--txt);font-weight:600}
@@ -303,13 +311,14 @@
     width:40px;height:40px;border-radius:999px;border:1px solid var(--line);
     background:var(--panel);color:var(--txt);cursor:pointer;display:grid;place-items:center;padding:0
   }
-  .results-arrow:hover,.results-lb-close:hover,.results-lb-nav:hover{border-color:var(--line-2);background:var(--panel-2)}
-  .results-arrow:focus-visible,.results-dot:focus-visible,.results-lb-close:focus-visible,.results-lb-nav:focus-visible{
+  .results-arrow:hover:not(:disabled),.results-lb-close:hover,.results-lb-nav:hover{border-color:var(--line-2);background:var(--panel-2)}
+  .results-arrow:disabled{opacity:.35;cursor:not-allowed}
+  .results-arrow:focus-visible,.results-dot:focus-visible,.results-lb-close:focus-visible,.results-lb-nav:focus-visible,.results-track:focus-visible{
     outline:2px solid rgba(var(--glow),.65);outline-offset:2px
   }
   @media(min-width:1024px){
     .results-arrows{
-      display:flex;position:absolute;left:8px;right:8px;top:50%;
+      display:flex;position:absolute;left:8px;right:8px;top:42%;
       transform:translateY(-50%);justify-content:space-between;pointer-events:none;z-index:2
     }
     .results.is-single .results-arrows{display:none}
@@ -325,7 +334,7 @@
   }
   .results-lb[hidden]{display:none!important}
   .results-lb img{
-    max-width:min(96vw,1659px);max-height:90vh;width:auto;height:auto;
+    max-width:min(96vw,1983px);max-height:90vh;width:auto;height:auto;
     object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#0f0f0f
   }
   .results-lb-close{position:absolute;top:18px;right:18px;z-index:2}
