@@ -62,7 +62,8 @@
       }
     }
   } catch (e) {}
-  if (needOb || !obSeen || (!paid && !paywallOff)) document.documentElement.classList.add('needs-gate')
+  if (needOb || !obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
+  else if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -71,7 +72,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></noscript>
 <style>
 @font-face{font-family:'TikTok Sans 18pt';src:url('/fonts/TikTokSans-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
 @font-face{font-family:'SF Pro Display';font-weight:400;src:url('/fonts/SF-Pro-Display-Regular.woff2') format('woff2');font-display:swap}
@@ -567,18 +569,22 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
 .modal-bg.hidden{display:none}
 /* Instant auth / unpaid gate: cover the app before JS and /user/me finish. */
-html.needs-auth,html.needs-gate,html.needs-paywall{background:#0B0B0C}
+html.needs-auth,html.needs-gate,html.needs-paywall,html.needs-onboarding{background:#0B0B0C}
 html.needs-auth body::before,html.needs-gate body::before,html.needs-paywall body::before{
   content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
 }
+html.needs-onboarding body::before{content:none;display:none}
 html.needs-auth #app-sidebar,html.needs-auth main,
 html.needs-gate #app-sidebar,html.needs-gate main,
-html.needs-paywall #app-sidebar,html.needs-paywall main{visibility:hidden}
+html.needs-paywall #app-sidebar,html.needs-paywall main,
+html.needs-onboarding #app-sidebar,html.needs-onboarding main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
 html.needs-paywall #paywall-modal{display:flex!important;z-index:20001}
 html.needs-gate #paywall-modal{display:none!important}
 #onboarding-modal{z-index:20000}
+html.needs-onboarding #onboarding-modal,
+html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .modal.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
 .auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
@@ -1382,7 +1388,8 @@ input:focus,textarea:focus,select:focus,
   padding:0;align-items:stretch;justify-content:stretch;
   background:#0B0B0C;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:20000
 }
-#onboarding-modal.hidden{display:none}
+html.needs-onboarding #onboarding-modal,
+html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
 .onboarding-shell{
   width:100%;max-width:none;height:100%;max-height:none;min-height:100%;flex:1;
@@ -1753,148 +1760,9 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   .credits-pill{padding:6px 8px}
 }
 </style>
-<script src="/brand.js"></script>
+<script src="/brand.js" defer></script>
 </head>
 <body class="has-page-header">
-<div id="topo-bg" data-mode="subtle" aria-hidden="true"></div>
-
-<!-- PAYWALL (shown after onboarding + tour for unpaid accounts) -->
-<div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
-  <div class="paywall-shell" tabindex="-1">
-    <p class="paywall-kicker">Unlock Vidso</p>
-    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
-    <p class="paywall-sub">Pick a plan to unlock long-form Video Generation.</p>
-    <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
-      <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
-      <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
-    </div>
-    <div class="paywall-plans" id="paywall-plans"></div>
-    <div class="paywall-status" id="paywall-status"></div>
-    <div class="paywall-foot">
-      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
-      <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
-    </div>
-  </div>
-</div>
-
-<!-- AUTH MODAL -->
-<div class="modal-bg hidden" id="auth-modal">
-  <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <aside class="auth-showcase" aria-hidden="true">
-      <div class="auth-preview">
-        <div class="auth-preview-play" aria-hidden="true">
-          <span>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
-          </span>
-        </div>
-        <span class="auth-preview-score">98</span>
-        <div class="auth-preview-cap">12-min faceless explainer</div>
-      </div>
-      <h3>Long-form YouTube videos on autopilot</h3>
-      <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
-      <div class="auth-chips">
-        <span>Faceless explainer</span>
-        <span>Documentary</span>
-        <span>Listicle</span>
-        <span>Tutorial</span>
-      </div>
-    </aside>
-    <div class="auth-panel">
-      <div class="auth-brand">
-        <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
-      </div>
-      <h2 id="auth-title">Welcome to Vidso</h2>
-      <p class="auth-lead">Sign in to access your AI content tools.</p>
-      <div class="modal-tabs">
-        <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
-        <button type="button" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
-      </div>
-      <div class="auth-social">
-        <button type="button" class="btn auth-google" id="google-cta" onclick="doGoogleLogin()">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          <span class="auth-cta-label">Continue with Google</span>
-          <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
-        </button>
-      </div>
-      <div class="auth-or">or continue with email</div>
-      <div id="tab-login">
-        <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
-        <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
-        <button type="button" class="btn btn-primary auth-cta" id="login-cta" onclick="doLogin()"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-        <div class="modal-error" id="login-err"></div>
-      </div>
-      <div id="tab-signup" style="display:none">
-        <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
-        <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
-        <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
-        <button type="button" class="btn btn-primary auth-cta" id="signup-cta" onclick="doSignup()"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-        <div class="modal-error" id="signup-err"></div>
-      </div>
-      <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  if (!document.documentElement.classList.contains('auth-signup')) return
-  var login = document.getElementById('tab-login')
-  var signup = document.getElementById('tab-signup')
-  if (login) login.style.display = 'none'
-  if (signup) signup.style.display = ''
-  document.querySelectorAll('#auth-modal .tab-btn').forEach(function(b, i){
-    b.classList.toggle('active', i === 1)
-  })
-})()
-</script>
-
-<!-- ACCOUNT SETTINGS -->
-<div class="modal-bg hidden" id="settings-modal" onclick="if(event.target===this)closeAccountSettings()">
-  <div class="modal settings-shell" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
-    <div class="settings-head">
-      <h2 id="settings-title">Account</h2>
-      <button type="button" class="settings-close" onclick="closeAccountSettings()" aria-label="Close settings">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="settings-profile">
-      <span class="user-avatar" id="settings-avatar">?</span>
-      <div class="settings-profile-meta">
-        <div class="settings-name" id="settings-name">Your account</div>
-        <div class="settings-email" id="settings-email">—</div>
-      </div>
-    </div>
-    <div class="settings-rows">
-      <div class="settings-row">
-        <span class="settings-row-label">This month</span>
-        <span class="settings-row-value" id="settings-credits">—</span>
-      </div>
-      <button type="button" class="settings-row-btn" id="settings-getting-started" onclick="closeAccountSettings();openUiTour({fromMenu:true})" aria-label="Open app tour">
-        <span class="settings-row-label">Getting started</span>
-        <span class="settings-row-value">App tour →</span>
-      </button>
-      <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
-        <span class="settings-row-label">Billing</span>
-        <span class="settings-row-value" id="settings-plan-label">Plans →</span>
-      </button>
-      <div class="settings-row is-soon" aria-disabled="true">
-        <span class="settings-row-label">Change email</span>
-        <span class="badge-soon">Coming soon</span>
-      </div>
-      <div class="settings-row is-soon" aria-disabled="true">
-        <span class="settings-row-label">Change password</span>
-        <span class="badge-soon">Coming soon</span>
-      </div>
-    </div>
-    <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
-  </div>
-</div>
-
 <!-- ONBOARDING -->
 <div class="modal-bg hidden" id="onboarding-modal">
   <div class="modal onboarding-shell" role="dialog" aria-modal="true" aria-labelledby="ob-title" tabindex="-1">
@@ -2093,6 +1961,156 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (!document.documentElement.classList.contains('needs-onboarding')) return
+  var m = document.getElementById('onboarding-modal')
+  if (m) m.classList.remove('hidden')
+  document.body.classList.add('onboarding-open')
+  window.skipOnboarding = window.skipOnboarding || function(){ window.__obCmd = 'skip' }
+  window.onboardingNext = window.onboardingNext || function(){ window.__obCmd = 'next' }
+  window.onboardingBack = window.onboardingBack || function(){ window.__obCmd = 'back' }
+})()
+</script>
+<div id="topo-bg" data-mode="subtle" aria-hidden="true"></div>
+
+<!-- PAYWALL (shown after onboarding + tour for unpaid accounts) -->
+<div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+  <div class="paywall-shell" tabindex="-1">
+    <p class="paywall-kicker">Unlock Vidso</p>
+    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
+    <p class="paywall-sub">Pick a plan to unlock long-form Video Generation.</p>
+    <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
+      <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
+      <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
+    </div>
+    <div class="paywall-plans" id="paywall-plans"></div>
+    <div class="paywall-status" id="paywall-status"></div>
+    <div class="paywall-foot">
+      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
+      <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
+      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg hidden" id="auth-modal">
+  <div class="modal auth-shell" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <aside class="auth-showcase" aria-hidden="true">
+      <div class="auth-preview">
+        <div class="auth-preview-play" aria-hidden="true">
+          <span>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
+          </span>
+        </div>
+        <span class="auth-preview-score">98</span>
+        <div class="auth-preview-cap">12-min faceless explainer</div>
+      </div>
+      <h3>Long-form YouTube videos on autopilot</h3>
+      <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
+      <div class="auth-chips">
+        <span>Faceless explainer</span>
+        <span>Documentary</span>
+        <span>Listicle</span>
+        <span>Tutorial</span>
+      </div>
+    </aside>
+    <div class="auth-panel">
+      <div class="auth-brand">
+        <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+      </div>
+      <h2 id="auth-title">Welcome to Vidso</h2>
+      <p class="auth-lead">Sign in to access your AI content tools.</p>
+      <div class="modal-tabs">
+        <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button type="button" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      <div class="auth-social">
+        <button type="button" class="btn auth-google" id="google-cta" onclick="doGoogleLogin()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span class="auth-cta-label">Continue with Google</span>
+          <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
+        </button>
+      </div>
+      <div class="auth-or">or continue with email</div>
+      <div id="tab-login">
+        <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
+        <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
+        <button type="button" class="btn btn-primary auth-cta" id="login-cta" onclick="doLogin()"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+        <div class="modal-error" id="login-err"></div>
+      </div>
+      <div id="tab-signup" style="display:none">
+        <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
+        <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
+        <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
+        <button type="button" class="btn btn-primary auth-cta" id="signup-cta" onclick="doSignup()"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+        <div class="modal-error" id="signup-err"></div>
+      </div>
+      <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if (!document.documentElement.classList.contains('auth-signup')) return
+  var login = document.getElementById('tab-login')
+  var signup = document.getElementById('tab-signup')
+  if (login) login.style.display = 'none'
+  if (signup) signup.style.display = ''
+  document.querySelectorAll('#auth-modal .tab-btn').forEach(function(b, i){
+    b.classList.toggle('active', i === 1)
+  })
+})()
+</script>
+
+<!-- ACCOUNT SETTINGS -->
+<div class="modal-bg hidden" id="settings-modal" onclick="if(event.target===this)closeAccountSettings()">
+  <div class="modal settings-shell" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+    <div class="settings-head">
+      <h2 id="settings-title">Account</h2>
+      <button type="button" class="settings-close" onclick="closeAccountSettings()" aria-label="Close settings">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="settings-profile">
+      <span class="user-avatar" id="settings-avatar">?</span>
+      <div class="settings-profile-meta">
+        <div class="settings-name" id="settings-name">Your account</div>
+        <div class="settings-email" id="settings-email">—</div>
+      </div>
+    </div>
+    <div class="settings-rows">
+      <div class="settings-row">
+        <span class="settings-row-label">This month</span>
+        <span class="settings-row-value" id="settings-credits">—</span>
+      </div>
+      <button type="button" class="settings-row-btn" id="settings-getting-started" onclick="closeAccountSettings();openUiTour({fromMenu:true})" aria-label="Open app tour">
+        <span class="settings-row-label">Getting started</span>
+        <span class="settings-row-value">App tour →</span>
+      </button>
+      <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
+        <span class="settings-row-label">Billing</span>
+        <span class="settings-row-value" id="settings-plan-label">Plans →</span>
+      </button>
+      <div class="settings-row is-soon" aria-disabled="true">
+        <span class="settings-row-label">Change email</span>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+      <div class="settings-row is-soon" aria-disabled="true">
+        <span class="settings-row-label">Change password</span>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+    </div>
+    <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
   </div>
 </div>
 
@@ -3965,7 +3983,7 @@ function enterUiPreview() {
     plan: 'studio',
     plan_status: 'active'
   }
-  document.documentElement.classList.remove('needs-gate', 'needs-auth', 'needs-paywall')
+  document.documentElement.classList.remove('needs-gate', 'needs-auth', 'needs-paywall', 'needs-onboarding')
   hideModal()
   closePaywall()
   try { closeOnboarding() } catch (_) {}
@@ -4014,12 +4032,12 @@ function afterAuthReady(opts = {}) {
   loadFiles()
   if (opts.restoreRoute) restorePanelFromHash()
   if (hasActivePlan() || paywallDevBypass() || !paywallOn()) {
-    document.documentElement.classList.remove('needs-gate', 'needs-paywall')
+    document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
     closePaywall()
     maybeShowOnboarding()
     return
   }
-  document.documentElement.classList.remove('needs-paywall')
+  document.documentElement.classList.remove('needs-paywall', 'needs-onboarding')
   document.documentElement.classList.add('needs-gate')
   maybeShowOnboarding()
 }
@@ -4027,6 +4045,36 @@ function afterAuthReady(opts = {}) {
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 function obForcePreview() {
   return /(?:\?|&)onboarding=1(?:&|$)/.test(location.search || '')
+}
+
+function userStubFromToken() {
+  try {
+    const token = getToken() || ''
+    const part = token.split('.')[1]
+    if (!part) return null
+    const p = JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')))
+    const email = String(p.email || p.user_email || '').trim()
+    const id = String(p.sub || p.user_id || '').trim()
+    if (!email && !id) return null
+    const meta = p.user_metadata || {}
+    return {
+      id: id || email,
+      email: email || id,
+      name: String(meta.name || p.name || email || 'You').trim(),
+      credits: 0,
+      plan: 'free',
+      plan_status: 'inactive'
+    }
+  } catch (_) { return null }
+}
+
+function revealOnboardingNow() {
+  if (typeof uiPreviewMode === 'function' && uiPreviewMode()) return
+  const stub = userStubFromToken()
+  if (stub && !currentUser) currentUser = stub
+  const pending = obForcePreview() || document.documentElement.classList.contains('needs-onboarding') || obShouldAutoOpen()
+  if (!pending) return
+  maybeShowOnboarding()
 }
 
 async function checkAuth() {
@@ -4054,6 +4102,7 @@ async function checkAuth() {
     if (!getToken()) return
   }
   if (!getToken()) { showModal(); return }
+  revealOnboardingNow()
   try {
     currentUser = await api.user.me()
   } catch {
@@ -4649,7 +4698,7 @@ window.openOnboarding = (opts = {}) => {
   window.closeMobileNav?.()
   window.closeAccountSettings?.()
   document.documentElement.classList.remove('needs-paywall')
-  document.documentElement.classList.add('needs-gate')
+  document.documentElement.classList.add('needs-gate', 'needs-onboarding')
   document.body.classList.remove('paywalled')
   document.getElementById('paywall-modal')?.classList.add('hidden')
   modal.classList.remove('hidden')
@@ -4658,6 +4707,11 @@ window.openOnboarding = (opts = {}) => {
   const shell = modal.querySelector('.onboarding-shell')
   shell?.focus?.()
   _obOpening = false
+  const cmd = window.__obCmd
+  window.__obCmd = null
+  if (cmd === 'skip') skipOnboarding()
+  else if (cmd === 'next') onboardingNext()
+  else if (cmd === 'back') onboardingBack()
 }
 
 window.closeOnboarding = () => {
@@ -4665,6 +4719,7 @@ window.closeOnboarding = () => {
   if (!modal) return
   modal.classList.add('hidden')
   document.body.classList.remove('onboarding-open')
+  document.documentElement.classList.remove('needs-onboarding')
   if (!(typeof introPending === 'function' && introPending())) {
     document.documentElement.classList.remove('needs-gate')
   }
@@ -4762,6 +4817,8 @@ window.maybeShowOnboarding = () => {
   }
   run()
 }
+
+revealOnboardingNow()
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
 // Persistence: vidso_ui_tour_seen:<userKey> -> "1" when completed or skipped (no auto re-open).
