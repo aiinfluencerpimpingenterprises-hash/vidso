@@ -19,7 +19,7 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 .auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
 .auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
 .auth-showcase > *{position:relative;z-index:1}
-.auth-preview{aspect-ratio:16/9;width:100%;border-radius:14px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.auth-preview{aspect-ratio:16/9;width:100%;border-radius:14px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45);cursor:pointer}
 .auth-preview-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0c0c0c}
 .auth-showcase h3{font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
 .auth-sub{font-size:.9rem;color:var(--muted);line-height:1.45;margin:0}
@@ -215,17 +215,46 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
   document.getElementById('tab-btn-signup').classList.toggle('active', isSignup)
 
   var video = document.getElementById('auth-preview-video')
+  var preview = video && video.closest('.auth-preview')
   if (video) {
     var reduce = false
     try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) {}
+    var expired = false
+    var hovering = false
+    var unmute = function () {
+      video.muted = false
+      video.volume = 1
+      video.play().catch(function () {})
+    }
+    var mute = function () {
+      video.muted = true
+    }
+    if (preview) {
+      preview.addEventListener('pointerenter', function () {
+        hovering = true
+        unmute()
+      })
+      preview.addEventListener('pointerleave', function () {
+        hovering = false
+        mute()
+        if (expired) {
+          video.loop = false
+          try { video.pause() } catch (e2) {}
+        }
+      })
+    }
     if (reduce) {
       video.removeAttribute('autoplay')
       video.loop = false
     } else {
       var armed = false
       var stop = function () {
+        expired = true
         video.loop = false
-        try { video.pause() } catch (e2) {}
+        if (!hovering) {
+          mute()
+          try { video.pause() } catch (e2) {}
+        }
       }
       var arm = function () {
         if (armed) return
