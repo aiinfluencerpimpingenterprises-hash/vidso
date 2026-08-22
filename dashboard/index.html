@@ -72,8 +72,7 @@
     for (var i = 0; i < ids.length; i++) {
       if (hasSeenId(ids[i])) obSeen = true
     }
-    // Fresh signup must still see onboarding even if another account used this browser.
-    if (needOb && !obSeen) obSeen = false
+    if (needOb) obSeen = false
   } catch (e) {}
   if (!obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
   else if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
@@ -4023,20 +4022,15 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan() || !paywallOn())
-  if (obHasSeen()) {
-    _obDoneThisSession = true
-    obMarkSeen()
-  }
   if (tourHasSeen()) _tourDoneThisSession = true
+  hideModal()
+  populateUser()
   const pendingOb = obForcePreview() || obShouldAutoOpen()
   if (pendingOb) {
-    document.documentElement.classList.add('needs-gate')
+    document.documentElement.classList.add('needs-gate', 'needs-onboarding')
     document.documentElement.classList.remove('needs-paywall')
     closePaywall()
-    hideModal()
-    populateUser()
     maybeShowOnboarding()
-    obClearNeedFlag()
     loadUsage()
     loadVoices()
     loadFiles()
@@ -4044,21 +4038,12 @@ function afterAuthReady(opts = {}) {
     return
   }
   obClearNeedFlag()
-  hideModal()
-  populateUser()
+  document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
+  closePaywall()
   loadUsage()
   loadVoices()
   loadFiles()
   if (opts.restoreRoute) restorePanelFromHash()
-  if (hasActivePlan() || paywallDevBypass() || !paywallOn()) {
-    document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
-    closePaywall()
-    maybeShowOnboarding()
-    return
-  }
-  document.documentElement.classList.remove('needs-paywall', 'needs-onboarding')
-  document.documentElement.classList.add('needs-gate')
-  maybeShowOnboarding()
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -4089,22 +4074,17 @@ function userStubFromToken() {
 
 function revealOnboardingNow() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) return
-  if (obHasSeen() && !obForcePreview()) {
-    obClearNeedFlag()
-    document.documentElement.classList.remove('needs-onboarding', 'needs-gate')
-    const modal = document.getElementById('onboarding-modal')
-    if (modal) modal.classList.add('hidden')
-    document.body.classList.remove('onboarding-open')
-    return
-  }
   const stub = userStubFromToken()
   if (stub && !currentUser) currentUser = stub
-  const pending = obForcePreview() || obShouldAutoOpen()
-  if (!pending) {
-    document.documentElement.classList.remove('needs-onboarding')
+  if (obForcePreview() || obShouldAutoOpen()) {
+    maybeShowOnboarding()
     return
   }
-  maybeShowOnboarding()
+  obClearNeedFlag()
+  document.documentElement.classList.remove('needs-onboarding')
+  const modal = document.getElementById('onboarding-modal')
+  if (modal) modal.classList.add('hidden')
+  document.body.classList.remove('onboarding-open')
 }
 
 async function checkAuth() {
@@ -4729,9 +4709,10 @@ window.openOnboarding = (opts = {}) => {
   if (!currentUser && !opts.force && !obForcePreview()) { showModal(); return }
   const modal = document.getElementById('onboarding-modal')
   if (!modal || _obOpening) return
+  const already = document.body.classList.contains('onboarding-open') && !modal.classList.contains('hidden')
   _obOpening = true
   _obPrevFocus = document.activeElement
-  _obStep = 1
+  if (!already) _obStep = 1
   obBindAll()
   obRestoreFromStorage()
   obSyncUI()
@@ -4747,6 +4728,7 @@ window.openOnboarding = (opts = {}) => {
   const shell = modal.querySelector('.onboarding-shell')
   shell?.focus?.()
   _obOpening = false
+  if (already) return
   const cmd = window.__obCmd
   window.__obCmd = null
   if (cmd === 'skip') skipOnboarding()
@@ -4841,22 +4823,9 @@ window.maybeShowOnboarding = () => {
   if (!currentUser && !force) return
   const auth = document.getElementById('auth-modal')
   if (!force && auth && !auth.classList.contains('hidden')) return
-  if (!force && !obShouldAutoOpen()) {
-    maybeStartUiTour()
-    return
-  }
+  if (!force && !obShouldAutoOpen()) return
   if (force) hideModal()
-  const run = () => {
-    if (!currentUser && !force) return
-    if (!force && !obShouldAutoOpen()) {
-      maybeStartUiTour()
-      return
-    }
-    // Count first auto-open as the signup run, even if they close the tab.
-    if (!force) obMarkSeen()
-    openOnboarding({ auto: true, force })
-  }
-  run()
+  openOnboarding({ auto: true, force })
 }
 
 revealOnboardingNow()
@@ -4927,8 +4896,7 @@ function tourFinishStep() {
 }
 function tourShouldAutoOpen() {
   if (paywallDevBypass()) return false
-  if (funnelLocked()) return !tourIsCompleted() && !_tourDoneThisSession
-  return !tourIsCompleted()
+  return !tourIsCompleted() && _obDoneThisSession
 }
 function tourObReady() {
   return obHasSeen() || _obDoneThisSession
@@ -5489,6 +5457,7 @@ window.maybeStartUiTour = () => {
   if (_tourActive) return
   const auth = document.getElementById('auth-modal')
   if (auth && !auth.classList.contains('hidden')) return
+  if (document.documentElement.classList.contains('needs-onboarding')) return
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   const force = /(?:\?|&)tour=1(?:&|$)/.test(location.search || '')
@@ -5499,6 +5468,7 @@ window.maybeStartUiTour = () => {
   if (!force && !tourObReady()) return
   const run = () => {
     if (!currentUser || _tourActive) return
+    if (document.documentElement.classList.contains('needs-onboarding')) return
     if (!force && !tourShouldAutoOpen()) {
       maybeShowPaywall()
       return
