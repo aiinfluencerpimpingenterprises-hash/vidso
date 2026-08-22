@@ -465,6 +465,40 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .img-stepper button{width:32px;height:32px;border:none;border-radius:9px;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;font-family:inherit}
 .img-stepper button:hover{background:rgba(255,255,255,.06)}
 .img-stepper-val{min-width:64px;text-align:center;font-size:.84rem;font-weight:650;color:var(--ink)}
+.img-model{position:relative}
+.img-model-pill{
+  width:100%;display:flex;align-items:center;gap:10px;min-height:44px;
+  padding:8px 12px 8px 14px;border-radius:999px;cursor:pointer;font-family:inherit;text-align:left;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--ink)
+}
+.img-model-pill:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
+.img-model.is-open .img-model-pill{border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.14)}
+.img-model-mark{
+  width:22px;height:22px;border-radius:7px;flex-shrink:0;display:grid;place-items:center;
+  background:rgba(var(--glow),.16);border:1px solid rgba(var(--glow),.32);color:var(--a1)
+}
+.img-model-mark svg{width:12px;height:12px}
+.img-model-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.img-model-name{font-size:.84rem;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.img-model-meta{font-size:.68rem;color:var(--text-label);font-weight:550}
+.img-model-chev{flex-shrink:0;opacity:.55;transition:transform .15s}
+.img-model.is-open .img-model-chev{transform:rotate(180deg)}
+.img-model-menu{
+  display:none;position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:20;
+  max-height:320px;overflow:auto;padding:8px;border-radius:16px;
+  background:#121214;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 48px rgba(0,0,0,.55)
+}
+.img-model.is-open .img-model-menu{display:block}
+.img-model-group{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38);padding:8px 10px 4px}
+.img-model-opt{
+  width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:10px;
+  background:transparent;color:var(--ink);cursor:pointer;font-family:inherit;text-align:left
+}
+.img-model-opt:hover{background:rgba(255,255,255,.06)}
+.img-model-opt.is-on{background:rgba(var(--glow),.12)}
+.img-model-opt b{display:block;font-size:.8rem;font-weight:700}
+.img-model-opt span{display:block;font-size:.68rem;color:rgba(255,255,255,.48);font-weight:500}
 .img-results{min-height:calc(100vh - 180px)}
 .img-skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 .clip-shell{max-width:var(--page-max-wide);margin:0 auto;width:100%}
@@ -2297,6 +2331,23 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
             <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('A cinematic mountain landscape at golden hour, 4k')">Mountain landscape</button>
             <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Neon city street at night, rain reflections, photorealistic')">Neon city night</button>
             <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Minimal product shot on dark slate, soft studio light')">Product still</button>
+          </div>
+          <div class="field">
+            <label>AI model</label>
+            <div class="img-model" id="img-model-wrap">
+              <input type="hidden" id="img-model" value="nano-banana">
+              <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
+                <span class="img-model-mark" aria-hidden="true">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </span>
+                <span class="img-model-copy">
+                  <span class="img-model-name" id="img-model-name">Nano Banana</span>
+                  <span class="img-model-meta" id="img-model-meta">Google · fast, strong text</span>
+                </span>
+                <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Image generation models"></div>
+            </div>
           </div>
           <div class="field">
             <label>Aspect ratio</label>
@@ -6847,6 +6898,82 @@ window.burnCaptions = async () => {
 }
 
 // ── IMAGE GEN ─────────────────────────────────────────────────────────────────
+const IMG_MODEL_KEY = 'vidso_img_model'
+const IMG_MODELS = [
+  { id: 'nano-banana', name: 'Nano Banana', group: 'Google', hint: 'Fast, strong text' },
+  { id: 'nano-banana-2', name: 'Nano Banana 2', group: 'Google', hint: 'Higher quality, consistent' },
+  { id: 'nano-banana-pro', name: 'Nano Banana Pro', group: 'Google', hint: '4K, best text & detail' },
+  { id: 'imagen-4', name: 'Imagen 4', group: 'Google', hint: 'Photoreal stills' },
+  { id: 'flux-schnell', name: 'FLUX.1 Schnell', group: 'Black Forest Labs', hint: 'Fast drafts' },
+  { id: 'flux-dev', name: 'FLUX.1 Dev', group: 'Black Forest Labs', hint: 'Balanced quality' },
+  { id: 'flux-pro', name: 'FLUX.1 Pro', group: 'Black Forest Labs', hint: 'Photoreal, detailed' },
+  { id: 'flux-2', name: 'FLUX.2', group: 'Black Forest Labs', hint: 'Latest FLUX' },
+  { id: 'gpt-image-1', name: 'GPT Image', group: 'OpenAI', hint: 'Instruction-following' },
+  { id: 'gpt-image-1.5', name: 'GPT Image 1.5', group: 'OpenAI', hint: 'Sharper edits & text' },
+  { id: 'gpt-image-2', name: 'GPT Image 2', group: 'OpenAI', hint: 'Highest GPT quality' },
+  { id: 'seedream-4.5', name: 'Seedream 4.5', group: 'ByteDance', hint: 'Cinematic stills' },
+  { id: 'seedream-5', name: 'Seedream 5.0', group: 'ByteDance', hint: 'Latest Seedream' },
+  { id: 'grok-imagine', name: 'Grok Imagine', group: 'xAI', hint: 'Stylized, punchy' },
+  { id: 'ideogram-3', name: 'Ideogram 3', group: 'Ideogram', hint: 'Best for titles & type' },
+  { id: 'recraft-v3', name: 'Recraft V3', group: 'Recraft', hint: 'Design & illustration' },
+  { id: 'qwen-image', name: 'Qwen Image', group: 'Alibaba', hint: 'Fast generalist' },
+  { id: 'sd3.5', name: 'Stable Diffusion 3.5', group: 'Stability', hint: 'Open, versatile' },
+]
+
+function imgModelById(id) {
+  return IMG_MODELS.find((m) => m.id === id) || IMG_MODELS[0]
+}
+
+function closeImgModelMenu() {
+  const wrap = document.getElementById('img-model-wrap')
+  const btn = document.getElementById('img-model-btn')
+  if (!wrap) return
+  wrap.classList.remove('is-open')
+  if (btn) btn.setAttribute('aria-expanded', 'false')
+}
+
+window.toggleImgModelMenu = () => {
+  const wrap = document.getElementById('img-model-wrap')
+  const btn = document.getElementById('img-model-btn')
+  if (!wrap) return
+  const open = !wrap.classList.contains('is-open')
+  wrap.classList.toggle('is-open', open)
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+}
+
+window.setImgModel = (id) => {
+  const model = imgModelById(id)
+  const input = document.getElementById('img-model')
+  const name = document.getElementById('img-model-name')
+  const meta = document.getElementById('img-model-meta')
+  if (input) input.value = model.id
+  if (name) name.textContent = model.name
+  if (meta) meta.textContent = model.group + ' · ' + model.hint.toLowerCase()
+  document.querySelectorAll('#img-model-menu .img-model-opt').forEach((el) => {
+    el.classList.toggle('is-on', el.dataset.id === model.id)
+  })
+  try { localStorage.setItem(IMG_MODEL_KEY, model.id) } catch (_) {}
+  closeImgModelMenu()
+}
+
+function renderImgModelMenu() {
+  const menu = document.getElementById('img-model-menu')
+  if (!menu) return
+  let last = ''
+  menu.innerHTML = IMG_MODELS.map((m) => {
+    const head = m.group !== last ? `<div class="img-model-group">${m.group}</div>` : ''
+    last = m.group
+    return `${head}<button type="button" class="img-model-opt" role="option" data-id="${m.id}" onclick="setImgModel('${m.id}')"><span><b>${m.name}</b><span>${m.hint}</span></span></button>`
+  }).join('')
+}
+
+function initImgModelPicker() {
+  renderImgModelMenu()
+  let saved = ''
+  try { saved = localStorage.getItem(IMG_MODEL_KEY) || '' } catch (_) {}
+  setImgModel(saved || 'nano-banana')
+}
+
 window.fillImgPrompt = (text) => {
   const el = document.getElementById('img-prompt')
   if (el) el.value = text
@@ -6879,6 +7006,7 @@ window.generateImage = async () => {
   try {
     const data = await api.generate.image({
       prompt,
+      model: document.getElementById('img-model')?.value || 'nano-banana',
       aspect_ratio: document.getElementById('img-ratio').value,
       num_images:   count,
     })
@@ -6975,6 +7103,14 @@ function setStatus(id, msg, type) {
   }
 }
 
+initImgModelPicker()
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('img-model-wrap')
+  if (wrap && wrap.classList.contains('is-open') && !wrap.contains(e.target)) closeImgModelMenu()
+})
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeImgModelMenu()
+})
 checkAuth()
 
 // ── VIDEO CLIPPER ─────────────────────────────────────────────────────────────
