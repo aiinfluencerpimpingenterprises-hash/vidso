@@ -45,24 +45,37 @@
     var ids = []
     var parts = token.split('.')
     if (parts[1]) {
-      var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
-      ;[payload.email, payload.user_email, payload.sub].forEach(function (v) {
+      var json = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+      try { json = decodeURIComponent(escape(json)) } catch (e2) {}
+      var payload = JSON.parse(json)
+      ;[payload.email, payload.user_email, payload.sub, payload.user_id].forEach(function (v) {
         var s = String(v || '').trim().toLowerCase()
         if (s && ids.indexOf(s) === -1) ids.push(s)
       })
     }
-    for (var i = 0; i < ids.length; i++) {
-      if (localStorage.getItem('vidso_onboarding_v3_seen:' + ids[i]) === '1') obSeen = true
-    }
+    var store = []
+    try { store = JSON.parse(localStorage.getItem('vidso_ob_v3_ids') || '[]') || [] } catch (e3) { store = [] }
+    var cookieIds = []
     var cm = document.cookie.match(/(?:^|; )vidso_ob_v3=([^;]*)/)
-    if (cm && ids.length) {
-      var seenIds = decodeURIComponent(cm[1]).split('|')
-      for (var j = 0; j < ids.length; j++) {
-        if (seenIds.indexOf(ids[j]) !== -1) obSeen = true
-      }
+    if (cm) cookieIds = decodeURIComponent(cm[1]).split('|').filter(Boolean)
+    function hasSeenId(id) {
+      if (!id) return false
+      if (localStorage.getItem('vidso_onboarding_v3_seen:' + id) === '1') return true
+      if (store.indexOf(id) !== -1) return true
+      if (cookieIds.indexOf(id) !== -1) return true
+      try {
+        var a = JSON.parse(localStorage.getItem('vidso_onboarding_answers:' + id) || 'null')
+        if (a && (a.status === 'completed' || a.status === 'skipped')) return true
+      } catch (e4) {}
+      return false
     }
+    for (var i = 0; i < ids.length; i++) {
+      if (hasSeenId(ids[i])) obSeen = true
+    }
+    // Fresh signup must still see onboarding even if another account used this browser.
+    if (needOb && !obSeen) obSeen = false
   } catch (e) {}
-  if (needOb || !obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
+  if (!obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
   else if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
 })()
 </script>
@@ -4007,7 +4020,10 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan() || !paywallOn())
-  if (obHasSeen()) _obDoneThisSession = true
+  if (obHasSeen()) {
+    _obDoneThisSession = true
+    obMarkSeen()
+  }
   if (tourHasSeen()) _tourDoneThisSession = true
   const pendingOb = obForcePreview() || obShouldAutoOpen()
   if (pendingOb) {
@@ -4017,14 +4033,14 @@ function afterAuthReady(opts = {}) {
     hideModal()
     populateUser()
     maybeShowOnboarding()
-    try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
+    obClearNeedFlag()
     loadUsage()
     loadVoices()
     loadFiles()
     if (opts.restoreRoute) restorePanelFromHash()
     return
   }
-  try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
+  obClearNeedFlag()
   hideModal()
   populateUser()
   loadUsage()
@@ -4070,10 +4086,21 @@ function userStubFromToken() {
 
 function revealOnboardingNow() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) return
+  if (obHasSeen() && !obForcePreview()) {
+    obClearNeedFlag()
+    document.documentElement.classList.remove('needs-onboarding', 'needs-gate')
+    const modal = document.getElementById('onboarding-modal')
+    if (modal) modal.classList.add('hidden')
+    document.body.classList.remove('onboarding-open')
+    return
+  }
   const stub = userStubFromToken()
   if (stub && !currentUser) currentUser = stub
-  const pending = obForcePreview() || document.documentElement.classList.contains('needs-onboarding') || obShouldAutoOpen()
-  if (!pending) return
+  const pending = obForcePreview() || obShouldAutoOpen()
+  if (!pending) {
+    document.documentElement.classList.remove('needs-onboarding')
+    return
+  }
   maybeShowOnboarding()
 }
 
@@ -4468,25 +4495,32 @@ function obCookieWrite(keys) {
     const domain = (host === 'vidso.pro' || host.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
     const secure = location.protocol === 'https:' ? '; Secure' : ''
     document.cookie = 'vidso_ob_v3=' + encodeURIComponent(all.join('|')) + '; Path=/; Max-Age=31536000; SameSite=Lax' + domain + secure
+    localStorage.setItem('vidso_ob_v3_ids', JSON.stringify(all))
   } catch (_) {}
 }
 function obHasSeen() {
   try {
     const keys = obIdentityKeys()
-    if (keys.some((k) => localStorage.getItem(obSeenKey(k)) === '1')) return true
+    let store = []
+    try { store = JSON.parse(localStorage.getItem('vidso_ob_v3_ids') || '[]') || [] } catch (_) { store = [] }
     const cookieKeys = obCookieRead()
-    if (keys.some((k) => cookieKeys.includes(k))) return true
+    if (keys.some((k) => localStorage.getItem(obSeenKey(k)) === '1')) return true
+    if (keys.some((k) => store.includes(k) || cookieKeys.includes(k))) return true
     for (const k of keys) {
       const a = JSON.parse(localStorage.getItem(obAnswersKey(k)) || 'null')
-      if (a && (a.status || a.goal || a.niche || a.format)) return true
+      if (a && (a.status === 'completed' || a.status === 'skipped')) return true
     }
   } catch (_) {}
   return false
+}
+function obClearNeedFlag() {
+  try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
 }
 function obMarkSeen() {
   const keys = obIdentityKeys()
   try { keys.forEach((k) => localStorage.setItem(obSeenKey(k), '1')) } catch (_) {}
   obCookieWrite(keys)
+  obClearNeedFlag()
 }
 function obFinishStep() {
   _obDoneThisSession = true
@@ -4501,7 +4535,10 @@ function obLoadAnswers() {
 }
 function obSaveAnswers(patch) {
   const next = Object.assign({}, obLoadAnswers(), patch || {}, { updatedAt: Date.now() })
-  try { localStorage.setItem(obAnswersKey(), JSON.stringify(next)) } catch (_) {}
+  const raw = JSON.stringify(next)
+  try {
+    obIdentityKeys().forEach((k) => localStorage.setItem(obAnswersKey(k), raw))
+  } catch (_) {}
   return next
 }
 function obNicheOther() {
@@ -4720,6 +4757,7 @@ window.closeOnboarding = () => {
   modal.classList.add('hidden')
   document.body.classList.remove('onboarding-open')
   document.documentElement.classList.remove('needs-onboarding')
+  obClearNeedFlag()
   if (!(typeof introPending === 'function' && introPending())) {
     document.documentElement.classList.remove('needs-gate')
   }
