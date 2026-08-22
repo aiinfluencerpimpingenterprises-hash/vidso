@@ -2335,14 +2335,14 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <div class="field">
             <label>AI model</label>
             <div class="img-model" id="img-model-wrap">
-              <input type="hidden" id="img-model" value="nano-banana">
+              <input type="hidden" id="img-model" value="nano-banana-pro">
               <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
                 <span class="img-model-mark" aria-hidden="true">
                   <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                 </span>
                 <span class="img-model-copy">
-                  <span class="img-model-name" id="img-model-name">Nano Banana</span>
-                  <span class="img-model-meta" id="img-model-meta">Google · fast, strong text</span>
+                  <span class="img-model-name" id="img-model-name">Nano Banana Pro</span>
+                  <span class="img-model-meta" id="img-model-meta">Google · 2k, best text &amp; detail</span>
                 </span>
                 <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
@@ -3887,6 +3887,7 @@ import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
+import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
 
 window._api = api
 window._setSession = setSession
@@ -4256,7 +4257,8 @@ document.addEventListener('keydown', (e) => {
 // Persistence:
 //   vidso_onboarding_v3_seen:<userKey>  -> "1" when completed or skipped (once per account on this browser)
 //   vidso_onboarding_answers:<userKey>  -> JSON snapshot of Q&A
-// Auto-open only the first time after signup. Replay with ?onboarding=1.
+// Auto-open only the first time after signup (marked as soon as the flow opens).
+// Replay with ?onboarding=1. Shared across vidso.pro / www via cookie.
 // userKey = currentUser.email || currentUser.id || 'anon'
 // No /api/user profile write endpoint exists in this repo; do not invent a silent backend save.
 const OB_STEPS = 6
@@ -6957,29 +6959,10 @@ window.burnCaptions = async () => {
 
 // ── IMAGE GEN ─────────────────────────────────────────────────────────────────
 const IMG_MODEL_KEY = 'vidso_img_model'
-const IMG_MODELS = [
-  { id: 'nano-banana', name: 'Nano Banana', group: 'Google', hint: 'Fast, strong text' },
-  { id: 'nano-banana-2', name: 'Nano Banana 2', group: 'Google', hint: 'Higher quality, consistent' },
-  { id: 'nano-banana-pro', name: 'Nano Banana Pro', group: 'Google', hint: '4K, best text & detail' },
-  { id: 'imagen-4', name: 'Imagen 4', group: 'Google', hint: 'Photoreal stills' },
-  { id: 'flux-schnell', name: 'FLUX.1 Schnell', group: 'Black Forest Labs', hint: 'Fast drafts' },
-  { id: 'flux-dev', name: 'FLUX.1 Dev', group: 'Black Forest Labs', hint: 'Balanced quality' },
-  { id: 'flux-pro', name: 'FLUX.1 Pro', group: 'Black Forest Labs', hint: 'Photoreal, detailed' },
-  { id: 'flux-2', name: 'FLUX.2', group: 'Black Forest Labs', hint: 'Latest FLUX' },
-  { id: 'gpt-image-1', name: 'GPT Image', group: 'OpenAI', hint: 'Instruction-following' },
-  { id: 'gpt-image-1.5', name: 'GPT Image 1.5', group: 'OpenAI', hint: 'Sharper edits & text' },
-  { id: 'gpt-image-2', name: 'GPT Image 2', group: 'OpenAI', hint: 'Highest GPT quality' },
-  { id: 'seedream-4.5', name: 'Seedream 4.5', group: 'ByteDance', hint: 'Cinematic stills' },
-  { id: 'seedream-5', name: 'Seedream 5.0', group: 'ByteDance', hint: 'Latest Seedream' },
-  { id: 'grok-imagine', name: 'Grok Imagine', group: 'xAI', hint: 'Stylized, punchy' },
-  { id: 'ideogram-3', name: 'Ideogram 3', group: 'Ideogram', hint: 'Best for titles & type' },
-  { id: 'recraft-v3', name: 'Recraft V3', group: 'Recraft', hint: 'Design & illustration' },
-  { id: 'qwen-image', name: 'Qwen Image', group: 'Alibaba', hint: 'Fast generalist' },
-  { id: 'sd3.5', name: 'Stable Diffusion 3.5', group: 'Stability', hint: 'Open, versatile' },
-]
+const IMG_MODELS = IMAGE_MODELS
 
 function imgModelById(id) {
-  return IMG_MODELS.find((m) => m.id === id) || IMG_MODELS[0]
+  return imageModelById(id)
 }
 
 function closeImgModelMenu() {
@@ -7029,7 +7012,7 @@ function initImgModelPicker() {
   renderImgModelMenu()
   let saved = ''
   try { saved = localStorage.getItem(IMG_MODEL_KEY) || '' } catch (_) {}
-  setImgModel(saved || 'nano-banana')
+  setImgModel(IMG_MODELS.some((m) => m.id === saved) ? saved : DEFAULT_IMAGE_MODEL)
 }
 
 window.fillImgPrompt = (text) => {
@@ -7064,7 +7047,7 @@ window.generateImage = async () => {
   try {
     const data = await api.generate.image({
       prompt,
-      model: document.getElementById('img-model')?.value || 'nano-banana',
+      model: document.getElementById('img-model')?.value || DEFAULT_IMAGE_MODEL,
       aspect_ratio: document.getElementById('img-ratio').value,
       num_images:   count,
     })

@@ -48,6 +48,36 @@ async function req(method, path, body, isFormData = false) {
   return reqTo(BASE + path, method, body, isFormData)
 }
 
+function sameOriginApi(path) {
+  try {
+    if (typeof location !== 'undefined' && /^https?:/.test(location.origin)) return location.origin + path
+  } catch (_) {}
+  return ''
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function generateImageFal(body) {
+  const startUrl = sameOriginApi('/api/generate/image')
+  if (!startUrl) throw new Error('Image generation is only available on the live app.')
+  const start = await reqTo(startUrl, 'POST', body)
+  if (Array.isArray(start.urls) && start.urls.length) return start
+  if (!start.statusUrl || !start.responseUrl) throw new Error('Fal did not start the image job.')
+  const pollUrl = sameOriginApi('/api/generate/image-status')
+  const deadline = Date.now() + 180000
+  while (Date.now() < deadline) {
+    await sleep(1800)
+    const st = await reqTo(pollUrl, 'POST', {
+      statusUrl: start.statusUrl,
+      responseUrl: start.responseUrl,
+    })
+    if (st.done && Array.isArray(st.urls) && st.urls.length) return st
+  }
+  throw new Error('Timed out waiting for the image. Try again.')
+}
+
 function gateUrl(path) {
   const origin = (typeof location !== 'undefined' && /^https?:/.test(location.origin)) ? location.origin : ''
   if (!origin) return ''
@@ -168,7 +198,7 @@ export const api = {
     deleteVo: (id)    => req('DELETE', `/api/tts/library/${id}`),
   },
   generate: {
-    image: (body) => req('POST', '/api/generate/image', body),
+    image: (body) => generateImageFal(body),
   },
   transcribe: {
     start: (file_url) => req('POST', '/api/transcribe', { file_url }),
