@@ -22,10 +22,6 @@
       "destination": "/dashboard/index.html"
     },
     {
-      "source": "/upscale",
-      "destination": "/dashboard/index.html"
-    },
-    {
       "source": "/tools",
       "destination": "/dashboard/index.html"
     },
@@ -93,6 +89,16 @@
     {
       "source": "/index.html",
       "destination": "/home",
+      "permanent": false
+    },
+    {
+      "source": "/upscale",
+      "destination": "/dashboard",
+      "permanent": false
+    },
+    {
+      "source": "/upscale/",
+      "destination": "/dashboard",
       "permanent": false
     },
     {

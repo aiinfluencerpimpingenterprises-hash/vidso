@@ -2183,11 +2183,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
       <span class="nav-item-label">Video Generation</span>
     </button>
-    <button class="nav-item" id="nav-upscale" data-panel="upscale" onclick="switchPanel('upscale',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
-      <span class="nav-item-label">Upscale</span>
-      <span class="badge-soon">Soon</span>
-    </button>
     <div class="nav-section"><span class="nav-section-label">Workspace</span></div>
     <button class="nav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
@@ -3791,23 +3786,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       </div>
     </div>
 
-    <div class="panel content-glow" id="panel-upscale">
-      <div class="page-shell">
-        <div class="page-header">
-          <h2>Upscale</h2>
-          <p>Enhance clips and stills with AI upscaling.</p>
-        </div>
-        <div class="upscale-soon">
-          <div class="ui-empty-icon" aria-hidden="true">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          </div>
-          <div class="ui-empty-title">Upscale is on the way</div>
-          <div class="ui-empty-sub">Enhance clips and stills with AI upscaling. Same quality pipeline as the rest of Vidso.</div>
-          <button type="button" class="btn btn-ghost" disabled>Coming soon</button>
-        </div>
-      </div>
-    </div>
-
     <div class="panel content-glow" id="panel-tools">
       <div class="tools-page">
         <div class="page-header">
@@ -5072,17 +5050,7 @@ const UI_TOUR_STEPS = [
     panel: 'imagegen'
   },
   {
-    id: 'upscale',
-    kicker: 'Long form',
-    title: 'Upscale',
-    body: 'AI upscaling for clips and stills. Listed here so you know where it will live — not available yet.',
-    selector: '#nav-upscale',
-    needsNav: true,
-    panel: 'upscale'
-  },
-  {
     id: 'tools-create',
-    kicker: 'Workspace',
     title: 'Create tools',
     body: 'AI Captions (transcribe and burn-in), AI Voiceover (ElevenLabs), and AI Reframe (auto 9:16).',
     selector: '#tools-group-create',
@@ -5714,19 +5682,20 @@ function populateUser() {
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
 const titles = {
   home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Video Generation', upscale:'Upscale', tools:'Tools', dashboard:'Dashboard',
+  videogen:'Video Generation', tools:'Tools', dashboard:'Dashboard',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
   home:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', upscale:'/upscale', tools:'/tools', dashboard:'/dashboard',
+  videogen:'/video-generation', tools:'/tools', dashboard:'/dashboard',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 PATH_TO_PANEL['/analytics'] = 'dashboard'
 PATH_TO_PANEL['/overview'] = 'dashboard'
+PATH_TO_PANEL['/upscale'] = 'dashboard'
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
@@ -5748,7 +5717,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     openPaywall({ force: true })
     return
   }
-  const panelFeature = { editor: 'video_tools', upscale: 'video_tools' }[id]
+  const panelFeature = { editor: 'video_tools' }[id]
   if (panelFeature && currentUser && hasActivePlan()) {
     const gate = evaluateFeature({ user: currentUser, feature: panelFeature })
     if (!gate.ok) {
@@ -5769,7 +5738,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen','upscale'].includes(id)
+    const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
   }
