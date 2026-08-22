@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  var h = location.hash || ''
+  var s = location.search || ''
+  if (/access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)) {
+    location.replace('/login' + s + h)
+  } else if (/(?:[?&])(?:billing=success|status=success)/.test(s)) {
+    location.replace('/dashboard' + s + h)
+  }
+})()
+</script>
 <title>Vidso · AI Long-Form Video Generator for YouTube</title>
 <meta name="description" content="Vidso is an AI long-form video generator for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
 <link rel="canonical" href="https://vidso.pro/home">
@@ -336,14 +347,15 @@
   .bill-tg.active{background:transparent;color:var(--txt)}
   .bill-tg .save{font-size:11px;font-weight:700;background:rgba(34,197,94,.14);color:#4ade80;padding:2px 8px;border-radius:99px;transition:background .25s ease,color .25s ease}
   .bill-tg.active .save{background:rgba(255,255,255,.18);color:#fff}
-  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;align-items:stretch}
-  .plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:34px;position:relative;display:flex;flex-direction:column;transition:border-color .25s,box-shadow .25s}
+  .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:48px;align-items:stretch}
+  .plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:34px;position:relative;display:flex;flex-direction:column;transition:border-color .25s,box-shadow .25s;min-width:0}
   .plan:hover{border-color:var(--line-2)}
   .plan.pop{border-color:var(--blue);box-shadow:0 0 0 1px rgba(var(--glow),.35),0 18px 48px rgba(var(--glow),.12)}
-  .plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;border:none;font-size:11px;font-weight:700;padding:5px 15px;border-radius:99px;letter-spacing:.05em}
+  .plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;border:none;font-size:11px;font-weight:700;padding:5px 15px;border-radius:99px;letter-spacing:.05em;visibility:hidden;white-space:nowrap}
+  .plan.pop .tag{visibility:visible}
   .plan .tag-soft{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.08);border:1px solid var(--line-2);color:var(--muted);font-size:11px;font-weight:700;padding:5px 15px;border-radius:99px;letter-spacing:.04em}
   .plan .pn{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
-  .plan .pd{font-size:13.5px;color:var(--faint);margin-top:8px;line-height:1.45;min-height:2.7em}
+  .plan .pd{font-size:13.5px;color:var(--faint);margin-top:8px;line-height:1.45;min-height:3.2em}
   .plan .price{margin:22px 0 4px;font-size:46px;font-weight:800;letter-spacing:-.045em;line-height:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .plan .price .was{font-size:18px;font-weight:600;color:var(--faint);text-decoration:line-through;letter-spacing:0;display:none}
   .plan.is-annual .price .was{display:inline}
@@ -356,18 +368,29 @@
   .plan .metrics{display:flex;flex-direction:column;gap:10px;padding:14px 0 4px;margin-bottom:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .plan .metric{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--muted)}
   .plan .metric strong{font-size:15px;font-weight:750;color:var(--txt);letter-spacing:-.01em}
-  .plan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin-top:18px;margin-bottom:0;flex:1}
-  .plan li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--txt);line-height:1.35}
-  .plan li.off{color:var(--faint)}
-  .plan li svg{width:16px;height:16px;color:var(--blue);flex-shrink:0;margin-top:2px}
-  .plan li.off svg{color:var(--faint)}
+  .plan .metric strong.hl{color:#FE0C30}
+  .plan .feat{list-style:none;display:grid;grid-template-rows:repeat(17,minmax(2.75em,auto));gap:0;margin-top:18px;margin-bottom:0;flex:1;padding:0}
+  .plan .feat-row{display:grid;grid-template-columns:16px minmax(0,1fr) auto;column-gap:10px;align-items:start;font-size:13.5px;color:var(--txt);line-height:1.35;padding-top:10px;min-height:2.75em}
+  .plan .feat-row.off{color:var(--faint);opacity:.55}
+  .plan .feat-row.off .feat-label,.plan .feat-row.off .feat-val{text-decoration:line-through}
+  .plan .feat-row svg{width:16px;height:16px;color:var(--blue);flex-shrink:0;margin-top:2px}
+  .plan .feat-row.off svg{color:var(--faint)}
+  .plan .feat-val{text-align:right;font-weight:650;color:var(--txt);padding-left:8px}
+  .plan .feat-row.off .feat-val{color:inherit}
   .plan .btn{width:100%;margin-bottom:0;margin-top:4px}
   .plan.pop .btn{background:var(--grad);color:#fff}
   .plan.pop .btn:hover{box-shadow:0 10px 28px rgba(var(--glow),.26)}
   .plan:not(.pop) .btn{background:rgba(255,255,255,.05);border:1px solid var(--line-2);color:#fff}
   .under-plans{text-align:center;font-size:13px;color:var(--faint);margin-top:28px;display:flex;align-items:center;justify-content:center;gap:8px}
   .under-plans svg{width:14px;height:14px;color:var(--blue);flex-shrink:0}
-  @media(max-width:820px){.plans{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}.plan .pd{min-height:0}}
+  @media(min-width:821px){
+    .plans{grid-template-rows:auto auto auto auto auto auto repeat(17,minmax(2.75em,auto));column-gap:16px;row-gap:0}
+    .plan{display:grid;grid-template-rows:subgrid;grid-row:span 23;align-content:start}
+    .plan > .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%)}
+    .plan .feat{display:contents}
+    .plan .feat-row{margin:0}
+  }
+  @media(max-width:820px){.plans{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}.plan .pd{min-height:0}.plan .feat{display:flex;flex-direction:column;grid-template-rows:none}.plan .feat-row{min-height:0}}
 
   /* ---------- faq ---------- */
   .faq{padding:40px 0 100px}
@@ -661,26 +684,26 @@
         {
           "@type": "Offer",
           "name": "Plus",
-          "price": "49.00",
+          "price": "14.99",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Plus plan: from $49/mo billed annually ($70/mo monthly). 30 long-form videos, 300 credits, script-to-video workflow."
+          "description": "Plus plan: $14.99/mo billed annually ($70/mo monthly). 10 long-form videos, 15 short-form videos."
         },
         {
           "@type": "Offer",
           "name": "Pro",
-          "price": "69.00",
+          "price": "24.99",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Pro: from $69/mo billed annually ($99/mo monthly). 100 long-form videos, 1,000 credits, video tools + priority."
+          "description": "Pro: $24.99/mo billed annually ($99/mo monthly). 25 long-form videos, 30 short-form videos."
         },
         {
           "@type": "Offer",
           "name": "Studio",
-          "price": "105.00",
+          "price": "29.99",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Studio: from $105/mo billed annually ($150/mo monthly). Unlimited long-form, unlimited credits, retention score."
+          "description": "Studio: $29.99/mo billed annually ($150/mo monthly). Unlimited long-form videos, unlimited short-form videos."
         }
       ]
     },
@@ -1470,129 +1493,16 @@
       <div class="bill-toggle" id="billToggle">
         <span class="bill-thumb" id="billThumb" aria-hidden="true"></span>
         <button type="button" class="bill-tg active" data-cycle="monthly">Monthly</button>
-        <button type="button" class="bill-tg" data-cycle="annual">Annual <span class="save">Save 30%</span></button>
+        <button type="button" class="bill-tg" data-cycle="annual">Annual <span class="save">Save</span></button>
       </div>
     </div>
-    <div class="plans">
-      <div class="plan">
-        <div class="pn">Plus</div>
-        <div class="pd">For creators building a steady faceless YouTube workflow.</div>
-        <div class="price">
-          <span class="was">$70</span>
-          <span class="amt" data-m="70" data-a="49">$70</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-a="Billed $588 yearly">Billed monthly</div>
-        <button class="btn" onclick="location.href='/signup'">Get Plus →</button>
-        <div class="metrics">
-          <div class="metric"><span>Long-form videos</span><strong>30 / month</strong></div>
-          <div class="metric"><span>Credits</span><strong>300 / month</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Script → voiceover → B-roll → captions</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Max video length: 15 min</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Standard queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Image tools</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Clipping &amp; ranking tools</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Video tools</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Priority queue</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Retention score on long-form</li>
-        </ul>
-      </div>
-      <div class="plan pop">
-        <span class="tag">Most popular</span>
-        <div class="pn">Pro</div>
-        <div class="pd">For creators publishing more formats and weekly volume.</div>
-        <div class="price">
-          <span class="was">$99</span>
-          <span class="amt" data-m="99" data-a="69">$99</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-a="Billed $828 yearly">Billed monthly</div>
-        <button class="btn" onclick="location.href='/signup'">Get Pro →</button>
-        <div class="metrics">
-          <div class="metric"><span>Long-form videos</span><strong>100 / month</strong></div>
-          <div class="metric"><span>Credits</span><strong>1,000 / month</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Plus</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Max video length: 20 min</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Video tools</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Priority queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Faster rendering queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Viral moment clipping</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Unlimited credits</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg> Retention score on long-form</li>
-        </ul>
-      </div>
-      <div class="plan">
-        <div class="pn">Studio</div>
-        <div class="pd">For high-volume creators chasing monetization.</div>
-        <div class="price">
-          <span class="was">$150</span>
-          <span class="amt" data-m="150" data-a="105">$150</span><span class="per">/mo</span>
-          <span class="pct">30% off</span>
-        </div>
-        <div class="bill" data-m="Billed monthly" data-a="Billed $1,260 yearly">Billed monthly</div>
-        <button class="btn" onclick="location.href='/signup'">Get Studio →</button>
-        <div class="metrics">
-          <div class="metric"><span>Long-form videos</span><strong>Unlimited</strong></div>
-          <div class="metric"><span>Credits</span><strong>Unlimited*</strong></div>
-        </div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Everything in Pro</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Max video length: 30 min</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Fastest queue</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Long-form with retention score</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> High-volume publishing workflow</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Priority support</li>
-        </ul>
-      </div>
-    </div>
+    <div class="plans" id="pricingPlans"></div>
     <p class="under-plans">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>
-      Cancel anytime. No hidden fees.*
+      Cancel anytime. No hidden fees.
     </p>
   </div>
 </section>
-
-<script>
-(function(){
-  var root=document.getElementById('billToggle');
-  if(!root) return;
-  var thumb=document.getElementById('billThumb');
-  function moveThumb(btn){
-    if(!thumb||!btn) return;
-    var pad=4;
-    thumb.style.width=btn.offsetWidth+'px';
-    thumb.style.transform='translateX('+(btn.offsetLeft-pad)+'px)';
-  }
-  function applyCycle(cycle){
-    var annual=cycle==='annual';
-    var key=annual?'data-a':'data-m';
-    document.querySelectorAll('#pricing .plan').forEach(function(card){
-      card.classList.toggle('is-annual', annual);
-    });
-    document.querySelectorAll('#pricing .amt').forEach(function(a){ a.textContent='$'+a.getAttribute(key); });
-    document.querySelectorAll('#pricing .bill').forEach(function(x){ x.textContent=x.getAttribute(key); });
-  }
-  function sync(){
-    var on=root.querySelector('.bill-tg.active')||root.querySelector('.bill-tg');
-    moveThumb(on);
-  }
-  root.querySelectorAll('.bill-tg').forEach(function(b){
-    b.addEventListener('click',function(){
-      root.querySelectorAll('.bill-tg').forEach(function(x){x.classList.remove('active');});
-      b.classList.add('active');
-      moveThumb(b);
-      applyCycle(b.getAttribute('data-cycle'));
-    });
-  });
-  window.addEventListener('resize',sync);
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(sync);}
-  requestAnimationFrame(sync);
-})();
-</script>
 
 <!-- FAQ -->
 <section class="faq" id="faq">
@@ -1979,6 +1889,23 @@
 })();
 </script>
 
+<script type="module">
+import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
+const plans = document.getElementById('pricingPlans')
+mountPricing(plans, { variant: 'landing' })
+bindLandingToggle(document.getElementById('billToggle'), plans)
+if ((location.pathname || '').replace(/\/+$/, '') === '/pricing') {
+  document.getElementById('pricing')?.scrollIntoView({ behavior: 'auto', block: 'start' })
+}
+if (window.gsap) {
+  window.gsap.utils.toArray('#pricingPlans .plan').forEach(function(el, i){
+    window.gsap.from(el, {
+      y: 36, opacity: 0, duration: .7, ease: 'power3.out', delay: (i % 3) * .08,
+      scrollTrigger: { trigger: el, start: 'top 88%' }
+    })
+  })
+}
+</script>
 <script src="/topo-bg.js"></script>
 </body>
 </html>

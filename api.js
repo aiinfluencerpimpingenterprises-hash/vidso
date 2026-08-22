@@ -1,3 +1,7 @@
+import { WHOP_CHECKOUT } from '/lib/whop-map.js'
+import { normalizeTier } from '/lib/entitlements.js'
+import { quotaView, unlockCopy } from '/lib/quota.js'
+
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
 // Google OAuth starts here; tokens return to the app via redirect hash/query.
@@ -13,14 +17,14 @@ function clearSession() {
   localStorage.removeItem('clipzo_refresh')
 }
 
-async function req(method, path, body, isFormData = false) {
+async function reqTo(url, method, body, isFormData = false) {
   const token = getToken()
   const headers = {}
   if (token) headers['Authorization'] = `Bearer ${token}`
   if (!isFormData) headers['Content-Type'] = 'application/json'
   let res
   try {
-    res = await fetch(BASE + path, {
+    res = await fetch(url, {
       method,
       headers,
       body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
@@ -30,27 +34,102 @@ async function req(method, path, body, isFormData = false) {
   }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    // 402 = paid-only gate (no active plan or monthly quota used up). Surface a
-    // structured error so the UI can show an upgrade prompt instead of a raw message.
     const err = new Error(data.message || data.error || 'Request failed')
     err.status = res.status
-    err.code = data.error // 'no_active_plan' | 'quota_exceeded' | ...
+    err.code = data.error
     err.needsPlan = res.status === 402
+    err.needsUpgrade = res.status === 403
     throw err
   }
   return data
 }
 
-// Your 6 Whop checkout links. After creating the plans in Whop, copy each plan's
-// public checkout URL and paste it here. Used by the pricing buttons + upgrade prompts.
-const WHOP_CHECKOUT = {
-  // Plus / Pro / Studio — wired to live Whop checkout plans.
-  starter_monthly:  'https://whop.com/checkout/plan_2PQXzyYrseWZ6', // Vidso Plus $70/mo
-  starter_yearly:   'https://whop.com/checkout/plan_5FMFAYw0z7AbJ', // Vidso Plus $588/yr
-  creator_monthly:  'https://whop.com/checkout/plan_oYn5KJ7Wnv8NA', // Vidso Pro $99/mo
-  creator_yearly:   'https://whop.com/checkout/plan_PBiAm2SiwS0jR', // Vidso Pro $828/yr
-  business_monthly: 'https://whop.com/checkout/plan_pXuKK8Tk1Aj05', // Vidso Studio $150/mo
-  business_yearly:  'https://whop.com/checkout/plan_7HLlhKgRF0XfQ', // Vidso Studio $1260/yr
+async function req(method, path, body, isFormData = false) {
+  return reqTo(BASE + path, method, body, isFormData)
+}
+
+function gateUrl(path) {
+  const origin = (typeof location !== 'undefined' && /^https?:/.test(location.origin)) ? location.origin : ''
+  if (!origin) return ''
+  return origin + '/api/gate' + String(path || '').replace(/^\/api/, '')
+}
+
+async function gatedReq(method, path, body) {
+  const url = gateUrl(path)
+  if (url) {
+    try {
+      return await reqTo(url, method, body)
+    } catch (e) {
+      if (e.status !== 404) throw e
+    }
+  }
+  return req(method, path, body)
+}
+
+// Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
+
+function appOrigin() {
+  try { return location.origin } catch { return 'https://vidso.pro' }
+}
+
+function emailFromToken() {
+  try {
+    const token = getToken()
+    if (!token) return ''
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return String(payload.email || payload.user_email || '').trim()
+  } catch { return '' }
+}
+
+function formatQuota(me, usage) {
+  return quotaView(me, usage).compact
+}
+
+function planReady(me, expectedTier) {
+  if (!me || me.plan_status !== 'active') return false
+  const want = normalizeTier(expectedTier)
+  if (!want) return true
+  const got = normalizeTier(me.plan || me.plan_tier)
+  if (!got) return true
+  return got === want
+}
+
+function checkoutUrl(tier, interval, opts = {}) {
+  const base = WHOP_CHECKOUT[`${tier}_${interval}`]
+  if (!base) return ''
+  const u = new URL(base)
+  const email = String(opts.email || emailFromToken() || '').trim()
+  const userId = opts.userId ? String(opts.userId) : ''
+  if (email) {
+    u.searchParams.set('email', email)
+    u.searchParams.set('email.disabled', '1')
+  }
+  const ret = `${opts.origin || appOrigin()}/dashboard?billing=success`
+  u.searchParams.set('redirect', ret)
+  u.searchParams.set('return_url', ret)
+  if (userId) u.searchParams.set('metadata[user_id]', userId)
+  if (email) u.searchParams.set('metadata[email]', email)
+  if (tier) u.searchParams.set('metadata[tier]', String(tier))
+  return u.toString()
+}
+
+async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
+  const started = Date.now()
+  let last = null
+  while (Date.now() - started < timeoutMs) {
+    try {
+      last = await req('GET', '/api/user/me')
+      if (typeof onTick === 'function') onTick(last)
+      const active = last?.plan_status === 'active'
+      const ready = planReady(last, expectedTier)
+      const late = active && Date.now() - started > timeoutMs - 10000
+      if (ready || late) return last
+    } catch (e) {
+      if (typeof onTick === 'function') onTick(null, e)
+    }
+    await new Promise(r => setTimeout(r, intervalMs))
+  }
+  return last
 }
 
 export const api = {
@@ -64,7 +143,17 @@ export const api = {
       `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}`,
   },
   user: {
-    me:    () => req('GET', '/api/user/me'),
+    me: async () => {
+      const me = await req('GET', '/api/user/me')
+      try {
+        const u = await gatedReq('GET', '/api/usage')
+        if (u && (u.long_form_used != null || u.short_form_used != null)) {
+          me.long_form_used = u.long_form_used
+          me.short_form_used = u.short_form_used
+        }
+      } catch (_) {}
+      return me
+    },
     usage: () => req('GET', '/api/user/usage'),
   },
   upload: {
@@ -88,7 +177,7 @@ export const api = {
   download: {
     info:      (url) => req('POST', '/api/download/info', { url }),
     search:    (q, limit) => req('POST', '/api/download/search', { q, limit }),
-    analyze:   (url) => req('POST', '/api/download/analyze', { url }),
+    analyze:   (url) => gatedReq('POST', '/api/download/analyze', { url }),
     streamUrl: (url) => `${BASE}/api/download/stream?url=${encodeURIComponent(url)}&token=${encodeURIComponent(getToken())}`,
     clipUrl:   (url, start, end, frame, crop) => {
       const params = [
@@ -103,7 +192,7 @@ export const api = {
     },
   },
   autoclip: {
-    start: (file_url) => req('POST', '/api/autoclip', { file_url }),
+    start: (file_url) => gatedReq('POST', '/api/autoclip', { file_url }),
     poll:  (jobId, count, genre) => req('GET',  `/api/autoclip/${jobId}?count=${count || 5}${genre ? `&genre=${encodeURIComponent(genre)}` : ''}`),
   },
   caption: {
@@ -189,16 +278,16 @@ export const api = {
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
     // body: { topic, duration_id, aspect } → structured script
-    script: (body) => req('POST', '/api/faceless/script', body),
+    script: (body) => gatedReq('POST', '/api/faceless/script', body),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
-    // body: { script, voice_id, aspect } → { jobId }
-    startMedia: (body) => req('POST', '/api/faceless/media', body),
+    // body: { script, voice_id, aspect, duration_id } → { jobId }
+    startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
     // body: { query, aspect } → { clips }
     searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
-    startRender: (body) => req('POST', '/api/faceless/render', body),
+    startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
     pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
     downloadRender: async (jobId) => {
       const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
@@ -216,12 +305,15 @@ export const api = {
   },
   billing: {
     // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
-    checkoutUrl: (tier, interval) => WHOP_CHECKOUT[`${tier}_${interval}`] || WHOP_CHECKOUT.creator_monthly,
-    // True when the user has an active paid plan with quota remaining.
+    checkoutUrl: (tier, interval, opts) => checkoutUrl(tier, interval, opts) || WHOP_CHECKOUT.creator_monthly,
+    waitForProvisioned,
+    formatQuota,
+    quotaView,
+    unlockCopy,
     canClip: async () => {
       try {
         const me = await req('GET', '/api/user/me')
-        return me.plan_status === 'active' && (me.videos_remaining ?? 0) > 0
+        return me.plan_status === 'active'
       } catch { return false }
     },
   },

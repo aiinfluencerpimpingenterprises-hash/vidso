@@ -62,12 +62,16 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/pricing",
+      "destination": "/home/index.html"
+    },
+    {
       "source": "/login",
-      "destination": "/dashboard/index.html"
+      "destination": "/auth.html"
     },
     {
       "source": "/signup",
-      "destination": "/dashboard/index.html"
+      "destination": "/auth.html"
     }
   ],
   "redirects": [
@@ -123,7 +127,52 @@
       ]
     },
     {
+      "source": "/auth.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/dashboard/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/login",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/signup",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/pricing",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/gate/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

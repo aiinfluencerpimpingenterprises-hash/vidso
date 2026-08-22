@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vidso · Sign in</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0B0C;--card:#18181B;--ink:#F5F5F4;--muted:rgba(245,245,244,.70);--faint:rgba(245,245,244,.45);
+  --a1:#E94B58;--line:rgba(245,245,244,.09);--line-2:rgba(245,245,244,.15);--border:rgba(245,245,244,.10);
+  --grad:linear-gradient(135deg,#F0606C 0%,#B31D2C 100%);
+  --grad-hover:linear-gradient(135deg,#F27580 0%,#C42232 100%);
+  --glow:233,75,88;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:Inter,SF Pro Display,-apple-system,BlinkMacSystemFont,sans-serif;min-height:100%}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
+.auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
+.auth-showcase > *{position:relative;z-index:1}
+.auth-preview{aspect-ratio:16/9;width:100%;border-radius:14px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.auth-preview-play{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.88)}
+.auth-preview-play span{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14);display:grid;place-items:center}
+.auth-preview-play svg{width:20px;height:20px;margin-left:2px}
+.auth-preview-score{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;letter-spacing:.02em}
+.auth-preview-cap{position:absolute;left:12px;right:12px;bottom:12px;font-size:12px;font-weight:600;color:var(--ink);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:8px;line-height:1.3}
+.auth-showcase h3{font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
+.auth-sub{font-size:.9rem;color:var(--muted);line-height:1.45;margin:0}
+.auth-chips{display:flex;flex-wrap:wrap;gap:8px}
+.auth-chips span{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.62);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.auth-panel{flex:1;min-width:0;padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+.auth-brand{display:flex;justify-content:center;margin:0 0 16px}
+.auth-panel h2{font-size:1.45rem;font-weight:800;letter-spacing:-.03em;margin:0 0 8px;text-align:center}
+.auth-lead{font-size:.85rem;color:var(--muted);margin:0 0 22px;text-align:center;line-height:1.45}
+.modal-tabs{display:flex;gap:0;margin-bottom:22px;background:var(--card);border-radius:10px;padding:4px;border:1px solid var(--line)}
+.tab-btn{flex:1;padding:9px 10px;border-radius:8px;border:none;background:none;color:var(--muted);font-size:.84rem;font-weight:500;cursor:pointer;font-family:inherit}
+.tab-btn.active{background:var(--grad);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(196,16,40,.28)}
+.field{margin-bottom:14px}
+label{display:block;font-size:.75rem;color:var(--faint);margin-bottom:6px;font-weight:500}
+input[type=text],input[type=email],input[type=password]{
+  width:100%;border-radius:10px;padding:12px 14px;background:var(--bg);border:1px solid var(--line-2);color:var(--ink);font:inherit;font-size:.875rem;outline:none
+}
+input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;font-size:.92rem;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:inherit;line-height:1}
+.btn-primary{background:var(--grad);color:#fff}
+.btn-primary:hover{background:var(--grad-hover)}
+.auth-cta{width:100%;position:relative}
+.auth-cta.is-loading,.auth-google.is-loading{pointer-events:none;opacity:.85}
+.auth-cta.is-loading .auth-cta-label{opacity:0}
+.auth-cta-spinner,.auth-google .auth-cta-spinner{display:none;position:absolute;inset:0;place-items:center}
+.auth-cta.is-loading .auth-cta-spinner,.auth-google.is-loading .auth-cta-spinner{display:grid}
+.auth-cta-spinner i{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.auth-social{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.auth-google{width:100%;justify-content:center;gap:10px;padding:12px 16px;font-weight:600;font-size:.9rem;background:#fff;color:#1f1f1f;position:relative}
+.auth-google:hover{background:#f5f5f5}
+.auth-google svg{width:18px;height:18px;flex-shrink:0}
+.auth-google.is-loading .auth-cta-label,.auth-google.is-loading > svg{opacity:0}
+.auth-google .auth-cta-spinner i{border-color:rgba(0,0,0,.15);border-top-color:#222}
+.auth-or{display:flex;align-items:center;gap:12px;margin:0 0 18px;color:var(--faint);font-size:.72rem;font-weight:600}
+.auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
+.modal-error{font-size:.78rem;color:#eb5757;margin-top:10px;display:none;text-align:center}
+.auth-legal{margin-top:16px;font-size:.72rem;line-height:1.5;color:var(--faint);text-align:center}
+.auth-legal a{color:var(--a1);text-decoration:none;font-weight:500}
+.auth-legal a:hover{text-decoration:underline}
+.auth-home{position:absolute;top:18px;left:18px;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:600;text-decoration:none}
+.auth-home:hover{color:#fff}
+.btn-secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--ink)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+#paywall-modal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72);backdrop-filter:blur(10px)}
+#paywall-modal.hidden{display:none!important}
+.paywall-shell{width:min(920px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;background:linear-gradient(180deg,rgba(22,22,28,.98),rgba(12,12,16,.98));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px 26px 22px;box-shadow:0 30px 80px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:18px}
+.paywall-kicker{margin:0;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42);text-align:center}
+.paywall-title{margin:0;font-size:clamp(1.35rem,3vw,1.75rem);font-weight:800;letter-spacing:-.03em;text-align:center}
+.paywall-sub{margin:0 auto;max-width:36em;font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.58);text-align:center}
+.paywall-toggle{display:inline-flex;align-self:center;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
+.paywall-tg{min-height:36px;padding:0 14px;border:none;border-radius:999px;background:transparent;color:rgba(255,255,255,.55);font:inherit;font-size:.78rem;font-weight:650;cursor:pointer}
+.paywall-tg.active{background:var(--grad);color:#fff}
+.paywall-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.paywall-plan{position:relative;display:flex;flex-direction:column;gap:10px;padding:16px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);min-width:0}
+.paywall-plan.pop{border-color:rgba(var(--glow),.55);background:rgba(var(--glow),.08)}
+.paywall-plan .tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--grad);color:#fff;padding:3px 10px;border-radius:999px;white-space:nowrap;visibility:hidden}
+.paywall-plan.pop .tag{visibility:visible}
+.paywall-plan .pn{font-size:1rem;font-weight:750}
+.paywall-plan .pd{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.35;min-height:2.4em}
+.paywall-plan .price{font-size:1.7rem;font-weight:800;letter-spacing:-.03em;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.paywall-plan .price .was{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.35);text-decoration:line-through;display:none}
+.paywall-plan.is-annual .price .was{display:inline}
+.paywall-plan .price .per{font-size:.78rem;font-weight:500;color:rgba(255,255,255,.45)}
+.paywall-plan .price .pct{display:none;font-size:.62rem;font-weight:700;color:#4ade80;background:rgba(34,197,94,.14);padding:2px 7px;border-radius:99px}
+.paywall-plan.is-annual .price .pct{display:inline-flex}
+.paywall-plan.pop .price .amt,.paywall-plan.pop .price .per{color:var(--a1)}
+.paywall-plan .bill{font-size:.7rem;color:rgba(255,255,255,.4)}
+.paywall-plan .metrics{display:flex;flex-direction:column;gap:6px;padding:8px 0;margin:2px 0;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.paywall-plan .metric{display:flex;justify-content:space-between;gap:8px;font-size:.7rem;color:rgba(255,255,255,.48)}
+.paywall-plan .metric strong{color:rgba(255,255,255,.88)}
+.paywall-plan .metric strong.hl{color:#FE0C30}
+.paywall-plan .feat{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-rows:repeat(17,minmax(2.2em,auto));gap:0;flex:1}
+.paywall-plan .feat-row{font-size:.75rem;color:rgba(255,255,255,.72);display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:7px;align-items:start;line-height:1.35;min-height:2.2em;padding-top:6px}
+.paywall-plan .feat-row.off{color:rgba(255,255,255,.32);opacity:.55}
+.paywall-plan .feat-row.off .feat-label,.paywall-plan .feat-row.off .feat-val{text-decoration:line-through}
+.paywall-plan .feat-row svg{width:12px;height:12px;flex-shrink:0;margin-top:2px;color:var(--a1)}
+.paywall-plan .feat-row.off svg{color:rgba(255,255,255,.28)}
+.paywall-plan .feat-val{text-align:right;font-weight:650;color:rgba(255,255,255,.88)}
+.paywall-plan .btn{width:100%;margin-top:8px;justify-content:center}
+.paywall-plan.pop .btn{background:var(--grad);color:#fff;border-color:transparent}
+.paywall-status{display:none;align-items:center;justify-content:center;gap:8px;font-size:.8rem;min-height:1.2em}
+.paywall-status.show{display:flex}
+.paywall-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding-top:4px}
+.paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:760px){
+  .auth-shell{max-width:420px;border-radius:18px}
+  .auth-showcase{display:none}
+  .auth-panel{padding:32px 24px}
+  .paywall-plans{grid-template-columns:1fr}
+  .paywall-plan .feat{display:flex;flex-direction:column;grid-template-rows:none}
+  .paywall-plan .feat-row{min-height:0}
+  .paywall-shell{padding:20px 16px 16px;width:calc(100vw - 16px)}
+}
+</style>
+<script src="/brand.js"></script>
+</head>
+<body>
+<a class="auth-home" href="/home" id="auth-home">← Home</a>
+<div class="auth-shell" id="auth-card" role="dialog" aria-labelledby="auth-title">
+  <aside class="auth-showcase" aria-hidden="true">
+    <div class="auth-preview">
+      <div class="auth-preview-play"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></span></div>
+      <span class="auth-preview-score">98</span>
+      <div class="auth-preview-cap">12-min faceless explainer</div>
+    </div>
+    <h3>Long-form YouTube videos on autopilot</h3>
+    <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
+    <div class="auth-chips">
+      <span>Faceless explainer</span>
+      <span>Documentary</span>
+      <span>Listicle</span>
+      <span>Tutorial</span>
+    </div>
+  </aside>
+  <div class="auth-panel">
+    <div class="auth-brand">
+      <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+    </div>
+    <h2 id="auth-title">Welcome to Vidso</h2>
+    <p class="auth-lead">Sign in to access your AI content tools.</p>
+    <div class="modal-tabs">
+      <button type="button" class="tab-btn" id="tab-btn-login">Sign In</button>
+      <button type="button" class="tab-btn" id="tab-btn-signup">Sign Up</button>
+    </div>
+    <div class="auth-social">
+      <button type="button" class="btn auth-google" id="google-cta">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span class="auth-cta-label">Continue with Google</span>
+        <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
+      </button>
+    </div>
+    <div class="auth-or">or continue with email</div>
+    <div id="tab-login">
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
+      <button type="button" class="btn btn-primary auth-cta" id="login-cta"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <div class="modal-error" id="login-err"></div>
+    </div>
+    <div id="tab-signup" style="display:none">
+      <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
+      <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
+      <button type="button" class="btn btn-primary auth-cta" id="signup-cta"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <div class="modal-error" id="signup-err"></div>
+    </div>
+    <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+  </div>
+</div>
+
+<div class="hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+  <div class="paywall-shell" tabindex="-1">
+    <p class="paywall-kicker">Unlock Vidso</p>
+    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
+    <p class="paywall-sub">Pick a plan to unlock clipping, video tools, captions, and every other tool.</p>
+    <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
+      <button type="button" class="paywall-tg active" data-cycle="monthly" id="tg-monthly">Monthly</button>
+      <button type="button" class="paywall-tg" data-cycle="yearly" id="tg-yearly">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
+    </div>
+    <div class="paywall-plans" id="paywall-plans"></div>
+    <div class="paywall-status" id="paywall-status"></div>
+    <div class="paywall-foot">
+      <button type="button" class="btn btn-ghost" id="paywall-refresh">I've subscribed — refresh</button>
+      <button type="button" class="btn btn-ghost" id="paywall-signout">Sign out</button>
+      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var path = (location.pathname || '').replace(/\/+$/, '') || '/'
+  var isSignup = path === '/signup'
+  document.title = isSignup ? 'Vidso · Sign up' : 'Vidso · Sign in'
+  document.getElementById('tab-login').style.display = isSignup ? 'none' : ''
+  document.getElementById('tab-signup').style.display = isSignup ? '' : 'none'
+  document.getElementById('tab-btn-login').classList.toggle('active', !isSignup)
+  document.getElementById('tab-btn-signup').classList.toggle('active', isSignup)
+})()
+</script>
+<script type="module">
+import { api, setSession, clearSession, WHOP_CHECKOUT } from '/api.js'
+import { mountPricing } from '/lib/pricing-ui.js'
+
+const APP = '/dashboard'
+let paywallCycle = 'monthly'
+let currentUser = null
+let _planPoll = null
+const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
+  variant: 'paywall',
+  onCta: async (tier) => {
+    if (!currentUser) {
+      try { currentUser = await api.user.me() } catch (_) {}
+    }
+    const url = api.billing.checkoutUrl(tier, paywallCycle, {
+      email: currentUser?.email,
+      userId: currentUser?.id || currentUser?.user_id,
+    }) || WHOP_CHECKOUT[`${tier}_${paywallCycle}`]
+    if (!url) { setPaywallStatus('Checkout link missing for this plan', 'err'); return }
+    try { sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
+    setPaywallStatus('Opening checkout…', 'loading')
+    window.open(url, '_blank', 'noopener,noreferrer')
+    setTimeout(() => {
+      setPaywallStatus('Pay in the Whop tab — this page will unlock when your plan is active.', null)
+      watchForPurchase(tier)
+    }, 600)
+  },
+})
+
+function switchTab(tab) {
+  document.getElementById('tab-login').style.display = tab === 'login' ? '' : 'none'
+  document.getElementById('tab-signup').style.display = tab === 'signup' ? '' : 'none'
+  document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login')
+  document.getElementById('tab-btn-signup').classList.toggle('active', tab === 'signup')
+  history.replaceState({}, '', tab === 'signup' ? '/signup' : '/login')
+  document.title = tab === 'signup' ? 'Vidso · Sign up' : 'Vidso · Sign in'
+}
+
+function setLoading(btn, on) {
+  if (!btn) return
+  btn.classList.toggle('is-loading', !!on)
+  btn.disabled = !!on
+}
+
+function showError(message) {
+  const loginVisible = document.getElementById('tab-login').style.display !== 'none'
+  const err = document.getElementById(loginVisible ? 'login-err' : 'signup-err')
+  if (!err) return
+  err.textContent = message
+  err.style.display = 'block'
+}
+
+function consumeOAuthError() {
+  const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''))
+  const query = new URLSearchParams(location.search || '')
+  const code = hash.get('error') || query.get('error')
+  if (!code) return null
+  const desc = hash.get('error_description') || query.get('error_description') || code
+  return String(desc).replace(/\+/g, ' ')
+}
+
+function consumeOAuthReturn() {
+  const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''))
+  const query = new URLSearchParams(location.search || '')
+  const access = hash.get('access_token') || query.get('access_token')
+  const refresh = hash.get('refresh_token') || query.get('refresh_token')
+  if (!access) return false
+  setSession({ access_token: access, refresh_token: refresh || '' })
+  history.replaceState({}, '', location.pathname)
+  return true
+}
+
+function showPaywall() {
+  const card = document.getElementById('auth-card')
+  const home = document.getElementById('auth-home')
+  const modal = document.getElementById('paywall-modal')
+  if (card) card.style.display = 'none'
+  if (home) home.style.display = 'none'
+  if (modal) modal.classList.remove('hidden')
+  document.title = 'Vidso · Choose a plan'
+}
+
+function setPaywallStatus(msg, kind) {
+  const el = document.getElementById('paywall-status')
+  if (!el) return
+  if (!msg) { el.classList.remove('show'); el.textContent = ''; return }
+  el.classList.add('show')
+  el.style.color = kind === 'err' ? '#f87171' : kind === 'ok' ? '#4ade80' : 'rgba(255,255,255,.7)'
+  el.innerHTML = kind === 'loading' ? `<span class="spinner"></span> ${msg}` : msg
+}
+
+function setPaywallCycle(cycle) {
+  paywallCycle = cycle === 'yearly' ? 'yearly' : 'monthly'
+  document.querySelectorAll('.paywall-tg').forEach(b => b.classList.toggle('active', b.dataset.cycle === paywallCycle))
+  paywallPricing?.setCycle(paywallCycle)
+}
+
+async function goToAppIfPaid() {
+  try {
+    currentUser = await api.user.me()
+    if (currentUser && currentUser.plan_status === 'active') {
+      try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
+      location.replace(APP)
+      return true
+    }
+  } catch (_) {}
+  try { localStorage.removeItem('vidso_plan_active') } catch (_) {}
+  return false
+}
+
+async function watchForPurchase(tier) {
+  if (_planPoll) return _planPoll
+  try { if (tier) sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
+  const expectedTier = tier || (sessionStorage.getItem('vidso_pending_tier') || '')
+  setPaywallStatus('Activating your plan…', 'loading')
+  _planPoll = api.billing.waitForProvisioned({
+    expectedTier,
+    onTick(me) {
+      if (!me) return
+      currentUser = me
+      if (me.plan_status === 'active') {
+        setPaywallStatus(`Unlocking ${api.billing.unlockCopy(me)}…`, 'loading')
+      }
+    },
+  }).then(async (me) => {
+    _planPoll = null
+    if (me) currentUser = me
+    if (me && me.plan_status === 'active') {
+      try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
+      setPaywallStatus(`Plan active — ${api.billing.unlockCopy(me)} unlocked.`, 'ok')
+      try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
+      setTimeout(() => location.replace(APP), 600)
+      return true
+    }
+    setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
+    return false
+  }).catch((e) => {
+    _planPoll = null
+    setPaywallStatus(e.message || 'Could not refresh plan status', 'err')
+    return false
+  })
+  return _planPoll
+}
+
+function afterAuth() {
+  location.replace(APP)
+}
+
+function consumeOAuthErrorParams() {
+  const oauthErr = consumeOAuthError()
+  if (oauthErr) showError(oauthErr)
+}
+
+const oauthReturned = consumeOAuthReturn()
+if (oauthReturned) {
+  afterAuth()
+} else {
+  clearSession()
+  consumeOAuthErrorParams()
+}
+
+document.getElementById('tab-btn-login').onclick = () => switchTab('login')
+document.getElementById('tab-btn-signup').onclick = () => switchTab('signup')
+document.getElementById('tg-monthly').onclick = () => setPaywallCycle('monthly')
+document.getElementById('tg-yearly').onclick = () => setPaywallCycle('yearly')
+
+document.getElementById('google-cta').onclick = () => {
+  const btn = document.getElementById('google-cta')
+  setLoading(btn, true)
+  const here = location.origin + '/login'
+  location.href = api.auth.googleStartUrl(here)
+}
+
+document.getElementById('login-cta').onclick = async () => {
+  const email = document.getElementById('login-email').value.trim()
+  const pass = document.getElementById('login-pass').value
+  const err = document.getElementById('login-err')
+  const btn = document.getElementById('login-cta')
+  err.style.display = 'none'
+  setLoading(btn, true)
+  try {
+    const data = await api.auth.login(email, pass)
+    setSession(data.session)
+    afterAuth()
+  } catch (e) {
+    err.textContent = e.message
+    err.style.display = 'block'
+    setLoading(btn, false)
+  }
+}
+
+document.getElementById('signup-cta').onclick = async () => {
+  const name = document.getElementById('su-name').value.trim()
+  const email = document.getElementById('su-email').value.trim()
+  const pass = document.getElementById('su-pass').value
+  const err = document.getElementById('signup-err')
+  const btn = document.getElementById('signup-cta')
+  err.style.display = 'none'
+  setLoading(btn, true)
+  try {
+    const data = await api.auth.signup(email, pass, name)
+    setSession(data.session)
+    afterAuth()
+  } catch (e) {
+    err.textContent = e.message
+    err.style.display = 'block'
+    setLoading(btn, false)
+  }
+}
+
+document.getElementById('paywall-refresh').onclick = () => watchForPurchase()
+
+document.getElementById('paywall-signout').onclick = async () => {
+  await api.auth.logout().catch(() => {})
+  clearSession()
+  try { localStorage.removeItem('vidso_plan_active') } catch (_) {}
+  location.replace('/login')
+}
+
+document.getElementById('login-pass').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('login-cta').click()
+})
+document.getElementById('su-pass').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('signup-cta').click()
+})
+
+document.addEventListener('visibilitychange', () => {
+  const modal = document.getElementById('paywall-modal')
+  if (document.visibilityState === 'visible' && modal && !modal.classList.contains('hidden')) {
+    watchForPurchase()
+  }
+})
+</script>
+</body>
+</html>
