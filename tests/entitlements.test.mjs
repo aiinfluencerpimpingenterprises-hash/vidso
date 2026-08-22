@@ -325,5 +325,22 @@ test('usage store increments and resets on the anniversary window', () => {
   assert.equal(readUsage(user, new Date('2026-02-15T00:00:00Z')).long_form_used, 0)
 })
 
+test('comped Studio email keeps top-tier access when paywall is on', () => {
+  const off = { PAYWALL_BYPASS: '0' }
+  const gifted = {
+    email: 'stormdecoded@gmail.com',
+    plan: 'free',
+    plan_status: 'inactive',
+  }
+  const access = resolveAccess(gifted, off)
+  assert.equal(access.active, true)
+  assert.equal(access.tier, 'studio')
+  assert.equal(access.entitlements.long_form_per_month, UNLIMITED)
+  const q = quotaView(gifted)
+  assert.equal(q.unlimited, true)
+  const stranger = resolveAccess({ email: 'someone@example.com', plan_status: 'inactive' }, off)
+  assert.equal(stranger.active, false)
+})
+
 
 

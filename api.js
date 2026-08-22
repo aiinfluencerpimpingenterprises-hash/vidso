@@ -1,6 +1,7 @@
 import { WHOP_CHECKOUT } from '/lib/whop-map.js'
 import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
+import { withCompedPlan } from '/lib/comped.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -185,7 +186,7 @@ export const api = {
           me.short_form_used = u.short_form_used
         }
       } catch (_) {}
-      return me
+      return withCompedPlan(me)
     },
     usage: () => req('GET', '/api/user/usage'),
   },
