@@ -138,6 +138,19 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .topbar::after{content:'';position:absolute;left:28px;right:28px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);pointer-events:none}
 .topbar-title{font-family:'SF Pro Display','Inter',sans-serif;font-size:1.1rem;font-weight:650;letter-spacing:-.02em;color:var(--ink)}
 .topbar-title.is-hidden{visibility:hidden;pointer-events:none}
+/* Desktop: in-page titles already exist — don't leave a blank 60px topbar that
+   clips the first heading inside the overflow:auto content pane. */
+@media (min-width:769px){
+  body.has-page-header .topbar{
+    position:absolute;top:18px;right:28px;left:auto;width:auto;
+    min-height:0;height:auto;padding:0;background:transparent;z-index:6;
+    pointer-events:none
+  }
+  body.has-page-header .topbar::after,
+  body.has-page-header .topbar-title,
+  body.has-page-header .mobile-nav-toggle{display:none!important}
+  body.has-page-header .topbar-actions{pointer-events:auto}
+}
 .credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 12px 7px 10px;font-size:.78rem;color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
 .credits-pill:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
 .credits-pill-icon{width:12px;height:12px;flex-shrink:0;color:var(--a1)}
@@ -156,7 +169,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 /* PANELS */
 .panel{display:none}
 .panel.active{display:block;animation:panelIn var(--dur-panel) var(--ease-out)}
-@keyframes panelIn{from{opacity:.0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes panelIn{from{opacity:0}to{opacity:1}}
 
 /* TOOL CARD / CARD SYSTEM */
 .tool-card,.ui-card{background:linear-gradient(180deg,rgba(245,245,244,.03) 0%,rgba(245,245,244,0) 48%),rgba(20,22,30,.94);border:1px solid var(--border);border-radius:var(--radius-card);padding:24px;margin-bottom:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(6px)}
@@ -1021,10 +1034,10 @@ body::after{
 .modal.auth-shell{border-radius:var(--radius-modal)}
 
 /* V2 page header */
-.page-header{margin:0 0 24px}
+.page-header{margin:0 0 24px;overflow:visible}
 .page-header h2,.page-title{
   font-family:'SF Pro Display','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:-.03em;
-  color:var(--ink);margin:0 0 8px;line-height:1.15
+  color:var(--ink);margin:0 0 8px;line-height:1.25;overflow:visible;padding-top:.12em
 }
 .page-header p,.page-sub{font-size:14px;color:var(--text-label);margin:0;line-height:1.45;font-weight:400}
 .section-label{font-size:11px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.40);margin:0 0 12px}
@@ -1683,7 +1696,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 </style>
 <script src="/brand.js"></script>
 </head>
-<body>
+<body class="has-page-header">
 <div id="topo-bg" data-mode="subtle" aria-hidden="true"></div>
 
 <!-- PAYWALL (shown after onboarding + tour for unpaid accounts) -->
@@ -5273,6 +5286,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     titleEl.textContent = titles[id]
     const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen','upscale'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
+    document.body.classList.toggle('has-page-header', hasPageHeader)
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') loadVoiceLibrary()
