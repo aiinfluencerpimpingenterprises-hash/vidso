@@ -37,7 +37,8 @@
     location.replace('/login')
     return
   }
-  if (!paid) document.documentElement.classList.add('needs-gate')
+  var paywallOff = true
+  if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -3911,14 +3912,14 @@ function applyAuthRouteTab() {
 }
 
 function afterAuthReady(opts = {}) {
-  persistPlanActive(hasActivePlan())
+  persistPlanActive(hasActivePlan() || !paywallOn())
   hideModal()
   populateUser()
   loadUsage()
   loadVoices()
   loadFiles()
   if (opts.restoreRoute) restorePanelFromHash()
-  if (hasActivePlan() || paywallDevBypass()) {
+  if (hasActivePlan() || paywallDevBypass() || !paywallOn()) {
     document.documentElement.classList.remove('needs-gate', 'needs-paywall')
     closePaywall()
     maybeShowOnboarding()
@@ -4963,7 +4964,7 @@ window.maybeStartUiTour = () => {
 
 // ── PAYWALL (hard gate — no feature access without an active plan) ───────
 // Flip PAYWALL_ENABLED to false only for temporary testing; keep true in production.
-const PAYWALL_ENABLED = true
+const PAYWALL_ENABLED = false
 let _paywallCycle = 'monthly'
 let _paywallOpening = false
 
