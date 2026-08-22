@@ -4329,17 +4329,73 @@ let _obLength = ''
 let _obFrequency = ''
 let _obOpening = false
 
-function obUserKey() {
-  const u = currentUser || {}
-  return String(u.email || u.id || u.user_id || 'anon').trim().toLowerCase() || 'anon'
+function obNormId(v) {
+  return String(v || '').trim().toLowerCase()
 }
-function obSeenKey() { return 'vidso_onboarding_v3_seen:' + obUserKey() }
-function obAnswersKey() { return 'vidso_onboarding_answers:' + obUserKey() }
+function obIdentityKeys() {
+  const keys = []
+  const push = (v) => {
+    const s = obNormId(v)
+    if (s && s !== 'anon' && !keys.includes(s)) keys.push(s)
+  }
+  const u = currentUser || {}
+  push(u.email)
+  push(u.user_email)
+  push(u.id)
+  push(u.user_id)
+  push(u.uid)
+  try {
+    const token = localStorage.getItem('clipzo_token') || ''
+    const part = token.split('.')[1]
+    if (part) {
+      const payload = JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')))
+      push(payload.email)
+      push(payload.user_email)
+      push(payload.sub)
+    }
+  } catch (_) {}
+  if (!keys.length) keys.push('anon')
+  return keys
+}
+function obUserKey() {
+  return obIdentityKeys()[0] || 'anon'
+}
+function obSeenKey(id) { return 'vidso_onboarding_v3_seen:' + (id || obUserKey()) }
+function obAnswersKey(id) { return 'vidso_onboarding_answers:' + (id || obUserKey()) }
+function obCookieRead() {
+  try {
+    const m = document.cookie.match(/(?:^|; )vidso_ob_v3=([^;]*)/)
+    if (!m) return []
+    return decodeURIComponent(m[1]).split('|').filter(Boolean)
+  } catch (_) { return [] }
+}
+function obCookieWrite(keys) {
+  try {
+    const all = [...new Set(obCookieRead().concat(keys || []))]
+    if (!all.length) return
+    const host = location.hostname
+    const domain = (host === 'vidso.pro' || host.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
+    const secure = location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie = 'vidso_ob_v3=' + encodeURIComponent(all.join('|')) + '; Path=/; Max-Age=31536000; SameSite=Lax' + domain + secure
+  } catch (_) {}
+}
 function obHasSeen() {
-  try { return localStorage.getItem(obSeenKey()) === '1' } catch (_) { return false }
+  try {
+    const keys = obIdentityKeys()
+    if (keys.some((k) => localStorage.getItem(obSeenKey(k)) === '1')) return true
+    const cookieKeys = obCookieRead()
+    if (keys.some((k) => cookieKeys.includes(k))) return true
+    for (const k of keys) {
+      const a = JSON.parse(localStorage.getItem(obAnswersKey(k)) || 'null')
+      if (a && (a.status || a.goal || a.niche || a.format)) return true
+    }
+  } catch (_) {}
+  return false
 }
 function obMarkSeen() {
-  try { localStorage.setItem(obSeenKey(), '1') } catch (_) {}
+  const keys = obIdentityKeys()
+  try { keys.forEach((k) => localStorage.setItem(obSeenKey(k), '1')) } catch (_) {}
+  obCookieWrite(keys)
 }
 function obFinishStep() {
   _obDoneThisSession = true
@@ -4657,6 +4713,8 @@ window.maybeShowOnboarding = () => {
       maybeStartUiTour()
       return
     }
+    // Count first auto-open as the signup run, even if they close the tab.
+    if (!force) obMarkSeen()
     openOnboarding({ auto: true, force })
   }
   if (force || (typeof funnelLocked === 'function' && funnelLocked())) run()
