@@ -489,12 +489,27 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 
 /* PHASE 3: workhorse pages */
 .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.img-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:20px;align-items:start}
+.img-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:1024px){.img-layout{grid-template-columns:1fr}}
 .img-pane{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .img-prompt-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .img-prompt-chip{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);border-radius:999px;padding:7px 12px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
 .img-prompt-chip:hover{border-color:rgba(var(--glow),.45);color:var(--ink);background:rgba(var(--glow),.08)}
+.img-chat-log{display:flex;flex-direction:column;gap:8px;max-height:132px;overflow:auto;margin:0 0 10px}
+.img-chat-log:empty,.img-chat-log:not(:has(.img-chat-msg)):not(:has(.img-prompt-chips)){display:none}
+.img-chat-msg{align-self:flex-end;max-width:92%;background:rgba(var(--glow),.16);border:1px solid rgba(var(--glow),.3);color:var(--ink);border-radius:16px 16px 4px 16px;padding:8px 12px;font-size:.84rem;line-height:1.4;white-space:pre-wrap}
+.img-chat-box{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);padding:8px 10px 10px}
+.img-chat-box:focus-within{border-color:rgba(var(--glow),.7);box-shadow:0 0 0 4px rgba(var(--glow),.16)}
+#panel-imagegen #img-prompt{
+  min-height:44px!important;max-height:140px;resize:none;border:none!important;box-shadow:none!important;
+  background:transparent!important;padding:8px 6px!important;margin:0
+}
+#panel-imagegen #img-prompt:focus{outline:none;box-shadow:none!important}
+.img-chat-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:2px}
+.img-chat .img-model{flex:1 1 200px;min-width:0}
+.img-chat-send{margin-left:auto}
+.img-chat .img-model-menu{top:auto;bottom:calc(100% + 8px);max-height:240px}
+.img-chat .status{margin-top:8px}
 .img-ratio-glyph{display:inline-block;border:1.5px solid currentColor;border-radius:2px;margin-right:6px;vertical-align:-1px;opacity:.85}
 .img-ratio-glyph.g916{width:8px;height:12px}
 .img-ratio-glyph.g169{width:14px;height:8px}
@@ -537,7 +552,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .img-model-opt.is-on{background:rgba(var(--glow),.12)}
 .img-model-opt b{display:block;font-size:.8rem;font-weight:700}
 .img-model-opt span{display:block;font-size:.68rem;color:rgba(255,255,255,.48);font-weight:500}
-.img-results{min-height:calc(100vh - 180px)}
+.img-results{min-height:280px}
 .img-skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 .clip-shell{max-width:var(--page-max-wide);margin:0 auto;width:100%}
 #panel-clipper .tool-card{max-width:880px;margin-left:auto;margin-right:auto}
@@ -1248,7 +1263,7 @@ input:focus,textarea:focus,select:focus,
 /* Image gen V2 */
 .img-layout{align-items:stretch;min-height:calc(100vh - 160px)}
 .img-pane{padding:24px!important;display:flex;flex-direction:column}
-.img-results{min-height:calc(100vh - 180px);flex:1}
+.img-results{min-height:280px;flex:1}
 .img-results .img-grid{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start}
 .img-results .img-grid:has(.ui-empty){display:flex;align-items:center;justify-content:center}
 .img-results .ui-empty{margin:auto}
@@ -1288,21 +1303,18 @@ input:focus,textarea:focus,select:focus,
 .dash-recent-wrap{min-height:120px!important;padding:16px 20px!important}
 .dash-recent-wrap .ui-empty{min-height:96px!important;padding:20px 16px!important}
 #panel-imagegen .img-layout{
-  align-items:stretch!important;
-  grid-auto-rows:1fr;
-  min-height:calc(100vh - 168px);
-  width:100%;
-  max-width:1280px
-}
-#panel-imagegen .img-pane{
-  min-height:calc(100vh - 180px)!important;
-  height:auto;
-  padding:24px!important;
-  display:flex;flex-direction:column
+  display:flex!important;flex-direction:column;align-items:stretch!important;
+  gap:16px;min-height:calc(100vh - 168px);width:100%;max-width:880px
 }
 #panel-imagegen .img-results{
-  min-height:calc(100vh - 180px)!important;
-  flex:1 1 auto
+  flex:1 1 auto;min-height:280px!important;height:auto
+}
+#panel-imagegen .img-pane.img-results{
+  min-height:280px!important
+}
+#panel-imagegen .img-chat{
+  flex:0 0 auto;min-height:0!important;height:auto!important;padding:12px!important;
+  position:sticky;bottom:12px;z-index:4
 }
 #panel-imagegen .img-results .img-grid{
   flex:1;min-height:0;margin-top:0;
@@ -1354,11 +1366,10 @@ input:focus,textarea:focus,select:focus,
 .fv-voice-row{align-items:start!important}
 @media (max-width:1280px){
   .qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  #panel-imagegen .img-layout{grid-template-columns:1fr 1fr}
 }
 @media (max-width:1024px){
   #panel-imagegen .img-layout{grid-template-columns:1fr}
-  #panel-imagegen .img-pane,#panel-imagegen .img-results{min-height:420px}
+  #panel-imagegen .img-results{min-height:240px}
 }
 .page-header + .tool-card > h3.ui-card-title{font-size:16px!important;font-weight:600!important}
 #panel-videogen .page-header{margin-bottom:20px}
@@ -2388,78 +2399,67 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <p>Make YouTube thumbnails from a prompt.</p>
       </div>
       <div class="page-shell-wide img-layout">
-        <div class="img-pane" id="img-prompt-pane">
-          <h3 class="ui-card-title">Prompt</h3>
-          <p class="ui-card-desc">Describe the image you want to create.</p>
-          <div class="field">
-            <label>Prompt</label>
-            <textarea id="img-prompt" placeholder="e.g. A cinematic mountain landscape at golden hour, 4k" style="min-height:120px"></textarea>
-          </div>
-          <div class="img-prompt-chips" aria-label="Example prompts">
-            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('A cinematic mountain landscape at golden hour, 4k')">Mountain landscape</button>
-            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Neon city street at night, rain reflections, photorealistic')">Neon city night</button>
-            <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Minimal product shot on dark slate, soft studio light')">Product still</button>
-          </div>
-          <div class="field">
-            <label>AI model</label>
-            <div class="img-model" id="img-model-wrap">
-              <input type="hidden" id="img-model" value="nano-banana-pro">
-              <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
-                <span class="img-model-mark" aria-hidden="true">
-                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </span>
-                <span class="img-model-copy">
-                  <span class="img-model-name" id="img-model-name">Nano Banana Pro</span>
-                  <span class="img-model-meta" id="img-model-meta">Google · 2k, best text &amp; detail</span>
-                </span>
-                <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Thumbnail generation models"></div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Aspect ratio</label>
-            <select id="img-ratio" class="visually-hidden" tabindex="-1" aria-hidden="true">
-              <option value="9:16" selected>9:16</option>
-              <option value="16:9">16:9</option>
-              <option value="1:1">1:1</option>
-            </select>
-            <div class="ui-seg" id="img-ratio-seg" role="group" aria-label="Aspect ratio">
-              <button type="button" class="ui-seg-btn active" data-ratio="9:16" onclick="setImgRatio('9:16',this)"><span class="img-ratio-glyph g916"></span>9:16</button>
-              <button type="button" class="ui-seg-btn" data-ratio="16:9" onclick="setImgRatio('16:9',this)"><span class="img-ratio-glyph g169"></span>16:9</button>
-              <button type="button" class="ui-seg-btn" data-ratio="1:1" onclick="setImgRatio('1:1',this)"><span class="img-ratio-glyph g11"></span>1:1</button>
-            </div>
-          </div>
-          <div class="field">
-            <label>Number of images</label>
-            <select id="img-count" class="visually-hidden" tabindex="-1" aria-hidden="true">
-              <option value="1" selected>1</option>
-              <option value="2">2</option>
-              <option value="4">4</option>
-            </select>
-            <div class="img-stepper">
-              <button type="button" onclick="stepImgCount(-1)" aria-label="Fewer images">−</button>
-              <span class="img-stepper-val" id="img-count-label">1 image</span>
-              <button type="button" onclick="stepImgCount(1)" aria-label="More images">+</button>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
-            <button class="btn btn-primary" id="img-btn" onclick="generateImage()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              Generate
-            </button>
-            <div class="status" id="img-status" style="display:none"></div>
-          </div>
-        </div>
         <div class="img-pane img-results">
           <div class="section-label" style="margin-bottom:14px">Results</div>
           <div class="img-grid" id="img-grid">
             <div class="ui-empty" id="img-empty">
               <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
               <div class="ui-empty-title">No thumbnails yet</div>
-              <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
+              <div class="ui-empty-sub">Describe a thumbnail below to generate it.</div>
             </div>
           </div>
+        </div>
+        <div class="img-pane img-chat" id="img-prompt-pane">
+          <div class="img-chat-log" id="img-chat-log" aria-live="polite">
+            <div class="img-prompt-chips" aria-label="Example prompts">
+              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('A cinematic mountain landscape at golden hour, 4k')">Mountain landscape</button>
+              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Neon city street at night, rain reflections, photorealistic')">Neon city night</button>
+              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Minimal product shot on dark slate, soft studio light')">Product still</button>
+            </div>
+          </div>
+          <div class="img-chat-box">
+            <label class="sr-only" for="img-prompt">Thumbnail prompt</label>
+            <textarea id="img-prompt" rows="1" placeholder="Describe the thumbnail you want…" onkeydown="onImgPromptKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
+            <div class="img-chat-tools">
+              <div class="img-model" id="img-model-wrap">
+                <input type="hidden" id="img-model" value="nano-banana-pro">
+                <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
+                  <span class="img-model-mark" aria-hidden="true">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </span>
+                  <span class="img-model-copy">
+                    <span class="img-model-name" id="img-model-name">Nano Banana Pro</span>
+                    <span class="img-model-meta" id="img-model-meta">Google · 2k, best text &amp; detail</span>
+                  </span>
+                  <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Thumbnail generation models"></div>
+              </div>
+              <select id="img-ratio" class="visually-hidden" tabindex="-1" aria-hidden="true">
+                <option value="16:9" selected>16:9</option>
+                <option value="9:16">9:16</option>
+              </select>
+              <div class="ui-seg" id="img-ratio-seg" role="group" aria-label="Aspect ratio">
+                <button type="button" class="ui-seg-btn active" data-ratio="16:9" onclick="setImgRatio('16:9',this)"><span class="img-ratio-glyph g169"></span>16:9</button>
+                <button type="button" class="ui-seg-btn" data-ratio="9:16" onclick="setImgRatio('9:16',this)"><span class="img-ratio-glyph g916"></span>9:16</button>
+              </div>
+              <select id="img-count" class="visually-hidden" tabindex="-1" aria-hidden="true">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="4">4</option>
+              </select>
+              <div class="img-stepper">
+                <button type="button" onclick="stepImgCount(-1)" aria-label="Fewer images">−</button>
+                <span class="img-stepper-val" id="img-count-label">1 image</span>
+                <button type="button" onclick="stepImgCount(1)" aria-label="More images">+</button>
+              </div>
+              <button class="btn btn-primary img-chat-send" id="img-btn" onclick="generateImage()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                Generate
+              </button>
+            </div>
+          </div>
+          <div class="status" id="img-status" style="display:none"></div>
         </div>
       </div>
     </div>
@@ -7438,12 +7438,34 @@ function initImgModelPicker() {
 
 window.fillImgPrompt = (text) => {
   const el = document.getElementById('img-prompt')
-  if (el) el.value = text
+  if (el) {
+    el.value = text
+    el.focus()
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px'
+  }
 }
 window.setImgRatio = (ratio, btn) => {
+  const next = ratio === '9:16' ? '9:16' : '16:9'
   const sel = document.getElementById('img-ratio')
-  if (sel) sel.value = ratio
-  document.querySelectorAll('#img-ratio-seg .ui-seg-btn').forEach(b => b.classList.toggle('active', b === btn || b.dataset.ratio === ratio))
+  if (sel) sel.value = next
+  document.querySelectorAll('#img-ratio-seg .ui-seg-btn').forEach(b => b.classList.toggle('active', b.dataset.ratio === next || b === btn))
+}
+window.onImgPromptKey = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    generateImage()
+  }
+}
+function appendImgChat(prompt) {
+  const log = document.getElementById('img-chat-log')
+  if (!log) return
+  log.querySelector('.img-prompt-chips')?.remove()
+  const el = document.createElement('div')
+  el.className = 'img-chat-msg'
+  el.textContent = prompt
+  log.appendChild(el)
+  log.scrollTop = log.scrollHeight
 }
 window.stepImgCount = (delta) => {
   const sel = document.getElementById('img-count')
@@ -7457,19 +7479,26 @@ window.stepImgCount = (delta) => {
   if (label) label.textContent = opts[idx] === 1 ? '1 image' : `${opts[idx]} images`
 }
 window.generateImage = async () => {
-  const prompt = document.getElementById('img-prompt').value.trim()
+  const input = document.getElementById('img-prompt')
+  const prompt = (input?.value || '').trim()
   if (!prompt) return setStatus('img-status','Enter a prompt','err')
   const btn = document.getElementById('img-btn')
   btn.disabled = true
   btn.classList.add('is-loading')
   setStatus('img-status','Generating...','loading')
+  appendImgChat(prompt)
+  if (input) {
+    input.value = ''
+    input.style.height = ''
+  }
   const count = parseInt(document.getElementById('img-count').value, 10) || 1
+  const ratio = document.getElementById('img-ratio')?.value === '9:16' ? '9:16' : '16:9'
   document.getElementById('img-grid').innerHTML = `<div class="img-skel-grid">${Array.from({length:count}).map(()=>'<div class="ui-skeleton ui-skeleton-thumb"></div>').join('')}</div>`
   try {
     const data = await api.generate.image({
       prompt,
       model: document.getElementById('img-model')?.value || DEFAULT_IMAGE_MODEL,
-      aspect_ratio: document.getElementById('img-ratio').value,
+      aspect_ratio: ratio,
       num_images:   count,
     })
     const grid = document.getElementById('img-grid')
@@ -7484,7 +7513,7 @@ window.generateImage = async () => {
     document.getElementById('img-grid').innerHTML = `<div class="ui-empty" id="img-empty">
       <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
       <div class="ui-empty-title">No thumbnails yet</div>
-      <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
+              <div class="ui-empty-sub">Describe a thumbnail below to generate it.</div>
     </div>`
     setStatus('img-status', e.message, 'err')
   }
