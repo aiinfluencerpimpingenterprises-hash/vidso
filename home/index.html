@@ -1571,8 +1571,8 @@
       <h2>Choose the plan for you.</h2>
       <div class="bill-toggle" id="billToggle">
         <span class="bill-thumb" id="billThumb" aria-hidden="true"></span>
-        <button type="button" class="bill-tg active" data-cycle="monthly">Monthly</button>
-        <button type="button" class="bill-tg" data-cycle="annual">Annual <span class="save">Save</span></button>
+        <button type="button" class="bill-tg" data-cycle="monthly">Monthly</button>
+        <button type="button" class="bill-tg active" data-cycle="annual">Annual <span class="save">Save</span></button>
       </div>
     </div>
     <div class="plans" id="pricingPlans"></div>
@@ -1972,7 +1972,7 @@
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
 const plans = document.getElementById('pricingPlans')
-mountPricing(plans, { variant: 'landing' })
+mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
 mountResults(document.getElementById('results-root'))
 if ((location.pathname || '').replace(/\/+$/, '') === '/pricing') {
