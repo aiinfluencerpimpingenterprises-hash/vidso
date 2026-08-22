@@ -1642,7 +1642,10 @@ body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
 @media (prefers-reduced-motion:reduce){
   .tour-highlight,.tour-tooltip{transition:none}
 }
-body.tour-active{overflow:hidden}
+body.tour-active #fv-script-box.show,
+body.tour-active #fv-media-box.show,
+body.tour-active #fv-preview-box.show,
+body.tour-active #fv-export-box.show{min-height:160px}
 
 /* ── Paywall (hard gate after onboarding + tour) ───────────────────────── */
 #paywall-modal{z-index:20001;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(0,0,0,.72)}
@@ -2376,7 +2379,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <p>Make YouTube thumbnails from a prompt.</p>
       </div>
       <div class="page-shell-wide img-layout">
-        <div class="img-pane">
+        <div class="img-pane" id="img-prompt-pane">
           <h3 class="ui-card-title">Prompt</h3>
           <p class="ui-card-desc">Describe the image you want to create.</p>
           <div class="field">
@@ -2461,7 +2464,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <h2>Video Clipper</h2>
           <p>Paste a link. Vidso finds the best moments and reframes them to 9:16.</p>
           </div>
-          <div class="clip-hero">
+          <div class="clip-hero" id="clip-hero">
             <div class="clip-hero-row">
               <span class="clip-hero-icon" aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22.5 6.5s-.2-1.5-.9-2.1c-.8-.9-1.7-.9-2.1-1C16.7 3 12 3 12 3h0s-4.7 0-7.5.4c-.4.1-1.3.1-2.1 1-.7.6-.9 2.1-.9 2.1S1.2 8.3 1.2 10v1.9c0 1.8.3 3.5.3 3.5s.2 1.5.9 2.1c.8.9 1.9.8 2.3.9 1.7.2 7.3.4 7.3.4s4.7 0 7.5-.4c.4-.1 1.3-.1 2.1-1 .7-.6.9-2.1.9-2.1s.3-1.8.3-3.5V10c0-1.7-.3-3.5-.3-3.5z" fill="#FF0033"/><path d="M10 14.6l5.2-3-5.2-3v6z" fill="#fff"/></svg>
@@ -3042,7 +3045,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <!-- VIDEO RANKING -->
     <div class="panel content-glow" id="panel-ranking">
-      <div class="page-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
+      <div class="page-header" id="ranking-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
         <h2>Ranking</h2>
         <p>Assemble ranked short videos with a live 9:16 preview.</p>
       </div>
@@ -3490,7 +3493,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
 
         <div class="fv-wizard">
-          <div class="fv-stepper" aria-label="Progress">
+          <div class="fv-stepper" id="fv-stepper" aria-label="Progress">
             <div class="fv-step-pill active" id="fv-pill-1"><span class="n">1</span> Script</div>
             <div class="fv-step-line"></div>
             <div class="fv-step-pill" id="fv-pill-2"><span class="n">2</span> Media</div>
@@ -3502,12 +3505,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
           <!-- Phase 1: Setup -->
           <div id="fv-setup" class="fv-setup">
-            <div class="field">
+            <div class="field" id="fv-field-topic">
               <label>Topic / Prompt</label>
               <textarea id="fv-topic" placeholder='e.g. "12 Airport Secrets Airlines Don’t Want You to Know"' style="min-height:88px"></textarea>
             </div>
 
-            <div class="field">
+            <div class="field" id="fv-field-length">
               <label>Video length</label>
               <div class="fv-seg" id="fv-format-seg" role="tablist">
                 <button type="button" class="fv-seg-btn" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30-60s</button>
@@ -3516,7 +3519,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px"></div>
             </div>
 
-            <div class="field">
+            <div class="field" id="fv-field-aspect">
               <label>Aspect ratio</label>
               <div class="fv-chip-row" id="fv-aspect-chips">
                 <button type="button" class="fv-chip active" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
@@ -3524,7 +3527,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </div>
             </div>
 
-            <div class="field">
+            <div class="field" id="fv-field-voice">
               <label>Narrator voice</label>
               <div class="fv-voice-row">
                 <div class="fv-voice-wrap">
@@ -3645,8 +3648,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                   <audio id="fv-prev-music" preload="auto" loop style="display:none"></audio>
                 </div>
 
-                <div class="fv-side">
-                  <div class="fv-side-tabs" role="tablist">
+                <div class="fv-side" id="fv-side">
+                  <div class="fv-side-tabs" id="fv-side-tabs" role="tablist">
                     <button type="button" class="fv-side-tab active" data-pane="broll" onclick="fvSideTab('broll')">B-roll</button>
                     <button type="button" class="fv-side-tab" data-pane="captions" onclick="fvSideTab('captions')">Captions</button>
                     <button type="button" class="fv-side-tab" data-pane="music" onclick="fvSideTab('music')">Music</button>
@@ -3769,7 +3772,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
       </div>
-      <div class="fv-how" aria-label="How it works">
+      <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
           <div class="fv-how-n">Step 1</div>
           <div class="fv-how-t">Script</div>
@@ -3811,7 +3814,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <h2>Tools</h2>
           <p>Captions, voiceover, editor, and file utilities.</p>
         </div>
-          <div class="tools-group">
+          <div class="tools-group" id="tools-group-create">
             <div class="section-label">Create</div>
             <div class="tools-grid">
               <button type="button" class="tool-tile" onclick="switchPanel('captions',null)">
@@ -3834,7 +3837,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </button>
             </div>
           </div>
-          <div class="tools-group">
+          <div class="tools-group" id="tools-group-edit">
             <div class="section-label">Edit</div>
             <div class="tools-grid">
               <button type="button" class="tool-tile" onclick="switchPanel('editor',null)">
@@ -3857,7 +3860,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </button>
             </div>
           </div>
-          <div class="tools-group">
+          <div class="tools-group" id="tools-group-manage">
             <div class="section-label">Manage</div>
             <div class="tools-grid">
               <button type="button" class="tool-tile" onclick="switchPanel('files',null)">
@@ -3873,11 +3876,11 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <div class="panel active content-glow" id="panel-dashboard">
       <div class="page-shell dash-shell">
-        <div class="page-header dash-welcome">
+        <div class="page-header dash-welcome" id="dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
           <p>Your usage and shortcuts in one place.</p>
         </div>
-        <div class="dash-stats">
+        <div class="dash-stats" id="dash-stats">
           <div class="dash-stat">
             <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
             <div><div class="stat-num" id="dash-transcriptions">0</div><div class="stat-label">Transcriptions</div></div>
@@ -3892,7 +3895,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
         <div class="section-label">Quick actions</div>
-        <div class="qa-grid">
+        <div class="qa-grid" id="dash-quick-actions">
           <button type="button" class="qa-card" onclick="switchPanel('videogen',null)">
             <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
             <div class="qa-body">
@@ -4898,84 +4901,235 @@ const UI_TOUR_STEPS = [
   {
     id: 'welcome',
     kicker: 'App tour',
-    title: 'A quick walk through Vidso',
-    body: 'We will highlight the real controls you will use. Skip anytime — unpaid accounts will see this again until you subscribe.',
+    title: 'Video Generation is the main tool',
+    body: 'We will walk the real controls: topic, length, voice, script, media, captions, music, then export. After that, the rest of the dashboard. Skip anytime.',
     selector: null,
-    placement: 'center'
+    placement: 'center',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-nav',
+    kicker: 'Start here',
+    title: 'Video Generation',
+    body: 'This is the faceless pipeline: a topic becomes a narrated short or long-form video with script, voice, B-roll, and captions.',
+    selector: '#nav-videogen',
+    needsNav: true,
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-pipeline',
+    kicker: 'Video Generation',
+    title: 'Four stages',
+    body: 'Script, Media, Preview, Export. You stay in this tool the whole way — generate, edit, then render an MP4.',
+    selector: '#fv-stepper',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-topic',
+    kicker: 'Video Generation',
+    title: 'Topic / prompt',
+    body: 'Describe the video. The script writer uses this as the brief for hooks, sections, and narration.',
+    selector: '#fv-field-topic',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-length',
+    kicker: 'Video Generation',
+    title: 'Shorts or long-form',
+    body: 'Shorts are 30–60s. Long-form goes up to your plan cap (10, 15, or 30 min). Length chips only show what your plan includes.',
+    selector: '#fv-field-length',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-aspect',
+    kicker: 'Video Generation',
+    title: 'Aspect ratio',
+    body: '9:16 for Shorts, Reels, and TikTok. 16:9 for YouTube long-form.',
+    selector: '#fv-field-aspect',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-voice',
+    kicker: 'Video Generation',
+    title: 'Narrator voice',
+    body: 'Pick an ElevenLabs voice and preview it before you generate. This voice is used for the full narration.',
+    selector: '#fv-field-voice',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-generate',
+    kicker: 'Video Generation',
+    title: 'Generate Script',
+    body: 'This writes a structured script you can edit section by section, regenerate, or clear — then continue to media.',
+    selector: '#fv-gen-script-btn',
+    panel: 'videogen',
+    fvStage: 'setup'
+  },
+  {
+    id: 'vg-script',
+    kicker: 'Video Generation',
+    title: 'Edit the script',
+    body: 'Rewrite any section with AI or edit it yourself. Regenerate the full script, then continue to media when the narration is right.',
+    selector: '#fv-script-box',
+    panel: 'videogen',
+    fvStage: 'script'
+  },
+  {
+    id: 'vg-media',
+    kicker: 'Video Generation',
+    title: 'Voiceover + B-roll',
+    body: 'Media builds the voiceover, word-level captions, B-roll clips, and a timeline matched to the narration. Re-run if you want a new cut.',
+    selector: '#fv-media-box',
+    panel: 'videogen',
+    fvStage: 'media'
+  },
+  {
+    id: 'vg-preview-broll',
+    kicker: 'Video Generation',
+    title: 'Preview: B-roll',
+    body: 'Replace any clip, shuffle all, even out timing, search Pexels, or upload your own footage. Play the stage to preview the cut.',
+    selector: '#fv-side',
+    panel: 'videogen',
+    fvStage: 'preview',
+    sideTab: 'broll'
+  },
+  {
+    id: 'vg-preview-captions',
+    kicker: 'Video Generation',
+    title: 'Preview: captions',
+    body: 'Style the on-screen captions: font, size, fill color, highlight color, and letter spacing. Changes show on the preview stage.',
+    selector: '#fv-pane-captions',
+    panel: 'videogen',
+    fvStage: 'preview',
+    sideTab: 'captions'
+  },
+  {
+    id: 'vg-preview-music',
+    kicker: 'Video Generation',
+    title: 'Preview: music',
+    body: 'Add background music and set volume under the voiceover. Audition a track, then hear it with Play on the preview.',
+    selector: '#fv-pane-music',
+    panel: 'videogen',
+    fvStage: 'preview',
+    sideTab: 'music'
+  },
+  {
+    id: 'vg-export',
+    kicker: 'Video Generation',
+    title: 'Render and download',
+    body: 'Export burns captions and music into a final MP4. Render, download, or render again if you change the cut.',
+    selector: '#fv-export-box',
+    panel: 'videogen',
+    fvStage: 'export'
+  },
+  {
+    id: 'vg-how',
+    kicker: 'Video Generation',
+    title: 'That is the core flow',
+    body: 'Script → media → export. Everything else in the sidebar supports clipping, ranking, images, and extra tools.',
+    selector: '#fv-how',
+    panel: 'videogen',
+    fvStage: 'setup'
   },
   {
     id: 'clipper',
     kicker: 'Short form',
     title: 'Clipping',
-    body: 'Turn long videos into short clips you can download and post.',
-    selector: '#nav-clipper',
-    needsNav: true
+    body: 'Paste a YouTube, TikTok, Instagram, or X link — or search and pick a video. Vidso finds viral moments and reframes them to 9:16.',
+    selector: '#clip-hero',
+    needsNav: false,
+    panel: 'clipper'
+  },
+  {
+    id: 'clipper-discover',
+    kicker: 'Short form',
+    title: 'Or pick a video',
+    body: 'Search YouTube, browse Recommended / Entertainment / Sport / Podcasts, or upload a file. Then Vidso finds the best 9:16 moments.',
+    selector: '#clip-discover',
+    panel: 'clipper'
   },
   {
     id: 'ranking',
     kicker: 'Short form',
     title: 'Ranking',
-    body: 'Score clip candidates so you can pick the strongest moments first.',
-    selector: '#nav-ranking',
-    needsNav: true
+    body: 'Build ranked short videos: pick a count, style the title, and preview in 9:16 before you export.',
+    selector: '#ranking-header',
+    panel: 'ranking'
   },
   {
     id: 'imagegen',
     kicker: 'Long form',
     title: 'Thumbnail Generator',
-    body: 'Turn a prompt into a YouTube thumbnail you can download and use.',
-    selector: '#nav-imagegen',
-    needsNav: true
-  },
-  {
-    id: 'videogen',
-    kicker: 'Long form',
-    title: 'Video Generation',
-    body: 'This is the core flow: topic to a full narrated long-form YouTube video.',
-    selector: '#nav-videogen',
-    needsNav: true,
-    panel: 'videogen'
+    body: 'Turn a prompt into a YouTube thumbnail. Pick a model, aspect ratio, and count — results land in the pane on the right.',
+    selector: '#img-prompt-pane',
+    panel: 'imagegen'
   },
   {
     id: 'upscale',
     kicker: 'Long form',
     title: 'Upscale',
-    body: 'Coming soon — listed here so you know where higher-resolution tools will land.',
+    body: 'AI upscaling for clips and stills. Listed here so you know where it will live — not available yet.',
     selector: '#nav-upscale',
-    needsNav: true
+    needsNav: true,
+    panel: 'upscale'
   },
   {
-    id: 'tools',
+    id: 'tools-create',
     kicker: 'Workspace',
-    title: 'Tools',
-    body: 'Extra utilities for captions, reframing, and other editing helpers.',
-    selector: '#nav-tools',
-    needsNav: true
+    title: 'Create tools',
+    body: 'AI Captions (transcribe and burn-in), AI Voiceover (ElevenLabs), and AI Reframe (auto 9:16).',
+    selector: '#tools-group-create',
+    panel: 'tools'
+  },
+  {
+    id: 'tools-edit',
+    kicker: 'Workspace',
+    title: 'Edit tools',
+    body: 'Video Editor, Downloader (any platform), and Commentary (voice plus captions on an existing clip).',
+    selector: '#tools-group-edit',
+    panel: 'tools'
+  },
+  {
+    id: 'tools-files',
+    kicker: 'Workspace',
+    title: 'My Files',
+    body: 'Uploads and finished exports live here so you can download them later.',
+    selector: '#tools-group-manage',
+    panel: 'tools'
   },
   {
     id: 'dashboard',
     kicker: 'Workspace',
-    title: 'Dashboard',
-    body: 'Your home overview for account activity and quick access back into the app.',
-    selector: '#nav-dashboard',
-    needsNav: true,
+    title: 'Dashboard home',
+    body: 'Usage counts, shortcuts back into Video Generation and the other tools, and recent files.',
+    selector: '#dash-quick-actions',
+    needsNav: false,
     panel: 'dashboard'
   },
   {
     id: 'quota',
     kicker: 'Account',
     title: 'Monthly videos',
-    body: 'Long-form and short-form counts reset on your billing anniversary. They match the plan cards — not a separate credit balance.',
+    body: 'Long-form and short-form remaining this billing window. These match the plan cards — not a separate credit balance.',
     selector: '#credits-pill',
-    needsNav: false
+    needsNav: false,
+    panel: 'dashboard'
   },
   {
     id: 'account',
     kicker: 'Account',
-    title: 'Account & Getting started',
-    body: 'Open settings here, and use Getting started anytime to replay this tour.',
+    title: 'Replay this tour',
+    body: 'Getting started opens this walkthrough again. Settings next to your name is billing and account.',
     selector: '#user-getting-started-btn',
-    needsNav: true
+    needsNav: true,
+    panel: 'dashboard'
   }
 ]
 
@@ -4985,9 +5139,79 @@ function tourTooltipEl() { return document.getElementById('tour-tooltip') }
 
 window.isUiTourActive = () => !!_tourActive
 
+let _tourFvSnapshot = null
+
+function tourCaptureFv() {
+  if (_tourFvSnapshot) return
+  const mediaResult = document.getElementById('fv-media-result')
+  const mediaProgress = document.getElementById('fv-media-progress-wrap')
+  _tourFvSnapshot = {
+    setupCollapsed: !!document.getElementById('fv-setup')?.classList.contains('collapsed'),
+    script: !!document.getElementById('fv-script-box')?.classList.contains('show'),
+    media: !!document.getElementById('fv-media-box')?.classList.contains('show'),
+    preview: !!document.getElementById('fv-preview-box')?.classList.contains('show'),
+    exportBox: !!document.getElementById('fv-export-box')?.classList.contains('show'),
+    mediaResult: mediaResult ? mediaResult.style.display : '',
+    mediaProgress: mediaProgress ? mediaProgress.style.display : '',
+    pill: typeof fvState !== 'undefined' ? (fvState.phase || 1) : 1,
+  }
+}
+
+function tourRestoreFv() {
+  const snap = _tourFvSnapshot
+  if (!snap) return
+  document.getElementById('fv-setup')?.classList.toggle('collapsed', snap.setupCollapsed)
+  document.getElementById('fv-script-box')?.classList.toggle('show', snap.script)
+  document.getElementById('fv-media-box')?.classList.toggle('show', snap.media)
+  document.getElementById('fv-preview-box')?.classList.toggle('show', snap.preview)
+  document.getElementById('fv-export-box')?.classList.toggle('show', snap.exportBox)
+  const mediaResult = document.getElementById('fv-media-result')
+  const mediaProgress = document.getElementById('fv-media-progress-wrap')
+  if (mediaResult) mediaResult.style.display = snap.mediaResult
+  if (mediaProgress) mediaProgress.style.display = snap.mediaProgress
+  try { fvSetPills(snap.pill) } catch (_) {}
+  _tourFvSnapshot = null
+}
+
+function tourApplyFvStage(stage) {
+  if (!stage) {
+    tourRestoreFv()
+    return
+  }
+  tourCaptureFv()
+  const setup = document.getElementById('fv-setup')
+  const script = document.getElementById('fv-script-box')
+  const media = document.getElementById('fv-media-box')
+  const preview = document.getElementById('fv-preview-box')
+  const exp = document.getElementById('fv-export-box')
+  setup?.classList.toggle('collapsed', stage !== 'setup')
+  script?.classList.toggle('show', stage === 'script')
+  media?.classList.toggle('show', stage === 'media')
+  preview?.classList.toggle('show', stage === 'preview')
+  exp?.classList.toggle('show', stage === 'export')
+  const mediaProgress = document.getElementById('fv-media-progress-wrap')
+  const mediaResult = document.getElementById('fv-media-result')
+  if (stage === 'media') {
+    if (mediaProgress) mediaProgress.style.display = 'none'
+    if (mediaResult) mediaResult.style.display = ''
+  } else if (_tourFvSnapshot) {
+    if (mediaProgress) mediaProgress.style.display = _tourFvSnapshot.mediaProgress
+    if (mediaResult) mediaResult.style.display = _tourFvSnapshot.mediaResult
+  }
+  const pill = { setup: 1, script: 1, media: 2, preview: 3, export: 4 }[stage] || 1
+  try { fvSetPills(pill) } catch (_) {}
+}
+
 async function tourPrepareStep(step) {
   if (step.panel) {
-    try { switchPanel(step.panel, null) } catch (_) {}
+    try { switchPanel(step.panel, null, { silent: true, allowLocked: true }) } catch (_) {}
+  }
+  if (step.panel === 'videogen' || step.fvStage) {
+    try { fvInit() } catch (_) {}
+  }
+  tourApplyFvStage(step.fvStage)
+  if (step.sideTab && typeof window.fvSideTab === 'function') {
+    try { window.fvSideTab(step.sideTab) } catch (_) {}
   }
   if (tourIsMobile()) {
     if (step.needsNav) {
@@ -5098,7 +5322,8 @@ function tourRender() {
     back.disabled = _tourStep === 0
   }
   if (next) next.textContent = _tourStep >= UI_TOUR_STEPS.length - 1 ? 'Done' : 'Next'
-  tourPrepareStep(step).then(() => {
+  tourPrepareStep(step).then(async () => {
+    await new Promise((r) => setTimeout(r, tourReduceMotion() ? 0 : 90))
     requestAnimationFrame(() => {
       tourPosition()
       tip.focus?.({ preventScroll: true })
@@ -5137,6 +5362,7 @@ window.closeUiTour = () => {
   document.body.classList.remove('tour-active')
   tourHighlightEl()?.classList.remove('is-on')
   try { closeMobileNav() } catch (_) {}
+  try { tourRestoreFv() } catch (_) {}
   if (funnelLocked() && !introPending()) {
     document.documentElement.classList.add('needs-paywall')
     document.documentElement.classList.remove('needs-gate')
