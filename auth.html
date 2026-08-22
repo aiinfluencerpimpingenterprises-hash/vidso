@@ -353,7 +353,10 @@ async function watchForPurchase(tier) {
   return _planPoll
 }
 
-function afterAuth() {
+function afterAuth(opts = {}) {
+  if (opts.needOnboarding) {
+    try { sessionStorage.setItem('vidso_need_onboarding', '1') } catch (_) {}
+  }
   location.replace(APP)
 }
 
@@ -411,7 +414,7 @@ document.getElementById('signup-cta').onclick = async () => {
   try {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
-    afterAuth()
+    afterAuth({ needOnboarding: true })
   } catch (e) {
     err.textContent = e.message
     err.style.display = 'block'

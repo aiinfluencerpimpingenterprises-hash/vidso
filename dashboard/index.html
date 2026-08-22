@@ -38,7 +38,31 @@
     return
   }
   var paywallOff = true
-  if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
+  var needOb = false
+  var obSeen = false
+  try {
+    needOb = sessionStorage.getItem('vidso_need_onboarding') === '1'
+    var ids = []
+    var parts = token.split('.')
+    if (parts[1]) {
+      var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+      ;[payload.email, payload.user_email, payload.sub].forEach(function (v) {
+        var s = String(v || '').trim().toLowerCase()
+        if (s && ids.indexOf(s) === -1) ids.push(s)
+      })
+    }
+    for (var i = 0; i < ids.length; i++) {
+      if (localStorage.getItem('vidso_onboarding_v3_seen:' + ids[i]) === '1') obSeen = true
+    }
+    var cm = document.cookie.match(/(?:^|; )vidso_ob_v3=([^;]*)/)
+    if (cm && ids.length) {
+      var seenIds = decodeURIComponent(cm[1]).split('|')
+      for (var j = 0; j < ids.length; j++) {
+        if (seenIds.indexOf(ids[j]) !== -1) obSeen = true
+      }
+    }
+  } catch (e) {}
+  if (needOb || !obSeen || (!paid && !paywallOff)) document.documentElement.classList.add('needs-gate')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -1356,7 +1380,7 @@ input:focus,textarea:focus,select:focus,
 /* ── Onboarding (full-page setup) ─────────────────────────────────────── */
 #onboarding-modal{
   padding:0;align-items:stretch;justify-content:stretch;
-  background:#0B0B0C;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:110
+  background:#0B0B0C;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:20000
 }
 #onboarding-modal.hidden{display:none}
 body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
@@ -2118,7 +2142,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     </button>
     <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-      <span class="nav-item-label">Image Generation</span>
+      <span class="nav-item-label">Thumbnail Generator</span>
     </button>
     <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
@@ -2316,8 +2340,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <!-- IMAGE GEN -->
     <div class="panel content-glow" id="panel-imagegen">
       <div class="page-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
-        <h2>Image Generation</h2>
-        <p>Generate thumbnails, portraits, or cinematic stills.</p>
+        <h2>Thumbnail Generator</h2>
+        <p>Make YouTube thumbnails from a prompt.</p>
       </div>
       <div class="page-shell-wide img-layout">
         <div class="img-pane">
@@ -2346,7 +2370,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                 </span>
                 <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-              <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Image generation models"></div>
+              <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Thumbnail generation models"></div>
             </div>
           </div>
           <div class="field">
@@ -2388,7 +2412,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <div class="img-grid" id="img-grid">
             <div class="ui-empty" id="img-empty">
               <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-              <div class="ui-empty-title">No images yet</div>
+              <div class="ui-empty-title">No thumbnails yet</div>
               <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
             </div>
           </div>
@@ -3832,7 +3856,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
           <div class="dash-stat">
             <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <div><div class="stat-num" id="dash-images">0</div><div class="stat-label">Images generated</div></div>
+            <div><div class="stat-num" id="dash-images">0</div><div class="stat-label">Thumbnails generated</div></div>
           </div>
         </div>
         <div class="section-label">Quick actions</div>
@@ -3861,8 +3885,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
             <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
             <div class="qa-body">
-              <div class="qa-title">Generate images</div>
-              <div class="qa-sub">Thumbnails and cinematic stills</div>
+              <div class="qa-title">Make a thumbnail</div>
+              <div class="qa-sub">Prompt to a YouTube thumbnail</div>
             </div>
           </button>
         </div>
@@ -3967,6 +3991,22 @@ function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan() || !paywallOn())
   if (obHasSeen()) _obDoneThisSession = true
   if (tourHasSeen()) _tourDoneThisSession = true
+  const pendingOb = obForcePreview() || obShouldAutoOpen()
+  if (pendingOb) {
+    document.documentElement.classList.add('needs-gate')
+    document.documentElement.classList.remove('needs-paywall')
+    closePaywall()
+    hideModal()
+    populateUser()
+    maybeShowOnboarding()
+    try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
+    loadUsage()
+    loadVoices()
+    loadFiles()
+    if (opts.restoreRoute) restorePanelFromHash()
+    return
+  }
+  try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
   hideModal()
   populateUser()
   loadUsage()
@@ -4609,9 +4649,7 @@ window.openOnboarding = (opts = {}) => {
   window.closeMobileNav?.()
   window.closeAccountSettings?.()
   document.documentElement.classList.remove('needs-paywall')
-  if (typeof funnelLocked === 'function' && funnelLocked()) {
-    document.documentElement.classList.add('needs-gate')
-  }
+  document.documentElement.classList.add('needs-gate')
   document.body.classList.remove('paywalled')
   document.getElementById('paywall-modal')?.classList.add('hidden')
   modal.classList.remove('hidden')
@@ -4627,6 +4665,9 @@ window.closeOnboarding = () => {
   if (!modal) return
   modal.classList.add('hidden')
   document.body.classList.remove('onboarding-open')
+  if (!(typeof introPending === 'function' && introPending())) {
+    document.documentElement.classList.remove('needs-gate')
+  }
   if (_obPrevFocus && typeof _obPrevFocus.focus === 'function') {
     try { _obPrevFocus.focus() } catch (_) {}
   }
@@ -4719,8 +4760,7 @@ window.maybeShowOnboarding = () => {
     if (!force) obMarkSeen()
     openOnboarding({ auto: true, force })
   }
-  if (force || (typeof funnelLocked === 'function' && funnelLocked())) run()
-  else setTimeout(run, 220)
+  run()
 }
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
@@ -4786,8 +4826,8 @@ const UI_TOUR_STEPS = [
   {
     id: 'imagegen',
     kicker: 'Create',
-    title: 'Image Generation',
-    body: 'Generate still images for thumbnails, frames, and creative assets.',
+    title: 'Thumbnail Generator',
+    body: 'Turn a prompt into a YouTube thumbnail you can download and use.',
     selector: '#nav-imagegen',
     needsNav: true
   },
@@ -5340,7 +5380,7 @@ function populateUser() {
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
 const titles = {
-  home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Image Generation',
+  home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Video Generation', upscale:'Upscale', tools:'Tools', dashboard:'Dashboard',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
@@ -7062,7 +7102,7 @@ window.generateImage = async () => {
   } catch(e) {
     document.getElementById('img-grid').innerHTML = `<div class="ui-empty" id="img-empty">
       <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-      <div class="ui-empty-title">No images yet</div>
+      <div class="ui-empty-title">No thumbnails yet</div>
       <div class="ui-empty-sub">Write a prompt and generate to see results here.</div>
     </div>`
     setStatus('img-status', e.message, 'err')
