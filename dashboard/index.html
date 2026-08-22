@@ -1639,6 +1639,17 @@ body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
 .tour-btn-primary{background:var(--grad);border-color:transparent;color:#fff}
 .tour-btn-primary:hover{filter:brightness(1.06)}
 .tour-card-mode .tour-highlight{display:none}
+.tour-backdrop{
+  display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.72);pointer-events:auto
+}
+#ui-tour.tour-card-mode .tour-backdrop{display:block}
+.tour-progress{display:flex;gap:4px;width:100%}
+.tour-seg{flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.12)}
+.tour-seg.is-on{background:var(--grad)}
+.tour-tooltip[data-placement="sheet"]::before{display:none}
+.tour-tooltip[data-placement="sheet"]{
+  left:8px;right:8px;top:auto;bottom:8px;width:auto;max-width:none;transform:none
+}
 @media (prefers-reduced-motion:reduce){
   .tour-highlight,.tour-tooltip{transition:none}
 }
@@ -2132,6 +2143,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
 <!-- UI TOUR -->
 <div id="ui-tour" class="hidden" aria-hidden="true">
+  <div class="tour-backdrop" id="tour-backdrop" aria-hidden="true"></div>
   <div class="tour-highlight" id="tour-highlight" aria-hidden="true"></div>
   <div class="tour-tooltip" id="tour-tooltip" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-body" tabindex="-1">
     <div class="tour-tooltip-top">
@@ -2140,12 +2152,15 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <h2 class="tour-title" id="tour-title">Welcome</h2>
         <p class="tour-body" id="tour-body"></p>
       </div>
-      <button type="button" class="tour-close" id="tour-close-btn" onclick="skipUiTour()" aria-label="Close tour">
+      <button type="button" class="tour-close" id="tour-close-btn" onclick="skipUiTour()" aria-label="Skip tour">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
+    <div class="tour-progress" id="tour-progress" aria-hidden="true"></div>
+    <p class="sr-only" id="tour-live" aria-live="polite"></p>
     <div class="tour-foot">
-      <span class="tour-step" id="tour-step-label">1 of 1</span>
+      <span class="tour-step" id="tour-step-label">Welcome · 1 of 1</span>
+      <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-section-btn" onclick="uiTourSkipSection()">Skip section</button>
       <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-btn" onclick="skipUiTour()">Skip tour</button>
       <button type="button" class="tour-btn" id="tour-back-btn" onclick="uiTourBack()">Back</button>
       <button type="button" class="tour-btn tour-btn-primary" id="tour-next-btn" onclick="uiTourNext()">Next</button>
@@ -3925,6 +3940,12 @@ import { durationPresets } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
+import {
+  TOUR_STEPS,
+  tourChapterLabel,
+  tourStepsInChapter,
+  tourNextChapterStart,
+} from '/lib/tour.js'
 
 window._api = api
 window._setSession = setSession
@@ -4841,29 +4862,73 @@ window.maybeShowOnboarding = () => {
 revealOnboardingNow()
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
-// Persistence: vidso_ui_tour_seen:<userKey> -> "1" when completed or skipped (no auto re-open).
-// Re-open anytime via Getting started. Preview: ?tour=1
+// Persistence: vidso_tour_step:<userKey>, vidso_tour_completed:<userKey>.
+// Legacy vidso_ui_tour_seen:<userKey> still counts as completed.
+// Getting started replays from step 1 and clears completed. Preview: ?tour=1
 let _tourStep = 0
 let _tourActive = false
 let _tourPrevFocus = null
 let _tourResizeTimer = 0
 let _tourFromMenu = false
+let _tourGen = 0
+let _tourDemoOn = false
+let _tourDir = 1
+let _tourSkipHops = 0
 
 function tourSeenKey() { return 'vidso_ui_tour_seen:' + obUserKey() }
+function tourStepKey() { return 'vidso_tour_step:' + obUserKey() }
+function tourCompletedKey() { return 'vidso_tour_completed:' + obUserKey() }
+function tourIsCompleted() {
+  try {
+    if (localStorage.getItem(tourCompletedKey()) === '1') return true
+    if (localStorage.getItem(tourSeenKey()) === '1') return true
+  } catch (_) {}
+  return false
+}
 function tourHasSeen() {
-  try { return localStorage.getItem(tourSeenKey()) === '1' } catch (_) { return false }
+  return tourIsCompleted()
+}
+function tourSetCompleted(on) {
+  try {
+    if (on) {
+      localStorage.setItem(tourCompletedKey(), '1')
+      localStorage.setItem(tourSeenKey(), '1')
+      localStorage.removeItem(tourStepKey())
+    } else {
+      localStorage.removeItem(tourCompletedKey())
+      localStorage.removeItem(tourSeenKey())
+    }
+  } catch (_) {}
 }
 function tourMarkSeen() {
-  try { localStorage.setItem(tourSeenKey(), '1') } catch (_) {}
+  tourSetCompleted(true)
+}
+function tourPersistStep(i) {
+  try { localStorage.setItem(tourStepKey(), String(i)) } catch (_) {}
+}
+function tourLoadStep() {
+  try {
+    const n = parseInt(localStorage.getItem(tourStepKey()) || '', 10)
+    if (Number.isFinite(n) && n >= 0 && n < TOUR_STEPS.length) return n
+  } catch (_) {}
+  return 0
+}
+function tourClearProgress() {
+  try {
+    localStorage.removeItem(tourCompletedKey())
+    localStorage.removeItem(tourStepKey())
+    localStorage.removeItem(tourSeenKey())
+  } catch (_) {}
+  _tourDoneThisSession = false
 }
 function tourFinishStep() {
   _tourDoneThisSession = true
-  if (hasActivePlan()) tourMarkSeen()
+  tourSetCompleted(true)
 }
 function tourShouldAutoOpen() {
   if (paywallDevBypass()) return false
-  if (funnelLocked()) return !_tourDoneThisSession
-  return !tourHasSeen()
+  if (funnelLocked()) return !tourIsCompleted() && !_tourDoneThisSession
+  return !tourIsCompleted()
 }
 function tourObReady() {
   return obHasSeen() || _obDoneThisSession
@@ -4871,239 +4936,18 @@ function tourObReady() {
 function tourIsMobile() {
   try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
 }
+function tourNarrowSheet() {
+  try { return window.matchMedia('(max-width:380px)').matches } catch (_) { return false }
+}
 function tourReduceMotion() {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (_) { return false }
 }
 
-const UI_TOUR_STEPS = [
-  {
-    id: 'welcome',
-    kicker: 'App tour',
-    title: 'Video Generation is the main tool',
-    body: 'We will walk the real controls: topic, length, voice, script, media, captions, music, then export. After that, the rest of the dashboard. Skip anytime.',
-    selector: null,
-    placement: 'center',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-nav',
-    kicker: 'Start here',
-    title: 'Video Generation',
-    body: 'This is the faceless pipeline: a topic becomes a narrated short or long-form video with script, voice, B-roll, and captions.',
-    selector: '#nav-videogen',
-    needsNav: true,
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-pipeline',
-    kicker: 'Video Generation',
-    title: 'Four stages',
-    body: 'Script, Media, Preview, Export. You stay in this tool the whole way — generate, edit, then render an MP4.',
-    selector: '#fv-stepper',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-topic',
-    kicker: 'Video Generation',
-    title: 'Topic / prompt',
-    body: 'Describe the video. The script writer uses this as the brief for hooks, sections, and narration.',
-    selector: '#fv-field-topic',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-length',
-    kicker: 'Video Generation',
-    title: 'Shorts or long-form',
-    body: 'Shorts are 30–60s. Long-form goes up to your plan cap (10, 15, or 30 min). Length chips only show what your plan includes.',
-    selector: '#fv-field-length',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-aspect',
-    kicker: 'Video Generation',
-    title: 'Aspect ratio',
-    body: '9:16 for Shorts, Reels, and TikTok. 16:9 for YouTube long-form.',
-    selector: '#fv-field-aspect',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-voice',
-    kicker: 'Video Generation',
-    title: 'Narrator voice',
-    body: 'Pick an ElevenLabs voice and preview it before you generate. This voice is used for the full narration.',
-    selector: '#fv-field-voice',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-generate',
-    kicker: 'Video Generation',
-    title: 'Generate Script',
-    body: 'This writes a structured script you can edit section by section, regenerate, or clear — then continue to media.',
-    selector: '#fv-gen-script-btn',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'vg-script',
-    kicker: 'Video Generation',
-    title: 'Edit the script',
-    body: 'Rewrite any section with AI or edit it yourself. Regenerate the full script, then continue to media when the narration is right.',
-    selector: '#fv-script-box',
-    panel: 'videogen',
-    fvStage: 'script'
-  },
-  {
-    id: 'vg-media',
-    kicker: 'Video Generation',
-    title: 'Voiceover + B-roll',
-    body: 'Media builds the voiceover, word-level captions, B-roll clips, and a timeline matched to the narration. Re-run if you want a new cut.',
-    selector: '#fv-media-box',
-    panel: 'videogen',
-    fvStage: 'media'
-  },
-  {
-    id: 'vg-preview-broll',
-    kicker: 'Video Generation',
-    title: 'Preview: B-roll',
-    body: 'Replace any clip, shuffle all, even out timing, search Pexels, or upload your own footage. Play the stage to preview the cut.',
-    selector: '#fv-side',
-    panel: 'videogen',
-    fvStage: 'preview',
-    sideTab: 'broll'
-  },
-  {
-    id: 'vg-preview-captions',
-    kicker: 'Video Generation',
-    title: 'Preview: captions',
-    body: 'Style the on-screen captions: font, size, fill color, highlight color, and letter spacing. Changes show on the preview stage.',
-    selector: '#fv-pane-captions',
-    panel: 'videogen',
-    fvStage: 'preview',
-    sideTab: 'captions'
-  },
-  {
-    id: 'vg-preview-music',
-    kicker: 'Video Generation',
-    title: 'Preview: music',
-    body: 'Add background music and set volume under the voiceover. Audition a track, then hear it with Play on the preview.',
-    selector: '#fv-pane-music',
-    panel: 'videogen',
-    fvStage: 'preview',
-    sideTab: 'music'
-  },
-  {
-    id: 'vg-export',
-    kicker: 'Video Generation',
-    title: 'Render and download',
-    body: 'Export burns captions and music into a final MP4. Render, download, or render again if you change the cut.',
-    selector: '#fv-export-box',
-    panel: 'videogen',
-    fvStage: 'export'
-  },
-  {
-    id: 'vg-how',
-    kicker: 'Video Generation',
-    title: 'That is the core flow',
-    body: 'Script → media → export. Everything else in the sidebar supports clipping, ranking, images, and extra tools.',
-    selector: '#fv-how',
-    panel: 'videogen',
-    fvStage: 'setup'
-  },
-  {
-    id: 'clipper',
-    kicker: 'Short form',
-    title: 'Clipping',
-    body: 'Paste a YouTube, TikTok, Instagram, or X link — or search and pick a video. Vidso finds viral moments and reframes them to 9:16.',
-    selector: '#clip-hero',
-    needsNav: false,
-    panel: 'clipper'
-  },
-  {
-    id: 'clipper-discover',
-    kicker: 'Short form',
-    title: 'Or pick a video',
-    body: 'Search YouTube, browse Recommended / Entertainment / Sport / Podcasts, or upload a file. Then Vidso finds the best 9:16 moments.',
-    selector: '#clip-discover',
-    panel: 'clipper'
-  },
-  {
-    id: 'ranking',
-    kicker: 'Short form',
-    title: 'Ranking',
-    body: 'Build ranked short videos: pick a count, style the title, and preview in 9:16 before you export.',
-    selector: '#ranking-header',
-    panel: 'ranking'
-  },
-  {
-    id: 'imagegen',
-    kicker: 'Long form',
-    title: 'Thumbnail Generator',
-    body: 'Turn a prompt into a YouTube thumbnail. Pick a model, aspect ratio, and count — results land in the pane on the right.',
-    selector: '#img-prompt-pane',
-    panel: 'imagegen'
-  },
-  {
-    id: 'tools-create',
-    title: 'Create tools',
-    body: 'AI Captions (transcribe and burn-in), AI Voiceover (ElevenLabs), and AI Reframe (auto 9:16).',
-    selector: '#tools-group-create',
-    panel: 'tools'
-  },
-  {
-    id: 'tools-edit',
-    kicker: 'Workspace',
-    title: 'Edit tools',
-    body: 'Video Editor, Downloader (any platform), and Commentary (voice plus captions on an existing clip).',
-    selector: '#tools-group-edit',
-    panel: 'tools'
-  },
-  {
-    id: 'tools-files',
-    kicker: 'Workspace',
-    title: 'My Files',
-    body: 'Uploads and finished exports live here so you can download them later.',
-    selector: '#tools-group-manage',
-    panel: 'tools'
-  },
-  {
-    id: 'dashboard',
-    kicker: 'Workspace',
-    title: 'Dashboard home',
-    body: 'Usage counts, shortcuts back into Video Generation and the other tools, and recent files.',
-    selector: '#dash-quick-actions',
-    needsNav: false,
-    panel: 'dashboard'
-  },
-  {
-    id: 'quota',
-    kicker: 'Account',
-    title: 'Monthly videos',
-    body: 'Long-form and short-form remaining this billing window. These match the plan cards — not a separate credit balance.',
-    selector: '#credits-pill',
-    needsNav: false,
-    panel: 'dashboard'
-  },
-  {
-    id: 'account',
-    kicker: 'Account',
-    title: 'Replay this tour',
-    body: 'Getting started opens this walkthrough again. Settings next to your name is billing and account.',
-    selector: '#user-getting-started-btn',
-    needsNav: true,
-    panel: 'dashboard'
-  }
-]
-
 function tourRoot() { return document.getElementById('ui-tour') }
 function tourHighlightEl() { return document.getElementById('tour-highlight') }
 function tourTooltipEl() { return document.getElementById('tour-tooltip') }
+function tourTargetOf(step) { return step?.target || step?.selector || null }
+function tourRouteOf(step) { return step?.route || step?.panel || null }
 
 window.isUiTourActive = () => !!_tourActive
 
@@ -5126,6 +4970,7 @@ function tourCaptureFv() {
 }
 
 function tourRestoreFv() {
+  tourClearDemo()
   const snap = _tourFvSnapshot
   if (!snap) return
   document.getElementById('fv-setup')?.classList.toggle('collapsed', snap.setupCollapsed)
@@ -5159,7 +5004,7 @@ function tourApplyFvStage(stage) {
   exp?.classList.toggle('show', stage === 'export')
   const mediaProgress = document.getElementById('fv-media-progress-wrap')
   const mediaResult = document.getElementById('fv-media-result')
-  if (stage === 'media') {
+  if (stage === 'media' || stage === 'preview' || stage === 'export') {
     if (mediaProgress) mediaProgress.style.display = 'none'
     if (mediaResult) mediaResult.style.display = ''
   } else if (_tourFvSnapshot) {
@@ -5170,17 +5015,118 @@ function tourApplyFvStage(stage) {
   try { fvSetPills(pill) } catch (_) {}
 }
 
-async function tourPrepareStep(step) {
-  if (step.panel) {
-    try { switchPanel(step.panel, null, { silent: true, allowLocked: true }) } catch (_) {}
+function tourMountDemo(step) {
+  if (step?.precondition !== 'fv-demo') return
+  _tourDemoOn = true
+  const sections = document.getElementById('fv-sections')
+  if (step.fvStage === 'script' && sections && !sections.querySelector('.fv-section')) {
+    sections.innerHTML = `
+      <div class="fv-section" data-tour-demo="1">
+        <div class="fv-section-head"><label>Hook</label></div>
+        <div class="fv-section-preview">Most faceless videos lose the viewer in the first eight seconds.</div>
+      </div>
+      <div class="fv-section" data-tour-demo="1">
+        <div class="fv-section-head"><label>Point</label></div>
+        <div class="fv-section-preview">Open with a specific claim, then prove it with B-roll that matches the line.</div>
+      </div>`
+    const title = document.getElementById('fv-script-title')
+    if (title && !title.textContent.trim()) {
+      title.textContent = 'Demo script'
+      title.setAttribute('data-tour-demo-title', '1')
+    }
+    try { fvSetScriptActionsVisible(true) } catch (_) {}
   }
-  if (step.panel === 'videogen' || step.fvStage) {
+  if (step.fvStage === 'media' || step.fvStage === 'preview' || step.fvStage === 'export') {
+    const words = document.getElementById('fv-media-words')
+    if (words && !words.children.length) {
+      words.innerHTML = '<span data-tour-demo="1">Demo</span><span data-tour-demo="1">narration</span><span data-tour-demo="1">with</span><span data-tour-demo="1">captions</span>'
+    }
+    const clips = document.getElementById('fv-media-clips')
+    if (clips && !clips.children.length) {
+      clips.innerHTML = [1, 2, 3].map((i) => `<div class="fv-clip-card" data-tour-demo="1"><div class="tag">B-roll ${i}</div></div>`).join('')
+    }
+  }
+  if (step.fvStage === 'preview') {
+    const segs = document.getElementById('fv-seg-list')
+    if (segs && !segs.querySelector('.fv-seg-row')) {
+      segs.innerHTML = `
+        <div class="fv-seg-row" data-tour-demo="1">
+          <div class="fv-seg-thumb"></div>
+          <div class="fv-seg-info"><div class="t">Street B-roll</div><div class="s">0:00 – 0:08</div></div>
+        </div>
+        <div class="fv-seg-row" data-tour-demo="1">
+          <div class="fv-seg-thumb"></div>
+          <div class="fv-seg-info"><div class="t">Talking point</div><div class="s">0:08 – 0:16</div></div>
+        </div>`
+    }
+    const music = document.getElementById('fv-music-list')
+    if (music && !music.children.length) {
+      try { fvRenderMusicList() } catch (_) {}
+    }
+  }
+}
+
+function tourClearDemo() {
+  if (!_tourDemoOn) {
+    document.querySelectorAll('[data-tour-demo]').forEach((n) => n.remove())
+    return
+  }
+  document.querySelectorAll('[data-tour-demo]').forEach((n) => n.remove())
+  const title = document.querySelector('[data-tour-demo-title]')
+  if (title) {
+    title.textContent = ''
+    title.removeAttribute('data-tour-demo-title')
+  }
+  _tourDemoOn = false
+}
+
+function tourElVisible(el) {
+  if (!el) return false
+  const st = getComputedStyle(el)
+  if (st.display === 'none' || st.visibility === 'hidden' || Number(st.opacity) === 0) return false
+  const r = el.getBoundingClientRect()
+  return r.width >= 2 && r.height >= 2
+}
+
+function tourWaitFor(selector, timeoutMs = 1600) {
+  if (!selector) return Promise.resolve(true)
+  const hit = () => {
+    const el = document.querySelector(selector)
+    return tourElVisible(el) ? el : null
+  }
+  const now = hit()
+  if (now) return Promise.resolve(now)
+  return new Promise((resolve) => {
+    const obs = new MutationObserver(() => {
+      const el = hit()
+      if (el) {
+        obs.disconnect()
+        clearTimeout(timer)
+        resolve(el)
+      }
+    })
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] })
+    const timer = setTimeout(() => {
+      obs.disconnect()
+      resolve(hit())
+    }, timeoutMs)
+  })
+}
+
+async function tourPrepareStep(step) {
+  const route = tourRouteOf(step)
+  if (route) {
+    try { switchPanel(route, null, { silent: true, allowLocked: true }) } catch (_) {}
+    await tourWaitFor('#panel-' + route, 1200)
+  }
+  if (route === 'videogen' || step.fvStage) {
     try { fvInit() } catch (_) {}
   }
   tourApplyFvStage(step.fvStage)
   if (step.sideTab && typeof window.fvSideTab === 'function') {
     try { window.fvSideTab(step.sideTab) } catch (_) {}
   }
+  tourMountDemo(step)
   if (tourIsMobile()) {
     if (step.needsNav) {
       try { openMobileNav() } catch (_) {}
@@ -5194,8 +5140,79 @@ async function tourPrepareStep(step) {
   }
 }
 
+function tourScrollTarget(el) {
+  if (!el) return
+  const pad = 120
+  const r = el.getBoundingClientRect()
+  const vh = window.innerHeight
+  const vw = window.innerWidth
+  if (r.top >= pad && r.bottom <= vh - pad && r.left >= 16 && r.right <= vw - 16) return
+  try {
+    el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: tourReduceMotion() ? 'auto' : 'smooth' })
+  } catch (_) {}
+}
+
+function tourRectsOverlap(a, b, slack = 8) {
+  return a.left < b.right - slack && a.right > b.left + slack && a.top < b.bottom - slack && a.bottom > b.top + slack
+}
+
+function tourTipBox(placement, r, tw, th, gap) {
+  let left = r.left
+  let top = r.top + r.height + gap
+  if (placement === 'top') top = r.top - th - gap
+  if (placement === 'bottom') {
+    left = r.left
+    top = r.top + r.height + gap
+  }
+  if (placement === 'right') {
+    left = r.left + r.width + gap
+    top = r.top + Math.max(0, (r.height - th) / 2)
+  }
+  if (placement === 'left') {
+    left = r.left - tw - gap
+    top = r.top + Math.max(0, (r.height - th) / 2)
+  }
+  return { left, top, right: left + tw, bottom: top + th, width: tw, height: th }
+}
+
+function tourPickPlacement(preferred, r, tw, th, gap, vw, vh) {
+  const order = []
+  const add = (p) => { if (p && !order.includes(p)) order.push(p) }
+  if (preferred && preferred !== 'auto' && preferred !== 'center' && preferred !== 'sheet') add(preferred)
+  if (!tourIsMobile() && r.left < 320) add('right')
+  add('bottom')
+  add('top')
+  add('right')
+  add('left')
+  const hi = { left: r.left, top: r.top, right: r.left + r.width, bottom: r.top + r.height }
+  let best = order[0]
+  let bestScore = Infinity
+  for (const p of order) {
+    const box = tourTipBox(p, r, tw, th, gap)
+    const clamped = {
+      left: Math.min(Math.max(16, box.left), vw - tw - 16),
+      top: Math.min(Math.max(16, box.top), vh - th - 16),
+    }
+    clamped.right = clamped.left + tw
+    clamped.bottom = clamped.top + th
+    const overflow =
+      Math.max(0, 16 - box.left) +
+      Math.max(0, 16 - box.top) +
+      Math.max(0, box.right - (vw - 16)) +
+      Math.max(0, box.bottom - (vh - 16))
+    const overlap = tourRectsOverlap(clamped, hi) ? 400 : 0
+    const score = overflow + overlap
+    if (score < bestScore) {
+      bestScore = score
+      best = p
+    }
+    if (!overlap && overflow < 8) return p
+  }
+  return best
+}
+
 function tourPosition() {
-  const step = UI_TOUR_STEPS[_tourStep]
+  const step = TOUR_STEPS[_tourStep]
   const root = tourRoot()
   const tip = tourTooltipEl()
   const hi = tourHighlightEl()
@@ -5204,23 +5221,29 @@ function tourPosition() {
   const pad = 8
   const vw = window.innerWidth
   const vh = window.innerHeight
-  let target = step.selector ? document.querySelector(step.selector) : null
+  const selector = tourTargetOf(step)
+  let target = selector ? document.querySelector(selector) : null
+  if (target && !tourElVisible(target)) target = null
 
+  const cardMode = !target || step.placement === 'center'
   tip.classList.toggle('is-on', true)
-  root.classList.toggle('tour-card-mode', !target || step.placement === 'center')
+  root.classList.toggle('tour-card-mode', cardMode)
 
-  if (!target || step.placement === 'center') {
+  if (cardMode) {
     hi.classList.remove('is-on')
     tip.dataset.placement = 'center'
     const tw = tip.offsetWidth || 320
     const th = tip.offsetHeight || 180
     tip.style.left = Math.max(16, (vw - tw) / 2) + 'px'
     tip.style.top = Math.max(16, (vh - th) / 2) + 'px'
+    tip.style.right = 'auto'
+    tip.style.bottom = 'auto'
+    tip.style.width = ''
+    tip.style.maxWidth = ''
     tip.style.setProperty('--tour-arrow-x', '24px')
     return
   }
 
-  try { target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: tourReduceMotion() ? 'auto' : 'smooth' }) } catch (_) {}
   const rect = target.getBoundingClientRect()
   const r = {
     top: Math.max(6, rect.top - pad),
@@ -5235,36 +5258,45 @@ function tourPosition() {
   hi.style.borderRadius = (getComputedStyle(target).borderRadius || '14px')
   hi.classList.add('is-on')
 
-  // Measure tip after content set
   const tw = tip.offsetWidth || 320
   const th = tip.offsetHeight || 180
   const gap = 14
-  const spaceBelow = vh - (r.top + r.height)
-  const spaceAbove = r.top
-  let placement = 'bottom'
-  if (spaceBelow < th + gap + 12 && spaceAbove > spaceBelow) placement = 'top'
-  // Prefer side placement on desktop if target is in the left sidebar.
-  if (!tourIsMobile() && r.left < 320 && vw - (r.left + r.width) > tw + gap + 24) {
-    placement = 'right'
+  let placement = tourPickPlacement(step.placement, r, tw, th, gap, vw, vh)
+
+  const hiRect = { left: r.left, top: r.top, right: r.left + r.width, bottom: r.top + r.height }
+  const trial = tourTipBox(placement, r, tw, th, gap)
+  const clampedTrial = {
+    left: Math.min(Math.max(16, trial.left), vw - tw - 16),
+    top: Math.min(Math.max(16, trial.top), vh - th - 16),
+  }
+  clampedTrial.right = clampedTrial.left + tw
+  clampedTrial.bottom = clampedTrial.top + th
+  const overflows = trial.left < 8 || trial.top < 8 || trial.right > vw - 8 || trial.bottom > vh - 8
+  if (tourNarrowSheet() && (overflows || tourRectsOverlap(clampedTrial, hiRect))) {
+    placement = 'sheet'
   }
 
-  let left = r.left
-  let top = r.top + r.height + gap
-  if (placement === 'top') top = r.top - th - gap
-  if (placement === 'right') {
-    left = r.left + r.width + gap
-    top = r.top + Math.max(0, (r.height - th) / 2)
-  }
-  if (placement === 'left') {
-    left = r.left - tw - gap
-    top = r.top + Math.max(0, (r.height - th) / 2)
+  if (placement === 'sheet') {
+    tip.dataset.placement = 'sheet'
+    tip.style.left = '8px'
+    tip.style.right = '8px'
+    tip.style.top = 'auto'
+    tip.style.bottom = '8px'
+    tip.style.width = 'auto'
+    tip.style.maxWidth = 'none'
+    return
   }
 
-  left = Math.min(Math.max(16, left), vw - tw - 16)
-  top = Math.min(Math.max(16, top), vh - th - 16)
+  const box = tourTipBox(placement, r, tw, th, gap)
+  const left = Math.min(Math.max(16, box.left), vw - tw - 16)
+  const top = Math.min(Math.max(16, box.top), vh - th - 16)
   tip.dataset.placement = placement
   tip.style.left = left + 'px'
   tip.style.top = top + 'px'
+  tip.style.right = 'auto'
+  tip.style.bottom = 'auto'
+  tip.style.width = ''
+  tip.style.maxWidth = ''
 
   if (placement === 'bottom' || placement === 'top') {
     const arrowX = Math.min(tw - 28, Math.max(18, (r.left + r.width / 2) - left - 6))
@@ -5275,28 +5307,79 @@ function tourPosition() {
   }
 }
 
-function tourRender() {
-  const step = UI_TOUR_STEPS[_tourStep]
+function tourFillChrome(step) {
   const tip = tourTooltipEl()
   if (!step || !tip) return
-  document.getElementById('tour-kicker').textContent = step.kicker || 'Tour'
+  const chapter = tourStepsInChapter(step.chapter)
+  const idx = Math.max(0, chapter.findIndex((s) => s.id === step.id))
+  const n = idx + 1
+  const m = chapter.length || 1
+  const label = tourChapterLabel(step.chapter)
+  document.getElementById('tour-kicker').textContent = step.eyebrow || label
   document.getElementById('tour-title').textContent = step.title || ''
   document.getElementById('tour-body').textContent = step.body || ''
-  document.getElementById('tour-step-label').textContent = (_tourStep + 1) + ' of ' + UI_TOUR_STEPS.length
+  document.getElementById('tour-step-label').textContent = label + ' · ' + n + ' of ' + m
+  const segs = document.getElementById('tour-progress')
+  if (segs) {
+    segs.innerHTML = chapter.map((_, i) => `<span class="tour-seg${i < n ? ' is-on' : ''}"></span>`).join('')
+  }
+  const live = document.getElementById('tour-live')
+  if (live) live.textContent = (step.title || '') + '. ' + (step.body || '')
+  const skipSec = document.getElementById('tour-skip-section-btn')
+  if (skipSec) skipSec.hidden = tourNextChapterStart(_tourStep) >= TOUR_STEPS.length
   const back = document.getElementById('tour-back-btn')
   const next = document.getElementById('tour-next-btn')
   if (back) {
     back.hidden = _tourStep === 0
     back.disabled = _tourStep === 0
   }
-  if (next) next.textContent = _tourStep >= UI_TOUR_STEPS.length - 1 ? 'Done' : 'Next'
+  if (next) next.textContent = _tourStep >= TOUR_STEPS.length - 1 ? 'Done' : 'Next'
+}
+
+function tourRender() {
+  const step = TOUR_STEPS[_tourStep]
+  const tip = tourTooltipEl()
+  if (!step || !tip) return
+  const gen = ++_tourGen
+  tourPersistStep(_tourStep)
+  tourFillChrome(step)
   tourPrepareStep(step).then(async () => {
-    await new Promise((r) => setTimeout(r, tourReduceMotion() ? 0 : 90))
+    if (gen !== _tourGen) return
+    const selector = tourTargetOf(step)
+    const el = await tourWaitFor(selector, 1600)
+    if (gen !== _tourGen) return
+    if (selector && !el) {
+      console.warn('[vidso tour] skipping step, target missing:', step.id, selector)
+      tourAdvance(_tourDir, true)
+      return
+    }
+    if (el && el !== true) tourScrollTarget(el)
+    await new Promise((r) => setTimeout(r, tourReduceMotion() ? 0 : 160))
+    if (gen !== _tourGen) return
     requestAnimationFrame(() => {
+      if (gen !== _tourGen) return
       tourPosition()
       tip.focus?.({ preventScroll: true })
     })
   })
+}
+
+function tourAdvance(dir, fromMissing) {
+  if (fromMissing) _tourSkipHops += 1
+  else _tourSkipHops = 0
+  if (_tourSkipHops > TOUR_STEPS.length) {
+    finishUiTour()
+    return
+  }
+  const next = _tourStep + dir
+  if (next < 0) return
+  if (next >= TOUR_STEPS.length) {
+    if (fromMissing || dir > 0) finishUiTour()
+    return
+  }
+  _tourDir = dir
+  _tourStep = next
+  tourRender()
 }
 
 window.openUiTour = (opts = {}) => {
@@ -5316,7 +5399,17 @@ window.openUiTour = (opts = {}) => {
   if (!root || !tip) return
   _tourFromMenu = !!opts.fromMenu
   _tourPrevFocus = document.activeElement
-  _tourStep = 0
+  if (opts.fromMenu) {
+    tourClearProgress()
+    _tourStep = 0
+  } else if (opts.force) {
+    _tourStep = 0
+  } else if (opts.auto) {
+    _tourStep = tourLoadStep()
+  } else {
+    _tourStep = 0
+  }
+  _tourDir = 1
   _tourActive = true
   window.closeAccountSettings?.()
   window.closeOnboarding?.()
@@ -5334,6 +5427,7 @@ window.closeUiTour = () => {
   const root = tourRoot()
   if (!root) return
   _tourActive = false
+  _tourGen += 1
   root.classList.add('hidden')
   root.classList.remove('is-active', 'tour-card-mode')
   root.setAttribute('aria-hidden', 'true')
@@ -5365,17 +5459,27 @@ window.finishUiTour = () => {
 
 window.uiTourBack = () => {
   if (!_tourActive || _tourStep <= 0) return
-  _tourStep -= 1
-  tourRender()
+  tourAdvance(-1)
 }
 
 window.uiTourNext = () => {
   if (!_tourActive) return
-  if (_tourStep >= UI_TOUR_STEPS.length - 1) {
+  if (_tourStep >= TOUR_STEPS.length - 1) {
     finishUiTour()
     return
   }
-  _tourStep += 1
+  tourAdvance(1)
+}
+
+window.uiTourSkipSection = () => {
+  if (!_tourActive) return
+  const next = tourNextChapterStart(_tourStep)
+  if (next >= TOUR_STEPS.length) {
+    finishUiTour()
+    return
+  }
+  _tourDir = 1
+  _tourStep = next
   tourRender()
 }
 
@@ -5633,6 +5737,11 @@ window.requireActivePlan = (opts = {}) => {
 
 document.addEventListener('keydown', (e) => {
   if (!_tourActive) return
+  if (e.key === 'Escape') {
+    e.preventDefault()
+    skipUiTour()
+    return
+  }
   if (e.key === 'ArrowRight' || e.key === 'Enter') {
     // Don't steal Enter from buttons that already handle click
     if (e.key === 'Enter' && e.target && e.target.closest && e.target.closest('.tour-btn, .tour-close')) return
