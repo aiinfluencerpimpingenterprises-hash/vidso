@@ -1,0 +1,14 @@
+---
+description: Always commit and push shipped work to origin/main. Never ask first.
+alwaysApply: true
+---
+
+# Push live
+
+After finishing a user-requested change, commit it and `git push origin HEAD` without asking.
+
+- Do not wait for "push live" or "is it live?"
+- Follow the repo commit-message style (why, not a file dump)
+- Never force-push `main` / `master`
+- Still skip secrets (`.env`, credentials)
+- If commit or push fails, fix it and retry; do not leave the work unpushed
