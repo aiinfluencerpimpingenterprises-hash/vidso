@@ -3964,6 +3964,8 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan() || !paywallOn())
+  if (obHasSeen()) _obDoneThisSession = true
+  if (tourHasSeen()) _tourDoneThisSession = true
   hideModal()
   populateUser()
   loadUsage()
@@ -4252,9 +4254,9 @@ document.addEventListener('keydown', (e) => {
 
 // ── ONBOARDING (localStorage until backend profile fields exist) ───────────
 // Persistence:
-//   vidso_onboarding_v3_seen:<userKey>  -> "1" when completed or skipped (paid users only)
+//   vidso_onboarding_v3_seen:<userKey>  -> "1" when completed or skipped (once per account on this browser)
 //   vidso_onboarding_answers:<userKey>  -> JSON snapshot of Q&A
-// Unpaid users re-run onboarding + tour + paywall every session until they buy.
+// Auto-open only the first time after signup. Replay with ?onboarding=1.
 // userKey = currentUser.email || currentUser.id || 'anon'
 // No /api/user profile write endpoint exists in this repo; do not invent a silent backend save.
 const OB_STEPS = 6
@@ -4341,11 +4343,10 @@ function obMarkSeen() {
 }
 function obFinishStep() {
   _obDoneThisSession = true
-  if (hasActivePlan()) obMarkSeen()
+  obMarkSeen()
 }
 function obShouldAutoOpen() {
   if (paywallDevBypass()) return false
-  if (funnelLocked()) return !_obDoneThisSession
   return !obHasSeen()
 }
 function obLoadAnswers() {
@@ -4688,8 +4689,7 @@ function tourShouldAutoOpen() {
   return !tourHasSeen()
 }
 function tourObReady() {
-  if (funnelLocked()) return _obDoneThisSession
-  return obHasSeen()
+  return obHasSeen() || _obDoneThisSession
 }
 function tourIsMobile() {
   try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
@@ -5036,7 +5036,8 @@ function introPending() {
   if (_tourActive) return true
   const ob = document.getElementById('onboarding-modal')
   if (ob && !ob.classList.contains('hidden')) return true
-  return !_obDoneThisSession || !_tourDoneThisSession
+  const needOb = !obHasSeen() && !_obDoneThisSession
+  return needOb || !_tourDoneThisSession
 }
 
 function setPaywallStatus(msg, kind) {
@@ -5196,10 +5197,9 @@ window.maybeShowPaywall = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   if (_tourActive) return
-  // Wait until welcome onboarding and interactive tour finish this session (unpaid
-  // users re-run both every visit). Paid users use the persisted seen flags.
+  // Wait until first-run onboarding is done and this session's tour (if any) finishes.
   if (funnelLocked()) {
-    if (!_obDoneThisSession || !_tourDoneThisSession) return
+    if ((!obHasSeen() && !_obDoneThisSession) || !_tourDoneThisSession) return
   } else if (!obHasSeen() || !tourHasSeen()) {
     return
   }
