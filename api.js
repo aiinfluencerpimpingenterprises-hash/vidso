@@ -32,9 +32,12 @@ async function reqTo(url, method, body, isFormData = false) {
   } catch {
     throw new Error('Cannot reach Clipzo API. The backend may be down. Try again in a minute.')
   }
-  const data = await res.json().catch(() => ({}))
+  const raw = await res.text()
+  let data = {}
+  try { data = raw ? JSON.parse(raw) : {} } catch { data = { raw } }
   if (!res.ok) {
-    const err = new Error(data.message || data.error || 'Request failed')
+    const fallback = raw && !raw.trim().startsWith('{') ? raw.trim().slice(0, 180) : 'Request failed'
+    const err = new Error(data.message || data.error || fallback)
     err.status = res.status
     err.code = data.error
     err.needsPlan = res.status === 402
