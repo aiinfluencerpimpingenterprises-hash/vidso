@@ -106,6 +106,8 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
 .paywall-status.show{display:flex}
 .paywall-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding-top:4px}
 .paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
+.paywall-note a{color:var(--a1);font-weight:500;text-decoration:none}
+.paywall-note a:hover{text-decoration:underline}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:760px){
   .auth-shell{max-width:420px;border-radius:18px;flex-direction:column}
@@ -202,6 +204,7 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
       <button type="button" class="btn btn-ghost" id="paywall-refresh">I've subscribed — refresh</button>
       <button type="button" class="btn btn-ghost" id="paywall-signout">Sign out</button>
       <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+      <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
 </div>

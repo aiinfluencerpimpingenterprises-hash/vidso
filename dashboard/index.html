@@ -2203,6 +2203,8 @@ body.tour-active #fv-export-box.show{min-height:160px}
 .paywall-plan.pop .btn{background:var(--grad);color:#fff;border-color:transparent}
 .paywall-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding-top:4px}
 .paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
+.paywall-note a{color:var(--a1);font-weight:500;text-decoration:none}
+.paywall-note a:hover{text-decoration:underline}
 .paywall-status{display:none;align-items:center;justify-content:center;gap:8px;font-size:.8rem;min-height:1.2em}
 .paywall-status.show{display:flex}
 @media (max-width:820px){
@@ -2518,6 +2520,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
       <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+      <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
 </div>

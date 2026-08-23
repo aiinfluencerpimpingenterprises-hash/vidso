@@ -461,6 +461,9 @@
   .plan:not(.pop) .btn{background:rgba(255,255,255,.05);border:1px solid var(--line-2);color:#fff}
   .under-plans{text-align:center;font-size:13px;color:var(--faint);margin-top:28px;display:flex;align-items:center;justify-content:center;gap:8px}
   .under-plans svg{width:14px;height:14px;color:var(--blue);flex-shrink:0}
+  .under-plans.plan-support{margin-top:10px}
+  .under-plans.plan-support a{color:var(--blue);font-weight:500}
+  .under-plans.plan-support a:hover{color:#F27580}
   @media(min-width:821px){
     .plans{grid-template-rows:auto auto auto auto auto auto repeat(17,minmax(2.75em,auto));column-gap:16px;row-gap:0}
     .plan{display:grid;grid-template-rows:subgrid;grid-row:span 23;align-content:start}
@@ -1581,6 +1584,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>
       Cancel anytime. No hidden fees.
     </p>
+    <p class="under-plans plan-support">Questions about a plan? <a data-vidso-support data-subject="Billing question" data-fill-text></a></p>
   </div>
 </section>
 
@@ -1662,6 +1666,7 @@
         <a href="/terms">Terms of service</a>
         <a href="/privacy">Privacy policy</a>
         <a href="/refund">Refund policy</a>
+        <a data-vidso-support data-label="Contact support" data-fill-text></a>
       </div>
     </div>
     <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
