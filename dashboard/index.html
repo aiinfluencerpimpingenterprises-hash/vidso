@@ -2259,6 +2259,15 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     </a>
   </div>
   <nav class="sidebar-nav">
+    <div class="nav-section"><span class="nav-section-label">Long form</span></div>
+    <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
+      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+      <span class="nav-item-label">Thumbnail Generator</span>
+    </button>
+    <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
+      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
+      <span class="nav-item-label">Video Generation</span>
+    </button>
     <div class="nav-section"><span class="nav-section-label">Short form</span></div>
     <button class="nav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
@@ -2292,23 +2301,14 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
       <span class="nav-item-label">Video Commentary</span>
     </button>
-    <button class="nav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-      <span class="nav-item-label">My Files</span>
-    </button>
-    <div class="nav-section"><span class="nav-section-label">Long form</span></div>
-    <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-      <span class="nav-item-label">Thumbnail Generator</span>
-    </button>
-    <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
-      <span class="nav-item-label">Video Generation</span>
-    </button>
     <div class="nav-section"><span class="nav-section-label">Workspace</span></div>
     <button class="nav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
       <span class="nav-item-label">Tools</span>
+    </button>
+    <button class="nav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">
+      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
+      <span class="nav-item-label">My Files</span>
     </button>
     <button class="nav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
       <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
