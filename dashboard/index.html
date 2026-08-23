@@ -2130,6 +2130,7 @@ body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
   background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:.82rem;font-weight:650;
   cursor:pointer;display:inline-flex;align-items:center;justify-content:center
 }
+.tour-btn[hidden]{display:none!important}
 .tour-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
 .tour-btn-ghost{border-color:transparent;background:transparent;color:rgba(255,255,255,.55)}
 .tour-btn-ghost:hover{color:var(--ink);background:rgba(255,255,255,.06)}
@@ -2154,6 +2155,35 @@ body.tour-active #fv-script-box.show,
 body.tour-active #fv-media-box.show,
 body.tour-active #fv-preview-box.show,
 body.tour-active #fv-export-box.show{min-height:160px}
+
+#tour-menu{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:20px}
+#tour-menu.hidden{display:none!important}
+.tour-menu-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72)}
+.tour-menu-card{
+  position:relative;z-index:1;width:min(440px,calc(100vw - 32px));max-height:min(72vh,640px);
+  background:#121214;border:1px solid rgba(255,255,255,.12);border-radius:16px;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);display:flex;flex-direction:column;overflow:hidden
+}
+.tour-menu-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 12px}
+.tour-menu-kicker{margin:0 0 4px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42)}
+.tour-menu-title{margin:0;font-size:1.05rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
+.tour-menu-sub{margin:6px 0 0;font-size:.82rem;line-height:1.4;color:rgba(255,255,255,.55)}
+.tour-menu-list{overflow:auto;padding:4px 10px 14px;display:flex;flex-direction:column;gap:4px}
+.tour-menu-item{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.03);
+  color:var(--ink);font:inherit;cursor:pointer
+}
+.tour-menu-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+.tour-menu-item:focus-visible{outline:2px solid rgba(var(--glow),.7);outline-offset:1px}
+.tour-menu-item-copy{flex:1;min-width:0}
+.tour-menu-item-name{display:block;font-size:.88rem;font-weight:650}
+.tour-menu-item-meta{display:block;font-size:.72rem;color:rgba(255,255,255,.45);margin-top:2px}
+.tour-menu-dot{
+  width:18px;height:18px;border-radius:99px;border:1.5px solid rgba(255,255,255,.22);flex-shrink:0
+}
+.tour-menu-item.is-done .tour-menu-dot{background:var(--grad);border-color:transparent}
+.tour-menu-item.is-done .tour-menu-item-meta{color:rgba(255,255,255,.55)}
 
 /* ── Paywall (hard gate after onboarding + tour) ───────────────────────── */
 #paywall-modal{z-index:20001;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(0,0,0,.72)}
@@ -2621,9 +2651,9 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <span class="settings-row-label">This month</span>
         <span class="settings-row-value" id="settings-credits">—</span>
       </div>
-      <button type="button" class="settings-row-btn" id="settings-getting-started" aria-label="Open app tour">
+      <button type="button" class="settings-row-btn" id="settings-getting-started" aria-label="Open getting started tours">
         <span class="settings-row-label">Getting started</span>
-        <span class="settings-row-value">App tour →</span>
+        <span class="settings-row-value">Tours →</span>
       </button>
       <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
         <span class="settings-row-label">Billing</span>
@@ -2661,11 +2691,28 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <p class="sr-only" id="tour-live" aria-live="polite"></p>
     <div class="tour-foot">
       <span class="tour-step" id="tour-step-label">Welcome · 1 of 1</span>
-      <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-section-btn" onclick="uiTourSkipSection()">Skip section</button>
+      <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-section-btn" hidden onclick="uiTourSkipSection()">Skip section</button>
       <button type="button" class="tour-btn tour-btn-ghost" id="tour-skip-btn" onclick="skipUiTour()">Skip tour</button>
       <button type="button" class="tour-btn" id="tour-back-btn" onclick="uiTourBack()">Back</button>
       <button type="button" class="tour-btn tour-btn-primary" id="tour-next-btn" onclick="uiTourNext()">Next</button>
     </div>
+  </div>
+</div>
+
+<div id="tour-menu" class="hidden" aria-hidden="true">
+  <div class="tour-menu-backdrop" id="tour-menu-backdrop" onclick="closeTourMenu()"></div>
+  <div class="tour-menu-card" role="dialog" aria-modal="true" aria-labelledby="tour-menu-title">
+    <div class="tour-menu-head">
+      <div>
+        <p class="tour-menu-kicker">Getting started</p>
+        <h2 class="tour-menu-title" id="tour-menu-title">Pick a tour</h2>
+        <p class="tour-menu-sub">Replay any walkthrough. Completing one does not hide the others.</p>
+      </div>
+      <button type="button" class="tour-close" onclick="closeTourMenu()" aria-label="Close getting started">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="tour-menu-list" id="tour-menu-list"></div>
   </div>
 </div>
 
@@ -2752,7 +2799,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
       </div>
-      <button type="button" class="user-signout-btn" id="user-getting-started-btn" aria-label="Open app tour" title="Getting started">
+      <button type="button" class="user-signout-btn" id="user-getting-started-btn" aria-label="Open getting started tours" title="Getting started">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19h14"/></svg>
         <span class="sidebar-hide-lbl">Getting started</span>
       </button>
@@ -2789,6 +2836,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div class="tool-card">
         <h3>AI Captions</h3>
         <p>Upload a video or paste a URL to auto-transcribe. Get a full SRT caption file back.</p>
+        <div id="cap-source">
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('cap-file-input').click()">
           <div class="uz-icon">🎥</div>
           <p><strong>Click to upload</strong> or drag &amp; drop</p>
@@ -2798,6 +2846,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <div style="margin-top:12px;text-align:center;font-size:.75rem;color:var(--muted)">or paste a public URL</div>
         <div class="field" style="margin-top:10px">
           <input type="text" id="cap-url" placeholder="https://example.com/video.mp4"/>
+        </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
           <button class="btn btn-primary" id="cap-btn" onclick="startTranscription()">
@@ -2875,7 +2924,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <label>Script <span style="color:var(--muted);font-size:.72rem" id="char-count">(0/5000)</span></label>
           <textarea id="tts-text" placeholder="Type your voiceover script here..." oninput="updateCharCount()"></textarea>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div id="vo-controls" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
           <div class="field" style="margin:0">
             <label>Stability <span id="stab-val">0.5</span></label>
             <input type="range" min="0" max="1" step="0.05" value="0.5" id="stab-range" oninput="document.getElementById('stab-val').textContent=this.value"/>
@@ -2921,7 +2970,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <p>Make YouTube thumbnails from a prompt.</p>
       </div>
       <div class="page-shell-wide img-layout">
-        <div class="img-pane img-results">
+        <div class="img-pane img-results" id="img-results-pane">
           <div class="section-label" style="margin-bottom:14px">Results</div>
           <div class="img-grid" id="img-grid">
             <div class="ui-empty" id="img-empty">
@@ -2936,7 +2985,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <div class="img-chat-box">
             <label class="sr-only" for="img-prompt">Thumbnail prompt</label>
             <textarea id="img-prompt" rows="1" placeholder="Describe the thumbnail you want…" onkeydown="onImgPromptKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
-            <div class="img-chat-tools">
+            <div class="img-chat-tools" id="img-chat-tools">
               <div class="img-model" id="img-model-wrap">
                 <input type="hidden" id="img-model" value="nano-banana-pro">
                 <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
@@ -3281,7 +3330,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <!-- VIDEO EDITOR -->
     <div class="panel" id="panel-editor">
       <div class="editor-wrap ve-app" id="ed-wrap">
-        <header class="ve-top">
+        <header class="ve-top" id="ed-top">
           <div></div>
           <div class="ve-proj" id="ed-proj-name" contenteditable="true" spellcheck="false">Untitled Project</div>
           <div class="ve-top-right">
@@ -3295,7 +3344,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         </header>
 
         <div class="ve-mid">
-          <nav class="ve-rail" aria-label="Editor tools">
+          <nav class="ve-rail" id="ed-rail" aria-label="Editor tools">
             <button class="ve-logo" type="button" title="Vidso" onclick="veSetTool('media')">
               <svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
@@ -3629,7 +3678,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         </div>
 
         <div class="ed-timeline ve-timeline">
-          <div class="ve-tl-tools">
+          <div class="ve-tl-tools" id="ed-tl-tools">
             <div class="ve-tl-left">
               <button class="ve-icon" type="button" onclick="edAddMedia()" title="Add media">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -3821,12 +3870,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <!-- AI REFRAME -->
     <div class="panel" id="panel-reframe">
       <div class="tool-card">
-        <h3>AI Reframe</h3>
+        <h3 id="rf-intro">AI Reframe</h3>
         <p>Auto-fit any landscape video into a vertical / square format by detecting the main subject and centering the crop around them. One click, no manual reframing.</p>
 
         <div class="field" style="margin-top:14px">
           <label>Video URL (YouTube, TikTok, Instagram, X, Reddit) or paste any direct video link</label>
-          <div style="display:flex;gap:8px">
+          <div id="rf-url-row" style="display:flex;gap:8px">
             <input type="text" id="rf-url" placeholder="https://..." style="flex:1" onkeydown="if(event.key==='Enter')startReframeAnalysis()"/>
             <button class="btn btn-primary" id="rf-analyze-btn" onclick="startReframeAnalysis()">Load video</button>
           </div>
@@ -3916,7 +3965,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <p>Download videos from YouTube, TikTok, Instagram, Twitter, Reddit and more. Paste any public video URL.</p>
         <div class="field">
           <label>Video URL</label>
-          <div style="display:flex;gap:8px">
+          <div id="dl-source" style="display:flex;gap:8px">
             <input type="text" id="dl-url" placeholder="https://youtube.com/watch?v=..." style="flex:1" onkeydown="if(event.key==='Enter')fetchVideoInfo()"/>
             <button class="btn btn-primary" id="dl-fetch-btn" onclick="fetchVideoInfo()">Fetch</button>
           </div>
@@ -3948,7 +3997,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div class="page-shell-wide vr-layout">
       <div class="vr-left">
       <div class="tool-card">
-        <div class="vr-sec">
+        <div class="vr-sec" id="vr-sec-setup">
           <div class="vr-sec-head"><span class="vr-sec-num">1</span><h3 class="vr-sec-title">Setup</h3></div>
           <label class="vr-mini-label" style="margin-bottom:8px">How many videos?</label>
           <div class="vr-count-stepper" role="group" aria-label="Video count">
@@ -3958,7 +4007,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
 
-        <div class="vr-sec vr-section">
+        <div class="vr-sec vr-section" id="vr-sec-title">
           <div class="vr-sec-head"><span class="vr-sec-num">2</span><h3 class="vr-sec-title">Title style</h3></div>
           <h4>Video Ranking Title</h4>
           <div class="vr-row" style="margin-bottom:10px">
@@ -3986,7 +4035,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
 
-        <div class="vr-sec vr-section">
+        <div class="vr-sec vr-section" id="vr-sec-general">
           <div class="vr-sec-head"><span class="vr-sec-num">3</span><h3 class="vr-sec-title">General settings</h3></div>
           <h4>General Setting</h4>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
@@ -4008,7 +4057,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <label class="vr-toggle" style="margin-top:16px"><input type="checkbox" id="vr-enable-caption" onchange="vrSyncStage()"/><span class="sw"></span>Enable caption</label>
         </div>
 
-        <div class="vr-sec vr-section">
+        <div class="vr-sec vr-section" id="vr-sec-order">
           <div class="vr-row" style="margin-bottom:0">
             <div class="vr-sec-head" style="margin:0"><span class="vr-sec-num">4</span><h3 class="vr-sec-title">Playback order</h3></div>
             <h4 style="margin:0">Playback Order</h4>
@@ -4016,7 +4065,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
 
-        <div class="vr-sec">
+        <div class="vr-sec" id="vr-sec-ranks">
           <div class="vr-sec-head"><span class="vr-sec-num">5</span><h3 class="vr-sec-title">Video ranks</h3></div>
           <div id="vr-cards"></div>
         </div>
@@ -4071,7 +4120,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div class="cm-wizard">
 
         <!-- Stepper -->
-        <div class="cm-stepper">
+        <div class="cm-stepper" id="cm-stepper">
           <div class="cm-step-pill" data-step="1"><span class="cm-step-num">1</span> Upload Video</div>
           <div class="cm-step-line"></div>
           <div class="cm-step-pill" data-step="2"><span class="cm-step-num">2</span> Script</div>
@@ -4349,7 +4398,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
 
           <!-- RIGHT: preview pane -->
-          <aside class="cm-preview">
+          <aside class="cm-preview" id="cm-preview">
             <div class="cm-preview-head">Preview</div>
             <div class="cm-preview-stage" id="cm-preview-stage">
               <video id="cm-preview-vid" muted playsinline></video>
@@ -4366,7 +4415,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <!-- FILES -->
     <div class="panel" id="panel-files">
-      <div class="tool-card">
+      <div class="tool-card" id="files-card">
         <h3>My Files</h3>
         <p>All files you've uploaded or generated.</p>
         <div style="display:flex;gap:10px;margin-bottom:16px">
@@ -4835,10 +4884,11 @@ import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
 import {
-  TOUR_STEPS,
-  tourChapterLabel,
-  tourStepsInChapter,
-  tourNextChapterStart,
+  TOURS,
+  tourById,
+  tourStepsOf,
+  tourLabel,
+  tourIdForPanel,
 } from '/lib/tour.js'
 
 window._api = api
@@ -4894,6 +4944,7 @@ function enterUiPreview() {
   try { closeUiTour() } catch (_) {}
   populateUser()
   restorePanelFromHash()
+  maybeStartUiTour()
 }
 
 function persistPlanActive(active) {
@@ -4940,6 +4991,7 @@ function afterAuthReady(opts = {}) {
   document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
   closePaywall()
   if (opts.restoreRoute) restorePanelFromHash()
+  maybeStartUiTour()
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -5266,6 +5318,11 @@ document.addEventListener('keydown', (e) => {
   }
   if (window.isUiTourActive?.()) {
     skipUiTour()
+    return
+  }
+  const tourMenu = document.getElementById('tour-menu')
+  if (tourMenu && !tourMenu.classList.contains('hidden')) {
+    closeTourMenu()
     return
   }
   const settings = document.getElementById('settings-modal')
@@ -5762,9 +5819,10 @@ window.maybeShowOnboarding = () => {
 revealOnboardingNow()
 
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
-// Persistence: vidso_tour_step:<userKey>, vidso_tour_completed:<userKey>.
-// Legacy vidso_ui_tour_seen:<userKey> still counts as completed.
-// Getting started replays from step 1 and clears completed. Preview: ?tour=1
+// Persistence: vidso_tour_{id}_completed, vidso_tour_{id}_step.
+// Legacy vidso_tour_completed:<userKey> / vidso_ui_tour_seen:<userKey> count as core done.
+// Getting started opens the tour list. Preview: ?tour=1 or ?tour=<id>
+let _tourId = 'core'
 let _tourStep = 0
 let _tourActive = false
 let _tourPrevFocus = null
@@ -5774,60 +5832,84 @@ let _tourGen = 0
 let _tourDemoOn = false
 let _tourDir = 1
 let _tourSkipHops = 0
+let _tourExpandedSidebar = false
+let _tourResolvedEl = null
 
-function tourSeenKey() { return 'vidso_ui_tour_seen:' + obUserKey() }
-function tourStepKey() { return 'vidso_tour_step:' + obUserKey() }
-function tourCompletedKey() { return 'vidso_tour_completed:' + obUserKey() }
-function tourIsCompleted() {
+function tourSteps() { return tourStepsOf(_tourId) }
+function tourCompletedStoreKey(id) { return 'vidso_tour_' + id + '_completed' }
+function tourStepStoreKey(id) { return 'vidso_tour_' + id + '_step' }
+function tourLegacySeenKey() { return 'vidso_ui_tour_seen:' + obUserKey() }
+function tourLegacyCompletedKey() { return 'vidso_tour_completed:' + obUserKey() }
+function tourLegacyStepKey() { return 'vidso_tour_step:' + obUserKey() }
+function tourIsCompleted(id) {
+  const tourId = id || _tourId
   try {
-    if (localStorage.getItem(tourCompletedKey()) === '1') return true
-    if (localStorage.getItem(tourSeenKey()) === '1') return true
+    if (localStorage.getItem(tourCompletedStoreKey(tourId)) === '1') return true
+    if (tourId === 'core') {
+      if (localStorage.getItem(tourLegacyCompletedKey()) === '1') return true
+      if (localStorage.getItem(tourLegacySeenKey()) === '1') return true
+    }
   } catch (_) {}
   return false
 }
 function tourHasSeen() {
-  return tourIsCompleted()
+  return tourIsCompleted('core')
 }
-function tourSetCompleted(on) {
+function tourSetCompleted(id, on) {
+  const tourId = id || _tourId
   try {
     if (on) {
-      localStorage.setItem(tourCompletedKey(), '1')
-      localStorage.setItem(tourSeenKey(), '1')
-      localStorage.removeItem(tourStepKey())
+      localStorage.setItem(tourCompletedStoreKey(tourId), '1')
+      localStorage.removeItem(tourStepStoreKey(tourId))
+      if (tourId === 'core') {
+        localStorage.setItem(tourLegacyCompletedKey(), '1')
+        localStorage.setItem(tourLegacySeenKey(), '1')
+        localStorage.removeItem(tourLegacyStepKey())
+      }
     } else {
-      localStorage.removeItem(tourCompletedKey())
-      localStorage.removeItem(tourSeenKey())
+      localStorage.removeItem(tourCompletedStoreKey(tourId))
+      if (tourId === 'core') {
+        localStorage.removeItem(tourLegacyCompletedKey())
+        localStorage.removeItem(tourLegacySeenKey())
+      }
     }
   } catch (_) {}
 }
 function tourMarkSeen() {
-  tourSetCompleted(true)
+  tourSetCompleted('core', true)
 }
 function tourPersistStep(i) {
-  try { localStorage.setItem(tourStepKey(), String(i)) } catch (_) {}
+  try { localStorage.setItem(tourStepStoreKey(_tourId), String(i)) } catch (_) {}
 }
-function tourLoadStep() {
+function tourLoadStep(id) {
+  const tourId = id || _tourId
+  const steps = tourStepsOf(tourId)
   try {
-    const n = parseInt(localStorage.getItem(tourStepKey()) || '', 10)
-    if (Number.isFinite(n) && n >= 0 && n < TOUR_STEPS.length) return n
+    const n = parseInt(localStorage.getItem(tourStepStoreKey(tourId)) || '', 10)
+    if (Number.isFinite(n) && n >= 0 && n < steps.length) return n
   } catch (_) {}
   return 0
 }
-function tourClearProgress() {
+function tourClearProgress(id) {
+  const tourId = id || _tourId
   try {
-    localStorage.removeItem(tourCompletedKey())
-    localStorage.removeItem(tourStepKey())
-    localStorage.removeItem(tourSeenKey())
+    localStorage.removeItem(tourCompletedStoreKey(tourId))
+    localStorage.removeItem(tourStepStoreKey(tourId))
+    if (tourId === 'core') {
+      localStorage.removeItem(tourLegacyCompletedKey())
+      localStorage.removeItem(tourLegacyStepKey())
+      localStorage.removeItem(tourLegacySeenKey())
+    }
   } catch (_) {}
-  _tourDoneThisSession = false
+  if (tourId === 'core') _tourDoneThisSession = false
 }
 function tourFinishStep() {
-  _tourDoneThisSession = true
-  tourSetCompleted(true)
+  if (_tourId === 'core') _tourDoneThisSession = true
+  tourSetCompleted(_tourId, true)
 }
 function tourShouldAutoOpen() {
   if (paywallDevBypass()) return false
-  return !tourIsCompleted() && _obDoneThisSession
+  return !tourIsCompleted('core') && _obDoneThisSession
 }
 function tourObReady() {
   return obHasSeen() || _obDoneThisSession
@@ -5915,6 +5997,33 @@ function tourApplyFvStage(stage) {
 }
 
 function tourMountDemo(step) {
+  if (step?.precondition === 'voice-library') {
+    const lib = document.getElementById('voice-library')
+    if (lib && !lib.querySelector('[data-lib-id], [data-tour-demo]')) {
+      _tourDemoOn = true
+      lib.innerHTML = `
+        <div class="result-box" data-tour-demo="1" style="padding:12px">
+          <div style="font-size:.82rem;font-weight:500">Demo narration</div>
+          <div style="font-size:.68rem;color:var(--muted);margin-top:2px">Saved voiceover</div>
+        </div>`
+    }
+    return
+  }
+  if (step?.precondition === 'files-list') {
+    const list = document.getElementById('files-list')
+    if (list && !list.querySelector('[data-file-id], [data-tour-demo], .file-row, .files-row')) {
+      const empty = !list.children.length || /loading|no files|empty/i.test(list.textContent || '')
+      if (empty) {
+        _tourDemoOn = true
+        list.innerHTML = `
+          <div data-tour-demo="1" style="padding:12px;border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:.82rem;font-weight:500">demo-clip.mp4</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:2px">Video · ready to download or open in Commentary</div>
+          </div>`
+      }
+    }
+    return
+  }
   if (step?.precondition !== 'fv-demo') return
   _tourDemoOn = true
   const sections = document.getElementById('fv-sections')
@@ -5981,8 +6090,10 @@ function tourClearDemo() {
 
 function tourElVisible(el) {
   if (!el) return false
+  const panel = el.closest('.panel')
+  if (panel && !panel.classList.contains('active')) return false
   const st = getComputedStyle(el)
-  if (st.display === 'none' || st.visibility === 'hidden' || Number(st.opacity) === 0) return false
+  if (st.display === 'none' || st.visibility === 'hidden') return false
   const r = el.getBoundingClientRect()
   return r.width >= 2 && r.height >= 2
 }
@@ -6012,10 +6123,22 @@ function tourWaitFor(selector, timeoutMs = 1600) {
   })
 }
 
+function tourSidebarCollapsed() {
+  return document.body.classList.contains('sidebar-collapsed')
+}
+
+function tourEnsureSidebarExpanded() {
+  if (tourIsMobile()) return
+  if (!tourSidebarCollapsed()) return
+  try { applySidebarCollapsed(false) } catch (_) {}
+  _tourExpandedSidebar = true
+}
+
 async function tourPrepareStep(step) {
   const route = tourRouteOf(step)
+  if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
   if (route) {
-    try { switchPanel(route, null, { silent: true, allowLocked: true }) } catch (_) {}
+    try { switchPanel(route, null, { silent: true, allowLocked: true, fromTour: true }) } catch (_) {}
     await tourWaitFor('#panel-' + route, 1200)
   }
   if (route === 'videogen' || step.fvStage) {
@@ -6027,7 +6150,7 @@ async function tourPrepareStep(step) {
   }
   tourMountDemo(step)
   if (tourIsMobile()) {
-    if (step.needsNav) {
+    if (step.needsNav || step.needsSidebar) {
       try { openMobileNav() } catch (_) {}
       await new Promise(r => setTimeout(r, tourReduceMotion() ? 0 : 240))
     } else {
@@ -6036,6 +6159,7 @@ async function tourPrepareStep(step) {
     }
   } else {
     try { closeMobileNav() } catch (_) {}
+    if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
   }
 }
 
@@ -6111,7 +6235,7 @@ function tourPickPlacement(preferred, r, tw, th, gap, vw, vh) {
 }
 
 function tourPosition() {
-  const step = TOUR_STEPS[_tourStep]
+  const step = tourSteps()[_tourStep]
   const root = tourRoot()
   const tip = tourTooltipEl()
   const hi = tourHighlightEl()
@@ -6121,8 +6245,11 @@ function tourPosition() {
   const vw = window.innerWidth
   const vh = window.innerHeight
   const selector = tourTargetOf(step)
-  let target = selector ? document.querySelector(selector) : null
-  if (target && !tourElVisible(target)) target = null
+  let target = _tourResolvedEl
+  if (!target || !document.body.contains(target)) {
+    target = selector ? document.querySelector(selector) : null
+  }
+  if (target && !tourElVisible(target) && target !== _tourResolvedEl) target = null
 
   const cardMode = !target || step.placement === 'center'
   tip.classList.toggle('is-on', true)
@@ -6209,50 +6336,54 @@ function tourPosition() {
 function tourFillChrome(step) {
   const tip = tourTooltipEl()
   if (!step || !tip) return
-  const chapter = tourStepsInChapter(step.chapter)
-  const idx = Math.max(0, chapter.findIndex((s) => s.id === step.id))
-  const n = idx + 1
-  const m = chapter.length || 1
-  const label = tourChapterLabel(step.chapter)
+  const steps = tourSteps()
+  const n = _tourStep + 1
+  const m = steps.length || 1
+  const label = tourLabel(_tourId)
   document.getElementById('tour-kicker').textContent = step.eyebrow || label
   document.getElementById('tour-title').textContent = step.title || ''
   document.getElementById('tour-body').textContent = step.body || ''
   document.getElementById('tour-step-label').textContent = label + ' · ' + n + ' of ' + m
   const segs = document.getElementById('tour-progress')
   if (segs) {
-    segs.innerHTML = chapter.map((_, i) => `<span class="tour-seg${i < n ? ' is-on' : ''}"></span>`).join('')
+    segs.innerHTML = steps.map((_, i) => `<span class="tour-seg${i < n ? ' is-on' : ''}"></span>`).join('')
   }
   const live = document.getElementById('tour-live')
   if (live) live.textContent = (step.title || '') + '. ' + (step.body || '')
   const skipSec = document.getElementById('tour-skip-section-btn')
-  if (skipSec) skipSec.hidden = tourNextChapterStart(_tourStep) >= TOUR_STEPS.length
+  if (skipSec) skipSec.hidden = true
   const back = document.getElementById('tour-back-btn')
   const next = document.getElementById('tour-next-btn')
   if (back) {
     back.hidden = _tourStep === 0
     back.disabled = _tourStep === 0
   }
-  if (next) next.textContent = _tourStep >= TOUR_STEPS.length - 1 ? 'Done' : 'Next'
+  if (next) next.textContent = _tourStep >= steps.length - 1 ? 'Done' : 'Next'
 }
 
 function tourRender() {
-  const step = TOUR_STEPS[_tourStep]
+  const steps = tourSteps()
+  const step = steps[_tourStep]
   const tip = tourTooltipEl()
   if (!step || !tip) return
   const gen = ++_tourGen
   tourPersistStep(_tourStep)
   tourFillChrome(step)
+  _tourResolvedEl = null
+  tourPosition()
   tourPrepareStep(step).then(async () => {
     if (gen !== _tourGen) return
     const selector = tourTargetOf(step)
     const el = await tourWaitFor(selector, 1600)
     if (gen !== _tourGen) return
     if (selector && !el) {
-      console.warn('[vidso tour] skipping step, target missing:', step.id, selector)
+      _tourResolvedEl = null
+      console.warn('[vidso tour] skipping step, target missing:', _tourId, step.id, selector)
       tourAdvance(_tourDir, true)
       return
     }
-    if (el && el !== true) tourScrollTarget(el)
+    _tourResolvedEl = el && el !== true ? el : null
+    if (_tourResolvedEl) tourScrollTarget(_tourResolvedEl)
     await new Promise((r) => setTimeout(r, tourReduceMotion() ? 0 : 160))
     if (gen !== _tourGen) return
     requestAnimationFrame(() => {
@@ -6260,19 +6391,23 @@ function tourRender() {
       tourPosition()
       tip.focus?.({ preventScroll: true })
     })
+  }).catch((err) => {
+    console.warn('[vidso tour] step prepare failed:', _tourId, step.id, err)
+    tourPosition()
   })
 }
 
 function tourAdvance(dir, fromMissing) {
+  const steps = tourSteps()
   if (fromMissing) _tourSkipHops += 1
   else _tourSkipHops = 0
-  if (_tourSkipHops > TOUR_STEPS.length) {
+  if (_tourSkipHops > steps.length) {
     finishUiTour()
     return
   }
   const next = _tourStep + dir
   if (next < 0) return
-  if (next >= TOUR_STEPS.length) {
+  if (next >= steps.length) {
     if (fromMissing || dir > 0) finishUiTour()
     return
   }
@@ -6293,22 +6428,28 @@ window.openUiTour = (opts = {}) => {
     }
   }
   if (!currentUser) return
+  const requested = opts.tourId || opts.id || 'core'
+  if (!tourById(requested)) return
   const root = tourRoot()
   const tip = tourTooltipEl()
   if (!root || !tip) return
+  closeTourMenu()
+  _tourId = requested
   _tourFromMenu = !!opts.fromMenu
   _tourPrevFocus = document.activeElement
+  _tourExpandedSidebar = false
   if (opts.fromMenu) {
-    tourClearProgress()
+    tourClearProgress(_tourId)
     _tourStep = 0
   } else if (opts.force) {
     _tourStep = 0
   } else if (opts.auto) {
-    _tourStep = tourLoadStep()
+    _tourStep = tourLoadStep(_tourId)
   } else {
     _tourStep = 0
   }
   _tourDir = 1
+  _tourSkipHops = 0
   _tourActive = true
   window.closeAccountSettings?.()
   window.closeOnboarding?.()
@@ -6327,6 +6468,7 @@ window.closeUiTour = () => {
   if (!root) return
   _tourActive = false
   _tourGen += 1
+  _tourResolvedEl = null
   root.classList.add('hidden')
   root.classList.remove('is-active', 'tour-card-mode')
   root.setAttribute('aria-hidden', 'true')
@@ -6363,7 +6505,7 @@ window.uiTourBack = () => {
 
 window.uiTourNext = () => {
   if (!_tourActive) return
-  if (_tourStep >= TOUR_STEPS.length - 1) {
+  if (_tourStep >= tourSteps().length - 1) {
     finishUiTour()
     return
   }
@@ -6372,14 +6514,77 @@ window.uiTourNext = () => {
 
 window.uiTourSkipSection = () => {
   if (!_tourActive) return
-  const next = tourNextChapterStart(_tourStep)
-  if (next >= TOUR_STEPS.length) {
-    finishUiTour()
-    return
+  finishUiTour()
+}
+
+function tourMenuRoot() { return document.getElementById('tour-menu') }
+
+function tourMenuOpen() {
+  const menu = tourMenuRoot()
+  return !!(menu && !menu.classList.contains('hidden'))
+}
+
+window.closeTourMenu = () => {
+  const menu = tourMenuRoot()
+  if (!menu) return
+  menu.classList.add('hidden')
+  menu.setAttribute('aria-hidden', 'true')
+}
+
+window.openTourMenu = () => {
+  if (!currentUser) currentUser = userStubFromToken()
+  if (!currentUser && getToken()) {
+    currentUser = userStubFromToken() || { id: 'session', email: '', name: 'You', plan_status: 'inactive' }
   }
-  _tourDir = 1
-  _tourStep = next
-  tourRender()
+  if (!currentUser) return
+  const menu = tourMenuRoot()
+  const list = document.getElementById('tour-menu-list')
+  if (!menu || !list) return
+  window.closeAccountSettings?.()
+  window.closeOnboarding?.()
+  if (_tourActive) closeUiTour()
+  list.innerHTML = TOURS.map((tour) => {
+    const done = tourIsCompleted(tour.id)
+    const n = tour.steps.length
+    const meta = done ? 'Completed · ' + n + ' steps' : n + (n === 1 ? ' step' : ' steps')
+    const action = done ? 'Replay' : 'Start'
+    return `<button type="button" class="tour-menu-item${done ? ' is-done' : ''}" data-tour-id="${tour.id}">
+      <span class="tour-menu-dot" aria-hidden="true"></span>
+      <span class="tour-menu-item-copy">
+        <span class="tour-menu-item-name">${tour.label}</span>
+        <span class="tour-menu-item-meta">${meta}</span>
+      </span>
+      <span class="tour-menu-item-meta">${action}</span>
+    </button>`
+  }).join('')
+  list.querySelectorAll('[data-tour-id]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-tour-id')
+      closeTourMenu()
+      openUiTour({ tourId: id, fromMenu: true, force: true })
+    })
+  })
+  menu.classList.remove('hidden')
+  menu.setAttribute('aria-hidden', 'false')
+}
+
+function maybeStartPageTour(panel) {
+  if (_tourActive || tourMenuOpen()) return
+  if (tourQueryId()) return
+  if (paywallDevBypass()) return
+  const tourId = tourIdForPanel(panel)
+  if (!tourId) return
+  if (tourIsCompleted(tourId)) return
+  openUiTour({ tourId, auto: true })
+}
+
+function tourQueryId() {
+  try {
+    const asked = new URL(location.href).searchParams.get('tour')
+    if (!asked) return null
+    if (asked === '1') return 'core'
+    return tourById(asked) ? asked : null
+  } catch (_) { return null }
 }
 
 window.maybeStartUiTour = () => {
@@ -6391,29 +6596,30 @@ window.maybeStartUiTour = () => {
   if (document.documentElement.classList.contains('needs-onboarding')) return
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
-  const force = /(?:\?|&)tour=1(?:&|$)/.test(location.search || '')
-  if (!force && !tourShouldAutoOpen()) {
+  const forcedId = tourQueryId()
+  if (!forcedId && !tourShouldAutoOpen()) {
     maybeShowPaywall()
     return
   }
-  if (!force && !tourObReady()) return
+  if (!forcedId && !tourObReady()) return
   const run = () => {
     if (!currentUser || _tourActive) return
     if (document.documentElement.classList.contains('needs-onboarding')) return
-    if (!force && !tourShouldAutoOpen()) {
+    if (!forcedId && !tourShouldAutoOpen()) {
       maybeShowPaywall()
       return
     }
     const ob = document.getElementById('onboarding-modal')
     if (ob && !ob.classList.contains('hidden')) return
-    if (force) {
+    const tourId = forcedId || 'core'
+    if (forcedId) {
       try {
         const url = new URL(location.href)
         url.searchParams.delete('tour')
         history.replaceState({}, '', url.pathname + url.search + url.hash)
       } catch (_) {}
     }
-    openUiTour({ auto: true, force })
+    openUiTour({ auto: !forcedId, force: !!forcedId, tourId })
   }
   if (funnelLocked()) run()
   else setTimeout(run, 280)
@@ -6766,6 +6972,9 @@ window.switchPanel = (id, btn, opts = {}) => {
       history.pushState({ panel: id }, '', next)
     }
   }
+  if (!opts.fromTour && !opts.silent) {
+    setTimeout(() => maybeStartPageTour(id), 220)
+  }
 }
 function restorePanelFromPath() {
   if (isAuthPath()) {
@@ -6778,7 +6987,11 @@ function restorePanelFromPath() {
   if (p === '/overview' || p === '/analytics' || p === '/') {
     history.replaceState(null, '', '/dashboard')
   }
-  switchPanel(panelFromPath(), null, { silent: true })
+  const panel = panelFromPath()
+  switchPanel(panel, null, { silent: true })
+  if (tourIsCompleted('core') && !tourQueryId()) {
+    setTimeout(() => maybeStartPageTour(panel), 220)
+  }
 }
 function migrateHashToPath() {
   const h = (location.hash || '').replace(/^#/, '').toLowerCase()
@@ -8649,7 +8862,7 @@ function bindGettingStarted() {
     e.preventDefault()
     e.stopPropagation()
     try { closeAccountSettings() } catch (_) {}
-    openUiTour({ fromMenu: true, force: true })
+    openTourMenu()
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
