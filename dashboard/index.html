@@ -717,34 +717,414 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 .clip-playhead{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--a3);pointer-events:none;z-index:3;transform:translateX(-1px)}
 
 /* ── VIDEO EDITOR ────────────────── */
-.editor-wrap{display:flex;flex-direction:column;height:calc(100vh - 60px);overflow:hidden}
-.editor-bar{padding:8px 0;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:0}
+.editor-wrap{display:flex;flex-direction:column;height:calc(100vh - 60px);overflow:hidden;background:var(--bg)}
+.editor-wrap.ed-drag{outline:2px dashed var(--a2);outline-offset:-6px}
+.editor-bar{padding:8px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--surface)}
+.ed-bar-group{display:flex;align-items:center;gap:4px}
+.ed-bar-sep{width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0}
+.ed-icon-btn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--card);border-radius:8px;color:var(--ink);cursor:pointer;padding:0}
+.ed-icon-btn:hover{border-color:var(--a2);color:var(--a2)}
+.ed-icon-btn:disabled{opacity:.35;cursor:default;border-color:var(--border);color:var(--muted)}
+.ed-icon-btn.on{background:rgba(233,75,88,.12);border-color:var(--a2);color:var(--a2)}
+.ed-icon-btn.danger:hover{color:#eb5757;border-color:rgba(235,87,87,.4)}
+.ed-zoom-lbl{min-width:40px;text-align:center;font-size:.68rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .editor-body{display:flex;flex:1;min-height:0;overflow:hidden}
-.ed-preview-area{flex:1;display:flex;flex-direction:column;background:#0a0a14;align-items:center;justify-content:center;min-width:0;position:relative;overflow:hidden}
-.preview-stage{position:relative;display:inline-flex;max-width:100%}
-.preview-stage video{display:block;max-width:100%;max-height:320px;width:auto;height:auto}
+.ed-preview-area{flex:1;display:flex;flex-direction:column;background:#0b1220;align-items:stretch;justify-content:flex-start;min-width:0;position:relative;overflow:hidden}
+.ed-preview-main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview-stage{position:relative;display:inline-flex;max-width:100%;border-radius:10px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.preview-stage video{display:block;max-width:100%;max-height:380px;width:auto;height:auto;background:#000}
 .preview-stage canvas{position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%}
-.ed-time-bar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:rgba(0,0,0,.6);width:100%;flex-shrink:0}
-.ed-props{width:216px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:14px}
+.ed-time-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(11,18,32,.82);width:100%;flex-shrink:0;backdrop-filter:blur(10px)}
+.ed-tb-btn{width:30px;height:30px;border:none;background:transparent;color:#fff;cursor:pointer;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.ed-tb-btn:hover{background:rgba(255,255,255,.1)}
+.ed-tb-play{width:34px;height:34px;background:#E94B58;border-radius:50%}
+.ed-tb-play:hover{background:#C42232}
+.ed-tb-btn.on{color:#F0606C;background:rgba(255,255,255,.12)}
+.ed-time-lbl{font-size:.72rem;color:rgba(255,255,255,.72);min-width:148px;font-variant-numeric:tabular-nums;flex-shrink:0}
+.ed-scrub-wrap{flex:1 1 0;min-width:0;width:0;display:flex;align-items:center;height:28px}
+.ed-scrubber{-webkit-appearance:none;appearance:none;flex:1;width:100%;min-width:0;height:6px;margin:0;padding:0;background:#dbe1ea;border-radius:99px;outline:none;cursor:pointer}
+.ed-scrubber::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:transparent}
+.ed-scrubber::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-4px;border-radius:50%;background:#E94B58;border:2px solid #fff;box-shadow:0 1px 4px rgba(15,23,42,.25);cursor:grab}
+.ed-scrubber::-moz-range-track{height:6px;border-radius:99px;background:#dbe1ea;border:none}
+.ed-scrubber::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#E94B58;border:2px solid #fff;box-shadow:0 1px 4px rgba(15,23,42,.25);cursor:grab}
+.ed-vol-wrap{display:flex;align-items:center;gap:4px;flex-shrink:0;padding:3px 10px 3px 4px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px}
+.ed-vol-slider{-webkit-appearance:none;appearance:none;width:84px;height:6px;margin:0;padding:0;border-radius:99px;outline:none;cursor:pointer;background:linear-gradient(to right,#E94B58 var(--p,100%),#dbe1ea var(--p,100%))}
+.ed-vol-slider::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:transparent}
+.ed-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-4px;border-radius:50%;background:#fff;border:2px solid #E94B58;box-shadow:0 1px 3px rgba(15,23,42,.2);cursor:pointer}
+.ed-vol-slider::-moz-range-track{height:6px;border-radius:99px;background:transparent;border:none}
+.ed-vol-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #E94B58;box-shadow:0 1px 3px rgba(15,23,42,.2);cursor:pointer}
+.ed-props{width:252px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:16px}
 .ed-props h4{font-size:.78rem;font-weight:600;margin-bottom:10px;color:var(--ink)}
-.ed-props>div>label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;margin-top:10px}
-.ed-props>div>input[type=text],.ed-props>div>input[type=number],.ed-props>div>select{width:100%;font-size:.78rem;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,sans-serif;outline:none}
-.ed-props>div>input[type=range]{width:100%;margin-top:2px}
-.ed-props>div>input[type=color]{width:36px;height:28px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;padding:2px;vertical-align:middle}
+.ed-props>div>label,.ed-props label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;margin-top:10px}
+.ed-props>div>input[type=text],.ed-props>div>input[type=number],.ed-props>div>select,.ed-props input[type=text],.ed-props input[type=number],.ed-props select{width:100%;font-size:.78rem;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,sans-serif;outline:none}
+.ed-props>div>input[type=range],.ed-props input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;margin-top:8px;margin-bottom:4px;
+  background:#e7eaef;border-radius:99px;outline:none;cursor:pointer
+}
+.ed-props input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:transparent}
+.ed-props input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:16px;height:16px;margin-top:-5px;border-radius:50%;
+  background:#fff;border:2px solid #E94B58;box-shadow:0 1px 3px rgba(15,23,42,.16);cursor:pointer
+}
+.ed-props input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#e7eaef;border:none}
+.ed-props input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #E94B58;
+  box-shadow:0 1px 3px rgba(15,23,42,.16);cursor:pointer
+}
+.ed-props>div>input[type=color],.ed-props input[type=color]{width:36px;height:28px;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;padding:2px;vertical-align:middle}
+.ed-prop-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ed-prop-hint{font-size:.68rem;color:var(--muted);line-height:1.6;margin:0}
+.ed-check{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.74rem;color:var(--ink);cursor:pointer}
+.ed-check input{margin:0}
+.ed-shortcuts{margin-top:14px;display:grid;gap:6px}
+.ed-shortcuts div{display:flex;justify-content:space-between;gap:8px;font-size:.68rem;color:var(--muted)}
+.ed-shortcuts kbd{display:inline-block;padding:1px 6px;border:1px solid var(--border);border-radius:4px;font-size:.62rem;background:var(--card);color:var(--ink);font-family:inherit}
 /* TIMELINE */
-.ed-timeline{height:184px;flex-shrink:0;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.ed-ruler{height:22px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;user-select:none}
+.ed-timeline{height:250px;flex-shrink:0;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.ed-tl-bar{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);background:var(--surface);font-size:.68rem;color:var(--muted);flex-shrink:0}
+.ed-ruler{height:22px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);position:relative;overflow:auto hidden;cursor:pointer;user-select:none;scrollbar-width:none}
+.ed-ruler::-webkit-scrollbar{display:none}
 .ed-tracks{flex:1;overflow:auto;position:relative;display:flex;flex-direction:column}
-.ed-track{display:flex;height:44px;flex-shrink:0;border-bottom:1px solid rgba(var(--glow),.1)}
-.track-lbl{width:66px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;align-items:center;padding:0 8px;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ed-track{display:flex;height:48px;flex-shrink:0;border-bottom:1px solid rgba(233,75,88,.1)}
+.track-lbl{width:66px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;align-items:center;padding:0 8px;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;position:sticky;left:0;z-index:5}
 .track-body{flex:1;position:relative;min-width:0;overflow:visible}
-.tl-clip{position:absolute;top:4px;bottom:4px;border-radius:4px;cursor:pointer;display:flex;align-items:center;padding:0 6px;font-size:.62rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none;transition:outline .1s}
-.tl-clip.video{background:linear-gradient(135deg,var(--a1),var(--a2));color:var(--ink)fff}
-.tl-clip.text-cl{background:rgba(255,68,85,.22);border:1px solid var(--a3);color:var(--a3)}
-.tl-clip.audio-cl{background:rgba(96,165,250,.22);border:1px solid #60a5fa;color:#93c5fd}
+.tl-clip{position:absolute;top:6px;bottom:6px;border-radius:6px;cursor:pointer;display:flex;align-items:center;padding:0 10px;font-size:.62rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none;transition:outline .1s;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.tl-clip.video{background:linear-gradient(135deg,#3b82f6,#E94B58);color:#ffffff}
+.tl-clip.text-cl{background:rgba(255,68,85,.16);border:1px solid #fb7185;color:#fb7185}
+.tl-clip.audio-cl{background:rgba(96,165,250,.16);border:1px solid #60a5fa;color:#60a5fa}
+.tl-clip.overlay-cl{background:rgba(16,185,129,.16);border:1px solid #10b981;color:#10b981}
 .tl-clip.selected{outline:2px solid #fff;outline-offset:1px}
-.ed-ph{position:absolute;top:0;bottom:0;width:2px;background:var(--a3);pointer-events:none;z-index:20;transform:translateX(-1px)}
-.ed-ph::before{content:'';position:absolute;top:-2px;left:-4px;width:10px;height:10px;background:var(--a3);clip-path:polygon(50% 100%,0 0,100% 0)}
+.ed-ph{position:absolute;top:0;bottom:0;width:2px;background:#fb7185;pointer-events:none;z-index:20;transform:translateX(-1px)}
+.ed-ph::before{content:'';position:absolute;top:-2px;left:-4px;width:10px;height:10px;background:#fb7185;clip-path:polygon(50% 100%,0 0,100% 0)}
+.ed-ph-time{position:absolute;top:6px;left:8px;transform:none;background:#0b1220;color:#fff;font-size:10px;line-height:1;padding:4px 6px;border-radius:5px;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px rgba(15,23,42,.2)}
+.tl-h{position:absolute;top:0;bottom:0;width:8px;cursor:ew-resize;z-index:3}
+.tl-h-l{left:0;border-radius:6px 0 0 6px}
+.tl-h-r{right:0;border-radius:0 6px 6px 0}
+.tl-clip.selected .tl-h{background:rgba(255,255,255,.35)}
+.tl-h::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:14px;border-radius:1px;background:rgba(255,255,255,.9)}
+
+/* ── CapCut-style video editor chrome ── */
+.ve-app{
+  --ve-blue:#E94B58;
+  --ve-bg:#f4f6f8;
+  --ve-line:#e6e8ec;
+  --ve-ink:#111827;
+  --ve-muted:#6b7280;
+  --ve-lbl:108px;
+  height:100%;
+  background:var(--ve-bg);
+  color:var(--ve-ink);
+}
+.ve-top{
+  height:52px;flex-shrink:0;display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;padding:0 16px;background:#f4f6f8;border-bottom:1px solid var(--ve-line);
+}
+.ve-proj{
+  justify-self:center;background:#fff;border:1px solid #eceef1;border-radius:999px;
+  padding:7px 18px;font-size:13px;font-weight:600;color:#374151;outline:none;min-width:148px;text-align:center;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+.ve-proj:focus{border-color:var(--ve-blue);box-shadow:0 0 0 3px rgba(45,124,246,.12)}
+.ve-top-right{justify-self:end;display:flex;align-items:center;gap:8px}
+.ve-export{
+  display:inline-flex;align-items:center;gap:6px;background:var(--ve-blue);color:#fff;border:none;
+  border-radius:10px;height:36px;padding:0 14px;font:600 13px inherit;cursor:pointer;
+}
+.ve-export:hover{background:#C42232}
+.ve-help{
+  width:36px;height:36px;border-radius:10px;border:1px solid #e2e5ea;background:#fff;color:#6b7280;
+  font:600 15px inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+}
+.ve-help:hover{border-color:#cfd6df;color:#111;background:#f8fafc}
+.ve-mid{flex:1;min-height:0;display:flex;overflow:hidden}
+.ve-rail{
+  width:76px;flex-shrink:0;background:#fff;border-right:1px solid var(--ve-line);
+  display:flex;flex-direction:column;align-items:center;padding:10px 6px 16px;gap:2px;
+  min-height:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.ve-rail::-webkit-scrollbar{display:none;width:0;height:0}
+.ve-logo{
+  width:36px;height:36px;border-radius:10px;background:var(--ve-blue);color:#fff;border:none;
+  display:flex;align-items:center;justify-content:center;margin:2px 0 10px;cursor:pointer;flex-shrink:0;
+}
+.ve-rail-btn{
+  width:100%;border:none;background:transparent;color:#6b7280;cursor:pointer;border-radius:10px;
+  padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  font:500 10px/1.1 inherit;letter-spacing:0;flex-shrink:0;
+}
+.ve-rail-btn svg{flex-shrink:0}
+.ve-rail-btn:hover{background:#f3f5f7;color:#111827}
+.ve-rail-btn.on{background:#eef5ff;color:var(--ve-blue);font-weight:600}
+.ve-side{
+  width:360px;flex-shrink:0;background:#fff;border-right:1px solid var(--ve-line);
+  display:flex;flex-direction:column;min-height:0;position:relative;overflow:hidden;
+}
+.ve-panel{flex:1;min-height:0;overflow-y:auto;padding:22px 22px 18px;display:flex;flex-direction:column}
+.ve-panel[hidden]{display:none !important}
+.ve-panel h2{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:0 0 16px;color:#111827}
+.ve-panel label{font-size:.72rem;color:#6b7280;display:block;margin:10px 0 6px}
+.ve-tabs{display:flex;gap:8px;margin-bottom:18px}
+.ve-mtab{
+  flex:1;border:none;border-radius:8px;padding:10px 8px;font:600 13px inherit;cursor:pointer;background:#f1f3f5;color:#111;
+}
+.ve-mtab.on{background:#111;color:#fff}
+.ve-drop{
+  flex:1;min-height:0;border:1.5px dashed #d5d9de;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:28px 20px;cursor:pointer;transition:border-color .15s,background .15s;overflow:hidden;
+}
+.ve-drop[hidden],#ve-import-url[hidden]{display:none !important}
+.ve-drop:hover,.ve-app.ed-drag .ve-drop{border-color:var(--ve-blue);background:#f5f9ff}
+@media (max-width:860px){
+  .ve-drop{min-height:0;padding:16px 12px}
+}
+.ve-drop strong{display:block;font-size:15px;font-weight:700;color:#111;margin-bottom:4px}
+.ve-drop p{font-size:12px;color:#9aa1ab;margin:0 0 16px}
+.ve-choose{
+  display:inline-flex;align-items:center;gap:8px;background:var(--ve-blue);color:#fff;border:none;
+  border-radius:10px;padding:10px 18px;font:600 14px inherit;cursor:pointer;
+}
+.ve-choose:hover{background:#D93A48}
+.ve-url-row{display:flex;gap:8px;margin-top:8px}
+.ve-url-row input{flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font:14px inherit}
+.ve-hint{font-size:13px;color:var(--ve-muted);line-height:1.5;margin:0 0 14px}
+.ve-actions{display:flex;flex-direction:column;gap:8px}
+.ve-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  height:40px;padding:0 14px;border:1.5px solid #e5e7eb;background:#fff;color:#111;
+  border-radius:10px;font:600 13px inherit;cursor:pointer;
+}
+.ve-ghost:hover{border-color:#cfd4dc;background:#f8fafc}
+.ve-now{
+  font-size:12px;color:#6b7280;background:#f3f5f7;border-radius:10px;padding:10px 12px;margin:0 0 12px;
+}
+.ve-now b{display:block;color:#111;font-size:13px;margin-bottom:2px;word-break:break-all}
+.ve-cap-styles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 14px}
+.ve-cap-chip{
+  border:1.5px solid #e5e7eb;background:#fff;border-radius:10px;padding:10px 8px;cursor:pointer;
+  font:700 12px inherit;color:#111;text-align:center;
+}
+.ve-cap-chip.on,.ve-cap-chip:hover{border-color:var(--ve-blue);background:#eef5ff;color:var(--ve-blue)}
+.ve-emoji{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.ve-emoji button{
+  width:40px;height:40px;border:1px solid #eef0f3;background:#f8fafc;border-radius:10px;font-size:20px;cursor:pointer;
+}
+.ve-emoji button:hover{border-color:var(--ve-blue);background:#eef5ff}
+.ve-need{color:#b45309;background:#fff7ed;border-radius:8px;padding:8px 10px;font-size:12px;margin:0 0 10px}
+.ve-need[hidden]{display:none !important}
+.ve-status{font-size:12px;color:#6b7280;min-height:16px;margin-top:8px}
+.ve-preview{
+  flex:1;min-width:0;background:#eef1f5;display:flex;align-items:center;justify-content:center;padding:18px;
+}
+.ve-phone{
+  height:100%;aspect-ratio:9/16;max-width:100%;background:#000;border-radius:2px;
+  position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.12);
+}
+.ve-app .ed-empty-state{cursor:default;background:#000}
+.ve-app .preview-stage{
+  position:absolute;inset:0;max-width:none;border-radius:0;display:block;width:100%;height:100%;
+  box-shadow:none;
+}
+.ve-app .preview-stage video{width:100%;height:100%;max-height:none;object-fit:contain;background:#000}
+.ve-app .ed-props{
+  position:absolute;inset:0;width:auto;z-index:5;display:none;border-left:none;background:#fff;
+  padding-top:44px;
+}
+.ve-icon.on{color:#E94B58;background:#eef5ff;}
+.ve-app .ed-props.ve-props-open{display:block}
+.ve-props-close{
+  position:absolute;top:12px;right:12px;width:28px;height:28px;border:1px solid var(--ve-line);
+  background:#fff;border-radius:8px;cursor:pointer;color:#6b7280;z-index:2;
+}
+.ve-timeline{height:356px;background:#fff;border-top:1px solid var(--ve-line)}
+.ve-tl-tools{
+  display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid var(--ve-line);
+  background:#fff;flex-shrink:0;min-height:44px;
+}
+.ve-tl-left,.ve-tl-right{display:flex;align-items:center;gap:4px;flex:1}
+.ve-tl-right{justify-content:flex-end}
+.ve-tl-center{display:flex;align-items:center;justify-content:center}
+.ve-icon{
+  width:32px;height:32px;border:none;background:transparent;color:#4b5563;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.ve-icon:hover{background:#f3f5f7}
+.ve-icon:disabled{opacity:.35;cursor:default}
+.ve-fit{
+  border:1px solid #e5e7eb;background:#fff;border-radius:8px;padding:5px 10px;
+  font:600 12px inherit;color:#374151;cursor:pointer;
+}
+.ve-fit:hover{border-color:#cfd4dc}
+.ve-zoom{width:88px;height:4px;accent-color:var(--ve-blue);cursor:pointer}
+.ve-tb-mini{background:transparent;border:none;padding:0;width:auto;backdrop-filter:none;gap:10px}
+.ve-tb-mini .ed-tb-btn:not(.ed-tb-play),
+.ve-tb-mini .ed-scrub-wrap,
+.ve-tb-mini .ed-vol-wrap{display:none}
+.ve-app .ed-tb-play{
+  width:auto;height:auto;background:transparent;border-radius:0;color:#111;font-size:14px;padding:4px;
+}
+.ve-app .ed-tb-play:hover{background:transparent;color:#000}
+.ve-app .ed-time-lbl{color:#111;font-size:13px;font-weight:600;min-width:0}
+.ve-app .ed-tl-bar{display:none}
+.ve-app .ed-ruler{background:#fff;height:26px}
+.ve-app .ed-track{height:44px;border-bottom:1px solid #f0f2f4}
+.ve-app .track-lbl{
+  width:var(--ve-lbl);text-transform:none;letter-spacing:0;font-size:12px;font-weight:600;
+  color:#4b5563;gap:8px;padding:0 10px;white-space:nowrap;
+}
+.ve-app .track-lbl svg{flex-shrink:0;color:#9ca3af}
+.ve-add-lbl{border:none;background:#fff;cursor:pointer;font:700 12px inherit;color:#111;width:var(--ve-lbl);display:flex;align-items:center;gap:6px}
+.ve-add-lbl:hover{background:#f8fafc}
+.ve-app .ed-ph{background:#111;width:2px}
+.ve-app .ed-ph::before{
+  clip-path:none;width:12px;height:8px;border-radius:2px 2px 0 0;left:-5px;top:0;background:#111;
+}
+.ve-app .ed-ph-time{display:none}
+.ve-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* ── Clip Settings (import) ── */
+.cs-modal{
+  position:fixed;inset:0;z-index:240;display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;background:rgba(15,23,42,.48);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.cs-modal[hidden]{display:none !important}
+.cs-dialog{
+  width:min(920px,100%);max-height:min(92vh,860px);background:#fff;border-radius:16px;
+  box-shadow:0 24px 80px rgba(15,23,42,.28);display:flex;flex-direction:column;overflow:hidden;color:#111827;
+}
+.cs-head{
+  display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;flex-shrink:0;
+}
+.cs-head h3{margin:0;font:700 18px/1.2 inherit;letter-spacing:-.02em}
+.cs-x{
+  width:32px;height:32px;border:none;background:transparent;color:#6b7280;border-radius:8px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.cs-x:hover{background:#f3f4f6;color:#111}
+.cs-stage{
+  position:relative;margin:0 16px;background:#eef1f4;border-radius:10px;height:min(38vh,320px);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;
+}
+.cs-fit-prev{
+  position:absolute;top:10px;right:10px;z-index:3;display:inline-flex;align-items:center;gap:5px;
+  height:30px;padding:0 10px;border:1px solid #d8dee6;background:#fff;border-radius:8px;color:#374151;
+  font:600 12px inherit;cursor:pointer;box-shadow:0 1px 2px rgba(15,23,42,.06);
+}
+.cs-fit-prev:hover{border-color:#c5ced8;background:#f8fafc}
+.cs-frame{
+  position:relative;height:calc(100% - 28px);aspect-ratio:9/16;max-width:calc(100% - 48px);
+  background:#111;border-radius:2px;overflow:visible;
+}
+.cs-frame video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111;display:block;border-radius:2px;
+}
+.cs-frame.contain video{object-fit:contain}
+.cs-crop{
+  position:absolute;inset:0;border:2px solid #E94B58;border-radius:2px;pointer-events:none;z-index:2;box-shadow:0 0 0 999px rgba(238,241,244,.35);
+}
+.cs-h{
+  position:absolute;width:11px;height:11px;background:#E94B58;border:2px solid #fff;border-radius:50%;
+  box-shadow:0 0 0 1px rgba(45,124,246,.35);
+}
+.cs-h.n{top:-6px;left:50%;transform:translateX(-50%)}
+.cs-h.s{bottom:-6px;left:50%;transform:translateX(-50%)}
+.cs-h.e{right:-6px;top:50%;transform:translateY(-50%)}
+.cs-h.w{left:-6px;top:50%;transform:translateY(-50%)}
+.cs-h.nw{top:-6px;left:-6px}
+.cs-h.ne{top:-6px;right:-6px}
+.cs-h.sw{bottom:-6px;left:-6px}
+.cs-h.se{bottom:-6px;right:-6px}
+.cs-ctrl{
+  display:flex;align-items:center;gap:10px;padding:10px 18px 6px;flex-shrink:0;color:#111;
+}
+.cs-play{
+  width:32px;height:32px;border:none;background:transparent;color:#111;cursor:pointer;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;padding:0;
+}
+.cs-play:hover{background:#f3f4f6}
+.cs-clock{font:600 13px/1 inherit;font-variant-numeric:tabular-nums;color:#111;min-width:92px}
+.cs-vol{display:inline-flex;align-items:center;gap:6px;color:#4b5563}
+.cs-vol input[type=range]{
+  width:88px;height:4px;background:linear-gradient(to right,#E94B58 var(--p,100%),#dbe1ea var(--p,100%));border-radius:99px;
+}
+.cs-vol input[type=range]::-webkit-slider-thumb{width:12px;height:12px;background:#E94B58}
+.cs-ctrl-sp{flex:1}
+.cs-zoom{display:inline-flex;align-items:center;gap:4px}
+.cs-zoom button,.cs-link{
+  border:none;background:transparent;color:#374151;font:600 13px inherit;cursor:pointer;padding:4px 6px;border-radius:6px;
+}
+.cs-zoom button:hover,.cs-link:hover{background:#f3f4f6}
+.cs-zoom input[type=range]{width:72px;height:4px;background:#dbe1ea;border-radius:99px}
+.cs-zoom input[type=range]::-webkit-slider-thumb{width:12px;height:12px;background:#6b7280}
+.cs-link{color:#111}
+.cs-strip-wrap{padding:0 16px 8px;flex-shrink:0;overflow:hidden}
+.cs-strip-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+.cs-strip-inner{position:relative;min-width:100%}
+.cs-ruler{position:relative;height:18px;color:#9ca3af;font:500 10px/1 inherit;user-select:none}
+.cs-tick{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.cs-film{
+  position:relative;height:56px;border-radius:6px;overflow:hidden;background:#d7dce3;cursor:pointer;user-select:none;touch-action:none;
+}
+.cs-film canvas{display:block;height:56px;width:100%;pointer-events:none}
+.cs-dim{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.58);pointer-events:none;z-index:1}
+.cs-sel{
+  position:absolute;top:0;bottom:0;border:2px solid #E94B58;background:transparent;z-index:2;box-sizing:border-box;cursor:grab;
+}
+.cs-sel-h{
+  position:absolute;top:0;bottom:0;width:8px;background:#E94B58;cursor:ew-resize;z-index:3;
+}
+.cs-sel-h.l{left:-2px} .cs-sel-h.r{right:-2px}
+.cs-ph{
+  position:absolute;top:-2px;bottom:-2px;width:2px;background:#111;z-index:4;pointer-events:none;transform:translateX(-1px);
+}
+.cs-queue{
+  min-height:72px;margin:4px 16px 0;border-top:1px solid #eef0f3;display:flex;align-items:center;gap:10px;
+  overflow-x:auto;padding:12px 4px;flex-shrink:0;
+}
+.cs-queue-empty{width:100%;text-align:center;color:#9ca3af;font:500 13px inherit;padding:10px 0}
+.cs-q-item{
+  position:relative;flex:0 0 auto;width:52px;aspect-ratio:9/16;border-radius:6px;overflow:hidden;background:#111;
+  border:2px solid transparent;cursor:pointer;
+}
+.cs-q-item.on{border-color:#E94B58}
+.cs-q-item img,.cs-q-item canvas{width:100%;height:100%;object-fit:cover;display:block}
+.cs-q-item span{
+  position:absolute;left:4px;bottom:4px;font:700 9px inherit;color:#fff;text-shadow:0 1px 2px #000;
+}
+.cs-q-x{
+  position:absolute;top:2px;right:2px;width:16px;height:16px;border:none;border-radius:50%;background:rgba(0,0,0,.55);
+  color:#fff;font:700 10px inherit;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;line-height:1;
+}
+.cs-q-item:hover .cs-q-x{display:flex}
+.cs-foot{
+  display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:8px 16px 16px;flex-shrink:0;
+}
+.cs-add{
+  height:38px;padding:0 16px;border:1.5px solid #111;background:#fff;color:#111;border-radius:10px;
+  font:600 13px inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+.cs-add:hover{background:#f8fafc}
+.cs-save{
+  height:38px;padding:0 18px;border:none;background:#E94B58;color:#fff;border-radius:10px;
+  font:600 13px inherit;cursor:pointer;
+}
+.cs-save:hover{background:#C42232}
+@media (max-width:720px){
+  .cs-modal{padding:8px}
+  .cs-dialog{max-height:100vh;border-radius:12px}
+  .cs-stage{height:min(32vh,240px)}
+  .cs-ctrl{flex-wrap:wrap;gap:8px}
+}
+
+
+#panel-editor.panel.active{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%}
+.content:has(#panel-editor.active){
+  display:flex;flex-direction:column;overflow:hidden;padding:0!important;
+}
+.ve-app{height:100%;min-height:0;color-scheme:light}
+body.editor-open .topbar{display:none!important}
+#panel-editor .editor-wrap,body.editor-open .editor-wrap{height:100%}
 /* EMPTY */
 .ed-empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
 /* TEXT STYLE PICKER */
@@ -2861,189 +3241,541 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <!-- VIDEO EDITOR -->
     <div class="panel" id="panel-editor">
-      <div class="editor-wrap">
-        <!-- TOOLBAR -->
-        <div class="editor-bar">
-          <button class="btn btn-ghost btn-sm" onclick="edAddMedia()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M7 8l4 2-4 2V8z"/></svg>
-            Add Clip
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="edAddText()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
-            Text
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="edAddMusic()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-            Music
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="edOpenFrame()" title="Vertical frame / background">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="7" y1="7" x2="17" y2="7"/><line x1="7" y1="17" x2="17" y2="17"/></svg>
-            Format
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="edSplit()" title="Split at playhead">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/></svg>
-            Split
-          </button>
-          <button class="btn btn-ghost btn-sm" id="ed-del-btn" onclick="edDeleteSelected()" style="display:none;color:#eb5757;border-color:rgba(235,87,87,.3)">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-            Delete
-          </button>
-          <div style="flex:1"></div>
-          <div class="status" id="ed-export-status" style="display:none;margin-right:8px"></div>
-          <button class="btn btn-primary btn-sm" id="ed-export-btn" onclick="edExport()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export Video
-          </button>
-        </div>
+      <div class="editor-wrap ve-app" id="ed-wrap">
+        <header class="ve-top">
+          <div></div>
+          <div class="ve-proj" id="ed-proj-name" contenteditable="true" spellcheck="false">Untitled Project</div>
+          <div class="ve-top-right">
+            <div class="status" id="ed-export-status" style="display:none"></div>
+            <button class="ve-export" id="ed-export-btn" type="button" onclick="edExport()">
+              Export
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <button class="ve-help" type="button" title="Keyboard shortcuts" onclick="veShowHelp()">?</button>
+          </div>
+        </header>
 
-        <!-- BODY: preview + props -->
-        <div class="editor-body">
-          <!-- PREVIEW -->
-          <div class="ed-preview-area">
-            <div class="ed-empty-state" id="ed-empty" onclick="edAddMedia()">
-              <div class="upload-zone" style="max-width:340px;pointer-events:none">
-                <div class="uz-icon">🎞️</div>
-                <p><strong>Click to add your first clip</strong></p>
-                <p style="font-size:.72rem;margin-top:4px">MP4, MOV: drag multiple clips to sequence them</p>
+        <div class="ve-mid">
+          <nav class="ve-rail" aria-label="Editor tools">
+            <button class="ve-logo" type="button" title="Vidso" onclick="veSetTool('media')">
+              <svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="ve-rail-btn on" type="button" data-ve="media" onclick="veSetTool('media')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M12 11v6M9 14h6"/></svg>
+              Add Media
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="voiceover" onclick="veSetTool('voiceover')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+              Voiceover
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="sounds" onclick="veSetTool('sounds')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Sounds
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="script" onclick="veSetTool('script')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></svg>
+              Script
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="captions" onclick="veSetTool('captions')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4M13 10h4M7 14h10"/></svg>
+              Captions
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="effects" onclick="veSetTool('effects')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 4l-1 4-4 1 4 1 1 4 1-4 4-1-4-1zM5 16l-1 3-3 1 3 1 1 3 1-3 3-1-3-1z"/></svg>
+              Effects
+            </button>
+            <button class="ve-rail-btn" type="button" data-ve="stickers" onclick="veSetTool('stickers')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3l2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4z"/></svg>
+              Stickers
+            </button>
+          </nav>
+
+          <div class="ve-side">
+            <div class="ve-panel" data-ve="media">
+              <h2>Add Media</h2>
+              <div class="ve-tabs">
+                <button class="ve-mtab on" type="button" data-tab="files" onclick="veMediaTab('files')">Import Media</button>
+                <button class="ve-mtab" type="button" data-tab="url" onclick="veMediaTab('url')">Import From URL</button>
+              </div>
+              <div id="ve-import-files" class="ve-drop" onclick="edAddMedia()">
+                <strong>Upload media files</strong>
+                <p>Files under 1GB, or drag &amp; drop here</p>
+                <button class="ve-choose" type="button" onclick="event.stopPropagation();edAddMedia()">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  Choose Files
+                </button>
+              </div>
+              <div id="ve-import-url" hidden>
+                <p class="ve-hint">Paste a direct video link. Some sites block hotlinking.</p>
+                <div class="ve-url-row">
+                  <input type="text" id="ed-url-in" placeholder="https://" onkeydown="if(event.key==='Enter')edImportUrl()"/>
+                  <button class="ve-choose" type="button" onclick="edImportUrl()">Import</button>
+                </div>
               </div>
             </div>
-            <div class="preview-stage" id="ed-stage" style="display:none">
-              <video id="ed-vid" playsinline></video>
-              <canvas id="ed-canvas"></canvas>
-            </div>
-            <div class="ed-time-bar" id="ed-timebar" style="display:none">
-              <button id="ed-play-btn" onclick="edTogglePlay()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.1rem;line-height:1;width:24px">▶</button>
-              <span id="ed-time-lbl" style="font-size:.72rem;color:#aaa;min-width:88px;font-variant-numeric:tabular-nums">0:00 / 0:00</span>
-              <input type="range" id="ed-scrubber" min="0" max="100" value="0" step="0.01" style="flex:1" oninput="edScrub(this.value)"/>
-            </div>
-          </div>
 
-          <!-- PROPERTIES -->
-          <div class="ed-props">
-            <div id="ep-default" style="color:var(--muted);font-size:.78rem;line-height:1.7;padding-top:4px">
-              Select a clip, text, or audio element to edit its properties.
+            <div class="ve-panel" data-ve="voiceover" hidden>
+              <h2>Voiceover</h2>
+              <p class="ve-hint">Add a spoken track on Voiceover. Import a recording or generate one from your script.</p>
+              <div class="ve-now" id="ed-vo-now">No voiceover yet</div>
+              <label class="ve-hint" style="margin-bottom:6px">Voice</label>
+              <select id="ed-vo-voice" style="width:100%;margin-bottom:10px;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font:14px inherit"></select>
+              <textarea id="ed-vo-script" rows="5" placeholder="What should the voice say?" style="width:100%;min-height:88px;resize:vertical;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font:14px inherit;margin-bottom:10px"></textarea>
+              <div class="ve-actions">
+                <button class="ve-choose" type="button" onclick="edGenerateVoice()">Generate voiceover</button>
+                <button class="ve-ghost" type="button" onclick="document.getElementById('ed-voice-in').click()">Upload audio file</button>
+              </div>
+              <div class="ve-status" id="ed-vo-status"></div>
+              <div id="ed-vo-mix" hidden style="margin-top:12px">
+                <label>Voiceover volume</label>
+                <input type="range" id="ed-vo-vol" min="0" max="1" step="0.05" value="1" oninput="edVoiceVol(this.value)"/>
+                <button class="ve-ghost" type="button" style="margin-top:8px" onclick="edClearVoice()">Remove voiceover</button>
+              </div>
             </div>
-            <!-- Clip props -->
-            <div id="ep-clip" style="display:none">
-              <h4>Video Clip</h4>
-              <label>Brightness</label>
-              <input type="range" id="ep-br" min="-1" max="1" step="0.05" value="0" oninput="edApplyFilter()"/>
-              <label>Contrast</label>
-              <input type="range" id="ep-ct" min="-1" max="1" step="0.05" value="0" oninput="edApplyFilter()"/>
-              <label>Saturation</label>
-              <input type="range" id="ep-sat" min="0" max="3" step="0.05" value="1" oninput="edApplyFilter()"/>
-              <label>Speed</label>
-              <select id="ep-speed">
-                <option value="0.5">0.5×</option>
-                <option value="1" selected>1× (normal)</option>
-                <option value="1.5">1.5×</option>
-                <option value="2">2×</option>
-              </select>
+            <div class="ve-panel" data-ve="sounds" hidden>
+              <h2>Sounds</h2>
+              <p class="ve-hint">Background music or SFX on the Music track. It plays across the whole timeline.</p>
+              <div class="ve-now" id="ed-mus-now">No music yet</div>
+              <div class="ve-actions">
+                <button class="ve-choose" type="button" onclick="edAddMusic()">Choose audio file</button>
+              </div>
+              <div id="ed-mus-mix" hidden style="margin-top:14px">
+                <label>Music volume</label>
+                <input type="range" id="ed-mus-vol" min="0" max="1" step="0.05" value="0.5" oninput="edMusicPanelVol(this.value)"/>
+                <label class="ed-check" style="margin-top:10px"><input type="checkbox" id="ed-keeporig-panel" checked onchange="edSetKeepOrig(this.checked)"/> Keep original clip audio</label>
+                <button class="ve-ghost" type="button" style="margin-top:8px" onclick="edClearMusic()">Remove music</button>
+              </div>
             </div>
-            <!-- Text props -->
-            <div id="ep-text" style="display:none">
-              <h4>Text Style</h4>
-              <div class="txt-style-grid" id="ep-style-grid"></div>
-              <label>Text</label>
-              <input type="text" id="ep-txt" oninput="edUpdateText()"/>
-              <label>Size</label>
-              <input type="range" id="ep-tsz" min="12" max="140" value="48" oninput="edUpdateText()"/>
-              <label>Color <input type="color" id="ep-tcol" value="#ffffff" onchange="edUpdateText()" style="margin-left:6px;vertical-align:middle"/></label>
-              <label>Stroke <input type="color" id="ep-scol" value="#000000" onchange="edUpdateText()" style="margin-left:6px;vertical-align:middle"/> <span style="font-size:.65rem;color:var(--muted)">width</span> <input type="range" id="ep-sw" min="0" max="20" value="6" style="width:60px;vertical-align:middle" oninput="edUpdateText()"/></label>
-              <label>Start (s)</label>
-              <input type="number" id="ep-ts" min="0" step="0.1" oninput="edUpdateText()"/>
-              <label>End (s)</label>
-              <input type="number" id="ep-te" min="0" step="0.1" oninput="edUpdateText()"/>
-              <label>X position</label>
-              <input type="range" id="ep-tx" min="0" max="100" value="50" oninput="edUpdateText()"/>
-              <label>Y position</label>
-              <input type="range" id="ep-ty" min="0" max="100" value="80" oninput="edUpdateText()"/>
+            <div class="ve-panel" data-ve="script" hidden>
+              <h2>Script</h2>
+              <p class="ve-hint">Draft copy for voiceover or captions. It stays with this project until you add it to the video.</p>
+              <textarea id="ed-script-in" rows="12" placeholder="Write your script here…" oninput="edSaveScript()" style="flex:1;min-height:180px;resize:vertical;border:1px solid #e5e7eb;border-radius:10px;padding:12px;font:14px inherit"></textarea>
+              <div class="ve-actions" style="margin-top:12px">
+                <button class="ve-choose" type="button" onclick="edCaptionsFromScript()">Add as captions</button>
+                <button class="ve-ghost" type="button" onclick="veSetTool('voiceover')">Use for voiceover</button>
+              </div>
+              <p class="ve-need" id="ed-script-need" hidden>Import a clip first so captions have somewhere to sit.</p>
             </div>
-            <!-- Audio props -->
-            <div id="ep-audio" style="display:none">
-              <h4>Background Music</h4>
-              <label>Volume</label>
-              <input type="range" id="ep-vol" min="0" max="1" step="0.05" value="0.5" oninput="edAudioVol()"/>
-              <p style="font-size:.72rem;color:var(--muted);margin-top:12px">Music plays throughout the full video on export.</p>
+            <div class="ve-panel" data-ve="captions" hidden>
+              <h2>Captions</h2>
+              <p class="ve-hint">Add on-screen text. Pick a style, then add a caption or pull lines from your script.</p>
+              <p class="ve-need" id="ed-cap-need" hidden>Import a clip first, then add captions.</p>
+              <div class="ve-cap-styles" id="ed-cap-styles"></div>
+              <div class="ve-actions">
+                <button class="ve-choose" type="button" onclick="edAddText()">Add caption</button>
+                <button class="ve-ghost" type="button" onclick="edCaptionsFromScript()">From script</button>
+              </div>
             </div>
-            <!-- Frame / format props -->
-            <div id="ep-frame" style="display:none">
-              <h4>Vertical Frame (9:16)</h4>
-              <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">Reframe to portrait with a top &amp; bottom background, perfect for adding a caption above the video.</p>
+            <div class="ve-panel" data-ve="effects" hidden>
+              <h2>Effects</h2>
+              <p class="ve-hint">Reframe to 9:16 with a top and bottom background — useful for captions above the clip.</p>
               <div class="frame-grid">
-                <button class="frame-btn" data-fr="none" onclick="edSetFrame('none')">
+                <button class="frame-btn" data-fr="none" type="button" onclick="edSetFrame('none')">
                   <div class="frame-ico" style="background:none"><div class="mid" style="border-radius:3px"></div></div>
                   <span>Original</span>
                 </button>
-                <button class="frame-btn" data-fr="white" onclick="edSetFrame('white')">
+                <button class="frame-btn" data-fr="white" type="button" onclick="edSetFrame('white')">
                   <div class="frame-ico"><div class="bar" style="background:#fff"></div><div class="mid"></div><div class="bar" style="background:#fff"></div></div>
                   <span>White</span>
                 </button>
-                <button class="frame-btn" data-fr="black" onclick="edSetFrame('black')">
+                <button class="frame-btn" data-fr="black" type="button" onclick="edSetFrame('black')">
                   <div class="frame-ico"><div class="bar" style="background:#000"></div><div class="mid"></div><div class="bar" style="background:#000"></div></div>
                   <span>Black</span>
                 </button>
-                <button class="frame-btn" data-fr="blur" onclick="edSetFrame('blur')">
+                <button class="frame-btn" data-fr="blur" type="button" onclick="edSetFrame('blur')">
                   <div class="frame-ico"><div class="bar" style="background:linear-gradient(135deg,#7c4fd0,#a98ce0);filter:blur(1px)"></div><div class="mid"></div><div class="bar" style="background:linear-gradient(135deg,#7c4fd0,#a98ce0);filter:blur(1px)"></div></div>
                   <span>Blurred</span>
                 </button>
               </div>
-              <div id="crop-section" style="display:none">
-              <h4 style="margin-top:16px">Clip Crop</h4>
-              <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">How the center video is cropped inside the 9:16 frame.</p>
-              <div class="frame-grid">
-                <button class="frame-btn active" data-crop="fit" onclick="edSetCrop('fit')">
-                  <div class="frame-ico"><div class="mid" style="border-radius:3px;width:80%;height:45%"></div></div>
-                  <span>Fit</span>
-                </button>
-                <button class="frame-btn" data-crop="16:9" onclick="edSetCrop('16:9')">
-                  <div class="frame-ico"><div class="mid" style="border-radius:3px;width:80%;height:45%"></div></div>
-                  <span>16:9</span>
-                </button>
-                <button class="frame-btn" data-crop="4:3" onclick="edSetCrop('4:3')">
-                  <div class="frame-ico"><div class="mid" style="border-radius:3px;width:70%;height:52%"></div></div>
-                  <span>4:3</span>
-                </button>
-                <button class="frame-btn" data-crop="1:1" onclick="edSetCrop('1:1')">
-                  <div class="frame-ico"><div class="mid" style="border-radius:3px;width:55%;height:55%"></div></div>
-                  <span>1:1</span>
-                </button>
-                <button class="frame-btn" data-crop="3:4" onclick="edSetCrop('3:4')">
-                  <div class="frame-ico"><div class="mid" style="border-radius:3px;width:48%;height:64%"></div></div>
-                  <span>3:4</span>
-                </button>
+              <div data-ed-crop style="display:none">
+                <h4 style="margin:16px 0 8px;font-size:.78rem">Clip crop</h4>
+                <div class="frame-grid">
+                  <button class="frame-btn active" data-crop="fit" type="button" onclick="edSetCrop('fit')"><span>Fit</span></button>
+                  <button class="frame-btn" data-crop="16:9" type="button" onclick="edSetCrop('16:9')"><span>16:9</span></button>
+                  <button class="frame-btn" data-crop="4:3" type="button" onclick="edSetCrop('4:3')"><span>4:3</span></button>
+                  <button class="frame-btn" data-crop="1:1" type="button" onclick="edSetCrop('1:1')"><span>1:1</span></button>
+                  <button class="frame-btn" data-crop="3:4" type="button" onclick="edSetCrop('3:4')"><span>3:4</span></button>
+                </div>
               </div>
+            </div>
+            <div class="ve-panel" data-ve="stickers" hidden>
+              <h2>Stickers</h2>
+              <p class="ve-hint">Overlay images or emoji on top of your video. They land on the Stickers track.</p>
+              <div class="ve-emoji" id="ed-emoji-row"></div>
+              <div class="ve-actions">
+                <button class="ve-choose" type="button" onclick="edAddImage()">Upload image</button>
               </div>
-              <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Tip: after choosing a frame, click <b>Text</b> to add your caption in the top area.</p>
+            </div>
+
+            <div class="ed-props">
+              <button class="ve-props-close" type="button" onclick="edClearSel()" title="Close">✕</button>
+              <div id="ep-default">
+                <h4>Editor</h4>
+                <p class="ed-prop-hint">Select a clip, text, image, or music on the timeline to edit it. Drag clip edges to trim.</p>
+                <div class="ed-shortcuts">
+                  <div><span>Play / pause</span><kbd>Space</kbd></div>
+                  <div><span>Split</span><kbd>S</kbd></div>
+                  <div><span>Undo / redo</span><kbd>Ctrl Z</kbd></div>
+                  <div><span>Duplicate</span><kbd>Ctrl D</kbd></div>
+                  <div><span>Delete</span><kbd>Del</kbd></div>
+                  <div><span>Skip 1s</span><kbd>← →</kbd></div>
+                </div>
+              </div>
+              <div id="ep-clip" style="display:none">
+                <h4>Video Clip</h4>
+                <div class="ed-prop-row">
+                  <div>
+                    <label>Trim in (s)</label>
+                    <input type="number" id="ep-tin" min="0" step="0.001" onchange="edUpdateClip()"/>
+                  </div>
+                  <div>
+                    <label>Trim out (s)</label>
+                    <input type="number" id="ep-tout" min="0" step="0.001" onchange="edUpdateClip()"/>
+                  </div>
+                </div>
+                <label>Brightness</label>
+                <input type="range" id="ep-br" min="-1" max="1" step="0.05" value="0" oninput="edUpdateClip()"/>
+                <label>Contrast</label>
+                <input type="range" id="ep-ct" min="-1" max="1" step="0.05" value="0" oninput="edUpdateClip()"/>
+                <label>Saturation</label>
+                <input type="range" id="ep-sat" min="0" max="3" step="0.05" value="1" oninput="edUpdateClip()"/>
+                <label>Speed</label>
+                <select id="ep-speed" onchange="edUpdateClip()">
+                  <option value="0.5">0.5×</option>
+                  <option value="1" selected>1× (normal)</option>
+                  <option value="1.5">1.5×</option>
+                  <option value="2">2×</option>
+                </select>
+                <label>Clip volume</label>
+                <input type="range" id="ep-cvol" min="0" max="1" step="0.05" value="1" oninput="edUpdateClip()"/>
+                <div class="ed-prop-row">
+                  <div>
+                    <label>Fade in (s)</label>
+                    <input type="number" id="ep-fin" min="0" max="5" step="0.1" value="0" onchange="edUpdateClip()"/>
+                  </div>
+                  <div>
+                    <label>Fade out (s)</label>
+                    <input type="number" id="ep-fout" min="0" max="5" step="0.1" value="0" onchange="edUpdateClip()"/>
+                  </div>
+                </div>
+                <label class="ed-check"><input type="checkbox" id="ep-cmute" onchange="edUpdateClip()"/> Mute clip audio</label>
+                <div class="ed-prop-row" style="margin-top:12px">
+                  <button class="btn btn-ghost btn-sm" onclick="edFlip('h')">Flip H</button>
+                  <button class="btn btn-ghost btn-sm" onclick="edFlip('v')">Flip V</button>
+                </div>
+                <div class="ed-prop-row" style="margin-top:8px">
+                  <button class="btn btn-ghost btn-sm" onclick="edMoveClip(-1)">← Move</button>
+                  <button class="btn btn-ghost btn-sm" onclick="edMoveClip(1)">Move →</button>
+                </div>
+                <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="edAddTransition()">Crossfade neighbors</button>
+              </div>
+              <div id="ep-text" style="display:none">
+                <h4>Text Style</h4>
+                <div class="txt-style-grid" id="ep-style-grid"></div>
+                <label>Text</label>
+                <input type="text" id="ep-txt" oninput="edUpdateText()"/>
+                <label>Size</label>
+                <input type="range" id="ep-tsz" min="12" max="140" value="48" oninput="edUpdateText()"/>
+                <label>Color <input type="color" id="ep-tcol" value="#ffffff" onchange="edUpdateText()" style="margin-left:6px;vertical-align:middle"/></label>
+                <label>Stroke <input type="color" id="ep-scol" value="#000000" onchange="edUpdateText()" style="margin-left:6px;vertical-align:middle"/> <span style="font-size:.65rem;color:var(--muted)">width</span> <input type="range" id="ep-sw" min="0" max="20" value="6" style="width:60px;vertical-align:middle" oninput="edUpdateText()"/></label>
+                <label>Start (s)</label>
+                <input type="number" id="ep-ts" min="0" step="0.001" oninput="edUpdateText()"/>
+                <label>End (s)</label>
+                <input type="number" id="ep-te" min="0" step="0.001" oninput="edUpdateText()"/>
+                <label>X position</label>
+                <input type="range" id="ep-tx" min="0" max="100" value="50" oninput="edUpdateText()"/>
+                <label>Y position</label>
+                <input type="range" id="ep-ty" min="0" max="100" value="80" oninput="edUpdateText()"/>
+                <label class="ed-check"><input type="checkbox" id="ep-tbold" onchange="edUpdateText()"/> Bold</label>
+              </div>
+              <div id="ep-overlay" style="display:none">
+                <h4>Image Overlay</h4>
+                <div class="ed-prop-row">
+                  <div>
+                    <label>Start (s)</label>
+                    <input type="number" id="ep-os" min="0" step="0.001" oninput="edUpdateOverlay()"/>
+                  </div>
+                  <div>
+                    <label>End (s)</label>
+                    <input type="number" id="ep-oe" min="0" step="0.001" oninput="edUpdateOverlay()"/>
+                  </div>
+                </div>
+                <label>Scale</label>
+                <input type="range" id="ep-osc" min="8" max="120" value="40" oninput="edUpdateOverlay()"/>
+                <label>Opacity</label>
+                <input type="range" id="ep-oop" min="0" max="1" step="0.05" value="1" oninput="edUpdateOverlay()"/>
+                <label>X position</label>
+                <input type="range" id="ep-ox" min="0" max="100" value="50" oninput="edUpdateOverlay()"/>
+                <label>Y position</label>
+                <input type="range" id="ep-oy" min="0" max="100" value="50" oninput="edUpdateOverlay()"/>
+              </div>
+              <div id="ep-audio" style="display:none">
+                <h4>Background Music</h4>
+                <label>Volume</label>
+                <input type="range" id="ep-vol" min="0" max="1" step="0.05" value="0.5" oninput="edAudioVol()"/>
+                <div class="ed-prop-row">
+                  <div>
+                    <label>Fade in (s)</label>
+                    <input type="number" id="ep-afin" min="0" max="8" step="0.1" value="0" onchange="edAudioVol()"/>
+                  </div>
+                  <div>
+                    <label>Fade out (s)</label>
+                    <input type="number" id="ep-afout" min="0" max="8" step="0.1" value="0" onchange="edAudioVol()"/>
+                  </div>
+                </div>
+                <label class="ed-check"><input type="checkbox" id="ep-keeporig" checked onchange="edSetKeepOrig(this.checked)"/> Keep original clip audio</label>
+                <p class="ed-prop-hint" style="margin-top:12px">Music plays across the full timeline. Mix it with clip audio or replace it.</p>
+              </div>
+              <div id="ep-frame" style="display:none">
+                <h4>Vertical Frame (9:16)</h4>
+                <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">Reframe to portrait with a top &amp; bottom background — perfect for adding a caption above the video.</p>
+                <div class="frame-grid">
+                  <button class="frame-btn" data-fr="none" onclick="edSetFrame('none')">
+                    <div class="frame-ico" style="background:none"><div class="mid" style="border-radius:3px"></div></div>
+                    <span>Original</span>
+                  </button>
+                  <button class="frame-btn" data-fr="white" onclick="edSetFrame('white')">
+                    <div class="frame-ico"><div class="bar" style="background:#fff"></div><div class="mid"></div><div class="bar" style="background:#fff"></div></div>
+                    <span>White</span>
+                  </button>
+                  <button class="frame-btn" data-fr="black" onclick="edSetFrame('black')">
+                    <div class="frame-ico"><div class="bar" style="background:#000"></div><div class="mid"></div><div class="bar" style="background:#000"></div></div>
+                    <span>Black</span>
+                  </button>
+                  <button class="frame-btn" data-fr="blur" onclick="edSetFrame('blur')">
+                    <div class="frame-ico"><div class="bar" style="background:linear-gradient(135deg,#7c4fd0,#a98ce0);filter:blur(1px)"></div><div class="mid"></div><div class="bar" style="background:linear-gradient(135deg,#7c4fd0,#a98ce0);filter:blur(1px)"></div></div>
+                    <span>Blurred</span>
+                  </button>
+                </div>
+                <div id="crop-section" data-ed-crop style="display:none">
+                <h4 style="margin-top:16px">Clip Crop</h4>
+                <p style="font-size:.72rem;color:var(--muted);margin:-4px 0 12px">How the center video is cropped inside the 9:16 frame.</p>
+                <div class="frame-grid">
+                  <button class="frame-btn active" data-crop="fit" onclick="edSetCrop('fit')">
+                    <div class="frame-ico"><div class="mid" style="border-radius:3px;width:80%;height:45%"></div></div>
+                    <span>Fit</span>
+                  </button>
+                  <button class="frame-btn" data-crop="16:9" onclick="edSetCrop('16:9')">
+                    <div class="frame-ico"><div class="mid" style="border-radius:3px;width:80%;height:45%"></div></div>
+                    <span>16:9</span>
+                  </button>
+                  <button class="frame-btn" data-crop="4:3" onclick="edSetCrop('4:3')">
+                    <div class="frame-ico"><div class="mid" style="border-radius:3px;width:70%;height:52%"></div></div>
+                    <span>4:3</span>
+                  </button>
+                  <button class="frame-btn" data-crop="1:1" onclick="edSetCrop('1:1')">
+                    <div class="frame-ico"><div class="mid" style="border-radius:3px;width:55%;height:55%"></div></div>
+                    <span>1:1</span>
+                  </button>
+                  <button class="frame-btn" data-crop="3:4" onclick="edSetCrop('3:4')">
+                    <div class="frame-ico"><div class="mid" style="border-radius:3px;width:48%;height:64%"></div></div>
+                    <span>3:4</span>
+                  </button>
+                </div>
+                </div>
+                <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Tip: after choosing a frame, click <b>Captions</b> to add text in the top area.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ed-preview-area ve-preview">
+            <div class="ve-phone">
+              <div class="ed-empty-state" id="ed-empty"></div>
+              <div class="preview-stage" id="ed-stage" style="display:none">
+                <video id="ed-vid" playsinline></video>
+                <canvas id="ed-canvas"></canvas>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- TIMELINE -->
-        <div class="ed-timeline">
+        <div class="ed-timeline ve-timeline">
+          <div class="ve-tl-tools">
+            <div class="ve-tl-left">
+              <button class="ve-icon" type="button" onclick="edAddMedia()" title="Add media">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <button class="ve-icon" type="button" onclick="edClearSel()" title="Select">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4l7 16 2-7 7-2z"/></svg>
+              </button>
+              <button class="ve-icon" type="button" id="ed-undo-btn" onclick="edUndo()" title="Undo (Ctrl+Z)" disabled>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 010 8h-1"/></svg>
+              </button>
+              <button class="ve-icon" type="button" id="ed-redo-btn" onclick="edRedo()" title="Redo (Ctrl+Y)" disabled>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 14l4-4-4-4"/><path d="M19 10H8a4 4 0 000 8h1"/></svg>
+              </button>
+              <button class="ve-icon" type="button" onclick="edSplit()" title="Split at playhead (S)">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/></svg>
+              </button>
+              <button class="btn btn-ghost btn-sm" id="ed-dup-btn" onclick="edDuplicate()" title="Duplicate (Ctrl+D)" style="display:none">Duplicate</button>
+              <button class="btn btn-ghost btn-sm" id="ed-del-btn" onclick="edDeleteSelected()" title="Delete (Del)" style="display:none;color:#eb5757">Delete</button>
+              <button class="ve-icon" type="button" id="ed-snap-btn" onclick="edToggleSnap()" title="Snap to edges">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+              </button>
+            </div>
+            <div class="ve-tl-center">
+              <div class="ed-time-bar ve-tb-mini" id="ed-timebar">
+                <button class="ed-tb-btn" onclick="edSkipTo(0)" title="Start">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button class="ed-tb-btn" onclick="edNudge(-1)" title="Back 1s">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                </button>
+                <button class="ed-tb-btn ed-tb-play" id="ed-play-btn" onclick="edTogglePlay()" title="Play / pause (Space)">▶</button>
+                <button class="ed-tb-btn" onclick="edNudge(1)" title="Forward 1s">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM3 6v12l8.5-6L3 6z"/></svg>
+                </button>
+                <button class="ed-tb-btn" onclick="edSkipTo(-1)" title="End">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6v12z"/></svg>
+                </button>
+                <span class="ed-time-lbl" id="ed-time-lbl">0:00 / 0:00</span>
+                <div class="ed-scrub-wrap">
+                  <input class="ed-scrubber" type="range" id="ed-scrubber" min="0" max="100" value="0" step="0.001" oninput="edScrub(this.value)"/>
+                </div>
+                <div class="ed-vol-wrap">
+                  <button class="ed-tb-btn" id="ed-mute-btn" onclick="edToggleMute()" title="Mute preview">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 9a5 5 0 010 6"/></svg>
+                  </button>
+                  <input class="ed-vol-slider" type="range" id="ed-master-vol" min="0" max="1" step="0.01" value="1" title="Preview volume" style="--p:100%" oninput="edMasterVol(this.value)"/>
+                </div>
+              </div>
+            </div>
+            <div class="ve-tl-right">
+              <button class="ve-icon" type="button" onclick="edZoom(-1)" title="Zoom out">−</button>
+              <input class="ve-zoom" id="ed-zoom-slider" type="range" min="20" max="220" value="80" oninput="edZoomSet(this.value)"/>
+              <button class="ve-icon" type="button" onclick="edZoom(1)" title="Zoom in">+</button>
+              <button class="ve-fit" type="button" onclick="edFitZoom()">Fit</button>
+              <span class="ed-zoom-lbl ve-hidden" id="ed-zoom-lbl">100%</span>
+            </div>
+          </div>
+          <div class="ed-tl-bar">
+            <span id="ed-tl-meta">No clips yet</span>
+            <div style="flex:1"></div>
+            <span>Drag edges to trim · snap <span id="ed-snap-lbl">off</span></span>
+          </div>
           <div class="ed-ruler" id="ed-ruler" onclick="edRulerSeek(event)">
             <canvas id="ed-ruler-cv"></canvas>
-            <div class="ed-ph" id="ed-ph-r" style="left:66px"></div>
+            <div class="ed-ph" id="ed-ph-r" style="left:108px"></div>
           </div>
           <div class="ed-tracks" id="ed-tracks">
-            <div class="ed-ph" id="ed-ph-t" style="left:66px"></div>
-            <div class="ed-track">
-              <div class="track-lbl">Video</div>
-              <div class="track-body" id="tl-vid" onclick="edTrackSeek(event)"></div>
+            <div class="ed-ph" id="ed-ph-t" style="left:108px"><span class="ed-ph-time" id="ed-ph-time">0:00.000</span></div>
+            <div class="ed-track ve-add-track">
+              <button class="track-lbl ve-add-lbl" type="button" onclick="edAddMedia()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Add Track
+              </button>
+              <div class="track-body"></div>
             </div>
             <div class="ed-track">
-              <div class="track-lbl">Text</div>
+              <div class="track-lbl">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                Captions
+              </div>
               <div class="track-body" id="tl-txt" onclick="edTrackSeek(event)"></div>
             </div>
             <div class="ed-track">
-              <div class="track-lbl">Audio</div>
+              <div class="track-lbl">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14"/></svg>
+                B-Roll
+              </div>
+              <div class="track-body" id="tl-vid" onclick="edTrackSeek(event)"></div>
+            </div>
+            <div class="ed-track">
+              <div class="track-lbl">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0"/></svg>
+                Voiceover
+              </div>
+              <div class="track-body" id="tl-voice" onclick="edTrackSeek(event)"></div>
+            </div>
+            <div class="ed-track">
+              <div class="track-lbl">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3l2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4z"/></svg>
+                Stickers
+              </div>
+              <div class="track-body" id="tl-ov" onclick="edTrackSeek(event)"></div>
+            </div>
+            <div class="ed-track">
+              <div class="track-lbl">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Music
+              </div>
               <div class="track-body" id="tl-aud"></div>
             </div>
           </div>
         </div>
 
-        <input type="file" id="ed-media-in" accept="video/*" multiple style="display:none" onchange="edHandleMedia(this)"/>
+        <input type="file" id="ed-media-in" accept="video/*,image/*" multiple style="display:none" onchange="edHandleMedia(this)"/>
+        <input type="file" id="ed-image-in" accept="image/*" multiple style="display:none" onchange="edHandleImages(this)"/>
         <input type="file" id="ed-music-in" accept="audio/*" style="display:none" onchange="edHandleMusic(this)"/>
+        <input type="file" id="ed-voice-in" accept="audio/*" style="display:none" onchange="edHandleVoice(this)"/>
+      </div>
+
+      <div id="cs-modal" class="cs-modal" hidden onclick="if(event.target===this)csClose()">
+        <div class="cs-dialog" role="dialog" aria-labelledby="cs-title" onclick="event.stopPropagation()">
+          <div class="cs-head">
+            <h3 id="cs-title">Clip Settings</h3>
+            <button class="cs-x" type="button" onclick="csClose()" aria-label="Close">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <div class="cs-stage">
+            <button class="cs-fit-prev" type="button" onclick="csFitPreview()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Fit
+            </button>
+            <div class="cs-frame" id="cs-frame">
+              <video id="cs-vid" playsinline></video>
+              <div class="cs-crop" aria-hidden="true">
+                <i class="cs-h nw"></i><i class="cs-h n"></i><i class="cs-h ne"></i>
+                <i class="cs-h w"></i><i class="cs-h e"></i>
+                <i class="cs-h sw"></i><i class="cs-h s"></i><i class="cs-h se"></i>
+              </div>
+            </div>
+          </div>
+          <div class="cs-ctrl">
+            <button class="cs-play" id="cs-play-btn" type="button" onclick="csTogglePlay()" aria-label="Play">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <span class="cs-clock" id="cs-clock">0:00 / 0:00</span>
+            <div class="cs-vol">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9.5a4 4 0 010 5"/></svg>
+              <input type="range" id="cs-vol" min="0" max="1" step="0.01" value="1" style="--p:100%" oninput="csVol(this.value)"/>
+            </div>
+            <div class="cs-ctrl-sp"></div>
+            <div class="cs-zoom">
+              <button type="button" onclick="csZoom(-1)" title="Zoom out">−</button>
+              <input type="range" id="cs-zoom" min="24" max="220" value="80" oninput="csZoomSet(this.value)"/>
+              <button type="button" onclick="csZoom(1)" title="Zoom in">+</button>
+              <button class="cs-link" type="button" onclick="csFitStrip()">Fit</button>
+              <button class="cs-link" type="button" onclick="csSelectAll()">Select All</button>
+            </div>
+          </div>
+          <div class="cs-strip-wrap">
+            <div class="cs-strip-scroll" id="cs-strip-scroll">
+              <div class="cs-strip-inner" id="cs-strip-inner">
+                <div class="cs-ruler" id="cs-ruler"></div>
+                <div class="cs-film" id="cs-film">
+                  <canvas id="cs-film-cv"></canvas>
+                  <div class="cs-dim" id="cs-dim-l"></div>
+                  <div class="cs-dim" id="cs-dim-r"></div>
+                  <div class="cs-sel" id="cs-sel">
+                    <div class="cs-sel-h l" data-cs-h="in"></div>
+                    <div class="cs-sel-h r" data-cs-h="out"></div>
+                  </div>
+                  <div class="cs-ph" id="cs-ph"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cs-queue" id="cs-queue">
+            <div class="cs-queue-empty">Your clips will appear here</div>
+          </div>
+          <div class="cs-foot">
+            <button class="cs-add" type="button" onclick="csAddClip()">+ Add Clip</button>
+            <button class="cs-save" type="button" onclick="csSaveAll()">Save All Clips</button>
+          </div>
+        </div>
+        <input type="file" id="cs-media-in" accept="video/*" multiple style="display:none" onchange="csHandleMore(this)"/>
       </div>
     </div>
 
@@ -5965,10 +6697,15 @@ window.switchPanel = (id, btn, opts = {}) => {
     const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
+    document.body.classList.toggle('editor-open', id === 'editor')
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') loadVoiceLibrary()
   if (id === 'videogen') fvInit()
+  if (id === 'editor') {
+    try { edFillVoices?.() } catch (_) {}
+    try { edRenderTL?.() } catch (_) {}
+  }
   if (!opts.silent) {
     const next = pathForPanel(id)
     if (normalizePath(location.pathname) !== normalizePath(next)) {
@@ -8334,7 +9071,14 @@ window.clipPreviewRange = () => {
 }
 
 // ── VIDEO EDITOR ─────────────────────────────────────────────────────────────
-const ED_PX = 80
+let ED_PX = 80
+const ED_PX_MIN = 20
+const ED_PX_MAX = 220
+const ED_LBL = 108
+
+function escHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')
+}
 
 const ED_STYLES = {
   tiktok:   { label:'TikTok',    font:'Geist',       w:'800', color:'#ffffff', sc:'#000000', sw:7,  glow:0,  glowC:'transparent', bg:'' },
@@ -8410,47 +9154,523 @@ window.edApplyStyle = (key) => {
   edDrawCanvas()
 }
 
-let edClips = []     // {id, file, url, dur, tStart, trimIn, trimOut, trimDur}
+let edClips = []     // {id, file, url, dur, tStart, trimIn, trimOut, trimDur, br, ct, sat, speed, volume, muted, fadeIn, fadeOut, flipH, flipV}
 let edTexts = []     // {id, text, start, end, x, y, size, color, bold}
-let edAudio = null   // {file, url, volume}
+let edOverlays = []  // {id, file, url, start, end, x, y, scale, opacity, name}
+let edOverlayImgs = {}
+let edAudio = null   // {file, url, volume, fadeIn, fadeOut}
+let edVoice = null   // {file, url, volume, fadeIn, fadeOut}
 let edFilters = { br: 0, ct: 0, sat: 1 }
 let edTotalDur = 0
 let edCurTime = 0
-let edSel = null     // {type:'clip'|'text'|'audio'|'frame', id}
+let edSel = null     // {type:'clip'|'text'|'audio'|'frame'|'overlay', id}
 let edPlaying = false
 let edRaf = null
 let edAudioEl = null
+let edVoiceEl = null
+let edCapPreset = 'tiktok'
 let edFrame = { mode: 'none', crop: 'fit' }   // mode: 'none'|'white'|'black'|'blur'  crop: 'fit'|'16:9'|'4:3'|'1:1'|'3:4'
+let edSnapOn = false
+let edMuted = false
+let edPreviewVol = 1
+let edKeepOrig = true
+let edHist = []
+let edFut = []
+let edHistLock = false
 
-window.edAddMedia = () => document.getElementById('ed-media-in').click()
-window.edAddMusic = () => document.getElementById('ed-music-in').click()
-
-window.edHandleMedia = async (inp) => {
-  for (const file of Array.from(inp.files)) {
-    if (!file.type.startsWith('video/')) continue
-    const url = URL.createObjectURL(file)
-    const dur = await getEdVidDur(url)
-    const id = 'c' + Date.now() + Math.random().toString(36).slice(2,6)
-    edClips.push({ id, file, url, dur, tStart: 0, trimIn: 0, trimOut: dur, trimDur: dur })
-  }
-  inp.value = ''
-  edRecalc()
-  edRenderTL()
-  edShowPreview()
-  edLoadAt(0)
+function edIsOpen() {
+  const p = document.getElementById('panel-editor')
+  if (!p) return false
+  return p.classList.contains('active') || document.documentElement.dataset.panel === 'editor'
 }
 
+function edCloneState() {
+  return {
+    clips: edClips.map(c => ({ ...c })),
+    texts: edTexts.map(t => ({ ...t })),
+    overlays: edOverlays.map(o => ({ ...o })),
+    audio: edAudio ? { ...edAudio } : null,
+    voice: edVoice ? { ...edVoice } : null,
+    frame: { ...edFrame },
+    keepOrig: edKeepOrig,
+    time: edCurTime,
+    sel: edSel ? { ...edSel } : null,
+  }
+}
+
+function edApplyState(s) {
+  edClips = s.clips.map(c => ({ ...c }))
+  edTexts = s.texts.map(t => ({ ...t }))
+  edOverlays = s.overlays.map(o => ({ ...o }))
+  edAudio = s.audio ? { ...s.audio } : null
+  edVoice = s.voice ? { ...s.voice } : null
+  edFrame = { ...s.frame }
+  edKeepOrig = !!s.keepOrig
+  edCurTime = s.time || 0
+  edSel = s.sel ? { ...s.sel } : null
+  if (edAudio) {
+    if (!edAudioEl) { edAudioEl = new Audio(); edAudioEl.loop = false }
+    edAudioEl.src = edAudio.url
+    edAudioEl.volume = (edAudio.volume ?? 0.5) * edPreviewVol
+  } else if (edAudioEl) {
+    edAudioEl.pause()
+    edAudioEl.removeAttribute('src')
+  }
+  if (edVoice) {
+    if (!edVoiceEl) { edVoiceEl = new Audio(); edVoiceEl.loop = false }
+    edVoiceEl.src = edVoice.url
+    edVoiceEl.volume = (edVoice.volume ?? 1) * edPreviewVol
+  } else if (edVoiceEl) {
+    edVoiceEl.pause()
+    edVoiceEl.removeAttribute('src')
+  }
+  edRecalc()
+  if (edClips.length) edShowPreview()
+  else edHidePreview()
+  const stage = document.getElementById('ed-stage')
+  stage?.classList.toggle('framed', edFrame.mode !== 'none')
+  edResizeFrameCanvas()
+  if (edSel?.type === 'clip') {
+    const c = edClips.find(x => x.id === edSel.id)
+    if (c) { edShowProps('clip'); edFillClipProps(c) }
+    else edShowProps(null)
+  } else if (edSel?.type === 'text' && edTexts.some(t => t.id === edSel.id)) {
+    edSelectText(edSel.id)
+  } else if (edSel?.type === 'overlay' && edOverlays.some(o => o.id === edSel.id)) {
+    edSelectOverlay(edSel.id)
+  } else if (edSel?.type === 'audio' && edAudio) {
+    edShowProps('audio')
+  } else {
+    edShowProps(edSel?.type === 'frame' ? 'frame' : null)
+  }
+  const ko = document.getElementById('ep-keeporig')
+  if (ko) ko.checked = edKeepOrig
+  edRenderTL()
+  edLoadAt(edCurTime)
+  edDrawCanvas()
+}
+
+function edPushHist() {
+  if (edHistLock) return
+  edHist.push(edCloneState())
+  if (edHist.length > 50) edHist.shift()
+  edFut = []
+  edUpdHistBtns()
+}
+
+function edUpdHistBtns() {
+  const u = document.getElementById('ed-undo-btn')
+  const r = document.getElementById('ed-redo-btn')
+  if (u) u.disabled = !edHist.length
+  if (r) r.disabled = !edFut.length
+}
+
+window.edUndo = () => {
+  if (!edHist.length) return
+  edHistLock = true
+  edFut.push(edCloneState())
+  edApplyState(edHist.pop())
+  edHistLock = false
+  edUpdHistBtns()
+}
+
+window.edRedo = () => {
+  if (!edFut.length) return
+  edHistLock = true
+  edHist.push(edCloneState())
+  edApplyState(edFut.pop())
+  edHistLock = false
+  edUpdHistBtns()
+}
+
+function edSyncZoomUI() {
+  const lbl = document.getElementById('ed-zoom-lbl')
+  if (lbl) lbl.textContent = Math.round(ED_PX / 80 * 100) + '%'
+  const sl = document.getElementById('ed-zoom-slider')
+  if (sl) sl.value = ED_PX
+}
+
+window.edZoom = (dir) => {
+  ED_PX = Math.max(ED_PX_MIN, Math.min(ED_PX_MAX, ED_PX + dir * 20))
+  edSyncZoomUI()
+  edRenderTL()
+}
+
+window.edZoomSet = (v) => {
+  ED_PX = Math.max(ED_PX_MIN, Math.min(ED_PX_MAX, Number(v) || ED_PX))
+  edSyncZoomUI()
+  edRenderTL()
+}
+
+window.edFitZoom = () => {
+  const body = document.querySelector('#ed-tracks .track-body')
+  const w = body?.clientWidth || 640
+  const dur = Math.max(edTotalDur, 20)
+  ED_PX = Math.max(ED_PX_MIN, Math.min(ED_PX_MAX, w / dur))
+  edSyncZoomUI()
+  edRenderTL()
+}
+
+window.edToggleSnap = () => {
+  edSnapOn = !edSnapOn
+  document.getElementById('ed-snap-btn')?.classList.toggle('on', edSnapOn)
+  const lbl = document.getElementById('ed-snap-lbl')
+  if (lbl) lbl.textContent = edSnapOn ? 'on' : 'off'
+}
+
+function edSnapTime(t, extra = []) {
+  if (!edSnapOn) return Math.max(0, t)
+  const targets = [0, edTotalDur, ...extra]
+  edClips.forEach(c => { targets.push(c.tStart, c.tStart + c.trimDur) })
+  edTexts.forEach(x => { targets.push(x.start, x.end) })
+  edOverlays.forEach(o => { targets.push(o.start, o.end) })
+  let best = t, d = 0.12
+  for (const x of targets) {
+    const dd = Math.abs(x - t)
+    if (dd < d) { d = dd; best = x }
+  }
+  return Math.max(0, best)
+}
+
+function edFmtTime(s) {
+  const ms = Math.max(0, Math.round((Number(s) || 0) * 1000))
+  const m = Math.floor(ms / 60000)
+  const rem = ms % 60000
+  return `${m}:${String(Math.floor(rem / 1000)).padStart(2,'0')}.${String(rem % 1000).padStart(3,'0')}`
+}
+function edFmtClock(s) {
+  const sec = Math.max(0, Math.floor(Number(s) || 0))
+  const m = Math.floor(sec / 60)
+  return `${m}:${String(sec % 60).padStart(2,'0')}`
+}
+function edClipSpeed(c) { return c?.speed || 1 }
+function edClipSpan(c) { return Math.max(0.05, ((c.trimOut - c.trimIn) / edClipSpeed(c))) }
+
+window.edAddMedia = () => document.getElementById('ed-media-in').click()
+window.edAddImage = () => document.getElementById('ed-image-in').click()
+window.edAddMusic = () => document.getElementById('ed-music-in').click()
+
+window.veSetTool = (id) => {
+  document.querySelectorAll('.ve-rail-btn').forEach(b => b.classList.toggle('on', b.dataset.ve === id))
+  document.querySelectorAll('.ve-panel').forEach(p => { p.hidden = p.dataset.ve !== id })
+  edSel = null
+  edShowProps(null)
+  edRenderTL()
+  if (id === 'effects') edSyncFrameBtns()
+  if (id === 'voiceover') edRefreshVoicePanel()
+  if (id === 'sounds') edRefreshMusicPanel()
+  if (id === 'captions') edBuildCapChips()
+  if (id === 'script') edLoadScript()
+  if (id === 'stickers') edBuildEmojiRow()
+}
+
+window.veMediaTab = (tab) => {
+  document.querySelectorAll('.ve-mtab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab))
+  const files = document.getElementById('ve-import-files')
+  const url = document.getElementById('ve-import-url')
+  if (files) files.hidden = tab !== 'files'
+  if (url) url.hidden = tab !== 'url'
+}
+
+window.edClearSel = () => {
+  edSel = null
+  edShowProps(null)
+  edRenderTL()
+  const any = [...document.querySelectorAll('.ve-panel')].some(p => !p.hidden)
+  if (!any) veSetTool('media')
+}
+
+window.veShowHelp = () => {
+  document.querySelectorAll('.ve-rail-btn').forEach(b => b.classList.remove('on'))
+  document.querySelectorAll('.ve-panel').forEach(p => { p.hidden = true })
+  edSel = null
+  edShowProps(null)
+  document.querySelector('.ed-props')?.classList.add('ve-props-open')
+  const def = document.getElementById('ep-default')
+  if (def) def.style.display = ''
+}
+
+window.edImportUrl = async () => {
+  const inp = document.getElementById('ed-url-in')
+  const url = inp?.value.trim()
+  if (!url) return
+  const name = decodeURIComponent(url.split('/').pop() || 'Video')
+  await csOpenItems([{ url, file: { name }, name }])
+}
+
+window.edHandleMedia = async (inp) => { await edAddFiles(inp.files); inp.value = '' }
+window.edHandleImages = async (inp) => { await edAddFiles(inp.files); inp.value = '' }
 window.edHandleMusic = (inp) => {
-  const file = inp.files[0]; if (!file) return
+  const file = inp.files[0]
   inp.value = ''
+  if (file) edAddAudioFile(file)
+}
+window.edHandleVoice = (inp) => {
+  const file = inp.files[0]
+  inp.value = ''
+  if (file) edAddVoiceFile(file)
+}
+
+function edIsVideoFile(file) {
+  return !!(file && (file.type.startsWith('video/') || (!file.type && /\.(mp4|mov|webm|mkv|m4v|avi)$/i.test(file.name || ''))))
+}
+
+async function edAddFiles(fileList) {
+  const files = Array.from(fileList || [])
+  if (!files.length) return
+  const videos = files.filter(edIsVideoFile)
+  const rest = files.filter(f => !edIsVideoFile(f))
+  if (rest.length) {
+    edPushHist()
+    for (const file of rest) {
+      if (file.type.startsWith('image/')) edAddOverlayFile(file)
+      else if (file.type.startsWith('audio/')) edAddAudioFile(file, true)
+    }
+    edRecalc()
+    edRenderTL()
+    if (edClips.length) { edShowPreview(); edLoadAt(edCurTime) }
+  }
+  if (videos.length) await csOpenFiles(videos)
+}
+
+async function edAddVideoFile(file) {
   const url = URL.createObjectURL(file)
-  edAudio = { file, url, volume: 0.5 }
+  const dur = await getEdVidDur(url)
+  edClips.push(edMakeClip({ file, url, dur, trimIn: 0, trimOut: dur }))
+}
+
+function edMakeClip({ file, url, dur, trimIn, trimOut, volume }) {
+  const tin = Math.max(0, Number(trimIn) || 0)
+  const tout = Math.max(tin + 0.05, Math.min(Number(dur) || 0, Number(trimOut) || 0))
+  return {
+    id: 'c' + Date.now() + Math.random().toString(36).slice(2, 6),
+    file: file || { name: 'Video' },
+    url, dur, tStart: 0, trimIn: tin, trimOut: tout, trimDur: tout - tin,
+    br: 0, ct: 0, sat: 1, speed: 1, volume: volume ?? 1, muted: false,
+    fadeIn: 0, fadeOut: 0, flipH: false, flipV: false,
+  }
+}
+
+function edAddOverlayFile(file) {
+  const url = URL.createObjectURL(file)
+  const id = 'o' + Date.now() + Math.random().toString(36).slice(2, 6)
+  const img = new Image()
+  img.onload = () => edDrawCanvas()
+  img.src = url
+  edOverlayImgs[id] = img
+  const o = {
+    id, file, url, name: file.name,
+    start: edCurTime,
+    end: Math.max(edCurTime + 3, edTotalDur || 3),
+    x: 50, y: 50, scale: 40, opacity: 1,
+  }
+  edOverlays.push(o)
+  edSelectOverlay(id)
+}
+
+function edAddAudioFile(file, skipHist) {
+  if (!skipHist) edPushHist()
+  const url = URL.createObjectURL(file)
+  edAudio = { file, url, volume: 0.5, fadeIn: 0, fadeOut: 0 }
   if (!edAudioEl) { edAudioEl = new Audio(); edAudioEl.loop = false }
   edAudioEl.src = url
-  edAudioEl.volume = 0.5
-  edSel = { type: 'audio', id: 'audio' }
-  edShowProps('audio')
+  edAudioEl.volume = 0.5 * edPreviewVol
+  edRefreshMusicPanel()
   edRenderTL()
+}
+
+function edAddVoiceFile(file, skipHist) {
+  if (!skipHist) edPushHist()
+  const url = URL.createObjectURL(file)
+  edVoice = { file, url, volume: 1, fadeIn: 0, fadeOut: 0 }
+  if (!edVoiceEl) { edVoiceEl = new Audio(); edVoiceEl.loop = false }
+  edVoiceEl.src = url
+  edVoiceEl.volume = 1 * edPreviewVol
+  edRefreshVoicePanel()
+  edRenderTL()
+}
+
+const ED_SCRIPT_KEY = 'runvid:editorScript'
+const ED_EMOJIS = ['🔥','😂','❤️','✨','👀','💯','✅','⭐','🎵','🚀']
+
+function edSyncFrameBtns() {
+  document.querySelectorAll('.frame-btn[data-fr]').forEach(b => b.classList.toggle('active', b.dataset.fr === edFrame.mode))
+  document.querySelectorAll('.frame-btn[data-crop]').forEach(b => b.classList.toggle('active', b.dataset.crop === edFrame.crop))
+  document.querySelectorAll('[data-ed-crop]').forEach(el => { el.style.display = edFrame.mode !== 'none' ? '' : 'none' })
+}
+
+window.edSaveScript = () => {
+  const v = document.getElementById('ed-script-in')?.value || ''
+  try { localStorage.setItem(ED_SCRIPT_KEY, v) } catch {}
+}
+function edLoadScript() {
+  const el = document.getElementById('ed-script-in')
+  if (!el || el.value) return
+  try { el.value = localStorage.getItem(ED_SCRIPT_KEY) || '' } catch {}
+}
+
+function edBuildCapChips() {
+  const box = document.getElementById('ed-cap-styles')
+  if (!box || box.dataset.ready) return
+  box.dataset.ready = '1'
+  box.innerHTML = Object.entries(ED_STYLES).map(([key, s]) =>
+    `<button class="ve-cap-chip${key === edCapPreset ? ' on' : ''}" type="button" data-key="${key}" onclick="edPickCapStyle('${key}')">${s.label}</button>`
+  ).join('')
+}
+window.edPickCapStyle = (key) => {
+  edCapPreset = key
+  document.querySelectorAll('.ve-cap-chip').forEach(b => b.classList.toggle('on', b.dataset.key === key))
+}
+
+window.edCaptionsFromScript = () => {
+  const raw = (document.getElementById('ed-script-in')?.value || '').trim()
+  if (!raw) {
+    veSetTool('script')
+    return
+  }
+  if (!edClips.length) {
+    const n = document.getElementById('ed-script-need')
+    if (n) n.hidden = false
+    return
+  }
+  const lines = raw.split(/\n+/).map(s => s.trim()).filter(Boolean)
+  if (!lines.length) return
+  edPushHist()
+  const span = Math.max(1.2, (edTotalDur || 3) / lines.length)
+  lines.forEach((text, i) => {
+    const start = i * span
+    const end = Math.min(edTotalDur || start + span, start + span)
+    const preset = edCapPreset || 'tiktok'
+    const s = ED_STYLES[preset] || ED_STYLES.tiktok
+    edTexts.push({
+      id: 't' + Date.now() + i,
+      text, start, end, x: 50, y: edFrame.mode !== 'none' ? 11 : 80,
+      size: 48, color: s.color, fontFamily: s.font,
+      strokeColor: s.sc, strokeW: s.sw, glow: s.glow, glowColor: s.glowC, bgColor: s.bg, preset,
+    })
+  })
+  edRenderTL()
+  edDrawCanvas()
+  if (edTexts.length) edSelectText(edTexts[edTexts.length - 1].id)
+}
+
+function edBuildEmojiRow() {
+  const row = document.getElementById('ed-emoji-row')
+  if (!row || row.dataset.ready) return
+  row.dataset.ready = '1'
+  row.innerHTML = ED_EMOJIS.map(e =>
+    `<button type="button" title="${e}" onclick="edAddEmoji('${e}')">${e}</button>`
+  ).join('')
+}
+window.edAddEmoji = (emo) => {
+  if (!edClips.length) { veSetTool('media'); return }
+  edPushHist()
+  const id = 't' + Date.now()
+  edTexts.push({
+    id, text: emo, start: edCurTime, end: Math.max(edCurTime + 2, edTotalDur || 3),
+    x: 50, y: 28, size: 72, color: '#ffffff', fontFamily: 'Geist',
+    strokeColor: 'transparent', strokeW: 0, glow: 0, glowColor: 'transparent', bgColor: '', preset: 'tiktok',
+  })
+  edSelectText(id)
+  edRenderTL()
+  edDrawCanvas()
+}
+
+function edRefreshMusicPanel() {
+  const now = document.getElementById('ed-mus-now')
+  const mix = document.getElementById('ed-mus-mix')
+  const vol = document.getElementById('ed-mus-vol')
+  const ko = document.getElementById('ed-keeporig-panel')
+  if (now) now.innerHTML = edAudio
+    ? `<b>${edAudio.file?.name || 'Music'}</b>On the Music track`
+    : 'No music yet'
+  if (mix) mix.hidden = !edAudio
+  if (vol && edAudio) vol.value = edAudio.volume ?? 0.5
+  if (ko) ko.checked = edKeepOrig
+}
+window.edMusicPanelVol = (v) => {
+  if (!edAudio) return
+  edAudio.volume = parseFloat(v)
+  if (edAudioEl) edAudioEl.volume = edAudio.volume * edPreviewVol
+  const ep = document.getElementById('ep-vol')
+  if (ep) ep.value = edAudio.volume
+}
+window.edClearMusic = () => {
+  edPushHist()
+  edAudioEl?.pause()
+  edAudio = null
+  edRefreshMusicPanel()
+  edRenderTL()
+}
+
+async function edFillVoices() {
+  const sel = document.getElementById('ed-vo-voice')
+  if (!sel) return
+  if (!voices.length) {
+    try { voices = await api.tts.voices() } catch {}
+  }
+  if (!sel.dataset.filled && voices.length) {
+    sel.innerHTML = voices.map(v => `<option value="${escHtml(v.id)}">${escHtml((v.name || '').split(' - ')[0] || 'Voice')}</option>`).join('')
+    sel.dataset.filled = '1'
+    if (selectedVoiceId) sel.value = selectedVoiceId
+  }
+}
+function edRefreshVoicePanel() {
+  const now = document.getElementById('ed-vo-now')
+  const mix = document.getElementById('ed-vo-mix')
+  const vol = document.getElementById('ed-vo-vol')
+  if (now) now.innerHTML = edVoice
+    ? `<b>${edVoice.file?.name || 'Voiceover'}</b>On the Voiceover track`
+    : 'No voiceover yet'
+  if (mix) mix.hidden = !edVoice
+  if (vol && edVoice) vol.value = edVoice.volume ?? 1
+  const script = document.getElementById('ed-vo-script')
+  const from = document.getElementById('ed-script-in')
+  if (script && !script.value && from?.value) script.value = from.value
+  edFillVoices()
+}
+window.edVoiceVol = (v) => {
+  if (!edVoice) return
+  edVoice.volume = parseFloat(v)
+  if (edVoiceEl) edVoiceEl.volume = edVoice.volume * edPreviewVol
+}
+window.edClearVoice = () => {
+  edPushHist()
+  edVoiceEl?.pause()
+  edVoice = null
+  edRefreshVoicePanel()
+  edRenderTL()
+}
+window.edGenerateVoice = async () => {
+  const status = document.getElementById('ed-vo-status')
+  const text = (document.getElementById('ed-vo-script')?.value || document.getElementById('ed-script-in')?.value || '').trim()
+  const voiceId = document.getElementById('ed-vo-voice')?.value || selectedVoiceId
+  if (!text) {
+    if (status) status.textContent = 'Write a script first.'
+    return
+  }
+  if (!voiceId) {
+    if (status) status.textContent = 'Pick a voice.'
+    return
+  }
+  if (status) status.textContent = 'Generating…'
+  try {
+    const data = await api.tts.generate({ text, voice_id: voiceId, stability: 0.5, speed: 1 })
+    const blob = await fetch(data.url).then(r => r.blob())
+    const file = new File([blob], 'voiceover.mp3', { type: blob.type || 'audio/mpeg' })
+    edAddVoiceFile(file)
+    if (status) status.textContent = 'Added to the Voiceover track.'
+  } catch (e) {
+    if (status) status.textContent = e.message || 'Could not generate voiceover.'
+  }
+}
+
+window.edSetKeepOrig = (v) => {
+  edKeepOrig = !!v
+  const a = document.getElementById('ep-keeporig')
+  const b = document.getElementById('ed-keeporig-panel')
+  if (a) a.checked = edKeepOrig
+  if (b) b.checked = edKeepOrig
 }
 
 function getEdVidDur(url) {
@@ -8461,29 +9681,515 @@ function getEdVidDur(url) {
   })
 }
 
+let csState = {
+  url: '', file: null, name: '', dur: 0, trimIn: 0, trimOut: 0, px: 80,
+  contain: false, queue: [], owned: new Set(), editingId: null, drag: null, gen: 0,
+}
+
+function csIsOpen() {
+  const m = document.getElementById('cs-modal')
+  return !!(m && !m.hidden)
+}
+function csId() { return 'q' + Date.now() + Math.random().toString(36).slice(2, 6) }
+function csVid() { return document.getElementById('cs-vid') }
+function csFmt(s) {
+  const sec = Math.max(0, Math.floor(Number(s) || 0))
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+}
+function csSeekEl(v, t) {
+  return new Promise(res => {
+    const on = () => { v.removeEventListener('seeked', on); res() }
+    v.addEventListener('seeked', on)
+    try { v.currentTime = Math.min(Math.max(0, t), Math.max(0, (v.duration || 0) - 0.04)) }
+    catch { res() }
+  })
+}
+
+async function csOpenFiles(files) {
+  const items = files.map(file => {
+    const url = URL.createObjectURL(file)
+    csState.owned.add(url)
+    return { file, url, name: file.name }
+  })
+  await csOpenItems(items)
+}
+
+async function csOpenItems(items) {
+  if (!items?.length) return
+  const modal = document.getElementById('cs-modal')
+  if (!modal) return
+  if (edPlaying) window.edTogglePlay?.()
+  csBindOnce()
+  if (!csIsOpen()) {
+    csState.queue = []
+    csState.editingId = null
+    modal.hidden = false
+    await new Promise(r => requestAnimationFrame(r))
+    await csLoadSource(items[0])
+    for (const it of items.slice(1)) {
+      const dur = await getEdVidDur(it.url)
+      csState.queue.push({
+        id: csId(), file: it.file, url: it.url, name: it.name, dur,
+        trimIn: 0, trimOut: dur, volume: 1, thumb: '',
+      })
+    }
+    csRenderQueue()
+  } else {
+    for (const it of items) {
+      const dur = await getEdVidDur(it.url)
+      csState.queue.push({
+        id: csId(), file: it.file, url: it.url, name: it.name, dur,
+        trimIn: 0, trimOut: dur, volume: 1, thumb: '',
+      })
+    }
+    csRenderQueue()
+  }
+}
+
+async function csLoadSource(item, trims) {
+  const vid = csVid()
+  if (!vid || !item) return
+  csState.file = item.file || null
+  csState.url = item.url
+  csState.name = item.name || item.file?.name || 'Video'
+  csState.dur = 0
+  vid.pause()
+  vid.src = item.url
+  vid.muted = false
+  await new Promise(res => {
+    const done = () => { vid.removeEventListener('loadedmetadata', done); res() }
+    vid.addEventListener('loadedmetadata', done)
+    if (vid.readyState >= 1) done()
+  })
+  const dur = Number.isFinite(vid.duration) ? vid.duration : await getEdVidDur(item.url)
+  csState.dur = dur || 0
+  csState.trimIn = trims?.trimIn ?? 0
+  csState.trimOut = trims?.trimOut ?? csState.dur
+  vid.currentTime = csState.trimIn
+  csFitStrip()
+  csSyncClock()
+  csSetPlayIcon(false)
+  csBuildFilm()
+}
+
+function csBindOnce() {
+  const film = document.getElementById('cs-film')
+  const vid = csVid()
+  const modal = document.getElementById('cs-modal')
+  if (film && !film.dataset.bound) {
+    film.dataset.bound = '1'
+    film.addEventListener('pointerdown', csStripDown)
+  }
+  if (vid && !vid.dataset.bound) {
+    vid.dataset.bound = '1'
+    vid.addEventListener('timeupdate', () => {
+      if (vid.currentTime >= csState.trimOut - 0.02) {
+        vid.pause()
+        vid.currentTime = csState.trimOut
+        csSetPlayIcon(false)
+      }
+      csSyncClock()
+    })
+    vid.addEventListener('play', () => csSetPlayIcon(true))
+    vid.addEventListener('pause', () => csSetPlayIcon(false))
+    vid.addEventListener('ended', () => csSetPlayIcon(false))
+  }
+  if (modal && !modal.dataset.drop) {
+    modal.dataset.drop = '1'
+    modal.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation() })
+    modal.addEventListener('drop', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      const files = [...(e.dataTransfer?.files || [])].filter(edIsVideoFile)
+      if (files.length) csOpenFiles(files)
+    })
+  }
+}
+
+function csSetPlayIcon(playing) {
+  const btn = document.getElementById('cs-play-btn')
+  if (!btn) return
+  btn.setAttribute('aria-label', playing ? 'Pause' : 'Play')
+  btn.innerHTML = playing
+    ? '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg>'
+    : '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
+}
+
+window.csTogglePlay = () => {
+  const vid = csVid()
+  if (!vid) return
+  if (vid.paused) {
+    if (vid.currentTime < csState.trimIn || vid.currentTime >= csState.trimOut - 0.04) vid.currentTime = csState.trimIn
+    vid.muted = (vid.volume || 0) === 0
+    vid.play().catch(() => {})
+  } else vid.pause()
+}
+
+window.csVol = (v) => {
+  const vid = csVid()
+  const n = Number(v)
+  if (vid) { vid.volume = n; vid.muted = n === 0 }
+  const sl = document.getElementById('cs-vol')
+  if (sl) sl.style.setProperty('--p', Math.round(n * 100) + '%')
+}
+
+window.csFitPreview = () => {
+  csState.contain = !csState.contain
+  document.getElementById('cs-frame')?.classList.toggle('contain', csState.contain)
+}
+
+window.csZoom = (dir) => {
+  csState.px = Math.max(24, Math.min(220, csState.px * (dir > 0 ? 1.25 : 0.8)))
+  const sl = document.getElementById('cs-zoom')
+  if (sl) sl.value = String(Math.round(csState.px))
+  csLayoutStrip()
+}
+window.csZoomSet = (v) => { csState.px = Number(v) || 80; csLayoutStrip() }
+window.csFitStrip = () => {
+  const sc = document.getElementById('cs-strip-scroll')
+  const w = sc?.clientWidth || 640
+  csState.px = csState.dur > 0 ? Math.max(24, Math.min(220, (w - 8) / csState.dur)) : 80
+  const sl = document.getElementById('cs-zoom')
+  if (sl) sl.value = String(Math.round(csState.px))
+  csLayoutStrip()
+}
+window.csSelectAll = () => {
+  csState.trimIn = 0
+  csState.trimOut = csState.dur
+  csSyncEditing()
+  csLayoutStrip()
+}
+
+function csSyncClock() {
+  const vid = csVid()
+  const t = vid ? vid.currentTime : 0
+  const el = document.getElementById('cs-clock')
+  if (el) el.textContent = `${csFmt(t)} / ${csFmt(csState.dur)}`
+  const ph = document.getElementById('cs-ph')
+  if (ph) ph.style.left = (t * csState.px) + 'px'
+}
+
+function csTickStep() {
+  const px = csState.px
+  if (px >= 140) return 0.5
+  if (px >= 70) return 1
+  if (px >= 36) return 2
+  return 5
+}
+
+function csLayoutStrip() {
+  const inner = document.getElementById('cs-strip-inner')
+  const ruler = document.getElementById('cs-ruler')
+  const film = document.getElementById('cs-film')
+  const cv = document.getElementById('cs-film-cv')
+  if (!inner || !csState.dur) return
+  const w = Math.max(csState.dur * csState.px, 80)
+  inner.style.width = w + 'px'
+  if (film) film.style.width = w + 'px'
+  if (cv) { cv.style.width = w + 'px'; cv.style.height = '56px' }
+  if (ruler) {
+    const step = csTickStep()
+    const bits = []
+    for (let t = 0; t <= csState.dur + 0.001; t += step) {
+      const lab = step < 1 ? `${t.toFixed(1).replace(/\.0$/, '')}s` : `${Math.round(t)}s`
+      bits.push(`<span class="cs-tick" style="left:${t * csState.px}px">${lab}</span>`)
+    }
+    ruler.innerHTML = bits.join('')
+  }
+  const tin = csState.trimIn * csState.px
+  const tout = csState.trimOut * csState.px
+  const sel = document.getElementById('cs-sel')
+  const dl = document.getElementById('cs-dim-l')
+  const dr = document.getElementById('cs-dim-r')
+  if (sel) { sel.style.left = tin + 'px'; sel.style.width = Math.max(8, tout - tin) + 'px' }
+  if (dl) { dl.style.left = '0'; dl.style.width = tin + 'px' }
+  if (dr) { dr.style.left = tout + 'px'; dr.style.width = Math.max(0, w - tout) + 'px' }
+  csSyncClock()
+}
+
+async function csBuildFilm() {
+  const cv = document.getElementById('cs-film-cv')
+  const url = csState.url
+  const dur = csState.dur
+  if (!cv || !url || !dur) return
+  const gen = ++csState.gen
+  const n = Math.min(28, Math.max(8, Math.round(dur * 2)))
+  const tw = 48, th = 56
+  cv.width = n * tw
+  cv.height = th
+  const ctx = cv.getContext('2d')
+  ctx.fillStyle = '#c5ccd6'
+  ctx.fillRect(0, 0, cv.width, cv.height)
+  const v = document.createElement('video')
+  v.muted = true
+  v.playsInline = true
+  v.preload = 'auto'
+  v.src = url
+  try {
+    await new Promise((res, rej) => {
+      v.onloadeddata = res
+      v.onerror = rej
+      setTimeout(res, 6000)
+    })
+    for (let i = 0; i < n; i++) {
+      if (gen !== csState.gen) return
+      await csSeekEl(v, ((i + 0.5) / n) * dur)
+      try { ctx.drawImage(v, i * tw, 0, tw, th) } catch { /* tainted */ }
+    }
+  } catch { /* keep gray strip */ }
+  v.removeAttribute('src')
+  v.load()
+}
+
+function csTimeFromX(clientX) {
+  const film = document.getElementById('cs-film')
+  const r = film.getBoundingClientRect()
+  const full = Math.max(1, csState.dur * csState.px)
+  return Math.max(0, Math.min(csState.dur, ((clientX - r.left) / full) * csState.dur))
+}
+
+function csStripDown(e) {
+  if (e.button && e.button !== 0) return
+  e.preventDefault()
+  const h = e.target?.dataset?.csH
+  const film = document.getElementById('cs-film')
+  film.setPointerCapture?.(e.pointerId)
+  const t0 = csTimeFromX(e.clientX)
+  if (h === 'in' || h === 'out') {
+    csState.drag = { kind: h }
+  } else if (e.target?.id === 'cs-sel' || e.target?.closest?.('#cs-sel')) {
+    csState.drag = { kind: 'move', start: t0, tin: csState.trimIn, tout: csState.trimOut }
+  } else {
+    const vid = csVid()
+    if (vid) vid.currentTime = t0
+    csSyncClock()
+    csState.drag = { kind: 'seek' }
+  }
+  window.addEventListener('pointermove', csStripMove)
+  window.addEventListener('pointerup', csStripUp)
+}
+
+function csStripMove(e) {
+  const d = csState.drag
+  if (!d) return
+  const t = csTimeFromX(e.clientX)
+  const min = 0.1
+  if (d.kind === 'in') csState.trimIn = Math.min(csState.trimOut - min, Math.max(0, t))
+  else if (d.kind === 'out') csState.trimOut = Math.max(csState.trimIn + min, Math.min(csState.dur, t))
+  else if (d.kind === 'move') {
+    const span = d.tout - d.tin
+    let tin = d.tin + (t - d.start)
+    tin = Math.max(0, Math.min(csState.dur - span, tin))
+    csState.trimIn = tin
+    csState.trimOut = tin + span
+  } else if (d.kind === 'seek') {
+    const vid = csVid()
+    if (vid) vid.currentTime = t
+  }
+  csSyncEditing()
+  csLayoutStrip()
+}
+
+function csStripUp() {
+  csState.drag = null
+  window.removeEventListener('pointermove', csStripMove)
+  window.removeEventListener('pointerup', csStripUp)
+}
+
+function csSyncEditing() {
+  if (!csState.editingId) return
+  const q = csState.queue.find(x => x.id === csState.editingId)
+  if (!q) return
+  q.trimIn = csState.trimIn
+  q.trimOut = csState.trimOut
+  csRenderQueue()
+}
+
+function csGrabThumb() {
+  const vid = csVid()
+  if (!vid || vid.readyState < 2) return ''
+  try {
+    const c = document.createElement('canvas')
+    c.width = 72; c.height = 128
+    c.getContext('2d').drawImage(vid, 0, 0, 72, 128)
+    return c.toDataURL('image/jpeg', 0.72)
+  } catch { return '' }
+}
+
+window.csAddClip = () => {
+  if (!csState.url || !csState.dur) {
+    document.getElementById('cs-media-in')?.click()
+    return
+  }
+  const item = {
+    id: csId(),
+    file: csState.file,
+    url: csState.url,
+    name: csState.name,
+    dur: csState.dur,
+    trimIn: csState.trimIn,
+    trimOut: csState.trimOut,
+    volume: csVid()?.volume ?? 1,
+    thumb: csGrabThumb(),
+  }
+  csState.queue.push(item)
+  csState.editingId = item.id
+  csRenderQueue()
+}
+
+window.csHandleMore = async (inp) => {
+  const files = Array.from(inp.files || []).filter(edIsVideoFile)
+  inp.value = ''
+  if (files.length) await csOpenFiles(files)
+}
+
+window.csPickQueued = (id) => {
+  const q = csState.queue.find(x => x.id === id)
+  if (!q) return
+  csState.editingId = id
+  csLoadSource(q, { trimIn: q.trimIn, trimOut: q.trimOut })
+  csRenderQueue()
+}
+
+window.csRemoveQueued = (id, ev) => {
+  ev?.stopPropagation?.()
+  csState.queue = csState.queue.filter(x => x.id !== id)
+  if (csState.editingId === id) csState.editingId = null
+  csRenderQueue()
+}
+
+function csRenderQueue() {
+  const box = document.getElementById('cs-queue')
+  if (!box) return
+  if (!csState.queue.length) {
+    box.innerHTML = '<div class="cs-queue-empty">Your clips will appear here</div>'
+    return
+  }
+  box.innerHTML = csState.queue.map(q => {
+    const on = q.id === csState.editingId ? ' on' : ''
+    const img = q.thumb
+      ? `<img src="${q.thumb}" alt="">`
+      : `<div style="width:100%;height:100%;background:#1f2937"></div>`
+    return `<button class="cs-q-item${on}" type="button" onclick="csPickQueued('${q.id}')">
+      ${img}
+      <span>${csFmt(q.trimOut - q.trimIn)}</span>
+      <b class="cs-q-x" onclick="csRemoveQueued('${q.id}',event)">×</b>
+    </button>`
+  }).join('')
+}
+
+window.csSaveAll = () => {
+  if (csState.url && csState.dur) {
+    if (csState.editingId) csSyncEditing()
+    else csAddClip()
+  }
+  if (!csState.queue.length) { csClose(); return }
+  edPushHist()
+  for (const q of csState.queue) {
+    edClips.push(edMakeClip({
+      file: q.file, url: q.url, dur: q.dur,
+      trimIn: q.trimIn, trimOut: q.trimOut, volume: q.volume,
+    }))
+    csState.owned.delete(q.url)
+  }
+  edRecalc()
+  edRenderTL()
+  edShowPreview()
+  edLoadAt(edCurTime)
+  csClose(true)
+}
+
+window.csClose = (kept) => {
+  const vid = csVid()
+  if (vid) { vid.pause(); vid.removeAttribute('src'); vid.load() }
+  if (!kept) {
+    const used = new Set(edClips.map(c => c.url))
+    for (const url of csState.owned) {
+      if (!used.has(url) && url.startsWith('blob:')) URL.revokeObjectURL(url)
+    }
+  }
+  csState.owned.clear()
+  csState.queue = []
+  csState.editingId = null
+  csState.url = ''
+  const modal = document.getElementById('cs-modal')
+  if (modal) modal.hidden = true
+}
+
 function edRecalc() {
   let t = 0
-  for (const c of edClips) { c.trimDur = c.trimOut - c.trimIn; c.tStart = t; t += c.trimDur }
+  for (const c of edClips) { c.trimDur = edClipSpan(c); c.tStart = t; t += c.trimDur }
   edTotalDur = t
+  const meta = document.getElementById('ed-tl-meta')
+  if (meta) {
+    meta.textContent = edClips.length
+      ? `${edClips.length} clip${edClips.length > 1 ? 's' : ''} · ${edFmtTime(edTotalDur)}`
+      : 'No clips yet'
+  }
+}
+
+function edHidePreview() {
+  document.getElementById('ed-empty').style.display = ''
+  document.getElementById('ed-stage').style.display = 'none'
 }
 
 function edShowPreview() {
   document.getElementById('ed-empty').style.display = 'none'
   document.getElementById('ed-stage').style.display = ''
-  document.getElementById('ed-timebar').style.display = ''
 }
 
-function edLoadAt(time) {
+function edActiveAt(time = edCurTime) {
   let t = 0
   for (const c of edClips) {
     if (time < t + c.trimDur || t + c.trimDur >= edTotalDur - 0.01) {
-      const vid = document.getElementById('ed-vid')
-      if (vid.src !== c.url) { vid.src = c.url }
-      vid.currentTime = c.trimIn + (time - t)
-      edApplyFilter()
-      return
+      return { clip: c, local: Math.max(0, time - t) }
     }
     t += c.trimDur
+  }
+  return { clip: edClips[edClips.length - 1] || null, local: 0 }
+}
+
+function edClipOpacity(c, localT) {
+  const dur = c.trimDur || 0.01
+  let op = 1
+  const fin = c.fadeIn || 0
+  const fout = c.fadeOut || 0
+  if (fin > 0 && localT < fin) op *= localT / fin
+  if (fout > 0 && localT > dur - fout) op *= Math.max(0, (dur - localT) / fout)
+  return Math.max(0, Math.min(1, op))
+}
+
+function edApplyClipLook(c, localT = 0) {
+  const vid = document.getElementById('ed-vid')
+  if (!vid || !c) return
+  const br = 1 + (c.br ?? 0)
+  const ct = 1 + (c.ct ?? 0)
+  const sat = c.sat ?? 1
+  vid.style.filter = `brightness(${br}) contrast(${ct}) saturate(${sat})`
+  vid.style.transform = `${c.flipH ? 'scaleX(-1)' : ''} ${c.flipV ? 'scaleY(-1)' : ''}`.trim()
+  vid.style.opacity = edFrame.mode === 'none' ? String(edClipOpacity(c, localT)) : '1'
+  vid.playbackRate = edClipSpeed(c)
+  vid.muted = !!(edMuted || c.muted)
+  vid.volume = (c.muted ? 0 : (c.volume ?? 1)) * edPreviewVol
+  edFilters = { br: c.br ?? 0, ct: c.ct ?? 0, sat: c.sat ?? 1 }
+}
+
+function edLoadAt(time) {
+  const { clip, local } = edActiveAt(time)
+  if (!clip) return
+  const vid = document.getElementById('ed-vid')
+  if (vid.src !== clip.url) vid.src = clip.url
+  vid.currentTime = clip.trimIn + local * edClipSpeed(clip)
+  edApplyClipLook(clip, local)
+  if (edAudioEl && edAudio) {
+    try { edAudioEl.currentTime = Math.min(time, edAudioEl.duration || time) } catch {}
+    edAudioEl.volume = (edAudio.volume ?? 0.5) * edPreviewVol
+    edAudioEl.muted = edMuted
+  }
+  if (edVoiceEl && edVoice) {
+    try { edVoiceEl.currentTime = Math.min(time, edVoiceEl.duration || time) } catch {}
+    edVoiceEl.volume = (edVoice.volume ?? 1) * edPreviewVol
+    edVoiceEl.muted = edMuted
   }
 }
 
@@ -8527,9 +10233,18 @@ function edDrawCanvas() {
       if (cropAR > w / h) { dw = w; dh = w / cropAR }
       else { dh = h; dw = h * cropAR }
       const dx = (w - dw) / 2, dy = (h - dh) / 2
-      ctx.filter = `brightness(${1 + edFilters.br}) contrast(${1 + edFilters.ct}) saturate(${edFilters.sat})`
-      ctx.drawImage(vid, sx, sy, sw, sh, dx, dy, dw, dh)
-      ctx.filter = 'none'
+      const { clip, local } = edActiveAt()
+      ctx.save()
+      ctx.filter = `brightness(${1 + (clip?.br ?? edFilters.br)}) contrast(${1 + (clip?.ct ?? edFilters.ct)}) saturate(${clip?.sat ?? edFilters.sat})`
+      ctx.globalAlpha = clip ? edClipOpacity(clip, local) : 1
+      if (clip?.flipH || clip?.flipV) {
+        ctx.translate(dx + dw / 2, dy + dh / 2)
+        ctx.scale(clip.flipH ? -1 : 1, clip.flipV ? -1 : 1)
+        ctx.drawImage(vid, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh)
+      } else {
+        ctx.drawImage(vid, sx, sy, sw, sh, dx, dy, dw, dh)
+      }
+      ctx.restore()
     }
   } else {
     w = vid.clientWidth || 640
@@ -8538,6 +10253,7 @@ function edDrawCanvas() {
     cv.width = w; cv.height = h
     ctx.clearRect(0, 0, w, h)
   }
+  edDrawOverlays(ctx, w, h)
   for (const t of edTexts) {
     if (edCurTime < t.start || edCurTime > t.end) continue
     const sz = Math.round((t.size || 48) * w / 640)
@@ -8577,91 +10293,261 @@ function edDrawCanvas() {
   }
 }
 
-window.edApplyFilter = () => {
-  const vid = document.getElementById('ed-vid')
-  const br = 1 + parseFloat(document.getElementById('ep-br')?.value || 0)
-  const ct = 1 + parseFloat(document.getElementById('ep-ct')?.value || 0)
-  const sat = parseFloat(document.getElementById('ep-sat')?.value || 1)
-  vid.style.filter = `brightness(${br}) contrast(${ct}) saturate(${sat})`
-  edFilters = { br: br - 1, ct: ct - 1, sat }
+function edDrawOverlays(ctx, w, h) {
+  for (const o of edOverlays) {
+    if (edCurTime < o.start || edCurTime > o.end) continue
+    const img = edOverlayImgs[o.id]
+    if (!img || !img.naturalWidth) continue
+    const scale = (o.scale || 40) / 100
+    const iw = img.naturalWidth * scale * (w / 640)
+    const ih = img.naturalHeight * scale * (w / 640)
+    ctx.globalAlpha = o.opacity ?? 1
+    ctx.drawImage(img, (o.x / 100) * w - iw / 2, (o.y / 100) * h - ih / 2, iw, ih)
+    ctx.globalAlpha = 1
+  }
+}
+
+window.edApplyFilter = () => edUpdateClip()
+
+window.edUpdateClip = () => {
+  if (!edSel || edSel.type !== 'clip') return
+  const c = edClips.find(x => x.id === edSel.id); if (!c) return
+  const tin = parseFloat(document.getElementById('ep-tin').value)
+  const tout = parseFloat(document.getElementById('ep-tout').value)
+  if (!Number.isNaN(tin)) c.trimIn = Math.max(0, Math.min((c.dur || tout) - 0.05, tin))
+  if (!Number.isNaN(tout)) c.trimOut = Math.max(c.trimIn + 0.05, Math.min(c.dur || tout, tout))
+  c.br = parseFloat(document.getElementById('ep-br').value)
+  c.ct = parseFloat(document.getElementById('ep-ct').value)
+  c.sat = parseFloat(document.getElementById('ep-sat').value)
+  c.speed = parseFloat(document.getElementById('ep-speed').value) || 1
+  c.volume = parseFloat(document.getElementById('ep-cvol').value)
+  c.fadeIn = Math.max(0, parseFloat(document.getElementById('ep-fin').value) || 0)
+  c.fadeOut = Math.max(0, parseFloat(document.getElementById('ep-fout').value) || 0)
+  c.muted = !!document.getElementById('ep-cmute').checked
+  edRecalc()
+  edRenderTL()
+  edLoadAt(edCurTime)
+  edDrawCanvas()
+}
+
+function edFillClipProps(c) {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v }
+  set('ep-tin', Number(c.trimIn || 0).toFixed(3))
+  set('ep-tout', Number(c.trimOut || 0).toFixed(3))
+  set('ep-br', c.br ?? 0)
+  set('ep-ct', c.ct ?? 0)
+  set('ep-sat', c.sat ?? 1)
+  set('ep-speed', c.speed || 1)
+  set('ep-cvol', c.volume ?? 1)
+  set('ep-fin', c.fadeIn || 0)
+  set('ep-fout', c.fadeOut || 0)
+  const m = document.getElementById('ep-cmute')
+  if (m) m.checked = !!c.muted
+}
+
+window.edFlip = (axis) => {
+  if (!edSel || edSel.type !== 'clip') return
+  const c = edClips.find(x => x.id === edSel.id); if (!c) return
+  edPushHist()
+  if (axis === 'h') c.flipH = !c.flipH
+  else c.flipV = !c.flipV
+  edLoadAt(edCurTime)
+  edDrawCanvas()
+}
+
+window.edMoveClip = (dir) => {
+  if (!edSel || edSel.type !== 'clip') return
+  const i = edClips.findIndex(c => c.id === edSel.id)
+  const j = i + dir
+  if (i < 0 || j < 0 || j >= edClips.length) return
+  edPushHist()
+  const [c] = edClips.splice(i, 1)
+  edClips.splice(j, 0, c)
+  edRecalc(); edRenderTL(); edLoadAt(edCurTime)
+}
+
+window.edAddTransition = () => {
+  if (!edSel || edSel.type !== 'clip') return
+  const i = edClips.findIndex(c => c.id === edSel.id)
+  if (i < 0) return
+  edPushHist()
+  edClips[i].fadeOut = Math.max(edClips[i].fadeOut || 0, 0.4)
+  if (edClips[i + 1]) edClips[i + 1].fadeIn = Math.max(edClips[i + 1].fadeIn || 0, 0.4)
+  edFillClipProps(edClips[i])
+  edDrawCanvas()
+}
+
+window.edSkipTo = (t) => edSeekTo(t < 0 ? edTotalDur : t)
+window.edNudge = (s) => edSeekTo(edCurTime + s)
+
+window.edToggleMute = () => {
+  edMuted = !edMuted
+  document.getElementById('ed-mute-btn')?.classList.toggle('on', edMuted)
+  const { clip, local } = edActiveAt()
+  edApplyClipLook(clip, local)
+  if (edAudioEl) edAudioEl.muted = edMuted
+  if (edVoiceEl) edVoiceEl.muted = edMuted
+}
+
+window.edMasterVol = (v) => {
+  edPreviewVol = parseFloat(v)
+  const el = document.getElementById('ed-master-vol')
+  if (el) el.style.setProperty('--p', Math.round(edPreviewVol * 100) + '%')
+  const { clip, local } = edActiveAt()
+  edApplyClipLook(clip, local)
+  if (edAudioEl && edAudio) edAudioEl.volume = (edAudio.volume ?? 0.5) * edPreviewVol
+  if (edVoiceEl && edVoice) edVoiceEl.volume = (edVoice.volume ?? 1) * edPreviewVol
 }
 
 // ── TIMELINE ──────────────────────────────────────────────────────────────────
+function edBindTrim(el, item, kind) {
+  const add = (side) => {
+    const h = document.createElement('div')
+    h.className = 'tl-h tl-h-' + (side === 'l' ? 'l' : 'r')
+    h.onpointerdown = (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      const startX = e.clientX
+      const snap = { trimIn: item.trimIn, trimOut: item.trimOut, start: item.start, end: item.end }
+      edPushHist()
+      const move = (ev) => {
+        const dt = (ev.clientX - startX) / ED_PX
+        if (kind === 'clip') {
+          if (side === 'l') item.trimIn = Math.max(0, Math.min(snap.trimOut - 0.1, snap.trimIn + dt * edClipSpeed(item)))
+          else item.trimOut = Math.min(item.dur, Math.max(snap.trimIn + 0.1, snap.trimOut + dt * edClipSpeed(item)))
+          edRecalc()
+        } else if (side === 'l') {
+          item.start = edSnapTime(Math.max(0, Math.min(snap.end - 0.1, snap.start + dt)), [snap.end])
+        } else {
+          item.end = edSnapTime(Math.max(snap.start + 0.1, snap.end + dt), [snap.start])
+        }
+        edRenderTL()
+        if (kind === 'clip') {
+          edFillClipProps(item)
+          const edge = side === 'l' ? item.tStart : item.tStart + item.trimDur
+          const tip = document.getElementById('ed-ph-time')
+          if (tip) tip.textContent = edFmtTime(edge)
+          const lbl = document.getElementById('ed-time-lbl')
+          if (lbl) lbl.textContent = `${edFmtClock(edCurTime)} / ${edFmtClock(edTotalDur)}`
+        }
+        else if (kind === 'text') {
+          const a = document.getElementById('ep-ts'), b = document.getElementById('ep-te')
+          if (a) a.value = Number(item.start).toFixed(3)
+          if (b) b.value = Number(item.end).toFixed(3)
+        } else if (kind === 'overlay') {
+          const a = document.getElementById('ep-os'), b = document.getElementById('ep-oe')
+          if (a) a.value = Number(item.start).toFixed(3)
+          if (b) b.value = Number(item.end).toFixed(3)
+        }
+      }
+      const up = () => {
+        window.removeEventListener('pointermove', move)
+        window.removeEventListener('pointerup', up)
+        edRenderTL()
+      }
+      window.addEventListener('pointermove', move)
+      window.addEventListener('pointerup', up)
+    }
+    el.appendChild(h)
+  }
+  add('l'); add('r')
+}
+
 function edRenderTL() {
-  const W = Math.max(edTotalDur * ED_PX, 300)
-  // Video track
-  const vtEl = document.getElementById('tl-vid')
-  vtEl.style.width = W + 'px'
-  vtEl.innerHTML = ''
-  for (const c of edClips) {
-    const el = document.createElement('div')
-    el.className = 'tl-clip video' + (edSel?.id === c.id ? ' selected' : '')
-    el.style.cssText = `left:${c.tStart * ED_PX}px;width:${c.trimDur * ED_PX}px`
-    el.textContent = c.file.name.replace(/\.[^.]+$/, '')
-    el.onclick = (e) => { e.stopPropagation(); edSelectClip(c.id) }
-    vtEl.appendChild(el)
+  const W = Math.max(Math.max(edTotalDur, 20) * ED_PX, 300)
+  const mk = (parentId, items, cls, idOf, labelOf, onPick, kind) => {
+    const el = document.getElementById(parentId)
+    if (!el) return
+    el.style.width = W + 'px'
+    el.innerHTML = ''
+    for (const item of items) {
+      const node = document.createElement('div')
+      const selected = edSel?.id === idOf(item)
+      node.className = 'tl-clip ' + cls + (selected ? ' selected' : '')
+      const left = kind === 'clip' ? item.tStart : item.start
+      const dur = kind === 'clip' ? item.trimDur : Math.max(item.end - item.start, 0.2)
+      node.style.cssText = `left:${left * ED_PX}px;width:${Math.max(dur * ED_PX, 20)}px`
+      node.textContent = labelOf(item)
+      node.onclick = (e) => { e.stopPropagation(); onPick(item) }
+      if (selected) edBindTrim(node, item, kind)
+      el.appendChild(node)
+    }
   }
-  // Text track
-  const ttEl = document.getElementById('tl-txt')
-  ttEl.style.width = W + 'px'
-  ttEl.innerHTML = ''
-  for (const t of edTexts) {
-    const el = document.createElement('div')
-    el.className = 'tl-clip text-cl' + (edSel?.id === t.id ? ' selected' : '')
-    el.style.cssText = `left:${t.start * ED_PX}px;width:${Math.max((t.end - t.start) * ED_PX, 20)}px`
-    el.textContent = t.text
-    el.onclick = (e) => { e.stopPropagation(); edSelectText(t.id) }
-    ttEl.appendChild(el)
+  mk('tl-vid', edClips, 'video', c => c.id, c => (c.file?.name || 'Clip').replace(/\.[^.]+$/, ''), c => edSelectClip(c.id), 'clip')
+  mk('tl-ov', edOverlays, 'overlay-cl', o => o.id, o => o.name?.replace(/\.[^.]+$/, '') || 'Image', o => edSelectOverlay(o.id), 'overlay')
+  mk('tl-txt', edTexts, 'text-cl', t => t.id, t => t.text, t => edSelectText(t.id), 'text')
+  const paintBed = (parentId, bed, type, label) => {
+    const el = document.getElementById(parentId)
+    if (!el) return
+    el.style.width = W + 'px'
+    el.innerHTML = ''
+    if (!bed) return
+    const node = document.createElement('div')
+    node.className = 'tl-clip audio-cl' + (edSel?.type === type ? ' selected' : '')
+    node.style.cssText = `left:0;width:${Math.max(edTotalDur, 0.2) * ED_PX}px`
+    node.textContent = label
+    node.onclick = (e) => {
+      e.stopPropagation()
+      veSetTool(type === 'voice' ? 'voiceover' : 'sounds')
+      edSel = { type, id: type }
+      edRenderTL()
+    }
+    el.appendChild(node)
   }
-  // Audio track
-  const atEl = document.getElementById('tl-aud')
-  atEl.style.width = W + 'px'
-  atEl.innerHTML = ''
-  if (edAudio) {
-    const el = document.createElement('div')
-    el.className = 'tl-clip audio-cl' + (edSel?.type === 'audio' ? ' selected' : '')
-    el.style.cssText = `left:0;width:${W}px`
-    el.textContent = '♪ ' + edAudio.file.name
-    el.onclick = (e) => { e.stopPropagation(); edSel = { type:'audio', id:'audio' }; edShowProps('audio'); edRenderTL() }
-    atEl.appendChild(el)
-  }
+  paintBed('tl-aud', edAudio, 'audio', '♪ ' + (edAudio?.file?.name || 'Music'))
+  paintBed('tl-voice', edVoice, 'voice', '🎙 ' + (edVoice?.file?.name || 'Voiceover'))
   edDrawRuler(W)
   edMovePH()
 }
 
 function edDrawRuler(W) {
   const cv = document.getElementById('ed-ruler-cv')
-  cv.width = W + 66; cv.height = 22
-  cv.style.width = (W + 66) + 'px'
+  if (!cv) return
+  const viewDur = Math.max(edTotalDur, 20)
+  cv.width = W + ED_LBL
+  cv.height = 26
+  cv.style.width = (W + ED_LBL) + 'px'
   const ctx = cv.getContext('2d')
-  ctx.clearRect(0, 0, cv.width, 22)
+  ctx.clearRect(0, 0, cv.width, 26)
   const step = ED_PX >= 60 ? 1 : ED_PX >= 30 ? 2 : 5
-  for (let t = 0; t <= edTotalDur + step; t += step) {
-    const x = t * ED_PX + 66
-    ctx.fillStyle = 'rgba(255,59,74,.5)'
-    ctx.fillRect(x, 14, 1, 8)
-    ctx.fillStyle = 'rgba(200,190,230,.55)'
-    ctx.font = '9px Geist, sans-serif'
+  for (let t = 0; t <= viewDur + 0.001; t += step) {
+    const x = t * ED_PX + ED_LBL
+    ctx.fillStyle = '#d1d5db'
+    ctx.fillRect(x, 16, 1, 10)
+    if (!t) continue
+    ctx.fillStyle = '#9ca3af'
+    ctx.font = '10px Inter, "SF Pro Display", sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText(`${Math.floor(t/60)}:${String(t % 60).padStart(2,'0')}`, x, 10)
+    ctx.fillText(`${t}s`, x, 12)
   }
 }
 
 function edMovePH() {
-  const x = edCurTime * ED_PX + 66
-  document.getElementById('ed-ph-r').style.left = x + 'px'
-  document.getElementById('ed-ph-t').style.left = x + 'px'
+  const x = edCurTime * ED_PX + ED_LBL
+  const pr = document.getElementById('ed-ph-r')
+  const pt = document.getElementById('ed-ph-t')
+  if (pr) pr.style.left = x + 'px'
+  if (pt) pt.style.left = x + 'px'
+  const tip = document.getElementById('ed-ph-time')
+  if (tip) tip.textContent = edFmtTime(edCurTime)
+  const tracks = document.getElementById('ed-tracks')
+  if (tracks && edPlaying) {
+    const px = edCurTime * ED_PX
+    if (px < tracks.scrollLeft + 40 || px > tracks.scrollLeft + tracks.clientWidth - 140) {
+      tracks.scrollLeft = Math.max(0, px - 80)
+    }
+  }
 }
 
 window.edRulerSeek = (e) => {
   const rect = document.getElementById('ed-ruler').getBoundingClientRect()
-  edSeekTo(Math.max(0, (e.clientX - rect.left - 66) / ED_PX))
+  edSeekTo(edSnapTime((e.clientX - rect.left - ED_LBL + document.getElementById('ed-ruler').scrollLeft) / ED_PX))
 }
 
 window.edTrackSeek = (e) => {
-  if (e.target.classList.contains('tl-clip')) return
+  if (e.target.classList.contains('tl-clip') || e.target.classList.contains('tl-h')) return
   const rect = e.currentTarget.getBoundingClientRect()
-  edSeekTo(Math.max(0, (e.clientX - rect.left) / ED_PX))
+  edSeekTo(edSnapTime((e.clientX - rect.left) / ED_PX))
 }
 
 function edSeekTo(t) {
@@ -8674,9 +10560,9 @@ function edSeekTo(t) {
 
 function edUpdScrub() {
   const sc = document.getElementById('ed-scrubber')
-  sc.max = edTotalDur; sc.value = edCurTime
-  const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`
-  document.getElementById('ed-time-lbl').textContent = `${fmt(edCurTime)} / ${fmt(edTotalDur)}`
+  if (sc) { sc.max = edTotalDur || 0; sc.value = edCurTime }
+  const lbl = document.getElementById('ed-time-lbl')
+  if (lbl) lbl.textContent = `${edFmtClock(edCurTime)} / ${edFmtClock(edTotalDur)}`
 }
 
 window.edScrub = (v) => edSeekTo(parseFloat(v))
@@ -8684,11 +10570,13 @@ window.edScrub = (v) => edSeekTo(parseFloat(v))
 window.edTogglePlay = () => {
   const vid = document.getElementById('ed-vid')
   if (edPlaying) {
-    vid.pause(); edAudioEl?.pause()
+    vid.pause(); edAudioEl?.pause(); edVoiceEl?.pause()
     edPlaying = false; document.getElementById('ed-play-btn').textContent = '▶'
     cancelAnimationFrame(edRaf)
   } else {
-    vid.play(); edAudioEl?.play()
+    const { clip, local } = edActiveAt()
+    edApplyClipLook(clip, local)
+    vid.play(); edAudioEl?.play(); edVoiceEl?.play()
     edPlaying = true; document.getElementById('ed-play-btn').textContent = '⏸'
     edTick()
   }
@@ -8699,13 +10587,19 @@ function edTick() {
   for (let i = 0; i < edClips.length; i++) {
     const c = edClips[i]
     if (vid.src === c.url) {
-      edCurTime = c.tStart + Math.max(0, vid.currentTime - c.trimIn)
+      edCurTime = c.tStart + Math.max(0, (vid.currentTime - c.trimIn) / edClipSpeed(c))
+      edApplyClipLook(c, edCurTime - c.tStart)
       if (vid.currentTime >= c.trimOut - 0.05) {
         if (i + 1 < edClips.length) {
-          const n = edClips[i+1]; vid.src = n.url; vid.currentTime = n.trimIn; vid.play()
+          const n = edClips[i+1]
+          vid.src = n.url
+          vid.currentTime = n.trimIn
+          edApplyClipLook(n, 0)
+          vid.play()
         } else {
-          vid.pause(); edAudioEl?.pause()
+          vid.pause(); edAudioEl?.pause(); edVoiceEl?.pause()
           edPlaying = false; document.getElementById('ed-play-btn').textContent = '▶'
+          edMovePH(); edUpdScrub(); edDrawCanvas()
           return
         }
       }
@@ -8718,12 +10612,33 @@ function edTick() {
 
 // ── SELECTION & PROPS ─────────────────────────────────────────────────────────
 function edShowProps(type) {
-  document.getElementById('ep-default').style.display = type ? 'none' : ''
-  document.getElementById('ep-clip').style.display  = type === 'clip'  ? '' : 'none'
-  document.getElementById('ep-text').style.display  = type === 'text'  ? '' : 'none'
-  document.getElementById('ep-audio').style.display = type === 'audio' ? '' : 'none'
-  document.getElementById('ep-frame').style.display = type === 'frame' ? '' : 'none'
-  document.getElementById('ed-del-btn').style.display = (type && type !== 'frame') ? '' : 'none'
+  const def = document.getElementById('ep-default')
+  const clip = document.getElementById('ep-clip')
+  const text = document.getElementById('ep-text')
+  const audio = document.getElementById('ep-audio')
+  const frame = document.getElementById('ep-frame')
+  if (def) def.style.display = type ? 'none' : ''
+  if (clip) clip.style.display  = type === 'clip'  ? '' : 'none'
+  if (text) text.style.display  = type === 'text'  ? '' : 'none'
+  if (audio) audio.style.display = type === 'audio' ? '' : 'none'
+  if (frame) frame.style.display = type === 'frame' ? '' : 'none'
+  const ov = document.getElementById('ep-overlay')
+  if (ov) ov.style.display = type === 'overlay' ? '' : 'none'
+  const del = document.getElementById('ed-del-btn')
+  if (del) del.style.display = (type && type !== 'frame') ? '' : 'none'
+  const dup = document.getElementById('ed-dup-btn')
+  if (dup) dup.style.display = (type === 'clip' || type === 'text' || type === 'overlay') ? '' : 'none'
+  document.querySelector('.ed-props')?.classList.toggle('ve-props-open', !!type)
+  if (type === 'audio' && edAudio) {
+    const v = document.getElementById('ep-vol')
+    const a = document.getElementById('ep-afin')
+    const b = document.getElementById('ep-afout')
+    const k = document.getElementById('ep-keeporig')
+    if (v) v.value = edAudio.volume ?? 0.5
+    if (a) a.value = edAudio.fadeIn || 0
+    if (b) b.value = edAudio.fadeOut || 0
+    if (k) k.checked = edKeepOrig
+  }
 }
 
 window.edOpenFrame = () => {
@@ -8731,14 +10646,18 @@ window.edOpenFrame = () => {
   edShowProps('frame')
   document.querySelectorAll('.frame-btn[data-fr]').forEach(b => b.classList.toggle('active', b.dataset.fr === edFrame.mode))
   document.querySelectorAll('.frame-btn[data-crop]').forEach(b => b.classList.toggle('active', b.dataset.crop === edFrame.crop))
-  document.getElementById('crop-section').style.display = edFrame.mode !== 'none' ? '' : 'none'
+  document.querySelectorAll('[data-ed-crop]').forEach(el => { el.style.display = edFrame.mode !== 'none' ? '' : 'none' })
+  const crop = document.getElementById('crop-section')
+  if (crop) crop.style.display = edFrame.mode !== 'none' ? '' : 'none'
   edRenderTL()
 }
 
 window.edSetFrame = (mode) => {
   edFrame.mode = mode
   document.querySelectorAll('.frame-btn[data-fr]').forEach(b => b.classList.toggle('active', b.dataset.fr === mode))
-  document.getElementById('crop-section').style.display = mode !== 'none' ? '' : 'none'
+  document.querySelectorAll('[data-ed-crop]').forEach(el => { el.style.display = mode !== 'none' ? '' : 'none' })
+  const crop = document.getElementById('crop-section')
+  if (crop) crop.style.display = mode !== 'none' ? '' : 'none'
   const stage = document.getElementById('ed-stage')
   stage.classList.toggle('framed', mode !== 'none')
   edResizeFrameCanvas()
@@ -8766,7 +10685,37 @@ function edResizeFrameCanvas() {
 )
 
 function edSelectClip(id) {
-  edSel = { type: 'clip', id }; edShowProps('clip'); edRenderTL()
+  edSel = { type: 'clip', id }
+  const c = edClips.find(x => x.id === id)
+  edShowProps('clip')
+  if (c) edFillClipProps(c)
+  edRenderTL()
+}
+
+function edSelectOverlay(id) {
+  edSel = { type: 'overlay', id }
+  const o = edOverlays.find(x => x.id === id); if (!o) return
+  const set = (i, v) => { const el = document.getElementById(i); if (el) el.value = v }
+  set('ep-os', o.start)
+  set('ep-oe', o.end)
+  set('ep-osc', o.scale)
+  set('ep-oop', o.opacity)
+  set('ep-ox', o.x)
+  set('ep-oy', o.y)
+  edShowProps('overlay')
+  edRenderTL()
+}
+
+window.edUpdateOverlay = () => {
+  if (!edSel || edSel.type !== 'overlay') return
+  const o = edOverlays.find(x => x.id === edSel.id); if (!o) return
+  o.start = parseFloat(document.getElementById('ep-os').value) || 0
+  o.end = parseFloat(document.getElementById('ep-oe').value) || 3
+  o.scale = parseFloat(document.getElementById('ep-osc').value) || 40
+  o.opacity = parseFloat(document.getElementById('ep-oop').value)
+  o.x = parseFloat(document.getElementById('ep-ox').value)
+  o.y = parseFloat(document.getElementById('ep-oy').value)
+  edRenderTL(); edDrawCanvas()
 }
 
 function edSelectText(id) {
@@ -8782,6 +10731,8 @@ function edSelectText(id) {
   document.getElementById('ep-te').value   = t.end
   document.getElementById('ep-tx').value   = t.x
   document.getElementById('ep-ty').value   = t.y
+  const bold = document.getElementById('ep-tbold')
+  if (bold) bold.checked = !!t.bold
   document.querySelectorAll('.txt-style-btn').forEach(b => b.classList.toggle('active', b.dataset.key === (t.preset || 'tiktok')))
   edShowProps('text'); edRenderTL()
 }
@@ -8798,26 +10749,40 @@ window.edUpdateText = () => {
   t.end         = parseFloat(document.getElementById('ep-te').value) || 3
   t.x           = parseFloat(document.getElementById('ep-tx').value)
   t.y           = parseFloat(document.getElementById('ep-ty').value)
+  t.bold        = !!document.getElementById('ep-tbold')?.checked
   edRenderTL(); edDrawCanvas()
 }
 
 window.edAudioVol = () => {
-  if (edAudio) edAudio.volume = parseFloat(document.getElementById('ep-vol').value)
-  if (edAudioEl) edAudioEl.volume = edAudio.volume
+  if (!edAudio) return
+  edAudio.volume = parseFloat(document.getElementById('ep-vol').value)
+  edAudio.fadeIn = parseFloat(document.getElementById('ep-afin')?.value) || 0
+  edAudio.fadeOut = parseFloat(document.getElementById('ep-afout')?.value) || 0
+  if (edAudioEl) edAudioEl.volume = edAudio.volume * edPreviewVol
 }
 
-window.edAddText = () => {
-  if (!edClips.length) return
-  const id = 't' + Date.now()
-  // In a frame, default to a clean caption in the top bar; otherwise TikTok style mid-low
+window.edAddText = (given) => {
+  const need = document.getElementById('ed-cap-need')
+  const scriptNeed = document.getElementById('ed-script-need')
+  if (!edClips.length) {
+    if (need) need.hidden = false
+    if (scriptNeed) scriptNeed.hidden = false
+    return
+  }
+  if (need) need.hidden = true
+  if (scriptNeed) scriptNeed.hidden = true
+  edPushHist()
+  const id = 't' + Date.now() + Math.random().toString(36).slice(2, 5)
   const framed = edFrame.mode !== 'none'
-  const preset = framed ? (edFrame.mode === 'blur' ? 'tiktok' : 'subtitle') : 'tiktok'
-  const s = ED_STYLES[preset]
-  const t = { id, text: framed ? 'Your caption here' : 'YOUR TEXT',
+  const preset = edCapPreset || (framed ? (edFrame.mode === 'blur' ? 'tiktok' : 'subtitle') : 'tiktok')
+  const s = ED_STYLES[preset] || ED_STYLES.tiktok
+  const t = {
+    id, text: given || (framed ? 'Your caption here' : 'YOUR TEXT'),
     start: 0, end: edTotalDur || 3,
     x: 50, y: framed ? 11 : 80, size: framed ? 38 : 64,
     color: s.color, fontFamily: s.font,
-    strokeColor: s.sc, strokeW: s.sw, glow: s.glow, glowColor: s.glowC, bgColor: s.bg, preset }
+    strokeColor: s.sc, strokeW: s.sw, glow: s.glow, glowColor: s.glowC, bgColor: s.bg, preset,
+  }
   edTexts.push(t); edSelectText(id); edRenderTL(); edDrawCanvas()
 }
 
@@ -8827,30 +10792,110 @@ window.edSplit = () => {
   for (let i = 0; i < edClips.length; i++) {
     const c = edClips[i]
     if (edCurTime >= t && edCurTime < t + c.trimDur) {
-      const at = c.trimIn + (edCurTime - t)
+      const at = c.trimIn + (edCurTime - t) * edClipSpeed(c)
       if (at <= c.trimIn + 0.1 || at >= c.trimOut - 0.1) break
-      const nc = { id: 'c'+Date.now(), file: c.file, url: c.url, dur: c.dur, tStart: 0, trimIn: at, trimOut: c.trimOut, trimDur: 0 }
-      c.trimOut = at; edClips.splice(i + 1, 0, nc); edRecalc(); edRenderTL(); break
+      edPushHist()
+      const nc = { ...c, id: 'c'+Date.now(), tStart: 0, trimIn: at, trimOut: c.trimOut, trimDur: 0 }
+      c.trimOut = at
+      edClips.splice(i + 1, 0, nc)
+      edRecalc(); edRenderTL(); break
     }
     t += c.trimDur
   }
 }
 
+window.edDuplicate = () => {
+  if (!edSel) return
+  edPushHist()
+  if (edSel.type === 'clip') {
+    const i = edClips.findIndex(c => c.id === edSel.id)
+    if (i < 0) return
+    const nc = { ...edClips[i], id: 'c' + Date.now() }
+    edClips.splice(i + 1, 0, nc)
+    edRecalc(); edSelectClip(nc.id)
+  } else if (edSel.type === 'text') {
+    const t = edTexts.find(x => x.id === edSel.id); if (!t) return
+    const nt = { ...t, id: 't' + Date.now() }
+    edTexts.push(nt); edSelectText(nt.id)
+  } else if (edSel.type === 'overlay') {
+    const o = edOverlays.find(x => x.id === edSel.id); if (!o) return
+    const no = { ...o, id: 'o' + Date.now() }
+    edOverlayImgs[no.id] = edOverlayImgs[o.id]
+    edOverlays.push(no); edSelectOverlay(no.id)
+  }
+  edRenderTL(); edDrawCanvas()
+}
+
 window.edDeleteSelected = () => {
   if (!edSel) return
+  edPushHist()
   if (edSel.type === 'clip') {
     edClips = edClips.filter(c => c.id !== edSel.id); edRecalc()
-    if (!edClips.length) {
-      document.getElementById('ed-empty').style.display = ''
-      document.getElementById('ed-stage').style.display = 'none'
-      document.getElementById('ed-timebar').style.display = 'none'
-    }
+    if (!edClips.length) edHidePreview()
   } else if (edSel.type === 'text') {
     edTexts = edTexts.filter(t => t.id !== edSel.id)
+  } else if (edSel.type === 'overlay') {
+    edOverlays = edOverlays.filter(o => o.id !== edSel.id)
   } else if (edSel.type === 'audio') {
     edAudioEl?.pause(); edAudio = null
+  } else if (edSel.type === 'voice') {
+    edVoiceEl?.pause(); edVoice = null
   }
   edSel = null; edShowProps(null); edRenderTL(); edDrawCanvas()
+}
+
+function edEscText(t) {
+  return String(t || '').replace(/[\\':]/g, c => '\\' + c)
+}
+
+function edDrawtextList(scale = 1) {
+  return edTexts.map(t => {
+    const hex = (t.color || '#ffffff').replace('#', '')
+    const fs = Math.round((t.size || 48) * scale)
+    let s = `drawtext=text='${edEscText(t.text)}':fontsize=${fs}:fontcolor=0x${hex}:x=w*${t.x/100}-text_w/2:y=h*${t.y/100}-text_h/2`
+    if (t.strokeColor && t.strokeColor !== 'transparent' && t.strokeW > 0)
+      s += `:bordercolor=0x${t.strokeColor.replace('#','')}:borderw=${Math.max(1, Math.round((t.strokeW || 0) * scale / 4))}`
+    if (t.bgColor) s += `:box=1:boxcolor=black@0.6:boxborderw=${Math.round(20 * scale)}`
+    s += `:enable='between(t,${t.start},${t.end})'`
+    return s
+  })
+}
+
+function edClipVf(c) {
+  const speed = edClipSpeed(c)
+  const clipLen = edClipSpan(c)
+  const parts = [`eq=brightness=${c.br || 0}:contrast=${1 + (c.ct || 0)}:saturation=${c.sat ?? 1}`]
+  if (c.flipH) parts.push('hflip')
+  if (c.flipV) parts.push('vflip')
+  if ((c.fadeIn || 0) > 0) parts.push(`fade=t=in:st=0:d=${c.fadeIn}`)
+  if ((c.fadeOut || 0) > 0) parts.push(`fade=t=out:st=${Math.max(0, clipLen - c.fadeOut)}:d=${c.fadeOut}`)
+  if (speed !== 1) parts.push(`setpts=PTS/${speed}`)
+  return parts.join(',')
+}
+
+function edMusicAf() {
+  return edBedAf(edAudio)
+}
+function edBedAf(bed) {
+  if (!bed) return 'volume=1'
+  const parts = [`volume=${bed.volume ?? 0.5}`]
+  if ((bed.fadeIn || 0) > 0) parts.push(`afade=t=in:st=0:d=${bed.fadeIn}`)
+  if ((bed.fadeOut || 0) > 0) parts.push(`afade=t=out:st=${Math.max(0, edTotalDur - bed.fadeOut)}:d=${bed.fadeOut}`)
+  return parts.join(',')
+}
+
+function edOverlayChain(startLabel, startIdx, widthRef) {
+  let fc = ''
+  let last = startLabel
+  let idx = startIdx
+  edOverlays.forEach((o, i) => {
+    const sc = ((o.scale || 40) / 100) * (widthRef / 640)
+    const op = o.opacity ?? 1
+    fc += `;[${idx}:v]format=rgba,colorchannelmixer=aa=${op},scale=iw*${sc}:-1[ov${i}];[${last}][ov${i}]overlay=x=(W*${o.x/100})-w/2:y=(H*${o.y/100})-h/2:enable='between(t,${o.start},${o.end})'[vx${i}]`
+    last = `vx${i}`
+    idx += 1
+  })
+  return { fc, last, nextIdx: idx }
 }
 
 // ── EXPORT ────────────────────────────────────────────────────────────────────
@@ -8868,99 +10913,149 @@ window.edExport = async () => {
     }
     const { fetchFile } = await import('https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js')
     const ff = ffmpegInst
-    setStatus('ed-export-status', 'Processing...', 'loading')
+    setStatus('ed-export-status', 'Processing clips...', 'loading')
 
-    // Write all clip files to ffmpeg FS
+    const keepOrig = edKeepOrig && edClips.some(c => !c.muted && (c.volume ?? 1) > 0.001)
+    const segs = []
     for (let i = 0; i < edClips.length; i++) {
-      ff.FS('writeFile', `src${i}.mp4`, await fetchFile(edClips[i].file))
+      const c = edClips[i]
+      ff.FS('writeFile', `src${i}.mp4`, await fetchFile(c.file))
+      const fname = `seg${i}.mp4`
+      const args = ['-i', `src${i}.mp4`, '-ss', c.trimIn.toFixed(3), '-to', c.trimOut.toFixed(3), '-vf', edClipVf(c), '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23']
+      if (keepOrig) {
+        const speed = edClipSpeed(c)
+        const vol = c.muted ? 0 : (c.volume ?? 1)
+        const af = [`volume=${vol}`]
+        if (speed !== 1) af.push(`atempo=${Math.max(0.5, Math.min(2, speed))}`)
+        if ((c.fadeIn || 0) > 0) af.push(`afade=t=in:st=0:d=${c.fadeIn}`)
+        if ((c.fadeOut || 0) > 0) af.push(`afade=t=out:st=${Math.max(0, edClipSpan(c) - c.fadeOut)}:d=${c.fadeOut}`)
+        try {
+          await ff.run(...args, '-af', af.join(','), '-c:a', 'aac', '-ar', '44100', '-ac', '2', fname)
+        } catch {
+          await ff.run(...args, '-an', fname)
+        }
+      } else {
+        await ff.run(...args, '-an', fname)
+      }
+      segs.push(fname)
     }
+
+    const enc = new TextEncoder()
+    ff.FS('writeFile', 'list.txt', enc.encode(segs.map(f => `file '${f}'`).join('\n')))
+    const concatArgs = ['-f', 'concat', '-safe', '0', '-i', 'list.txt', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23']
+    if (keepOrig) concatArgs.push('-c:a', 'aac')
+    else concatArgs.push('-an')
+    concatArgs.push('base.mp4')
+    try {
+      await ff.run(...concatArgs)
+    } catch {
+      await ff.run('-f', 'concat', '-safe', '0', '-i', 'list.txt', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-an', 'base.mp4')
+    }
+
+    let current = 'base.mp4'
+    let hasAudio = keepOrig
+    const mixBed = async (bed, inName, outName) => {
+      if (!bed) return
+      setStatus('ed-export-status', 'Mixing audio...', 'loading')
+      ff.FS('writeFile', inName, await fetchFile(bed.file))
+      const maf = edBedAf(bed)
+      try {
+        if (hasAudio) {
+          await ff.run('-i', current, '-i', inName, '-filter_complex', `[1:a]${maf}[m];[0:a][m]amix=inputs=2:duration=first:dropout_transition=0[a]`, '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-shortest', outName)
+        } else {
+          await ff.run('-i', current, '-i', inName, '-filter_complex', `[1:a]${maf}[a]`, '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-shortest', outName)
+        }
+        current = outName
+        hasAudio = true
+      } catch {
+        await ff.run('-i', current, '-i', inName, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-shortest', outName)
+        current = outName
+        hasAudio = true
+      }
+    }
+    await mixBed(edAudio, 'mus.mp3', 'mix.mp4')
+    await mixBed(edVoice, 'vo.mp3', 'vomix.mp4')
 
     const framed = edFrame.mode !== 'none'
-
-    // Build eq filter
-    const eq = `eq=brightness=${edFilters.br}:contrast=${1 + edFilters.ct}:saturation=${edFilters.sat}`
-
-    // Landscape drawtext (only baked into base pass when NOT framed)
-    const dtFilters = edTexts.map(t => {
-      const esc = t.text.replace(/[\\':]/g, c => '\\' + c)
-      const hex = (t.color || '#ffffff').replace('#', '')
-      return `drawtext=text='${esc}':fontsize=${t.size||48}:fontcolor=0x${hex}:x=w*${t.x/100}-text_w/2:y=h*${t.y/100}-text_h/2:enable='between(t,${t.start},${t.end})'`
-    }).join(',')
-
-    const vf = framed ? eq : (dtFilters ? `${eq},${dtFilters}` : eq)
-    const stageOut = framed ? 'stage.mp4' : 'out.mp4'
-
-    if (edClips.length === 1) {
-      const c = edClips[0]
-      const args = ['-i','src0.mp4','-ss',c.trimIn.toFixed(3),'-to',c.trimOut.toFixed(3),'-vf',vf,'-c:v','libx264','-preset','ultrafast','-crf','23']
-      if (edAudio) {
-        ff.FS('writeFile', 'mus.mp3', await fetchFile(edAudio.file))
-        args.push('-i','mus.mp3','-filter_complex',`[1:a]volume=${edAudio.volume}[a]`,'-map','0:v','-map','[a]','-c:a','aac','-shortest')
-      } else { args.push('-an') }
-      args.push(stageOut)
-      await ff.run(...args)
-    } else {
-      // Trim each clip individually, then concat
-      const trimFiles = []
-      for (let i = 0; i < edClips.length; i++) {
-        const c = edClips[i]; const fname = `tr${i}.mp4`
-        await ff.run('-i',`src${i}.mp4`,'-ss',c.trimIn.toFixed(3),'-to',c.trimOut.toFixed(3),'-c','copy',fname)
-        trimFiles.push(fname)
-      }
-      const enc = new TextEncoder()
-      ff.FS('writeFile','list.txt', enc.encode(trimFiles.map(f => `file '${f}'`).join('\n')))
-      const concatArgs = ['-f','concat','-safe','0','-i','list.txt','-vf',vf,'-c:v','libx264','-preset','ultrafast','-crf','23']
-      if (edAudio) {
-        ff.FS('writeFile','mus.mp3', await fetchFile(edAudio.file))
-        concatArgs.push('-i','mus.mp3','-filter_complex',`[1:a]volume=${edAudio.volume}[a]`,'-map','0:v','-map','[a]','-c:a','aac','-shortest')
-      } else { concatArgs.push('-an') }
-      concatArgs.push(stageOut)
-      await ff.run(...concatArgs)
+    for (let i = 0; i < edOverlays.length; i++) {
+      const ext = (edOverlays[i].file?.name.match(/\.[a-z0-9]+$/i) || ['.png'])[0]
+      ff.FS('writeFile', `ov${i}${ext}`, await fetchFile(edOverlays[i].file))
+      edOverlays[i]._edExt = ext
     }
 
-    // ── FRAME PASS: reframe stage.mp4 → 9:16 portrait with bg + caption ──
-    if (framed) {
+    const applyComp = async (src, dest, widthRef, extraHead = '', startLabel = '0:v') => {
+      const ov = edOverlayChain(startLabel, 1, widthRef)
+      const dts = edDrawtextList(1)
+      let fc = extraHead
+      let last = startLabel
+      if (ov.fc) { fc += ov.fc; last = ov.last }
+      if (dts.length) {
+        fc += (fc && !fc.endsWith(';') ? ';' : '') + `[${last}]${dts.join(',')}[vo]`
+        last = 'vo'
+      }
+      if (!fc) {
+        await ff.run('-i', src, '-c', 'copy', dest)
+        return
+      }
+      const args = ['-i', src]
+      edOverlays.forEach((o, i) => args.push('-i', `ov${i}${o._edExt}`))
+      args.push('-filter_complex', fc.replace(/^;/, ''), '-map', `[${last}]`, '-map', '0:a?', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-c:a', 'aac', dest)
+      await ff.run(...args)
+    }
+
+    if (!framed) {
+      if (edOverlays.length || edTexts.length) {
+        setStatus('ed-export-status', 'Compositing...', 'loading')
+        await applyComp(current, 'out.mp4', 640)
+      } else {
+        const data0 = ff.FS('readFile', current)
+        ff.FS('writeFile', 'out.mp4', data0)
+      }
+    } else {
       setStatus('ed-export-status', 'Applying frame...', 'loading')
       const SF = 1080 / 640
       const cropFilter = edFrame.crop !== 'fit'
         ? (() => { const [cw,ch] = edFrame.crop.split(':').map(Number); const ar = cw/ch; return `crop=if(gt(a\\,${ar})\\,ih*${ar}\\,iw):if(gt(a\\,${ar})\\,ih\\,iw/${ar})` })()
         : null
-      let fc
+      let head
       if (edFrame.mode === 'blur') {
         const src = cropFilter ? `[0:v]${cropFilter}[cr];[cr]` : '[0:v]'
-        fc = `${src}split=2[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=18:2[bg];[b]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]`
+        head = `${src}split=2[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=18:2[bg];[b]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]`
       } else {
         const col = edFrame.mode === 'white' ? 'white' : 'black'
         const pre = cropFilter ? `${cropFilter},` : ''
-        fc = `[0:v]${pre}scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=${col}[v]`
+        head = `[0:v]${pre}scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=${col}[v]`
       }
-      const portraitDt = edTexts.map(t => {
-        const esc = t.text.replace(/[\\':]/g, c => '\\' + c)
-        const hex = (t.color || '#ffffff').replace('#', '')
-        const fs = Math.round((t.size || 38) * SF)
-        let s = `drawtext=text='${esc}':fontsize=${fs}:fontcolor=0x${hex}:x=w*${t.x/100}-text_w/2:y=h*${t.y/100}-text_h/2`
-        if (t.strokeColor && t.strokeColor !== 'transparent' && t.strokeW > 0)
-          s += `:bordercolor=0x${t.strokeColor.replace('#','')}:borderw=${Math.max(1, Math.round(t.strokeW * SF / 4))}`
-        if (t.bgColor) s += `:box=1:boxcolor=black@0.6:boxborderw=20`
-        s += `:enable='between(t,${t.start},${t.end})'`
-        return s
-      })
-      let last = '[v]'
-      if (portraitDt.length) { fc += `;[v]${portraitDt.join(',')}[vo]`; last = '[vo]' }
-      await ff.run('-i','stage.mp4','-filter_complex',fc,'-map',last,'-map','0:a?','-c:v','libx264','-preset','ultrafast','-crf','23','-c:a','aac','out.mp4')
+      const ov = edOverlayChain('v', 1, 1080)
+      let fc = head + ov.fc
+      let last = ov.last
+      const portraitDt = edDrawtextList(SF)
+      if (portraitDt.length) { fc += `;[${last}]${portraitDt.join(',')}[vo]`; last = 'vo' }
+      const args = ['-i', current]
+      edOverlays.forEach((o, i) => args.push('-i', `ov${i}${o._edExt}`))
+      args.push('-filter_complex', fc, '-map', `[${last}]`, '-map', '0:a?', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-c:a', 'aac', 'out.mp4')
+      await ff.run(...args)
     }
 
     const data = ff.FS('readFile', 'out.mp4')
-    // Cleanup
     try { ff.FS('unlink','out.mp4') } catch {}
     try { ff.FS('unlink','stage.mp4') } catch {}
-    for (let i=0;i<edClips.length;i++) { try { ff.FS('unlink',`src${i}.mp4`) } catch {} try { ff.FS('unlink',`tr${i}.mp4`) } catch {} }
+    try { ff.FS('unlink','base.mp4') } catch {}
+    try { ff.FS('unlink','mix.mp4') } catch {}
+    for (let i=0;i<edClips.length;i++) {
+      try { ff.FS('unlink',`src${i}.mp4`) } catch {}
+      try { ff.FS('unlink',`seg${i}.mp4`) } catch {}
+      try { ff.FS('unlink',`tr${i}.mp4`) } catch {}
+    }
+    edOverlays.forEach((o, i) => { try { ff.FS('unlink', `ov${i}${o._edExt}`) } catch {} })
     try { ff.FS('unlink','list.txt') } catch {}
     try { ff.FS('unlink','mus.mp3') } catch {}
+    try { ff.FS('unlink','vo.mp3') } catch {}
+    try { ff.FS('unlink','vomix.mp4') } catch {}
 
     const blob = new Blob([data.buffer], { type: 'video/mp4' })
     const url  = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'clipzo_edit.mp4'
+    const a = document.createElement('a'); a.href = url; a.download = 'vidso_edit.mp4'
     document.body.appendChild(a); a.click(); document.body.removeChild(a)
     setStatus('ed-export-status', 'Exported!', 'ok')
     setTimeout(() => { document.getElementById('ed-export-status').style.display = 'none' }, 3000)
@@ -8970,6 +11065,57 @@ window.edExport = async () => {
   }
   btn.disabled = false
 }
+
+function edOnKey(e) {
+  if (csIsOpen()) {
+    const tag = (e.target.tagName || '').toLowerCase()
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return
+    if (e.code === 'Space') { e.preventDefault(); window.csTogglePlay(); return }
+    if (e.key === 'Escape') { e.preventDefault(); window.csClose(); return }
+    return
+  }
+  if (!edIsOpen()) return
+  const tag = (e.target.tagName || '').toLowerCase()
+  if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return
+  const cmd = e.metaKey || e.ctrlKey
+  if (cmd && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? window.edRedo() : window.edUndo(); return }
+  if (cmd && e.key.toLowerCase() === 'y') { e.preventDefault(); window.edRedo(); return }
+  if (cmd && e.key.toLowerCase() === 'd') { e.preventDefault(); window.edDuplicate(); return }
+  if (e.code === 'Space') { e.preventDefault(); window.edTogglePlay(); return }
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); window.edDeleteSelected(); return }
+  if (e.key.toLowerCase() === 's' && !cmd) { e.preventDefault(); window.edSplit(); return }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); window.edNudge(e.shiftKey ? -0.1 : -1); return }
+  if (e.key === 'ArrowRight') { e.preventDefault(); window.edNudge(e.shiftKey ? 0.1 : 1); return }
+  if (e.key === '=' || e.key === '+') { e.preventDefault(); window.edZoom(1); return }
+  if (e.key === '-' || e.key === '_') { e.preventDefault(); window.edZoom(-1); return }
+  if (e.key === 'Home') { e.preventDefault(); window.edSkipTo(0); return }
+  if (e.key === 'End') { e.preventDefault(); window.edSkipTo(-1); return }
+}
+
+;(function edInitUi() {
+  const wrap = document.getElementById('ed-wrap')
+  if (!wrap || wrap.dataset.edReady) return
+  wrap.dataset.edReady = '1'
+  wrap.addEventListener('dragover', e => { e.preventDefault(); wrap.classList.add('ed-drag') })
+  wrap.addEventListener('dragleave', e => { if (!wrap.contains(e.relatedTarget)) wrap.classList.remove('ed-drag') })
+  wrap.addEventListener('drop', e => {
+    e.preventDefault()
+    wrap.classList.remove('ed-drag')
+    edAddFiles(e.dataTransfer.files)
+  })
+  const tracks = document.getElementById('ed-tracks')
+  const ruler = document.getElementById('ed-ruler')
+  tracks?.addEventListener('scroll', () => { if (ruler) ruler.scrollLeft = tracks.scrollLeft })
+  document.getElementById('ed-proj-name')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
+  })
+  document.addEventListener('keydown', edOnKey)
+  edLoadScript()
+  edRenderTL()
+  edUpdScrub()
+  edUpdHistBtns()
+})()
+
 
 
 // ── AI REFRAME ────────────────────────────────────────────────────────────────
@@ -10115,8 +12261,8 @@ window.openClipInEditor = async (frameMode) => {
     const file = new File([blob], fileName, { type: 'video/mp4' })
     const url = URL.createObjectURL(file)
     const dur = await getEdVidDur(url)
-    const id = 'c' + Date.now() + Math.random().toString(36).slice(2, 6)
-    edClips.push({ id, file, url, dur, tStart: 0, trimIn: 0, trimOut: dur, trimDur: dur })
+    edPushHist()
+    edClips.push(edMakeClip({ file, url, dur, trimIn: 0, trimOut: dur }))
     edRecalc()
     edRenderTL()
     edShowPreview()
