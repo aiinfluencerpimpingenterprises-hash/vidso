@@ -7764,19 +7764,19 @@ const CLIP_DISCOVER = [
   { id: '5hTAg2ThHAo', title: 'I Spent 30 Days Exploring All Of Africa!', channel: 'IShowSpeed', cats: ['recommended', 'entertainment'] },
   { id: 'WLgwMvBHti4', title: 'MAKE US LAUGH, WIN $1,000 (ft. Deji) 2', channel: 'KSI', cats: ['entertainment'] },
   { id: '0e3GPea1Tyg', title: 'I Spent 50 Hours Buried Alive', channel: 'MrBeast', cats: ['recommended', 'entertainment'] },
-  { id: 'erLbbextvyE', title: '100 Kids Vs 1 Giant Pizza', channel: 'MrBeast', cats: ['entertainment'] },
-  { id: 'asioCrI0MfY', title: 'Sidemen Charity Match 2023', channel: 'Sidemen', cats: ['recommended', 'sport'] },
-  { id: 'lBkd0vQmslE', title: 'Sidemen Charity Match 2022', channel: 'Sidemen', cats: ['sport'] },
-  { id: 'tqK8aWqV0p4', title: 'Sidemen Among Us But Imposters Can Talk', channel: 'Sidemen', cats: ['entertainment'] },
+  { id: '0CTp1a-aCUM', title: '100 Kids Vs 100 Adults For $500,000', channel: 'MrBeast', cats: ['entertainment'] },
+  { id: 'HeZO_LcQALI', title: 'Sidemen Charity Match 2023', channel: 'Sidemen', cats: ['recommended', 'sport'] },
+  { id: 'z0h3h1UVPSs', title: 'Sidemen Charity Match 2022', channel: 'Sidemen', cats: ['sport'] },
+  { id: '8a5Z1Idf-Jo', title: 'Sidemen Among Us But Imposters Can Talk', channel: 'MoreSidemen', cats: ['entertainment'] },
   { id: 'LXb3EKWsInQ', title: 'COSTA RICA IN 4K', channel: 'Jacob + Katie Schwarz', cats: ['entertainment'] },
   { id: 'UF8uR6Z6KLc', title: "Steve Jobs' 2005 Stanford Commencement Address", channel: 'Stanford', cats: ['recommended', 'podcasts'] },
-  { id: 'T4CID6Qvq8E', title: 'Joe Rogan Experience #1169 — Elon Musk', channel: 'PowerfulJRE', cats: ['recommended', 'podcasts'] },
-  { id: 'ycPr5-27vSI', title: 'Joe Rogan Experience #1554 — Kanye West', channel: 'PowerfulJRE', cats: ['podcasts'] },
-  { id: 'dxhZ7xHhR3s', title: 'Lex Fridman Podcast — Mark Zuckerberg', channel: 'Lex Fridman', cats: ['podcasts'] },
+  { id: 'ycPr5-27vSI', title: 'Joe Rogan Experience #1169 — Elon Musk', channel: 'PowerfulJRE', cats: ['recommended', 'podcasts'] },
+  { id: 'qxOeWuAHOiw', title: 'Joe Rogan Experience #1554 — Kanye West', channel: 'PowerfulJRE', cats: ['podcasts'] },
+  { id: '5zOHSysMmH0', title: 'Lex Fridman Podcast — Mark Zuckerberg', channel: 'Lex Fridman', cats: ['podcasts'] },
   { id: 'cdZZpaB2kDM', title: 'Impaulsive EP. 348', channel: 'Impaulsive', cats: ['podcasts'] },
   { id: 'pRpeEdMmmQ0', title: 'Shakira — Waka Waka (This Time for Africa)', channel: 'Shakira', cats: ['sport'] },
-  { id: '6DhJR8_iV4s', title: 'I Survived 24 Hours Straight In The Desert', channel: 'MrBeast', cats: ['sport', 'entertainment'] },
-  { id: 'djszH7QDYxI', title: 'World\'s Fastest Car Vs World\'s Fastest Man', channel: 'MrBeast', cats: ['sport'] },
+  { id: 'Ooke4YZv8Ts', title: 'Surviving 24 Hours Straight In A Desert', channel: 'MrBeast', cats: ['sport', 'entertainment'] },
+  { id: 'FWAdfuPpLOc', title: 'World\'s Fastest Car Vs Cheetah!', channel: 'MrBeast', cats: ['sport'] },
   { id: '9bZkp7q19f0', title: 'PSY — GANGNAM STYLE', channel: 'officialpsy', cats: ['entertainment'] },
   { id: 'JGwWNGJdvx8', title: 'Ed Sheeran — Shape of You', channel: 'Ed Sheeran', cats: ['entertainment'] },
   { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi — Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', cats: ['entertainment'] },
@@ -7805,6 +7805,28 @@ window.setClipDiscoverCat = (cat, btn) => {
   renderClipDiscover()
 }
 
+function ytThumbCandidates(id, preferred) {
+  const vid = String(id || '').replace(/[^A-Za-z0-9_-]/g, '')
+  const out = []
+  const add = (url) => { if (url && !out.includes(url)) out.push(url) }
+  add(preferred)
+  if (vid) {
+    for (const kind of ['hqdefault', 'mqdefault', 'sddefault', 'hq720', 'default']) {
+      add(`https://i.ytimg.com/vi/${vid}/${kind}.jpg`)
+    }
+    add(`https://img.youtube.com/vi/${vid}/hqdefault.jpg`)
+  }
+  return out
+}
+
+window.onClipThumbError = (img) => {
+  const rest = String(img.dataset.thumbs || '').split('|').filter(Boolean)
+  const next = rest.shift()
+  img.dataset.thumbs = rest.join('|')
+  if (next) img.src = next
+  else img.removeAttribute('src')
+}
+
 function paintClipDiscoverCards(list) {
   const grid = document.getElementById('clip-discover-grid')
   if (!grid) return
@@ -7816,13 +7838,15 @@ function paintClipDiscoverCards(list) {
     return
   }
   grid.innerHTML = list.slice(0, 12).map((v) => {
-    const thumb = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`
+    const thumbs = ytThumbCandidates(v.id, v.thumbnail)
+    const thumb = thumbs[0] || ''
+    const fallbacks = thumbs.slice(1).join('|').replace(/"/g, '')
     const initial = (v.channel || '?').trim().charAt(0).toUpperCase()
     const safeTitle = String(v.title || '').replace(/"/g, '&quot;')
     const safeId = String(v.id || '').replace(/'/g, '')
     return `<button type="button" class="clip-pick" onclick="pickClipDiscover('${safeId}')" title="${safeTitle}">
       <div class="clip-pick-thumb">
-        <img src="${thumb}" alt="" loading="lazy" referrerpolicy="no-referrer"/>
+        <img src="${thumb}" alt="" loading="lazy" referrerpolicy="no-referrer" data-thumbs="${fallbacks}" onerror="onClipThumbError(this)"/>
         <div class="clip-pick-overlay">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
           Find clips
