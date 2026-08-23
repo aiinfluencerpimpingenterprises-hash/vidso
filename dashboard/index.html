@@ -918,13 +918,43 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 }
 .clip-ctype-label{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--ink)}
 .clip-ctype-label svg{opacity:1;color:var(--a1);flex-shrink:0}
-.clip-ctype select{
-  appearance:none;-webkit-appearance:none;
-  background:#16161a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
-  border:1px solid rgba(255,255,255,.14);border-radius:999px;color:var(--ink);font-size:.8rem;font-weight:600;
-  padding:8px 34px 8px 14px;outline:none;cursor:pointer;font-family:inherit;width:auto
+#panel-clipper .clip-hero-card{position:relative;z-index:4}
+.clip-dd{position:relative;z-index:12}
+.clip-dd-btn{
+  appearance:none;display:inline-flex;align-items:center;gap:10px;
+  min-width:168px;height:36px;padding:0 12px 0 14px;
+  background:#16161a;border:1px solid rgba(255,255,255,.14);border-radius:999px;
+  color:var(--ink);font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;line-height:1
 }
-.clip-ctype select:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.14)}
+.clip-dd-btn:hover,.clip-dd.is-open .clip-dd-btn{
+  border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.14)
+}
+.clip-dd-btn:focus-visible{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
+.clip-dd-btn svg{margin-left:auto;flex-shrink:0;opacity:.55;transition:transform .15s}
+.clip-dd.is-open .clip-dd-btn svg{transform:rotate(180deg);opacity:.9}
+.clip-dd-menu{
+  position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  min-width:220px;max-height:min(320px,60vh);overflow:auto;
+  margin:0;padding:6px;list-style:none;
+  background:linear-gradient(180deg,#1a1a1f,#121216);
+  border:1px solid rgba(255,255,255,.12);border-radius:14px;
+  box-shadow:0 22px 56px rgba(0,0,0,.58),0 0 0 1px rgba(255,255,255,.04);
+  display:none
+}
+.clip-dd.is-open .clip-dd-menu{display:block}
+.clip-dd-menu li{margin:0;padding:0}
+.clip-dd-menu button{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border:none;border-radius:10px;
+  background:transparent;color:rgba(255,255,255,.78);
+  font:inherit;font-size:.82rem;font-weight:600;text-align:left;cursor:pointer
+}
+.clip-dd-menu button:hover{background:rgba(255,255,255,.06);color:#fff}
+.clip-dd-menu button.is-on{background:rgba(var(--glow),.16);color:#fff}
+.clip-dd-menu button .clip-dd-check{
+  width:14px;height:14px;flex-shrink:0;opacity:0;color:var(--a1)
+}
+.clip-dd-menu button.is-on .clip-dd-check{opacity:1}
 .clip-ctype-hint{color:#6b7280}
 .clip-discover{margin-top:8px;padding-top:4px;border-top:none;max-width:none;margin-left:0;margin-right:0}
 .clip-discover-head{margin-bottom:18px;text-align:center}
@@ -2495,19 +2525,38 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg>
                 Content type
               </span>
-              <select id="clip-content-type" onchange="setClipContentType(this.value)">
-                <option value="auto">Auto-detect</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="sports">Sport</option>
-                <option value="podcast">Podcast</option>
-                <option value="gaming">Gaming</option>
-                <option value="vlog">Vlog</option>
-                <option value="commentary">Commentary</option>
-                <option value="interview">Interview</option>
-                <option value="educational">Educational</option>
-                <option value="motivational">Motivational</option>
-                <option value="other">Other</option>
-              </select>
+              <div class="clip-dd" id="clip-ctype-dd">
+                <select id="clip-content-type" hidden aria-hidden="true" tabindex="-1">
+                  <option value="auto">Auto-detect</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="sports">Sport</option>
+                  <option value="podcast">Podcast</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="vlog">Vlog</option>
+                  <option value="commentary">Commentary</option>
+                  <option value="interview">Interview</option>
+                  <option value="educational">Educational</option>
+                  <option value="motivational">Motivational</option>
+                  <option value="other">Other</option>
+                </select>
+                <button type="button" class="clip-dd-btn" id="clip-ctype-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="clip-ctype-menu" onclick="toggleClipCtypeDd(event)">
+                  <span id="clip-ctype-value">Auto-detect</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <ul class="clip-dd-menu" id="clip-ctype-menu" role="listbox" aria-label="Content type">
+                  <li><button type="button" role="option" data-value="auto" class="is-on" onclick="pickClipCtype('auto')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Auto-detect</button></li>
+                  <li><button type="button" role="option" data-value="entertainment" onclick="pickClipCtype('entertainment')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Entertainment</button></li>
+                  <li><button type="button" role="option" data-value="sports" onclick="pickClipCtype('sports')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Sport</button></li>
+                  <li><button type="button" role="option" data-value="podcast" onclick="pickClipCtype('podcast')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Podcast</button></li>
+                  <li><button type="button" role="option" data-value="gaming" onclick="pickClipCtype('gaming')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Gaming</button></li>
+                  <li><button type="button" role="option" data-value="vlog" onclick="pickClipCtype('vlog')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Vlog</button></li>
+                  <li><button type="button" role="option" data-value="commentary" onclick="pickClipCtype('commentary')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Commentary</button></li>
+                  <li><button type="button" role="option" data-value="interview" onclick="pickClipCtype('interview')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Interview</button></li>
+                  <li><button type="button" role="option" data-value="educational" onclick="pickClipCtype('educational')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Educational</button></li>
+                  <li><button type="button" role="option" data-value="motivational" onclick="pickClipCtype('motivational')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Motivational</button></li>
+                  <li><button type="button" role="option" data-value="other" onclick="pickClipCtype('other')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>Other</button></li>
+                </ul>
+              </div>
               <span class="clip-ctype-hint">(helps the AI find better moments)</span>
             </div>
             <div class="status" id="clip-url-status" style="display:none;margin-top:12px"></div>
@@ -7744,10 +7793,46 @@ window.findClipsFromUrl = async () => {
   if (ok) clipFindViral()
 }
 
+function syncClipCtypeUi() {
+  const sel = document.getElementById('clip-content-type')
+  const label = document.getElementById('clip-ctype-value')
+  if (!sel || !label) return
+  const opt = sel.selectedOptions?.[0]
+  label.textContent = opt ? opt.textContent : 'Auto-detect'
+  document.querySelectorAll('#clip-ctype-menu [data-value]').forEach((el) => {
+    const on = el.dataset.value === sel.value
+    el.classList.toggle('is-on', on)
+    el.setAttribute('aria-selected', on ? 'true' : 'false')
+  })
+}
+
+function closeClipCtypeDd() {
+  const dd = document.getElementById('clip-ctype-dd')
+  const btn = document.getElementById('clip-ctype-btn')
+  dd?.classList.remove('is-open')
+  if (btn) btn.setAttribute('aria-expanded', 'false')
+}
+
+window.toggleClipCtypeDd = (e) => {
+  e?.stopPropagation?.()
+  const dd = document.getElementById('clip-ctype-dd')
+  const btn = document.getElementById('clip-ctype-btn')
+  if (!dd) return
+  const open = !dd.classList.contains('is-open')
+  dd.classList.toggle('is-open', open)
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+}
+
+window.pickClipCtype = (value) => {
+  setClipContentType(value)
+  closeClipCtypeDd()
+}
+
 window.setClipContentType = (g) => {
   cvGenre = g || 'auto'
   const sel = document.getElementById('clip-content-type')
   if (sel && sel.value !== cvGenre) sel.value = cvGenre
+  syncClipCtypeUi()
   const btn = document.querySelector(`#clip-viral-genres .cv-genre-btn[data-genre="${cvGenre}"]`)
   document.querySelectorAll('#clip-viral-genres .cv-genre-btn').forEach((b) => b.classList.remove('active'))
   if (btn) btn.classList.add('active')
@@ -7756,6 +7841,14 @@ window.setClipContentType = (g) => {
     autoBtn?.classList.add('active')
   }
 }
+
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('clip-ctype-dd')
+  if (dd && !dd.contains(e.target)) closeClipCtypeDd()
+})
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeClipCtypeDd()
+})
 
 // Popular video catalog for the discover grid (curated long-form sources).
 const CLIP_DISCOVER = [
@@ -9901,6 +9994,7 @@ window.setCvGenre = (g, btn) => {
   if (sel) {
     const opt = [...sel.options].find((o) => o.value === g)
     sel.value = opt ? g : 'auto'
+    syncClipCtypeUi()
   }
 }
 
