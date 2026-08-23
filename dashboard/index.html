@@ -312,8 +312,43 @@ select option{background:var(--card)}
 .fv-section.editing .fv-section-preview{display:none}
 .fv-section textarea:focus{outline:none;border-color:var(--a2)}
 .fv-section.busy{opacity:.65;pointer-events:none}
-.fv-regen-btn{border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.72rem;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
-.fv-regen-btn:hover{border-color:var(--a2);color:var(--ink)}
+.fv-regen-btn{
+  display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
+  color:#fff;font:inherit;font-size:.75rem;font-weight:650;border-radius:10px;
+  cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s
+}
+.fv-regen-btn svg{width:13px;height:13px;flex-shrink:0;opacity:.9}
+.fv-regen-btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.38)}
+.fv-regen-btn.is-ai{border-color:rgba(var(--glow),.55);background:rgba(var(--glow),.18)}
+.fv-regen-btn.is-ai:hover{background:rgba(var(--glow),.28);border-color:rgba(var(--glow),.75)}
+.fv-custom-dur{
+  display:none;align-items:center;gap:6px;height:36px;padding:0 12px 0 14px;
+  border:1px solid rgba(var(--glow),.5);background:rgba(var(--glow),.12);border-radius:999px
+}
+.fv-custom-dur.is-on{display:inline-flex}
+.fv-custom-dur input{
+  width:54px;border:none;background:transparent;color:var(--ink);
+  font:inherit;font-size:.8rem;font-weight:700;outline:none
+}
+.fv-custom-dur input::-webkit-outer-spin-button,.fv-custom-dur input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.fv-custom-dur input[type=number]{-moz-appearance:textfield}
+.fv-custom-dur span{font-size:.72rem;color:rgba(255,255,255,.5);font-weight:650}
+.fv-voice-dd{position:relative;z-index:6;width:100%}
+.fv-voice-dd-btn{
+  appearance:none;display:flex;align-items:center;gap:10px;width:100%;height:44px;
+  padding:0 12px 0 14px;background:#16161a;border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;color:var(--ink);font:inherit;font-size:.85rem;font-weight:600;
+  cursor:pointer;text-align:left
+}
+.fv-voice-dd-btn:hover,.fv-voice-dd.is-open .fv-voice-dd-btn{
+  border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.14)
+}
+.fv-voice-dd-btn:focus-visible{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
+.fv-voice-dd-btn svg.chev{margin-left:auto;flex-shrink:0;opacity:.55;transition:transform .15s}
+.fv-voice-dd.is-open .fv-voice-dd-btn svg.chev{transform:rotate(180deg);opacity:.9}
+.fv-voice-dd .clip-dd-menu{left:0;right:0;transform:none;min-width:0;width:100%;max-height:min(280px,50vh)}
+.fv-voice-dd.is-open .clip-dd-menu{display:block}
 .fv-setup.collapsed{display:none}
 .fv-media-box{display:none;margin-top:8px}
 .fv-media-box.show{display:block}
@@ -497,11 +532,8 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .img-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:1024px){.img-layout{grid-template-columns:1fr}}
 .img-pane{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.img-prompt-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
-.img-prompt-chip{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);border-radius:999px;padding:7px 12px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
-.img-prompt-chip:hover{border-color:rgba(var(--glow),.45);color:var(--ink);background:rgba(var(--glow),.08)}
 .img-chat-log{display:flex;flex-direction:column;gap:8px;max-height:132px;overflow:auto;margin:0 0 10px}
-.img-chat-log:empty,.img-chat-log:not(:has(.img-chat-msg)):not(:has(.img-prompt-chips)){display:none}
+.img-chat-log:empty,.img-chat-log:not(:has(.img-chat-msg)){display:none}
 .img-chat-msg{align-self:flex-end;max-width:92%;background:rgba(var(--glow),.16);border:1px solid rgba(var(--glow),.3);color:var(--ink);border-radius:16px 16px 4px 16px;padding:8px 12px;font-size:.84rem;line-height:1.4;white-space:pre-wrap}
 .img-chat-box{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);padding:8px 10px 10px}
 .img-chat-box:focus-within{border-color:rgba(var(--glow),.7);box-shadow:0 0 0 4px rgba(var(--glow),.16)}
@@ -1386,12 +1418,12 @@ input:focus,textarea:focus,select:focus,
 #panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:108px!important;padding-bottom:24px!important}
 #panel-ranking .vr-sticky-bar{pointer-events:auto}
 #panel-ranking .page-shell-wide{max-width:1280px;width:100%;margin-left:auto;margin-right:auto}
-.fv-voice-wrap{position:relative;min-width:0;flex:1;display:flex;flex-direction:column;gap:8px}
+.fv-voice-wrap{position:relative;z-index:6;min-width:0;flex:1;display:flex;flex-direction:column;gap:8px}
 .fv-voice-skel{
   height:44px;border-radius:12px;overflow:hidden;
   background:rgba(255,255,255,.04);border:1px solid var(--border)
 }
-.fv-voice-skel[hidden],.fv-voice-error[hidden],#fv-voice[hidden]{display:none!important}
+.fv-voice-skel[hidden],.fv-voice-error[hidden],#fv-voice[hidden],#fv-voice-dd[hidden]{display:none!important}
 .fv-voice-error{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   min-height:44px;padding:8px 12px;border-radius:12px;
@@ -1400,6 +1432,7 @@ input:focus,textarea:focus,select:focus,
 }
 .fv-voice-error .btn{flex-shrink:0;height:30px;padding:0 10px;font-size:.75rem}
 .fv-voice-row{align-items:start!important}
+#fv-voice-preview-btn{height:44px;padding:0 14px}
 @media (max-width:1280px){
   .qa-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
@@ -2446,13 +2479,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           </div>
         </div>
         <div class="img-pane img-chat" id="img-prompt-pane">
-          <div class="img-chat-log" id="img-chat-log" aria-live="polite">
-            <div class="img-prompt-chips" aria-label="Example prompts">
-              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('A cinematic mountain landscape at golden hour, 4k')">Mountain landscape</button>
-              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Neon city street at night, rain reflections, photorealistic')">Neon city night</button>
-              <button type="button" class="img-prompt-chip" onclick="fillImgPrompt('Minimal product shot on dark slate, soft studio light')">Product still</button>
-            </div>
-          </div>
+          <div class="img-chat-log" id="img-chat-log" aria-live="polite"></div>
           <div class="img-chat-box">
             <label class="sr-only" for="img-prompt">Thumbnail prompt</label>
             <textarea id="img-prompt" rows="1" placeholder="Describe the thumbnail you want…" onkeydown="onImgPromptKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
@@ -3595,9 +3622,16 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <label>Narrator voice</label>
               <div class="fv-voice-row">
                 <div class="fv-voice-wrap">
-                  <select id="fv-voice" class="cm-input" onchange="fvOnVoiceChange()" aria-label="Narrator voice">
+                  <select id="fv-voice" hidden aria-hidden="true" tabindex="-1" onchange="fvOnVoiceChange()">
                     <option value="">Loading voices…</option>
                   </select>
+                  <div class="fv-voice-dd" id="fv-voice-dd" hidden>
+                    <button type="button" class="fv-voice-dd-btn" id="fv-voice-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="fv-voice-menu" onclick="toggleFvVoiceDd(event)">
+                      <span id="fv-voice-value">Select a voice</span>
+                      <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <ul class="clip-dd-menu" id="fv-voice-menu" role="listbox" aria-label="Narrator voice"></ul>
+                  </div>
                   <div class="fv-voice-skel ui-skeleton" id="fv-voice-skel" hidden aria-hidden="true"></div>
                   <div class="fv-voice-error" id="fv-voice-error" hidden>
                     <span>Voices unavailable</span>
@@ -3990,7 +4024,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 <script type="module">
 import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
-import { durationPresets } from '/lib/entitlements.js'
+import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
@@ -6101,10 +6135,25 @@ function fvDurationList() {
   return durationPresets(fvState.format, fvDurationCapSeconds())
 }
 
+function fvCustomDurationLabel(seconds) {
+  if (fvState.format === 'shorts') return seconds + 's'
+  const mins = seconds / 60
+  return Number.isInteger(mins) ? mins + ' min' : mins.toFixed(1) + ' min'
+}
+
 function fvPickedDuration() {
   const list = fvDurationList()
-  return list.find((d) => d.id === fvState.durationId) || durationPresets(fvState.format).find((d) => d.id === fvState.durationId)
+  const hit = list.find((d) => d.id === fvState.durationId)
+  if (hit) return hit
+  const seconds = secondsFromDurationId(fvState.durationId)
+  if (seconds) {
+    const cap = fvDurationCapSeconds()
+    if (Number.isFinite(cap) && seconds > cap) return list[list.length - 1] || null
+    return { id: fvState.durationId, label: fvCustomDurationLabel(seconds), seconds, custom: true }
+  }
+  return durationPresets(fvState.format).find((d) => d.id === fvState.durationId) || list[0] || null
 }
+
 
 function fvSyncLengthLabel() {
   const btn = document.querySelector('#fv-format-seg [data-format="long"]')
@@ -6119,12 +6168,24 @@ function fvRenderDurationChips() {
   if (!row) return
   const list = fvDurationList()
   if (!list.length) return
-  if (!list.some(d => d.id === fvState.durationId)) {
-    fvState.durationId = list[list.length - 1].id
-  }
+  const picked = fvPickedDuration()
+  if (picked && picked.id !== fvState.durationId) fvState.durationId = picked.id
+  const custom = !!picked?.custom
+  const shorts = fvState.format === 'shorts'
+  const cap = fvDurationCapSeconds()
+  const max = Number.isFinite(cap) ? cap : (shorts ? 60 : 1800)
+  const min = shorts ? 15 : 120
+  const inputVal = custom
+    ? (shorts ? picked.seconds : Math.round((picked.seconds / 60) * 10) / 10)
+    : ''
   row.innerHTML = list.map(d =>
     `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
-  ).join('')
+  ).join('') +
+    `<button type="button" class="fv-chip${custom ? ' active' : ''}" data-dur="custom" onclick="fvOpenCustomDuration()">${custom ? picked.label : 'Custom'}</button>` +
+    `<label class="fv-custom-dur${custom ? ' is-on' : ''}">
+      <input type="number" id="fv-custom-dur" min="${shorts ? min : min / 60}" max="${shorts ? max : max / 60}" step="${shorts ? 1 : 1}" value="${inputVal}" inputmode="numeric" aria-label="Custom duration" onchange="fvApplyCustomDuration(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();fvApplyCustomDuration(this.value)}"/>
+      <span>${shorts ? 'sec' : 'min'}</span>
+    </label>`
   fvSyncLengthLabel()
 }
 
@@ -6146,11 +6207,95 @@ window.fvSetDuration = (id) => {
   fvRenderDurationChips()
 }
 
+window.fvOpenCustomDuration = () => {
+  const picked = fvPickedDuration()
+  if (!picked?.custom) {
+    const shorts = fvState.format === 'shorts'
+    const fallback = shorts ? 45 : 7
+    fvApplyCustomDuration(fallback)
+  } else {
+    fvRenderDurationChips()
+  }
+  setTimeout(() => document.getElementById('fv-custom-dur')?.focus(), 0)
+}
+
+window.fvApplyCustomDuration = (raw) => {
+  const shorts = fvState.format === 'shorts'
+  const n = parseFloat(raw)
+  if (!Number.isFinite(n) || n <= 0) {
+    fvRenderDurationChips()
+    return
+  }
+  let seconds = shorts ? Math.round(n) : Math.round(n * 60)
+  const min = shorts ? 15 : 120
+  const cap = fvDurationCapSeconds()
+  const max = Number.isFinite(cap) ? cap : (shorts ? 60 : 1800)
+  seconds = Math.min(max, Math.max(min, seconds))
+  const preset = fvDurationList().find((d) => d.seconds === seconds)
+  fvState.durationId = preset ? preset.id : (shorts ? `shorts_${seconds}` : `long_${seconds}`)
+  fvRenderDurationChips()
+}
+
 window.fvSetAspect = (aspect) => {
   fvState.aspect = aspect === '16:9' ? '16:9' : '9:16'
   document.querySelectorAll('#fv-aspect-chips .fv-chip').forEach(b => {
     b.classList.toggle('active', b.dataset.aspect === fvState.aspect)
   })
+}
+
+function fvVoiceLabel(v) {
+  const label = String(v.name || '').split(' - ')[0]
+  const cat = v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : (v.category || '')
+  return label + (cat ? ' · ' + cat : '')
+}
+
+function syncFvVoiceUi() {
+  const sel = document.getElementById('fv-voice')
+  const label = document.getElementById('fv-voice-value')
+  const menu = document.getElementById('fv-voice-menu')
+  if (label && sel) label.textContent = sel.selectedOptions?.[0]?.textContent || 'Select a voice'
+  if (!menu) return
+  menu.querySelectorAll('[data-value]').forEach((el) => {
+    const on = el.dataset.value === sel?.value
+    el.classList.toggle('is-on', on)
+    el.setAttribute('aria-selected', on ? 'true' : 'false')
+  })
+}
+
+function fvRenderVoiceMenu() {
+  const menu = document.getElementById('fv-voice-menu')
+  if (!menu) return
+  menu.innerHTML = voices.map((v) => {
+    const on = v.id === (fvState.voiceId || selectedVoiceId)
+    const id = String(v.id || '').replace(/'/g, '')
+    return `<li><button type="button" role="option" data-value="${id}" class="${on ? 'is-on' : ''}" onclick="pickFvVoice('${id}')"><svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>${fvEsc(fvVoiceLabel(v))}</button></li>`
+  }).join('')
+  syncFvVoiceUi()
+}
+
+function closeFvVoiceDd() {
+  const dd = document.getElementById('fv-voice-dd')
+  const btn = document.getElementById('fv-voice-btn')
+  dd?.classList.remove('is-open')
+  if (btn) btn.setAttribute('aria-expanded', 'false')
+}
+
+window.toggleFvVoiceDd = (e) => {
+  e?.stopPropagation?.()
+  const dd = document.getElementById('fv-voice-dd')
+  const btn = document.getElementById('fv-voice-btn')
+  if (!dd || dd.hidden) return
+  const open = !dd.classList.contains('is-open')
+  dd.classList.toggle('is-open', open)
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+}
+
+window.pickFvVoice = (id) => {
+  const sel = document.getElementById('fv-voice')
+  if (sel) sel.value = id
+  fvOnVoiceChange()
+  syncFvVoiceUi()
+  closeFvVoiceDd()
 }
 
 function fvPopulateVoices() {
@@ -6159,10 +6304,13 @@ function fvPopulateVoices() {
   const btn = document.getElementById('fv-voice-preview-btn')
   const skel = document.getElementById('fv-voice-skel')
   const errBox = document.getElementById('fv-voice-error')
+  const dd = document.getElementById('fv-voice-dd')
   const show = (mode) => {
     if (skel) skel.hidden = mode !== 'loading'
     if (errBox) errBox.hidden = mode !== 'error'
-    sel.hidden = mode !== 'ready' && mode !== 'empty'
+    sel.hidden = true
+    if (dd) dd.hidden = mode !== 'ready'
+    if (mode !== 'ready') closeFvVoiceDd()
   }
   if (voicesLoadState === 'loading' || voicesLoadState === 'idle') {
     sel.innerHTML = '<option value="">Loading voices…</option>'
@@ -6189,11 +6337,10 @@ function fvPopulateVoices() {
   sel.disabled = false
   const prev = fvState.voiceId || selectedVoiceId || voices[0].id
   sel.innerHTML = voices.map(v => {
-    const label = v.name.split(' - ')[0]
-    const cat = v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : (v.category || '')
-    return `<option value="${v.id}" data-preview="${v.preview_url || ''}">${label}${cat ? ' · ' + cat : ''}</option>`
+    return `<option value="${v.id}" data-preview="${v.preview_url || ''}">${fvEsc(fvVoiceLabel(v))}</option>`
   }).join('')
   sel.value = voices.some(v => v.id === prev) ? prev : voices[0].id
+  fvRenderVoiceMenu()
   fvOnVoiceChange()
 }
 
@@ -6209,6 +6356,7 @@ window.fvOnVoiceChange = () => {
   if (box) box.classList.remove('show')
   const audio = document.getElementById('fv-voice-audio')
   if (audio) { audio.pause(); audio.removeAttribute('src') }
+  syncFvVoiceUi()
 }
 
 window.fvPreviewVoice = () => {
@@ -6285,8 +6433,8 @@ function fvRenderScript(script) {
       <div class="fv-section-head">
         <label>${fvEsc(s.heading || s.id)}</label>
         <div class="fv-section-actions">
-          <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')">Edit manually</button>
-          <button type="button" class="fv-regen-btn" onclick="fvRegenerateSection('${fvEsc(s.id)}')">↻ Regenerate</button>
+          <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit manually</button>
+          <button type="button" class="fv-regen-btn is-ai" onclick="fvRegenerateSection('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>Regenerate</button>
         </div>
       </div>
       <div class="fv-section-preview">${fvEsc(s.text || '')}</div>
@@ -7845,9 +7993,14 @@ window.setClipContentType = (g) => {
 document.addEventListener('click', (e) => {
   const dd = document.getElementById('clip-ctype-dd')
   if (dd && !dd.contains(e.target)) closeClipCtypeDd()
+  const voice = document.getElementById('fv-voice-dd')
+  if (voice && !voice.contains(e.target)) closeFvVoiceDd()
 })
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeClipCtypeDd()
+  if (e.key === 'Escape') {
+    closeClipCtypeDd()
+    closeFvVoiceDd()
+  }
 })
 
 // Popular video catalog for the discover grid (curated long-form sources).
