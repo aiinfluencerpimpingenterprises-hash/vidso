@@ -38,7 +38,7 @@
     location.replace('/login')
     return
   }
-  var paywallOff = true
+  var paywallOff = false
   var needOb = false
   var obSeen = false
   try {
@@ -76,7 +76,7 @@
     if (needOb) obSeen = false
   } catch (e) {}
   if (!obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
-  else if (!paid && !paywallOff) document.documentElement.classList.add('needs-gate')
+  else if (!paywallOff) document.documentElement.classList.add(paid ? 'needs-gate' : 'needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -608,7 +608,8 @@ html.needs-paywall #app-sidebar,html.needs-paywall main,
 html.needs-onboarding #app-sidebar,html.needs-onboarding main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
-html.needs-paywall #paywall-modal{display:flex!important;z-index:20001}
+html.needs-paywall #paywall-modal,
+html.needs-paywall #paywall-modal.hidden{display:flex!important;z-index:20001}
 html.needs-gate #paywall-modal{display:none!important}
 #onboarding-modal{z-index:20000}
 html.needs-onboarding #onboarding-modal,
@@ -4022,8 +4023,10 @@ function applyAuthRouteTab() {
 }
 
 function afterAuthReady(opts = {}) {
-  persistPlanActive(hasActivePlan() || !paywallOn())
-  if (tourHasSeen()) _tourDoneThisSession = true
+  persistPlanActive(hasActivePlan())
+  // Returning users skip the tour. First-run tour only runs after this session's onboarding.
+  if (obHasSeen() && !_obDoneThisSession) _tourDoneThisSession = true
+  else if (tourHasSeen()) _tourDoneThisSession = true
   hideModal()
   populateUser()
   const pendingOb = obForcePreview() || obShouldAutoOpen()
@@ -4039,11 +4042,16 @@ function afterAuthReady(opts = {}) {
     return
   }
   obClearNeedFlag()
-  document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
-  closePaywall()
   loadUsage()
   loadVoices()
   loadFiles()
+  if (funnelLocked() && !introPending()) {
+    maybeShowPaywall()
+    if (opts.restoreRoute) restorePanelFromHash()
+    return
+  }
+  document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
+  closePaywall()
   if (opts.restoreRoute) restorePanelFromHash()
 }
 
@@ -4253,6 +4261,7 @@ window.doSignup = async () => {
   try {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
+    try { sessionStorage.setItem('vidso_need_onboarding', '1') } catch (_) {}
     currentUser = await api.user.me()
     afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
@@ -5512,8 +5521,10 @@ function introPending() {
   if (_tourActive) return true
   const ob = document.getElementById('onboarding-modal')
   if (ob && !ob.classList.contains('hidden')) return true
-  const needOb = !obHasSeen() && !_obDoneThisSession
-  return needOb || !_tourDoneThisSession
+  if (!obHasSeen() && !_obDoneThisSession) return true
+  // Tour only delays the paywall on a first-run session after onboarding.
+  if (_obDoneThisSession && !_tourDoneThisSession) return true
+  return false
 }
 
 function setPaywallStatus(msg, kind) {
@@ -5673,9 +5684,9 @@ window.maybeShowPaywall = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   if (_tourActive) return
-  // Wait until first-run onboarding is done and this session's tour (if any) finishes.
+  // First signup: wait for onboarding + tour. Returning unpaid users: paywall now.
   if (funnelLocked()) {
-    if ((!obHasSeen() && !_obDoneThisSession) || !_tourDoneThisSession) return
+    if (introPending()) return
   } else if (!obHasSeen() || !tourHasSeen()) {
     return
   }
