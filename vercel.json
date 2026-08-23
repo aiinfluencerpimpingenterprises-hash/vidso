@@ -2,6 +2,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/preview",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/ui",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/overview",
       "destination": "/dashboard/index.html"
     },
@@ -143,6 +151,24 @@
     },
     {
       "source": "/dashboard/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/preview",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/ui",
       "headers": [
         {
           "key": "Cache-Control",
