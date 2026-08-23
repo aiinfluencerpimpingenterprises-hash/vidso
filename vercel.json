@@ -70,6 +70,10 @@
       "destination": "/home/index.html"
     },
     {
+      "source": "/500",
+      "destination": "/500.html"
+    },
+    {
       "source": "/login",
       "destination": "/auth.html"
     },
