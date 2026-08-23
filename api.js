@@ -1,7 +1,7 @@
 import { WHOP_CHECKOUT } from '/lib/whop-map.js'
 import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
-import { withCompedPlan } from '/lib/comped.js'
+import { planIsActive, withCompedPlan } from '/lib/comped.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -120,7 +120,7 @@ function formatQuota(me, usage) {
 }
 
 function planReady(me, expectedTier) {
-  if (!me || me.plan_status !== 'active') return false
+  if (!planIsActive(me)) return false
   const want = normalizeTier(expectedTier)
   if (!want) return true
   const got = normalizeTier(me.plan || me.plan_tier)
@@ -152,9 +152,9 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
   let last = null
   while (Date.now() - started < timeoutMs) {
     try {
-      last = await req('GET', '/api/user/me')
+      last = withCompedPlan(await req('GET', '/api/user/me'))
       if (typeof onTick === 'function') onTick(last)
-      const active = last?.plan_status === 'active'
+      const active = planIsActive(last)
       const ready = planReady(last, expectedTier)
       const late = active && Date.now() - started > timeoutMs - 10000
       if (ready || late) return last
@@ -186,7 +186,7 @@ export const api = {
           me.short_form_used = u.short_form_used
         }
       } catch (_) {}
-      return withCompedPlan(me)
+      return withCompedPlan({ ...me, email: me.email || emailFromToken() })
     },
     usage: () => req('GET', '/api/user/usage'),
   },
@@ -346,8 +346,8 @@ export const api = {
     unlockCopy,
     canClip: async () => {
       try {
-        const me = await req('GET', '/api/user/me')
-        return me.plan_status === 'active'
+        const me = withCompedPlan(await req('GET', '/api/user/me'))
+        return planIsActive(me)
       } catch { return false }
     },
   },

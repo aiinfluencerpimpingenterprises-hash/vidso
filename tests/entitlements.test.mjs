@@ -340,6 +340,20 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
   assert.equal(q.unlimited, true)
   const stranger = resolveAccess({ email: 'someone@example.com', plan_status: 'inactive' }, off)
   assert.equal(stranger.active, false)
+  const nested = resolveAccess({
+    user: { email: 'stormdecoded@gmail.com' },
+    plan: 'free',
+    plan_status: 'inactive',
+  }, off)
+  assert.equal(nested.active, true)
+  assert.equal(nested.tier, 'studio')
+  const paidClipzo = resolveAccess({
+    email: 'payer@example.com',
+    plan: 'studio',
+    plan_status: 'active',
+  }, off)
+  assert.equal(paidClipzo.active, true)
+  assert.equal(paidClipzo.tier, 'studio')
 })
 
 

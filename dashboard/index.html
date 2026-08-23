@@ -72,11 +72,15 @@
     }
     for (var i = 0; i < ids.length; i++) {
       if (hasSeenId(ids[i])) obSeen = true
+      if (ids[i] === 'stormdecoded@gmail.com') paid = true
+    }
+    if (paid) {
+      try { localStorage.setItem('vidso_plan_active', '1') } catch (e5) {}
     }
     if (needOb) obSeen = false
   } catch (e) {}
   if (needOb) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
-  else if (!paywallOff) document.documentElement.classList.add(paid ? 'needs-gate' : 'needs-paywall')
+  else document.documentElement.classList.add('needs-gate')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -3939,6 +3943,7 @@ import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
+import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
 import {
@@ -4070,14 +4075,14 @@ function userStubFromToken() {
     const id = String(p.sub || p.user_id || '').trim()
     if (!email && !id) return null
     const meta = p.user_metadata || {}
-    return {
+    return withCompedPlan({
       id: id || email,
       email: email || id,
       name: String(meta.name || p.name || email || 'You').trim(),
       credits: 0,
       plan: 'free',
       plan_status: 'inactive'
-    }
+    })
   } catch (_) { return null }
 }
 
@@ -5518,7 +5523,7 @@ let _paywallCycle = 'monthly'
 let _paywallOpening = false
 
 function hasActivePlan() {
-  return !!(currentUser && currentUser.plan_status === 'active')
+  return !!(currentUser && resolveAccess(currentUser).active)
 }
 
 function paywallOn() {

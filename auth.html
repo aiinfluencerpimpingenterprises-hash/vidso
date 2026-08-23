@@ -368,7 +368,7 @@ function setPaywallCycle(cycle) {
 async function goToAppIfPaid() {
   try {
     currentUser = await api.user.me()
-    if (currentUser && currentUser.plan_status === 'active') {
+    if (currentUser && (currentUser.plan_status === 'active' || currentUser.active === true)) {
       try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
       location.replace(APP)
       return true
@@ -388,14 +388,14 @@ async function watchForPurchase(tier) {
     onTick(me) {
       if (!me) return
       currentUser = me
-      if (me.plan_status === 'active') {
+      if (me.plan_status === 'active' || me.active === true) {
         setPaywallStatus(`Unlocking ${api.billing.unlockCopy(me)}…`, 'loading')
       }
     },
   }).then(async (me) => {
     _planPoll = null
     if (me) currentUser = me
-    if (me && me.plan_status === 'active') {
+    if (me && (me.plan_status === 'active' || me.active === true)) {
       try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
       setPaywallStatus(`Plan active — ${api.billing.unlockCopy(me)} unlocked.`, 'ok')
       try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
@@ -418,7 +418,18 @@ function afterAuth(opts = {}) {
     else sessionStorage.removeItem('vidso_need_onboarding')
     sessionStorage.removeItem('vidso_auth_intent')
   } catch (_) {}
-  location.replace(APP)
+  persistPaidBeforeApp().finally(() => location.replace(APP))
+}
+
+async function persistPaidBeforeApp() {
+  try {
+    const me = await api.user.me()
+    if (me && (me.plan_status === 'active' || me.active === true)) {
+      localStorage.setItem('vidso_plan_active', '1')
+    } else {
+      localStorage.removeItem('vidso_plan_active')
+    }
+  } catch (_) {}
 }
 
 function consumeOAuthErrorParams() {
