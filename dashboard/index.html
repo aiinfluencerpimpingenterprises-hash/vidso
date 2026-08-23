@@ -75,7 +75,7 @@
     }
     if (needOb) obSeen = false
   } catch (e) {}
-  if (!obSeen) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
+  if (needOb) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
   else if (!paywallOff) document.documentElement.classList.add(paid ? 'needs-gate' : 'needs-paywall')
 })()
 </script>
@@ -4024,8 +4024,8 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   persistPlanActive(hasActivePlan())
-  // Returning users skip the tour. First-run tour only runs after this session's onboarding.
-  if (obHasSeen() && !_obDoneThisSession) _tourDoneThisSession = true
+  // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
+  if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
   else if (tourHasSeen()) _tourDoneThisSession = true
   hideModal()
   populateUser()
@@ -4223,6 +4223,10 @@ window.doGoogleLogin = async () => {
   const redirectTo = authRedirectTarget()
   document.getElementById('login-err').style.display = 'none'
   document.getElementById('signup-err').style.display = 'none'
+  const signup = document.getElementById('tab-signup')?.style.display !== 'none'
+    || (location.pathname || '').replace(/\/+$/, '') === '/signup'
+  if (signup) obSetNeedFlag()
+  else obClearNeedFlag()
   setAuthCtaLoading(btn, true)
   try {
     // Full-page redirect to Supabase Google OAuth; tokens return via URL hash.
@@ -4244,6 +4248,7 @@ window.doLogin = async () => {
   try {
     const data = await api.auth.login(email, pass)
     setSession(data.session)
+    obClearNeedFlag()
     currentUser = await api.user.me()
     afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
@@ -4261,7 +4266,7 @@ window.doSignup = async () => {
   try {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
-    try { sessionStorage.setItem('vidso_need_onboarding', '1') } catch (_) {}
+    obSetNeedFlag()
     currentUser = await api.user.me()
     afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
@@ -4271,6 +4276,7 @@ window.doSignup = async () => {
 window.doLogout = async () => {
   if (uiPreviewMode()) { enterUiPreview(); return }
   await api.auth.logout().catch(()=>{})
+  obClearNeedFlag()
   clearSession()
   currentUser = null
   persistPlanActive(false)
@@ -4509,6 +4515,12 @@ function obHasSeen() {
 function obClearNeedFlag() {
   try { sessionStorage.removeItem('vidso_need_onboarding') } catch (_) {}
 }
+function obSetNeedFlag() {
+  try { sessionStorage.setItem('vidso_need_onboarding', '1') } catch (_) {}
+}
+function obIsSignupSession() {
+  try { return sessionStorage.getItem('vidso_need_onboarding') === '1' } catch (_) { return false }
+}
 function obMarkSeen() {
   const keys = obIdentityKeys()
   try { keys.forEach((k) => localStorage.setItem(obSeenKey(k), '1')) } catch (_) {}
@@ -4520,8 +4532,9 @@ function obFinishStep() {
   obMarkSeen()
 }
 function obShouldAutoOpen() {
+  if (obForcePreview()) return true
   if (paywallDevBypass()) return false
-  return !obHasSeen()
+  return obIsSignupSession()
 }
 function obLoadAnswers() {
   try { return JSON.parse(localStorage.getItem(obAnswersKey()) || 'null') || {} } catch (_) { return {} }
@@ -5521,7 +5534,7 @@ function introPending() {
   if (_tourActive) return true
   const ob = document.getElementById('onboarding-modal')
   if (ob && !ob.classList.contains('hidden')) return true
-  if (!obHasSeen() && !_obDoneThisSession) return true
+  if (obIsSignupSession() && !_obDoneThisSession) return true
   // Tour only delays the paywall on a first-run session after onboarding.
   if (_obDoneThisSession && !_tourDoneThisSession) return true
   return false

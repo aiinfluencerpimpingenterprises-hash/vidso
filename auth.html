@@ -413,9 +413,11 @@ async function watchForPurchase(tier) {
 }
 
 function afterAuth(opts = {}) {
-  if (opts.needOnboarding) {
-    try { sessionStorage.setItem('vidso_need_onboarding', '1') } catch (_) {}
-  }
+  try {
+    if (opts.needOnboarding) sessionStorage.setItem('vidso_need_onboarding', '1')
+    else sessionStorage.removeItem('vidso_need_onboarding')
+    sessionStorage.removeItem('vidso_auth_intent')
+  } catch (_) {}
   location.replace(APP)
 }
 
@@ -426,7 +428,9 @@ function consumeOAuthErrorParams() {
 
 const oauthReturned = consumeOAuthReturn()
 if (oauthReturned) {
-  afterAuth()
+  let signupIntent = false
+  try { signupIntent = sessionStorage.getItem('vidso_auth_intent') === 'signup' } catch (_) {}
+  afterAuth({ needOnboarding: signupIntent })
 } else {
   clearSession()
   consumeOAuthErrorParams()
@@ -440,6 +444,8 @@ document.getElementById('tg-yearly').onclick = () => setPaywallCycle('yearly')
 document.getElementById('google-cta').onclick = () => {
   const btn = document.getElementById('google-cta')
   setLoading(btn, true)
+  const signup = document.getElementById('tab-signup').style.display !== 'none'
+  try { sessionStorage.setItem('vidso_auth_intent', signup ? 'signup' : 'login') } catch (_) {}
   const here = location.origin + '/login'
   location.href = api.auth.googleStartUrl(here)
 }
