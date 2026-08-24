@@ -420,6 +420,7 @@ function afterAuth(opts = {}) {
     if (opts.needOnboarding) sessionStorage.setItem('vidso_need_onboarding', '1')
     else sessionStorage.removeItem('vidso_need_onboarding')
     sessionStorage.removeItem('vidso_auth_intent')
+    localStorage.removeItem('vidso_ui_preview')
   } catch (_) {}
   persistPaidBeforeApp().finally(() => location.replace(APP))
 }

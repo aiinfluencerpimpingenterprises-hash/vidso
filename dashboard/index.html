@@ -24,6 +24,8 @@
     else if (on) {
       localStorage.setItem('vidso_ui_preview', '1')
       ui = true
+    } else if (token || oauthReturn) {
+      localStorage.removeItem('vidso_ui_preview')
     } else if (localStorage.getItem('vidso_ui_preview') === '1') {
       ui = true
     }
@@ -4921,17 +4923,34 @@ let _tourDoneThisSession = false
 const PLAN_ACTIVE_KEY = 'vidso_plan_active'
 const UI_PREVIEW_KEY = 'vidso_ui_preview'
 
-function uiPreviewMode() {
+function clearUiPreviewFlag() {
+  try { localStorage.removeItem(UI_PREVIEW_KEY) } catch (_) {}
+}
+
+function uiPreviewForced() {
   try {
     const q = new URLSearchParams(location.search || '')
     const path = (location.pathname || '').replace(/\/+$/, '') || '/'
+    return q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui' || path === '/preview'
+  } catch (_) { return false }
+}
+
+function uiPreviewMode() {
+  try {
+    const q = new URLSearchParams(location.search || '')
     if (q.get('ui') === '0' || q.get('dev') === '0') {
-      localStorage.removeItem(UI_PREVIEW_KEY)
+      clearUiPreviewFlag()
       return false
     }
-    if (q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui' || path === '/preview') {
+    if (uiPreviewForced()) {
       localStorage.setItem(UI_PREVIEW_KEY, '1')
       return true
+    }
+    // A real session always wins on app routes. Visiting /preview used to
+    // stick this flag and overwrite every later login as Preview.
+    if (getToken()) {
+      clearUiPreviewFlag()
+      return false
     }
     return localStorage.getItem(UI_PREVIEW_KEY) === '1'
   } catch (_) { return false }
@@ -4974,6 +4993,7 @@ function applyAuthRouteTab() {
 }
 
 function afterAuthReady(opts = {}) {
+  if (!uiPreviewForced()) clearUiPreviewFlag()
   persistPlanActive(hasActivePlan())
   // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
   if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
@@ -5049,12 +5069,13 @@ function revealOnboardingNow() {
 }
 
 async function checkAuth() {
+  // Store OAuth tokens before the preview check so a leftover /preview
+  // flag cannot swallow a real Google return.
+  consumeOAuthReturn()
   if (uiPreviewMode()) {
     enterUiPreview()
     return
   }
-  // Finish Google OAuth return (tokens in hash/query) before session checks.
-  consumeOAuthReturn()
   applyAuthRouteTab()
   const oauthErr = consumeOAuthError()
   if (oauthErr) {
@@ -5200,6 +5221,7 @@ window.doLogin = async () => {
   try {
     const data = await api.auth.login(email, pass)
     setSession(data.session)
+    clearUiPreviewFlag()
     obClearNeedFlag()
     currentUser = await api.user.me()
     afterAuthReady()
@@ -5218,6 +5240,7 @@ window.doSignup = async () => {
   try {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
+    clearUiPreviewFlag()
     obSetNeedFlag()
     currentUser = await api.user.me()
     afterAuthReady()
