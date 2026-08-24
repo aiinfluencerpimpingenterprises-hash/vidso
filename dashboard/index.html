@@ -4944,7 +4944,7 @@ function enterUiPreview() {
   try { closeUiTour() } catch (_) {}
   populateUser()
   restorePanelFromHash()
-  maybeStartUiTour()
+  startPreviewTourEntry()
 }
 
 function persistPlanActive(active) {
@@ -5907,11 +5907,19 @@ function tourFinishStep() {
   if (_tourId === 'core') _tourDoneThisSession = true
   tourSetCompleted(_tourId, true)
 }
+function tourPreviewPath() {
+  try {
+    const path = (location.pathname || '').replace(/\/+$/, '') || '/'
+    return path === '/preview' || path === '/ui'
+  } catch (_) { return false }
+}
 function tourShouldAutoOpen() {
-  if (paywallDevBypass()) return false
+  if (tourPreviewPath()) return false
+  if (uiPreviewMode()) return !tourIsCompleted('core')
   return !tourIsCompleted('core') && _obDoneThisSession
 }
 function tourObReady() {
+  if (uiPreviewMode()) return true
   return obHasSeen() || _obDoneThisSession
 }
 function tourIsMobile() {
@@ -6571,11 +6579,25 @@ window.openTourMenu = () => {
 function maybeStartPageTour(panel) {
   if (_tourActive || tourMenuOpen()) return
   if (tourQueryId()) return
-  if (paywallDevBypass()) return
   const tourId = tourIdForPanel(panel)
   if (!tourId) return
   if (tourIsCompleted(tourId)) return
   openUiTour({ tourId, auto: true })
+}
+
+function startPreviewTourEntry() {
+  if (tourQueryId()) {
+    maybeStartUiTour()
+    return
+  }
+  if (tourPreviewPath()) {
+    setTimeout(() => {
+      if (_tourActive || tourMenuOpen()) return
+      openTourMenu()
+    }, 200)
+    return
+  }
+  maybeStartUiTour()
 }
 
 function tourQueryId() {
