@@ -2160,7 +2160,7 @@ body.tour-active #fv-export-box.show{min-height:160px}
 #tour-menu.hidden{display:none!important}
 .tour-menu-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72)}
 .tour-menu-card{
-  position:relative;z-index:1;width:min(440px,calc(100vw - 32px));max-height:min(72vh,640px);
+  position:relative;z-index:1;width:min(440px,calc(100vw - 32px));max-height:min(80vh,720px);
   background:#121214;border:1px solid rgba(255,255,255,.12);border-radius:16px;
   box-shadow:0 24px 64px rgba(0,0,0,.7);display:flex;flex-direction:column;overflow:hidden
 }
@@ -2184,6 +2184,14 @@ body.tour-active #fv-export-box.show{min-height:160px}
 }
 .tour-menu-item.is-done .tour-menu-dot{background:var(--grad);border-color:transparent}
 .tour-menu-item.is-done .tour-menu-item-meta{color:rgba(255,255,255,.55)}
+.tour-menu-actions{padding:0 18px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.tour-menu-play{
+  width:100%;min-height:44px;border:none;border-radius:12px;padding:0 14px;
+  background:var(--grad);color:#fff;font:inherit;font-size:.88rem;font-weight:650;cursor:pointer
+}
+.tour-menu-play:hover{filter:brightness(1.06)}
+.tour-menu-play:focus-visible{outline:2px solid rgba(var(--glow),.7);outline-offset:2px}
+.tour-menu-play-sub{margin:8px 0 0;font-size:.75rem;line-height:1.4;color:rgba(255,255,255,.48)}
 
 /* ── Paywall (hard gate after onboarding + tour) ───────────────────────── */
 #paywall-modal{z-index:20001;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(0,0,0,.72)}
@@ -2683,7 +2691,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <h2 class="tour-title" id="tour-title">Welcome</h2>
         <p class="tour-body" id="tour-body"></p>
       </div>
-      <button type="button" class="tour-close" id="tour-close-btn" onclick="skipUiTour()" aria-label="Skip tour">
+      <button type="button" class="tour-close" id="tour-close-btn" onclick="dismissUiTour()" aria-label="Close tour">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
@@ -2700,17 +2708,21 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 </div>
 
 <div id="tour-menu" class="hidden" aria-hidden="true">
-  <div class="tour-menu-backdrop" id="tour-menu-backdrop" onclick="closeTourMenu()"></div>
+  <div class="tour-menu-backdrop" id="tour-menu-backdrop" onclick="dismissTourMenu()"></div>
   <div class="tour-menu-card" role="dialog" aria-modal="true" aria-labelledby="tour-menu-title">
     <div class="tour-menu-head">
       <div>
         <p class="tour-menu-kicker">Getting started</p>
         <h2 class="tour-menu-title" id="tour-menu-title">Pick a tour</h2>
-        <p class="tour-menu-sub">Replay any walkthrough. Completing one does not hide the others.</p>
+        <p class="tour-menu-sub">Video Generation is first. Then pick any other tool, or play every tour in order.</p>
       </div>
-      <button type="button" class="tour-close" onclick="closeTourMenu()" aria-label="Close getting started">
+      <button type="button" class="tour-close" onclick="dismissTourMenu()" aria-label="Close getting started">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
+    </div>
+    <div class="tour-menu-actions">
+      <button type="button" class="tour-menu-play" id="tour-play-all-btn" onclick="playAllUiTours()">Play the full tutorial</button>
+      <p class="tour-menu-play-sub">Starts with Video Generation, then every other tool in order.</p>
     </div>
     <div class="tour-menu-list" id="tour-menu-list"></div>
   </div>
@@ -4884,11 +4896,12 @@ import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
 import {
-  TOURS,
   tourById,
   tourStepsOf,
   tourLabel,
   tourIdForPanel,
+  toursInPlayOrder,
+  tourPlayIds,
 } from '/lib/tour.js'
 
 window._api = api
@@ -5317,12 +5330,12 @@ document.addEventListener('keydown', (e) => {
     return
   }
   if (window.isUiTourActive?.()) {
-    skipUiTour()
+    dismissUiTour()
     return
   }
   const tourMenu = document.getElementById('tour-menu')
   if (tourMenu && !tourMenu.classList.contains('hidden')) {
-    closeTourMenu()
+    dismissTourMenu()
     return
   }
   const settings = document.getElementById('settings-modal')
@@ -5821,7 +5834,7 @@ revealOnboardingNow()
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
 // Persistence: vidso_tour_{id}_completed, vidso_tour_{id}_step.
 // Legacy vidso_tour_completed:<userKey> / vidso_ui_tour_seen:<userKey> count as core done.
-// Getting started opens the tour list. Preview: ?tour=1 or ?tour=<id>
+// Video Generation first, then Getting started. Preview: ?tour=1, ?tour=<id>, or ?tour=all
 let _tourId = 'core'
 let _tourStep = 0
 let _tourActive = false
@@ -5913,9 +5926,31 @@ function tourPreviewPath() {
     return path === '/preview' || path === '/ui'
   } catch (_) { return false }
 }
+function tourPlayAllStoreKey() { return 'vidso_tour_playall' }
+function tourPlayAllIndex() {
+  try {
+    const n = parseInt(localStorage.getItem(tourPlayAllStoreKey()) || '', 10)
+    const ids = tourPlayIds()
+    if (Number.isFinite(n) && n >= 0 && n < ids.length) return n
+  } catch (_) {}
+  return -1
+}
+function tourPlayAllActive() {
+  return tourPlayAllIndex() >= 0
+}
+function tourSetPlayAll(index) {
+  try {
+    if (index == null || index < 0) localStorage.removeItem(tourPlayAllStoreKey())
+    else localStorage.setItem(tourPlayAllStoreKey(), String(index))
+  } catch (_) {}
+}
+function tourClearPlayAll() {
+  tourSetPlayAll(-1)
+}
+
 function tourShouldAutoOpen() {
-  if (tourPreviewPath()) return false
-  if (uiPreviewMode()) return !tourIsCompleted('core')
+  if (tourPlayAllActive()) return true
+  if (tourPreviewPath() || uiPreviewMode()) return !tourIsCompleted('core')
   return !tourIsCompleted('core') && _obDoneThisSession
 }
 function tourObReady() {
@@ -6351,7 +6386,10 @@ function tourFillChrome(step) {
   document.getElementById('tour-kicker').textContent = step.eyebrow || label
   document.getElementById('tour-title').textContent = step.title || ''
   document.getElementById('tour-body').textContent = step.body || ''
-  document.getElementById('tour-step-label').textContent = label + ' · ' + n + ' of ' + m
+  const playIdx = tourPlayAllIndex()
+  document.getElementById('tour-step-label').textContent = playIdx >= 0
+    ? 'Full tutorial · ' + label + ' · ' + n + ' of ' + m
+    : label + ' · ' + n + ' of ' + m
   const segs = document.getElementById('tour-progress')
   if (segs) {
     segs.innerHTML = steps.map((_, i) => `<span class="tour-seg${i < n ? ' is-on' : ''}"></span>`).join('')
@@ -6360,6 +6398,8 @@ function tourFillChrome(step) {
   if (live) live.textContent = (step.title || '') + '. ' + (step.body || '')
   const skipSec = document.getElementById('tour-skip-section-btn')
   if (skipSec) skipSec.hidden = true
+  const skip = document.getElementById('tour-skip-btn')
+  if (skip) skip.textContent = playIdx >= 0 ? 'Skip this tool' : 'Skip tour'
   const back = document.getElementById('tour-back-btn')
   const next = document.getElementById('tour-next-btn')
   if (back) {
@@ -6494,16 +6534,55 @@ window.closeUiTour = () => {
   _tourPrevFocus = null
 }
 
+function tourContinuePlayAll() {
+  const i = tourPlayAllIndex()
+  if (i < 0) return false
+  const ids = tourPlayIds()
+  const next = i + 1
+  if (next >= ids.length) {
+    tourClearPlayAll()
+    openTourMenu()
+    return true
+  }
+  tourSetPlayAll(next)
+  openUiTour({ tourId: ids[next], fromMenu: true, force: true })
+  return true
+}
+
+function afterTourClosed(dismissed) {
+  if (dismissed) {
+    tourClearPlayAll()
+    if (_tourId === 'core') {
+      openTourMenu()
+      return
+    }
+    maybeShowPaywall()
+    return
+  }
+  if (tourContinuePlayAll()) return
+  if (_tourId === 'core') {
+    openTourMenu()
+    return
+  }
+  maybeShowPaywall()
+}
+
 window.skipUiTour = () => {
   tourFinishStep()
   closeUiTour()
-  maybeShowPaywall()
+  afterTourClosed(false)
 }
 
 window.finishUiTour = () => {
   tourFinishStep()
   closeUiTour()
-  maybeShowPaywall()
+  afterTourClosed(false)
+}
+
+window.dismissUiTour = () => {
+  tourFinishStep()
+  closeUiTour()
+  afterTourClosed(true)
 }
 
 window.uiTourBack = () => {
@@ -6539,6 +6618,37 @@ window.closeTourMenu = () => {
   menu.setAttribute('aria-hidden', 'true')
 }
 
+window.dismissTourMenu = () => {
+  closeTourMenu()
+  tourClearPlayAll()
+  if (!_tourActive) maybeShowPaywall()
+}
+
+window.playAllUiTours = () => {
+  const ids = tourPlayIds()
+  if (!ids.length) return
+  closeTourMenu()
+  tourSetPlayAll(0)
+  openUiTour({ tourId: ids[0], fromMenu: true, force: true })
+}
+
+function tourResumePlayAll() {
+  const i = tourPlayAllIndex()
+  if (i < 0) return false
+  const ids = tourPlayIds()
+  openUiTour({ tourId: ids[i], auto: true })
+  return true
+}
+
+function tourClearQuery() {
+  try {
+    const url = new URL(location.href)
+    if (!url.searchParams.has('tour')) return
+    url.searchParams.delete('tour')
+    history.replaceState({}, '', url.pathname + url.search + url.hash)
+  } catch (_) {}
+}
+
 window.openTourMenu = () => {
   if (!currentUser) currentUser = userStubFromToken()
   if (!currentUser && getToken()) {
@@ -6551,7 +6661,7 @@ window.openTourMenu = () => {
   window.closeAccountSettings?.()
   window.closeOnboarding?.()
   if (_tourActive) closeUiTour()
-  list.innerHTML = TOURS.map((tour) => {
+  list.innerHTML = toursInPlayOrder().map((tour) => {
     const done = tourIsCompleted(tour.id)
     const n = tour.steps.length
     const meta = done ? 'Completed · ' + n + ' steps' : n + (n === 1 ? ' step' : ' steps')
@@ -6568,6 +6678,7 @@ window.openTourMenu = () => {
   list.querySelectorAll('[data-tour-id]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-tour-id')
+      tourClearPlayAll()
       closeTourMenu()
       openUiTour({ tourId: id, fromMenu: true, force: true })
     })
@@ -6577,7 +6688,7 @@ window.openTourMenu = () => {
 }
 
 function maybeStartPageTour(panel) {
-  if (_tourActive || tourMenuOpen()) return
+  if (_tourActive || tourMenuOpen() || tourPlayAllActive()) return
   if (tourQueryId()) return
   const tourId = tourIdForPanel(panel)
   if (!tourId) return
@@ -6590,11 +6701,13 @@ function startPreviewTourEntry() {
     maybeStartUiTour()
     return
   }
-  if (tourPreviewPath()) {
-    setTimeout(() => {
-      if (_tourActive || tourMenuOpen()) return
-      openTourMenu()
-    }, 200)
+  if (tourResumePlayAll()) return
+  if (tourPreviewPath() || uiPreviewMode()) {
+    if (!tourIsCompleted('core')) {
+      openUiTour({ tourId: 'core', force: true })
+      return
+    }
+    openTourMenu()
     return
   }
   maybeStartUiTour()
@@ -6605,6 +6718,7 @@ function tourQueryId() {
     const asked = new URL(location.href).searchParams.get('tour')
     if (!asked) return null
     if (asked === '1') return 'core'
+    if (asked === 'all' || asked === 'playall') return 'playall'
     return tourById(asked) ? asked : null
   } catch (_) { return null }
 }
@@ -6612,36 +6726,40 @@ function tourQueryId() {
 window.maybeStartUiTour = () => {
   if (!currentUser) currentUser = userStubFromToken()
   if (!currentUser) return
-  if (_tourActive) return
+  if (_tourActive || tourMenuOpen()) return
   const auth = document.getElementById('auth-modal')
   if (auth && !auth.classList.contains('hidden')) return
   if (document.documentElement.classList.contains('needs-onboarding')) return
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   const forcedId = tourQueryId()
-  if (!forcedId && !tourShouldAutoOpen()) {
+  if (forcedId === 'playall') {
+    tourClearQuery()
+    playAllUiTours()
+    return
+  }
+  if (forcedId) {
+    tourClearQuery()
+    openUiTour({ tourId: forcedId, force: true })
+    return
+  }
+  if (tourResumePlayAll()) return
+  if (!tourShouldAutoOpen()) {
     maybeShowPaywall()
     return
   }
-  if (!forcedId && !tourObReady()) return
+  if (!tourObReady()) return
   const run = () => {
-    if (!currentUser || _tourActive) return
+    if (!currentUser || _tourActive || tourMenuOpen()) return
     if (document.documentElement.classList.contains('needs-onboarding')) return
-    if (!forcedId && !tourShouldAutoOpen()) {
+    if (!tourShouldAutoOpen()) {
       maybeShowPaywall()
       return
     }
     const ob = document.getElementById('onboarding-modal')
     if (ob && !ob.classList.contains('hidden')) return
-    const tourId = forcedId || 'core'
-    if (forcedId) {
-      try {
-        const url = new URL(location.href)
-        url.searchParams.delete('tour')
-        history.replaceState({}, '', url.pathname + url.search + url.hash)
-      } catch (_) {}
-    }
-    openUiTour({ auto: !forcedId, force: !!forcedId, tourId })
+    if (tourResumePlayAll()) return
+    openUiTour({ auto: true, tourId: 'core' })
   }
   if (funnelLocked()) run()
   else setTimeout(run, 280)
@@ -6668,6 +6786,8 @@ function funnelLocked() {
 function introPending() {
   if (!funnelLocked()) return false
   if (_tourActive) return true
+  if (typeof tourMenuOpen === 'function' && tourMenuOpen()) return true
+  if (typeof tourPlayAllActive === 'function' && tourPlayAllActive()) return true
   const ob = document.getElementById('onboarding-modal')
   if (ob && !ob.classList.contains('hidden')) return true
   if (obIsSignupSession() && !_obDoneThisSession) return true
@@ -6870,7 +6990,7 @@ document.addEventListener('keydown', (e) => {
   if (!_tourActive) return
   if (e.key === 'Escape') {
     e.preventDefault()
-    skipUiTour()
+    dismissUiTour()
     return
   }
   if (e.key === 'ArrowRight' || e.key === 'Enter') {
