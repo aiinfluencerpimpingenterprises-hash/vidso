@@ -1755,7 +1755,7 @@ input:focus,textarea:focus,select:focus,
 /* Video gen V2 */
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
-.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
 .fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
 .fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
 .fv-how-t{font-size:16px;font-weight:600;color:var(--ink);margin:0 0 4px}
@@ -1863,7 +1863,7 @@ input:focus,textarea:focus,select:focus,
   #panel-imagegen .img-layout{grid-template-columns:1fr}
 }
 .page-header + .tool-card > h3.ui-card-title{font-size:16px!important;font-weight:600!important}
-#panel-videogen .page-header{margin-bottom:20px}
+#panel-videogen .page-header{margin-bottom:16px}
 #panel-upscale .page-shell{max-width:880px;margin:0 auto}
 .tool-tile,.qa-card,.dash-stat,.img-pane,.vr-sec{padding:20px!important}
 .dash-stat{padding:20px!important}
@@ -4449,6 +4449,23 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <h2>Video Generation</h2>
         <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
       </div>
+      <div class="fv-how" id="fv-how" aria-label="How it works">
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 1</div>
+          <div class="fv-how-t">Script</div>
+          <p class="fv-how-d">Generate and edit the narration for your topic.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 2</div>
+          <div class="fv-how-t">Media</div>
+          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 3</div>
+          <div class="fv-how-t">Export</div>
+          <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
+        </div>
+      </div>
       <div class="tool-card">
         <h3 class="ui-card-title">Faceless Video Generator</h3>
         <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
@@ -4738,23 +4755,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="fv-how" id="fv-how" aria-label="How it works">
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 1</div>
-          <div class="fv-how-t">Script</div>
-          <p class="fv-how-d">Generate and edit the narration for your topic.</p>
-        </div>
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 2</div>
-          <div class="fv-how-t">Media</div>
-          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
-        </div>
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 3</div>
-          <div class="fv-how-t">Export</div>
-          <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
         </div>
       </div>
     </div>
