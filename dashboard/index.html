@@ -162,7 +162,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 .app-topnav{
   flex-shrink:0;position:sticky;top:0;z-index:50;height:52px;
-  display:flex;align-items:center;gap:4px;padding:0 14px 0 16px;
+  display:flex;align-items:center;gap:2px;padding:0 10px 0 12px;
   flex-wrap:nowrap;overflow:visible;
   background:rgba(11,11,12,.88);border-bottom:1px solid var(--line);
   backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)
@@ -174,32 +174,40 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .nav-hamburger:hover{background:rgba(255,255,255,.06)}
 .nav-hamburger:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
 .topnav-logo{
-  display:flex;align-items:center;gap:8px;height:36px;min-width:0;color:inherit;text-decoration:none;
-  border-radius:10px;flex-shrink:0;padding:0 8px 0 0;line-height:1
+  display:flex;align-items:center;gap:7px;height:36px;min-width:0;color:inherit;text-decoration:none;
+  border-radius:10px;flex-shrink:0;padding:0 6px 0 0;line-height:1
 }
 .topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
-.topnav-logo img{width:22px;height:22px;object-fit:contain;flex-shrink:0;display:block}
-.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.02rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase;line-height:1;display:block}
-.topnav-primary{display:flex;align-items:center;align-self:stretch;gap:0;min-width:0;flex:1;overflow:visible}
+.topnav-logo img{width:20px;height:20px;object-fit:contain;flex-shrink:0;display:block}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:.96rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase;line-height:1;display:block}
+.topnav-primary{
+  display:flex;align-items:center;align-self:stretch;gap:0;min-width:0;flex:1;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
+  overscroll-behavior-x:contain
+}
+.topnav-primary::-webkit-scrollbar{display:none;height:0}
+.topnav-primary.is-overflow{mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 28px),transparent)}
+.topnav-primary.is-overflow.is-flush-start{mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent)}
+.topnav-primary.is-overflow.is-flush-end{mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 100%)}
+.topnav-primary.is-overflow.is-flush-start.is-flush-end{mask-image:none}
 .topnav-group{display:flex;align-items:stretch;align-self:stretch;gap:0;flex-shrink:0}
-.topnav-group + .topnav-group{margin-left:4px;padding-left:5px;border-left:1px solid rgba(255,255,255,.12)}
+.topnav-group + .topnav-group{margin-left:3px;padding-left:4px;border-left:1px solid rgba(255,255,255,.12)}
 .topnav-item{
-  position:relative;height:auto;align-self:stretch;padding:0 11px;border:none;border-radius:0;cursor:pointer;
-  background:transparent;color:var(--text-body);font-family:inherit;font-size:.8rem;font-weight:500;
-  letter-spacing:-.01em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:5px
+  position:relative;height:auto;align-self:stretch;padding:0 7px;border:none;border-radius:0;cursor:pointer;
+  background:transparent;color:var(--text-body);font-family:inherit;font-size:.73rem;font-weight:500;
+  letter-spacing:-.015em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:4px
 }
 .topnav-item:hover{color:var(--ink);background:transparent}
 .topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:-2px}
 .topnav-item.active{color:var(--ink);font-weight:500}
 .topnav-item.active::after{
-  content:'';position:absolute;left:11px;right:11px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--a1)
+  content:'';position:absolute;left:7px;right:7px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--a1)
 }
 .topnav-item .nav-new,.nav-drawer .nav-new{
   display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:999px;
   font-size:.58rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   color:#fff;background:var(--a1);line-height:1
 }
-.topnav-chev{width:10px;height:10px;opacity:.55;flex-shrink:0}
 .topnav-drop{position:relative;display:flex;align-items:stretch;align-self:stretch;overflow:visible}
 .topnav-drop.is-open{z-index:80}
 .topnav-menu,.nav-search-pop{
@@ -225,7 +233,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.82rem
 }
 .nav-search-empty{margin:8px 10px;font-size:.78rem;color:rgba(255,255,255,.45)}
-.topnav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;height:36px}
+.topnav-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;height:36px}
 .topnav-ico-btn{
   width:36px;height:36px;padding:0;border:none;border-radius:10px;cursor:pointer;
   background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center
@@ -1669,10 +1677,10 @@ body::after{
 }
 
 /* Card hover signature + press */
-.tool-card,.ui-card,.qa-card,.tool-tile,.dash-stat,.img-pane,.vr-sec,.upscale-soon,.shortcut{
+.tool-card,.ui-card,.qa-card,.tool-tile,.tool-shot,.dash-stat,.img-pane,.vr-sec,.upscale-soon,.shortcut{
   transition:transform 150ms var(--ease-out),border-color 150ms var(--ease-out),box-shadow 150ms var(--ease-out),background 150ms var(--ease-out)
 }
-.qa-card:hover,.tool-tile:hover,.shortcut:hover{
+.qa-card:hover,.tool-tile:hover,.tool-shot:hover,.shortcut:hover{
   transform:translateY(-2px);border-color:rgba(255,255,255,.22);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(var(--glow),.22),0 12px 28px rgba(0,0,0,.28)
 }
@@ -1738,9 +1746,30 @@ input:focus,textarea:focus,select:focus,
 .tools-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:1024px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.tools-grid{grid-template-columns:1fr}}
-.tool-tile{padding:20px;min-height:140px;height:100%}
-.tool-tile-chev{position:absolute;right:16px;bottom:16px;opacity:0;color:rgba(255,255,255,.55);transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out);transform:translateX(-4px)}
-.tool-tile:hover .tool-tile-chev{opacity:1;transform:translateX(0)}
+.tool-shot{
+  display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:0 0 14px;
+  text-decoration:none;color:inherit;background:var(--card-grad);border:1px solid var(--border);
+  border-radius:var(--radius-card);overflow:hidden;cursor:pointer;
+  transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.tool-shot:hover{
+  border-color:rgba(255,255,255,.22);transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(var(--glow),.22),0 12px 28px rgba(0,0,0,.28)
+}
+.tool-shot:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.tool-shot-media{
+  position:relative;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(160deg,#2c1c1e,#161618);border-bottom:1px solid var(--border)
+}
+.tool-shot-ph{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
+.tool-shot-ph svg{width:32px;height:32px}
+.tool-shot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.tool-shot-name{display:block;padding:0 14px;font-size:.9rem;font-weight:650;color:var(--ink);line-height:1.3}
+.tool-shot-desc{
+  display:block;padding:0 14px;font-size:.75rem;color:var(--text-body);line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
 
 /* Clipping V2: no outer card */
 #panel-clipper .tool-card{
@@ -2564,7 +2593,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 .mobile-nav-toggle,.mobile-nav-close{display:none}
 .nav-backdrop{display:none}
 
-@media (max-width:1100px){
+@media (max-width:1000px){
   body.nav-open{overflow:hidden}
   .nav-hamburger{display:inline-flex}
   .topnav-primary{display:none}
@@ -2581,14 +2610,11 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     color:var(--text-label);padding:10px 10px 4px
   }
   .nav-drawer .topnav-item{
-    width:100%;height:auto;min-height:44px;align-self:stretch;justify-content:flex-start;border-radius:12px
+    width:100%;height:auto;min-height:44px;align-self:stretch;justify-content:flex-start;border-radius:12px;
+    font-size:.84rem;padding:0 12px
   }
   .nav-drawer .topnav-item.active::after{display:none}
   .nav-drawer .topnav-item.active{background:rgba(var(--glow),.12);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
-  .nav-drawer .topnav-menu{
-    position:static;display:none;box-shadow:none;border:none;background:transparent;padding:0 0 0 8px
-  }
-  .nav-drawer .topnav-drop.is-open > .topnav-menu{display:block}
   .nav-backdrop{
     display:block;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);
     opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-out)
@@ -2608,7 +2634,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   .dash-stats{grid-template-columns:1fr!important;gap:10px}
   .qa-grid{grid-template-columns:1fr!important;gap:10px}
   .qa-card{min-height:0!important;padding:16px!important}
-  .tools-grid{grid-template-columns:1fr!important}
   .vr-layout{flex-direction:column!important}
   .vr-right{width:100%!important}
   .vr-preview-card{position:static!important;max-width:320px;margin:0 auto}
@@ -3060,22 +3085,15 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       <button type="button" class="topnav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
     </div>
     <div class="topnav-group">
-      <div class="topnav-drop" id="nav-tools-wrap">
-        <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
-          Tools
-          <svg class="topnav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Tools">
-          <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-          <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-          <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-          <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-          <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-          <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-        </div>
-      </div>
+      <button type="button" class="topnav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+      <button type="button" class="topnav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+      <button type="button" class="topnav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+      <button type="button" class="topnav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+      <button type="button" class="topnav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+      <button type="button" class="topnav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
     </div>
     <div class="topnav-group">
+      <button type="button" class="topnav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
       <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
       <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     </div>
@@ -3120,13 +3138,13 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <span class="nav-drawer-label">Create</span>
+  <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
   <span class="nav-drawer-label">Short form</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-  <span class="nav-drawer-label">Tools</span>
+  <span class="nav-drawer-label">Studio</span>
   <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
   <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
   <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
@@ -3134,6 +3152,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
   <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
   <span class="nav-drawer-label">Workspace</span>
+  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
   <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
 </aside>
@@ -5119,65 +5138,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       <div class="tools-page">
         <div class="page-header">
           <h2>Tools</h2>
-          <p>Captions, voiceover, editor, and file utilities.</p>
+          <p>Every Vidso tool in one place.</p>
         </div>
-          <div class="tools-group" id="tools-group-create">
-            <div class="section-label">Create</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('captions',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
-                <span class="tool-tile-title">AI Captions</span>
-                <span class="tool-tile-desc">Auto-transcribe any video</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('voiceover',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
-                <span class="tool-tile-title">AI Voiceover</span>
-                <span class="tool-tile-desc">35+ ElevenLabs voices</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('reframe',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
-                <span class="tool-tile-title">AI Reframe</span>
-                <span class="tool-tile-desc">Auto-fit to 9:16</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
-          <div class="tools-group" id="tools-group-edit">
-            <div class="section-label">Edit</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('editor',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
-                <span class="tool-tile-title">Video Editor</span>
-                <span class="tool-tile-desc">Multi-track timeline</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('downloader',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                <span class="tool-tile-title">Video Downloader</span>
-                <span class="tool-tile-desc">Download from any platform</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('commentary',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-                <span class="tool-tile-title">Video Commentary</span>
-                <span class="tool-tile-desc">Voice and captions on clips</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
-          <div class="tools-group" id="tools-group-manage">
-            <div class="section-label">Manage</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('files',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-                <span class="tool-tile-title">My Files</span>
-                <span class="tool-tile-desc">Uploads and exports</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
+        <div id="tools-gallery"></div>
       </div>
     </div>
 
@@ -5257,6 +5220,7 @@ import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quot
 import { isHistorySidecarName } from '/lib/image-gen.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
+import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
   tourById,
   tourStepsOf,
@@ -6325,7 +6289,7 @@ function tourObReady() {
   return obHasSeen() || _obDoneThisSession
 }
 function tourIsMobile() {
-  try { return window.matchMedia('(max-width:1100px)').matches } catch (_) { return false }
+  try { return window.matchMedia('(max-width:1000px)').matches } catch (_) { return false }
 }
 function tourNarrowSheet() {
   try { return window.matchMedia('(max-width:380px)').matches } catch (_) { return false }
@@ -9366,6 +9330,7 @@ function bindGettingStarted() {
 
 initBanner()
 initTopNav()
+initToolsGallery()
 
 initImageWorkspace({
   api,
