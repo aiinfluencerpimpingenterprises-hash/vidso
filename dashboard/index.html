@@ -206,17 +206,19 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   color:#fff;background:var(--a1);line-height:1;flex-shrink:0
 }
 .topnav-drop{position:relative;display:flex;align-items:center;flex-shrink:0}
+.topnav-item .nav-caret{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .15s ease}
+.topnav-drop.is-open .nav-caret{transform:rotate(180deg);opacity:.9}
 .topnav-menu,.nav-search-pop{
   display:none;min-width:240px;padding:6px;border-radius:12px;
   background:#1A1A1E;border:1px solid rgba(255,255,255,.16);
   box-shadow:0 18px 48px rgba(0,0,0,.65)
 }
-.topnav-menu.is-open,.nav-search-pop.is-open{display:flex;flex-direction:column}
+.topnav-menu.is-open,.nav-search-pop.is-open{display:flex;flex-direction:column;max-height:min(70vh,480px);overflow-y:auto}
 #nav-portal{
-  position:fixed;top:0;left:0;width:0;height:0;z-index:220;pointer-events:none;overflow:visible
+  position:fixed;top:0;left:0;width:0;height:0;z-index:400;pointer-events:none;overflow:visible
 }
 #nav-portal > *{pointer-events:auto}
-#nav-portal .topnav-menu,#nav-portal .nav-search-pop{width:280px}
+#nav-portal .topnav-menu,#nav-portal .nav-search-pop{width:280px;background:#1A1A1E}
 .topnav-menu [role="menuitem"],.nav-search-item{
   display:flex;align-items:center;flex-shrink:0;width:100%;min-height:36px;text-align:left;border:none;background:transparent;
   color:var(--ink);font:inherit;font-size:.82rem;line-height:1.2;padding:8px 10px;border-radius:8px;cursor:pointer
@@ -3125,15 +3127,22 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
-    <button type="button" class="topnav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-    <button type="button" class="topnav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-    <button type="button" class="topnav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-    <button type="button" class="topnav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-    <button type="button" class="topnav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-    <button type="button" class="topnav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-    <button type="button" class="topnav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-    <button type="button" class="topnav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-    <button type="button" class="topnav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
+    <div class="topnav-drop" id="nav-tools-wrap">
+      <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
+        Tools
+        <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Tools">
+        <button type="button" role="menuitem" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+        <button type="button" role="menuitem" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+        <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+        <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+        <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+        <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+        <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+        <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+      </div>
+    </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
     <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   </nav>
@@ -3182,10 +3191,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
-  <span class="nav-drawer-label">Short form</span>
+  <span class="nav-drawer-label">Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-  <span class="nav-drawer-label">Studio</span>
   <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
   <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
   <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
@@ -3193,7 +3201,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
   <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
   <span class="nav-drawer-label">Workspace</span>
-  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
+  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
   <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
 </aside>
