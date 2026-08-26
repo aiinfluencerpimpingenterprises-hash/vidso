@@ -1750,6 +1750,230 @@ input:focus,textarea:focus,select:focus,
 .img-results .img-grid:has(.ui-empty){display:flex;align-items:center;justify-content:center}
 .img-results .ui-empty{margin:auto}
 
+/* Thumbnail workspace */
+#panel-imagegen.content-glow::before{content:none}
+.content:has(#panel-imagegen.active){
+  display:flex;flex-direction:column;overflow:hidden;padding:0!important
+}
+#panel-imagegen.panel.active{
+  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%;
+  position:relative;padding:0;margin:0;max-width:none
+}
+.img-workspace{
+  position:relative;flex:1 1 auto;min-height:0;overflow:auto;
+  background:var(--bg)
+}
+.img-filters{
+  position:sticky;top:12px;left:12px;z-index:5;display:inline-flex;gap:6px;
+  margin:12px 12px 0;padding:4px;border-radius:999px;
+  background:rgba(12,12,14,.72);border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2)
+}
+.img-filter{
+  height:28px;padding:0 12px;border:none;border-radius:999px;cursor:pointer;font-family:inherit;
+  font-size:.75rem;font-weight:600;color:rgba(255,255,255,.55);background:transparent
+}
+.img-filter:hover{color:var(--ink)}
+.img-filter.is-on{color:var(--ink);background:rgba(255,255,255,.1)}
+.img-filter:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-empty-line{
+  position:absolute;inset:0;display:grid;place-items:center;margin:0;pointer-events:none;
+  font-size:.92rem;color:rgba(255,255,255,.45);letter-spacing:-.01em
+}
+.img-empty-line[hidden]{display:none}
+.img-masonry{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:2px;padding:0 0 200px;align-content:start
+}
+.img-tile{position:relative;background:#111;overflow:hidden;aspect-ratio:var(--ar,16/9)}
+.img-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.img-tile-hit{
+  display:block;width:100%;height:100%;padding:0;border:none;background:transparent;cursor:pointer;font:inherit
+}
+.img-tile-hit:focus-visible{outline:2px solid rgba(var(--glow),.8);outline-offset:-2px}
+.img-tile-skel{
+  width:100%;height:100%;
+  background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04));
+  background-size:200% 100%;animation:img-skel 1.2s ease-in-out infinite
+}
+@keyframes img-skel{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.img-tile-fail{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  height:100%;padding:16px;text-align:center;background:rgba(255,255,255,.03)
+}
+.img-tile-fail p{font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.35}
+.img-retry{
+  height:32px;padding:0 12px;border-radius:var(--radius-input);border:1px solid var(--border);
+  background:rgba(255,255,255,.06);color:var(--ink);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer
+}
+.img-retry:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-tile-hover{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+  padding:10px;opacity:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 42%)
+}
+.img-tile:hover .img-tile-hover,.img-tile:focus-within .img-tile-hover{opacity:1;pointer-events:auto}
+.img-ico{
+  width:32px;height:32px;border:none;border-radius:999px;cursor:pointer;color:#fff;
+  background:rgba(12,12,14,.55);backdrop-filter:blur(10px);display:grid;place-items:center;flex-shrink:0
+}
+.img-ico:hover{background:rgba(12,12,14,.78)}
+.img-ico.is-on{color:var(--a1);background:rgba(var(--glow),.28)}
+.img-ico:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-more{position:relative}
+.img-more-menu,.img-detail-overflow .img-more-menu{
+  display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:8;min-width:120px;
+  padding:6px;border-radius:12px;background:#121214;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 48px rgba(0,0,0,.55)
+}
+.img-more.is-open .img-more-menu,.img-detail-overflow.is-open .img-more-menu{display:block}
+.img-more-menu button{
+  width:100%;text-align:left;border:none;background:transparent;color:var(--ink);font:inherit;
+  font-size:.8rem;padding:8px 10px;border-radius:8px;cursor:pointer
+}
+.img-more-menu button:hover{background:rgba(255,255,255,.06)}
+.img-more-menu button:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:1px}
+.img-bar{
+  position:absolute!important;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;
+  width:min(920px,calc(100% - 24px));
+  padding:10px 12px 12px;border-radius:20px;
+  background:rgba(14,14,16,.78);border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25);
+  box-shadow:0 18px 50px rgba(0,0,0,.45)
+}
+.img-bar.is-drop{border-color:rgba(var(--glow),.7);box-shadow:0 0 0 4px rgba(var(--glow),.16)}
+.img-bar-error{margin:0 0 8px;font-size:.78rem;color:var(--err)}
+.img-bar-error[hidden]{display:none}
+.img-refs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.img-refs[hidden]{display:none}
+.img-ref-thumb{
+  position:relative;width:44px;height:44px;padding:0;border:none;border-radius:10px;overflow:hidden;
+  cursor:pointer;background:#111
+}
+.img-ref-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.img-ref-thumb span{
+  position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:999px;
+  background:rgba(0,0,0,.7);color:#fff;font-size:11px;line-height:16px
+}
+.img-bar-top{display:flex;align-items:flex-start;gap:10px}
+.img-ref-add{
+  width:40px;height:40px;flex-shrink:0;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.05);color:var(--ink);display:grid;place-items:center;cursor:pointer
+}
+.img-ref-add:hover{background:rgba(255,255,255,.08)}
+.img-ref-add:disabled{opacity:.4;cursor:not-allowed}
+.img-ref-add:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+#panel-imagegen #img-prompt{
+  flex:1;min-height:40px!important;max-height:88px;resize:none;border:none!important;box-shadow:none!important;
+  background:transparent!important;padding:10px 4px!important;margin:0;color:var(--ink);font:inherit;font-size:.92rem
+}
+#panel-imagegen #img-prompt:focus{outline:none;box-shadow:none!important}
+.img-bar-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.img-chip{
+  display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:999px;
+  border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--ink);
+  font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap
+}
+.img-chip:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.img-chip:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-pop.is-open .img-chip{border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.14)}
+.img-chip-chev{opacity:.55}
+.img-pop{position:relative}
+.img-pop-menu{
+  display:none;position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;min-width:200px;
+  max-height:420px;overflow:auto;padding:8px;border-radius:16px;
+  background:#121214;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 48px rgba(0,0,0,.55)
+}
+.img-pop.is-open .img-pop-menu,.img-model.is-open .img-model-menu{display:block}
+#panel-imagegen .img-model{flex:0 0 auto}
+#panel-imagegen .img-model-menu{
+  left:0;right:auto;top:auto;bottom:calc(100% + 8px);width:280px;max-height:280px
+}
+.img-pop-label{font-size:.68rem;font-weight:600;color:rgba(255,255,255,.45);padding:6px 10px 8px;margin:0}
+.img-pop-opt{
+  width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:10px;
+  background:transparent;color:var(--ink);cursor:pointer;font-family:inherit;text-align:left;font-size:.82rem
+}
+.img-pop-opt:hover,.img-pop-opt:focus-visible{background:rgba(255,255,255,.06)}
+.img-pop-opt:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:-2px}
+.img-pop-opt.is-on{background:rgba(var(--glow),.12)}
+.img-pop-check{margin-left:auto;opacity:.8}
+.img-pop-badge{
+  margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 6px;border-radius:999px;background:rgba(var(--glow),.18);color:var(--a1);border:1px solid rgba(var(--glow),.32)
+}
+.img-pop-opt.is-on .img-pop-badge{margin-right:8px}
+.img-pop-opt.is-locked{opacity:.85}
+#panel-imagegen .img-stepper{
+  display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 6px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:999px
+}
+#panel-imagegen .img-stepper button{
+  width:28px;height:28px;border:none;border-radius:999px;background:transparent;color:var(--ink);
+  font-size:1rem;cursor:pointer;font-family:inherit
+}
+#panel-imagegen .img-stepper button:hover{background:rgba(255,255,255,.06)}
+#panel-imagegen .img-stepper button:disabled{opacity:.35;cursor:not-allowed}
+#panel-imagegen .img-stepper-val{min-width:36px;text-align:center;font-size:.8rem;font-weight:650}
+.img-gen-btn{margin-left:auto;height:36px;padding:0 16px}
+.img-detail{
+  position:absolute!important;inset:0;z-index:30;display:flex;background:rgba(8,8,10,.96)
+}
+.img-detail.hidden{display:none}
+.img-detail-close{
+  position:absolute;top:12px;right:12px;z-index:4;width:40px;height:40px;border:none;border-radius:12px;
+  background:rgba(255,255,255,.06);color:var(--ink);cursor:pointer;display:grid;place-items:center
+}
+.img-detail-close:hover{background:rgba(255,255,255,.1)}
+.img-detail-close:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-detail-stage{
+  flex:1;min-width:0;display:grid;place-items:center;padding:24px 16px
+}
+.img-detail-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.img-detail-side{
+  width:min(360px,38%);flex-shrink:0;overflow:auto;padding:56px 20px 24px;
+  border-left:1px solid rgba(255,255,255,.08);background:rgba(12,12,14,.6)
+}
+.img-detail-block{margin-bottom:22px}
+.img-detail-kicker{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);
+  margin-bottom:10px
+}
+.img-detail-copy{
+  border:none;background:transparent;color:var(--ink);font:inherit;font-size:.75rem;font-weight:600;
+  letter-spacing:0;text-transform:none;cursor:pointer
+}
+.img-detail-copy:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-detail-prompt{font-size:.88rem;line-height:1.45;color:var(--ink);white-space:pre-wrap}
+.img-detail-refs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.img-detail-refs[hidden]{display:none}
+.img-detail-refs img{width:44px;height:44px;object-fit:cover;border-radius:8px}
+.img-detail-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin:0}
+.img-detail-meta div{min-width:0}
+.img-detail-meta dt{font-size:.68rem;color:rgba(255,255,255,.45);margin-bottom:2px}
+.img-detail-meta dd{margin:0;font-size:.82rem;color:var(--ink);word-break:break-word}
+.img-detail-actions{display:flex;flex-direction:column;gap:8px}
+.img-detail-utils{display:flex;align-items:center;gap:8px;margin-top:4px}
+.img-detail-overflow{position:relative;margin-left:auto}
+#img-sentinel{height:1px}
+
+@media (max-width:720px){
+  .img-masonry{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .img-detail{flex-direction:column}
+  .img-detail-side{width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.08);padding-top:20px}
+  .img-detail-stage{min-height:42vh}
+}
+@media (max-width:380px){
+  .img-masonry{grid-template-columns:1fr}
+  .img-bar{width:calc(100% - 12px);bottom:8px;padding:8px}
+  .img-bar-row{gap:6px}
+  .img-gen-btn{width:100%;margin-left:0}
+  .img-chip{height:34px;padding:0 10px}
+  .img-detail{flex-direction:column}
+  .img-detail-side{width:100%}
+}
+
 /* Video gen V2 */
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
@@ -1785,35 +2009,11 @@ input:focus,textarea:focus,select:focus,
 .dash-recent-wrap{min-height:120px!important;padding:16px 20px!important}
 .dash-recent-wrap .ui-empty{min-height:96px!important;padding:20px 16px!important}
 .content:has(#panel-imagegen.active){
-  display:flex;flex-direction:column;overflow:hidden;padding-bottom:28px
+  display:flex;flex-direction:column;overflow:hidden;padding:0!important
 }
 #panel-imagegen.panel.active{
-  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%
+  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%;position:relative
 }
-#panel-imagegen > .page-header{flex:0 0 auto;margin-bottom:16px!important}
-#panel-imagegen .img-layout{
-  display:flex!important;flex-direction:column;align-items:stretch!important;
-  flex:1 1 auto;gap:16px;min-height:0!important;width:100%;max-width:880px;overflow:hidden
-}
-#panel-imagegen .img-results{
-  flex:1 1 auto;min-height:0!important;height:auto;overflow:auto
-}
-#panel-imagegen .img-pane.img-results{
-  min-height:0!important
-}
-#panel-imagegen .img-chat{
-  flex:0 0 auto;min-height:0!important;height:auto!important;padding:12px!important;
-  position:relative;bottom:auto;z-index:4
-}
-#panel-imagegen .img-results .img-grid{
-  flex:1;min-height:0;margin-top:0;
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start
-}
-#panel-imagegen .img-results .img-grid:has(#img-empty),
-#panel-imagegen .img-results .img-grid:has(.ui-empty){
-  display:flex!important;align-items:center;justify-content:center
-}
-#panel-imagegen .img-results .ui-empty{margin:auto;width:100%}
 #panel-clipper .tool-card.clip-hero-card,
 #panel-clipper .tool-card{
   background:transparent!important;border:none!important;box-shadow:none!important;
@@ -2979,67 +3179,113 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <!-- IMAGE GEN -->
     <div class="panel content-glow" id="panel-imagegen">
-      <div class="page-header" style="max-width:var(--page-max-wide);margin:0 auto 24px;width:100%">
-        <h2>Thumbnail Generator</h2>
-        <p>Make YouTube thumbnails from a prompt.</p>
+      <div class="img-workspace" id="img-results-pane">
+        <div class="img-filters" role="tablist" aria-label="Thumbnail filters">
+          <button type="button" class="img-filter is-on" id="img-filter-all" role="tab" aria-selected="true">All</button>
+          <button type="button" class="img-filter" id="img-filter-favs" role="tab" aria-selected="false">Favorites</button>
+        </div>
+        <p class="img-empty-line" id="img-empty">Describe a thumbnail below to generate it.</p>
+        <div class="img-masonry" id="img-grid"></div>
+        <div id="img-sentinel" aria-hidden="true"></div>
       </div>
-      <div class="page-shell-wide img-layout">
-        <div class="img-pane img-results" id="img-results-pane">
-          <div class="section-label" style="margin-bottom:14px">Results</div>
-          <div class="img-grid" id="img-grid">
-            <div class="ui-empty" id="img-empty">
-              <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-              <div class="ui-empty-title">No thumbnails yet</div>
-              <div class="ui-empty-sub">Describe a thumbnail below to generate it.</div>
+
+      <form class="img-bar" id="img-bar" onsubmit="return false">
+        <p class="img-bar-error" id="img-bar-error" hidden></p>
+        <div class="img-refs" id="img-refs" hidden></div>
+        <div class="img-bar-top">
+          <button type="button" class="img-ref-add" id="img-ref-btn" aria-label="Add a reference image" title="Add a reference image">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <input type="file" id="img-ref-input" accept="image/*" multiple hidden>
+          <label class="sr-only" for="img-prompt">Thumbnail prompt</label>
+          <textarea id="img-prompt" rows="1" placeholder="Describe the thumbnail you want" onkeydown="onImgPromptKey(event)"></textarea>
+        </div>
+        <div class="img-bar-row" id="img-chat-tools">
+          <div class="img-model img-pop" id="img-model-wrap">
+            <input type="hidden" id="img-model" value="nano-banana-pro">
+            <button type="button" class="img-chip" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
+              <span class="img-model-name" id="img-model-name">Nano Banana Pro</span>
+              <svg class="img-chip-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+            </button>
+            <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Thumbnail models"></div>
+          </div>
+          <select id="img-ratio" class="visually-hidden" tabindex="-1" aria-hidden="true">
+            <option value="16:9" selected>16:9</option>
+          </select>
+          <div class="img-pop" id="img-aspect-wrap">
+            <button type="button" class="img-chip" id="img-aspect-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-aspect-menu">
+              <span class="img-ratio-glyph g169" aria-hidden="true"></span>
+              <span id="img-aspect-val">16:9</span>
+            </button>
+            <div class="img-pop-menu" id="img-aspect-menu" role="listbox" aria-labelledby="img-aspect-label"></div>
+          </div>
+          <div class="img-pop" id="img-quality-wrap">
+            <button type="button" class="img-chip" id="img-quality-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-quality-menu">
+              <svg class="img-chip-ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 9-7 9-7-9 7-9z"/></svg>
+              <span id="img-quality-val">2K</span>
+            </button>
+            <div class="img-pop-menu" id="img-quality-menu" role="listbox" aria-labelledby="img-quality-label"></div>
+          </div>
+          <select id="img-count" class="visually-hidden" tabindex="-1" aria-hidden="true">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <div class="img-stepper" role="group" aria-label="Batch size">
+            <button type="button" id="img-count-minus" onclick="stepImgCount(-1)" aria-label="Fewer images">−</button>
+            <span class="img-stepper-val" id="img-count-label">1/4</span>
+            <button type="button" id="img-count-plus" onclick="stepImgCount(1)" aria-label="More images">+</button>
+          </div>
+          <button type="button" class="btn btn-primary img-gen-btn" id="img-btn" disabled>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.4 4.2L18 8.6l-4.2 1.4L12 14l-1.4-4.2L6 8.6l4.6-1.4L12 3z"/></svg>
+            Generate
+          </button>
+        </div>
+      </form>
+
+      <div class="img-detail hidden" id="img-detail" role="dialog" aria-modal="true" aria-labelledby="img-detail-heading" aria-hidden="true">
+        <button type="button" class="img-detail-close" id="img-detail-close" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="img-detail-stage">
+          <img id="img-detail-img" alt="Generated thumbnail">
+        </div>
+        <aside class="img-detail-side">
+          <h2 class="sr-only" id="img-detail-heading">Thumbnail details</h2>
+          <div class="img-detail-block">
+            <div class="img-detail-kicker">
+              <span>Prompt</span>
+              <button type="button" class="img-detail-copy" id="img-detail-copy">Copy</button>
+            </div>
+            <div class="img-detail-refs" id="img-detail-refs" hidden></div>
+            <p class="img-detail-prompt" id="img-detail-prompt"></p>
+          </div>
+          <div class="img-detail-block">
+            <div class="img-detail-kicker"><span>Details</span></div>
+            <dl class="img-detail-meta">
+              <div><dt>Model</dt><dd id="img-detail-model">—</dd></div>
+              <div><dt>Quality</dt><dd id="img-detail-quality">—</dd></div>
+              <div><dt>Size</dt><dd id="img-detail-size">—</dd></div>
+              <div><dt>Created</dt><dd id="img-detail-created">—</dd></div>
+            </dl>
+          </div>
+          <div class="img-detail-actions">
+            <button type="button" class="btn btn-primary" id="img-detail-recreate">Recreate</button>
+            <button type="button" class="btn btn-secondary" id="img-detail-ref">Reference</button>
+            <div class="img-detail-utils">
+              <button type="button" class="btn btn-ghost" id="img-detail-dl">Download</button>
+              <button type="button" class="img-ico" id="img-detail-fav" aria-pressed="false" aria-label="Favorite"></button>
+              <button type="button" class="btn btn-ghost" id="img-detail-share">Share</button>
+              <div class="img-detail-overflow" id="img-detail-overflow">
+                <button type="button" class="img-ico" id="img-detail-more" aria-haspopup="true" aria-label="More">···</button>
+                <div class="img-more-menu" role="menu">
+                  <button type="button" role="menuitem" id="img-detail-del">Delete</button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="img-pane img-chat" id="img-prompt-pane">
-          <div class="img-chat-log" id="img-chat-log" aria-live="polite"></div>
-          <div class="img-chat-box">
-            <label class="sr-only" for="img-prompt">Thumbnail prompt</label>
-            <textarea id="img-prompt" rows="1" placeholder="Describe the thumbnail you want…" onkeydown="onImgPromptKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
-            <div class="img-chat-tools" id="img-chat-tools">
-              <div class="img-model" id="img-model-wrap">
-                <input type="hidden" id="img-model" value="nano-banana-pro">
-                <button type="button" class="img-model-pill" id="img-model-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="img-model-menu" onclick="toggleImgModelMenu()">
-                  <span class="img-model-mark" aria-hidden="true">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  </span>
-                  <span class="img-model-copy">
-                    <span class="img-model-name" id="img-model-name">Nano Banana Pro</span>
-                    <span class="img-model-meta" id="img-model-meta">Google · 2k, best text &amp; detail</span>
-                  </span>
-                  <svg class="img-model-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="img-model-menu" id="img-model-menu" role="listbox" aria-label="Thumbnail generation models"></div>
-              </div>
-              <select id="img-ratio" class="visually-hidden" tabindex="-1" aria-hidden="true">
-                <option value="16:9" selected>16:9</option>
-                <option value="9:16">9:16</option>
-              </select>
-              <div class="ui-seg" id="img-ratio-seg" role="group" aria-label="Aspect ratio">
-                <button type="button" class="ui-seg-btn active" data-ratio="16:9" onclick="setImgRatio('16:9',this)"><span class="img-ratio-glyph g169"></span>16:9</button>
-                <button type="button" class="ui-seg-btn" data-ratio="9:16" onclick="setImgRatio('9:16',this)"><span class="img-ratio-glyph g916"></span>9:16</button>
-              </div>
-              <select id="img-count" class="visually-hidden" tabindex="-1" aria-hidden="true">
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="4">4</option>
-              </select>
-              <div class="img-stepper">
-                <button type="button" onclick="stepImgCount(-1)" aria-label="Fewer images">−</button>
-                <span class="img-stepper-val" id="img-count-label">1 image</span>
-                <button type="button" onclick="stepImgCount(1)" aria-label="More images">+</button>
-              </div>
-              <button class="btn btn-primary img-chat-send" id="img-btn" onclick="generateImage()">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                Generate
-              </button>
-            </div>
-          </div>
-          <div class="status" id="img-status" style="display:none"></div>
-        </div>
+        </aside>
       </div>
     </div>
 
@@ -4896,7 +5142,8 @@ import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
-import { IMAGE_MODELS, DEFAULT_IMAGE_MODEL, imageModelById } from '/lib/fal-image.js'
+import { isHistorySidecarName } from '/lib/image-gen.js'
+import { initImageWorkspace } from '/lib/image-workspace.js'
 import {
   tourById,
   tourStepsOf,
@@ -7127,6 +7374,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   window.closeMobileNav?.()
   if (id === 'voiceover') loadVoiceLibrary()
   if (id === 'videogen') fvInit()
+  if (id === 'imagegen') window.imgWorkspaceShow?.()
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
     try { edRenderTL?.() } catch (_) {}
@@ -8806,149 +9054,8 @@ window.burnCaptions = async () => {
   }
 }
 
-// ── IMAGE GEN ─────────────────────────────────────────────────────────────────
-const IMG_MODEL_KEY = 'vidso_img_model'
-const IMG_MODELS = IMAGE_MODELS
-
-function imgModelById(id) {
-  return imageModelById(id)
-}
-
-function closeImgModelMenu() {
-  const wrap = document.getElementById('img-model-wrap')
-  const btn = document.getElementById('img-model-btn')
-  if (!wrap) return
-  wrap.classList.remove('is-open')
-  if (btn) btn.setAttribute('aria-expanded', 'false')
-}
-
-window.toggleImgModelMenu = () => {
-  const wrap = document.getElementById('img-model-wrap')
-  const btn = document.getElementById('img-model-btn')
-  if (!wrap) return
-  const open = !wrap.classList.contains('is-open')
-  wrap.classList.toggle('is-open', open)
-  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false')
-}
-
-window.setImgModel = (id) => {
-  const model = imgModelById(id)
-  const input = document.getElementById('img-model')
-  const name = document.getElementById('img-model-name')
-  const meta = document.getElementById('img-model-meta')
-  if (input) input.value = model.id
-  if (name) name.textContent = model.name
-  if (meta) meta.textContent = model.group + ' · ' + model.hint.toLowerCase()
-  document.querySelectorAll('#img-model-menu .img-model-opt').forEach((el) => {
-    el.classList.toggle('is-on', el.dataset.id === model.id)
-  })
-  try { localStorage.setItem(IMG_MODEL_KEY, model.id) } catch (_) {}
-  closeImgModelMenu()
-}
-
-function renderImgModelMenu() {
-  const menu = document.getElementById('img-model-menu')
-  if (!menu) return
-  let last = ''
-  menu.innerHTML = IMG_MODELS.map((m) => {
-    const head = m.group !== last ? `<div class="img-model-group">${m.group}</div>` : ''
-    last = m.group
-    return `${head}<button type="button" class="img-model-opt" role="option" data-id="${m.id}" onclick="setImgModel('${m.id}')"><span><b>${m.name}</b><span>${m.hint}</span></span></button>`
-  }).join('')
-}
-
-function initImgModelPicker() {
-  renderImgModelMenu()
-  let saved = ''
-  try { saved = localStorage.getItem(IMG_MODEL_KEY) || '' } catch (_) {}
-  setImgModel(IMG_MODELS.some((m) => m.id === saved) ? saved : DEFAULT_IMAGE_MODEL)
-}
-
-window.fillImgPrompt = (text) => {
-  const el = document.getElementById('img-prompt')
-  if (el) {
-    el.value = text
-    el.focus()
-    el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 140) + 'px'
-  }
-}
-window.setImgRatio = (ratio, btn) => {
-  const next = ratio === '9:16' ? '9:16' : '16:9'
-  const sel = document.getElementById('img-ratio')
-  if (sel) sel.value = next
-  document.querySelectorAll('#img-ratio-seg .ui-seg-btn').forEach(b => b.classList.toggle('active', b.dataset.ratio === next || b === btn))
-}
-window.onImgPromptKey = (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
-    generateImage()
-  }
-}
-function appendImgChat(prompt) {
-  const log = document.getElementById('img-chat-log')
-  if (!log) return
-  log.querySelector('.img-prompt-chips')?.remove()
-  const el = document.createElement('div')
-  el.className = 'img-chat-msg'
-  el.textContent = prompt
-  log.appendChild(el)
-  log.scrollTop = log.scrollHeight
-}
-window.stepImgCount = (delta) => {
-  const sel = document.getElementById('img-count')
-  const label = document.getElementById('img-count-label')
-  if (!sel) return
-  const opts = Array.from(sel.options).map(o => parseInt(o.value, 10))
-  let idx = opts.indexOf(parseInt(sel.value, 10))
-  if (idx < 0) idx = 0
-  idx = Math.max(0, Math.min(opts.length - 1, idx + delta))
-  sel.value = String(opts[idx])
-  if (label) label.textContent = opts[idx] === 1 ? '1 image' : `${opts[idx]} images`
-}
-window.generateImage = async () => {
-  const input = document.getElementById('img-prompt')
-  const prompt = (input?.value || '').trim()
-  if (!prompt) return setStatus('img-status','Enter a prompt','err')
-  const btn = document.getElementById('img-btn')
-  btn.disabled = true
-  btn.classList.add('is-loading')
-  setStatus('img-status','Generating...','loading')
-  appendImgChat(prompt)
-  if (input) {
-    input.value = ''
-    input.style.height = ''
-  }
-  const count = parseInt(document.getElementById('img-count').value, 10) || 1
-  const ratio = document.getElementById('img-ratio')?.value === '9:16' ? '9:16' : '16:9'
-  document.getElementById('img-grid').innerHTML = `<div class="img-skel-grid">${Array.from({length:count}).map(()=>'<div class="ui-skeleton ui-skeleton-thumb"></div>').join('')}</div>`
-  try {
-    const data = await api.generate.image({
-      prompt,
-      model: document.getElementById('img-model')?.value || DEFAULT_IMAGE_MODEL,
-      aspect_ratio: ratio,
-      num_images:   count,
-    })
-    const grid = document.getElementById('img-grid')
-    grid.innerHTML = data.urls.map(url => `
-      <div class="img-wrap">
-        <img src="${url}" loading="lazy"/>
-        <a href="${url}" download class="img-dl">⬇</a>
-      </div>`).join('')
-    setStatus('img-status','Done!','ok')
-    loadUsage()
-  } catch(e) {
-    document.getElementById('img-grid').innerHTML = `<div class="ui-empty" id="img-empty">
-      <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-      <div class="ui-empty-title">No thumbnails yet</div>
-              <div class="ui-empty-sub">Describe a thumbnail below to generate it.</div>
-    </div>`
-    setStatus('img-status', e.message, 'err')
-  }
-  finally { btn.disabled = false; btn.classList.remove('is-loading') }
-}
-
 // ── FILES ─────────────────────────────────────────────────────────────────────
+
 function renderDashRecent(files) {
   const el = document.getElementById('dash-recent')
   if (!el) return
@@ -8972,7 +9079,9 @@ function renderDashRecent(files) {
 
 async function loadFiles() {
   try {
-    const files = await api.upload.list()
+    const raw = await api.upload.list()
+    const all = Array.isArray(raw) ? raw : (raw?.files || [])
+    const files = all.filter((f) => !isHistorySidecarName(f.original_name || f.name))
     renderDashRecent(files)
     const list  = document.getElementById('files-list')
     if (!list) return
@@ -9033,13 +9142,13 @@ function bindGettingStarted() {
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
 }
 
-initImgModelPicker()
-document.addEventListener('click', (e) => {
-  const wrap = document.getElementById('img-model-wrap')
-  if (wrap && wrap.classList.contains('is-open') && !wrap.contains(e.target)) closeImgModelMenu()
-})
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeImgModelMenu()
+initImageWorkspace({
+  api,
+  getUser: () => currentUser,
+  openPaywall: (opts) => window.openPaywall(opts),
+  loadUsage,
+  loadFiles,
+  resolveAccess,
 })
 checkAuth()
 bindGettingStarted()

@@ -68,7 +68,7 @@ async function generateImageFal(body) {
   if (!startUrl) throw new Error('Image generation is only available on the live app.')
   const start = await reqTo(startUrl, 'POST', body)
   if (Array.isArray(start.urls) && start.urls.length) return start
-  if (!start.statusUrl || !start.responseUrl) throw new Error('Fal did not start the image job.')
+  if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the image job.')
   const pollUrl = sameOriginApi('/api/generate/image-status')
   const deadline = Date.now() + 180000
   while (Date.now() < deadline) {
@@ -77,7 +77,14 @@ async function generateImageFal(body) {
       statusUrl: start.statusUrl,
       responseUrl: start.responseUrl,
     })
-    if (st.done && Array.isArray(st.urls) && st.urls.length) return st
+    if (st.done && Array.isArray(st.urls) && st.urls.length) {
+      return {
+        ...st,
+        width: st.width || start.width,
+        height: st.height || start.height,
+        model: start.model || body.model,
+      }
+    }
   }
   throw new Error('Timed out waiting for the image. Try again.')
 }
@@ -203,6 +210,31 @@ export const api = {
   },
   generate: {
     image: (body) => generateImageFal(body),
+    imageSave: (body) => {
+      const url = sameOriginApi('/api/generate/image-save')
+      if (!url) throw new Error('Image history is only available on the live app.')
+      return reqTo(url, 'POST', body)
+    },
+    images: (opts = {}) => {
+      const base = sameOriginApi('/api/generate/images')
+      if (!base) throw new Error('Image history is only available on the live app.')
+      const q = new URLSearchParams()
+      if (opts.offset) q.set('offset', String(opts.offset))
+      if (opts.limit) q.set('limit', String(opts.limit))
+      if (opts.favorites) q.set('favorites', '1')
+      const qs = q.toString()
+      return reqTo(base + (qs ? '?' + qs : ''), 'GET')
+    },
+    imagePatch: (id, body) => {
+      const url = sameOriginApi('/api/generate/images/' + encodeURIComponent(id))
+      if (!url) throw new Error('Image history is only available on the live app.')
+      return reqTo(url, 'PATCH', body)
+    },
+    imageDelete: (id) => {
+      const url = sameOriginApi('/api/generate/images/' + encodeURIComponent(id))
+      if (!url) throw new Error('Image history is only available on the live app.')
+      return reqTo(url, 'DELETE')
+    },
   },
   transcribe: {
     start: (file_url) => req('POST', '/api/transcribe', { file_url }),
