@@ -2159,11 +2159,125 @@ body.img-detail-open{overflow:hidden}
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
 .fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
-.fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
-.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
-.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 0 4px}
-.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+.fv-how-item{padding:0 0 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left;overflow:hidden}
+.fv-how-item .media-ph,.fv-how-shot{border-radius:0;border:none;border-bottom:1px solid var(--border)}
+.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,244,.4);margin:14px 16px 8px}
+.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 16px 4px}
+.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0 16px;line-height:1.4}
 @media (max-width:640px){.fv-how{grid-template-columns:1fr}}
+
+.media-ph{
+  position:relative;width:100%;overflow:hidden;
+  background:linear-gradient(160deg,#2c1c1e,#161618);
+  border:1px solid rgba(245,245,244,.22)
+}
+.media-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
+.media-ph-icon svg{width:32px;height:32px}
+
+.content:has(#panel-facelessstudio.active),
+body.studio-open .content{
+  display:flex;flex-direction:column;overflow:hidden;padding:0!important
+}
+#panel-facelessstudio{display:none;height:100%;min-height:0}
+#panel-facelessstudio.panel.active{
+  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%;
+  position:relative;padding:0;margin:0;max-width:none
+}
+.fs-shell{display:flex;width:100%;height:100%;min-height:0;flex:1;background:var(--bg)}
+.fs-rail{
+  width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
+  border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px
+}
+body.fs-rail-collapsed .fs-rail{width:56px}
+body.fs-rail-collapsed .fs-rail-brand,
+body.fs-rail-collapsed .fs-rail-label,
+body.fs-rail-collapsed .fs-rail-search,
+body.fs-rail-collapsed .fs-rail-projects,
+body.fs-rail-collapsed #fs-rail-new,
+body.fs-rail-collapsed .fs-rail-item{display:none}
+.fs-rail-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 12px}
+.fs-rail-brand{font-family:var(--font-heading);font-weight:700;letter-spacing:-.03em;text-transform:uppercase;font-size:.82rem}
+.fs-rail-toggle{width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
+.fs-rail-toggle:focus-visible{outline:2px solid rgba(var(--glow),.65)}
+.fs-rail-nav{display:flex;flex-direction:column;gap:2px}
+.fs-rail-link{
+  display:flex;align-items:center;gap:8px;min-height:36px;padding:0 8px;border:none;border-radius:8px;
+  background:transparent;color:var(--text-body);font:inherit;font-size:.82rem;cursor:pointer;text-align:left
+}
+.fs-rail-link:hover,.fs-rail-item:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.fs-rail-link.is-on,.fs-rail-item.is-on{color:var(--a1);background:rgba(var(--glow),.12)}
+.fs-rail-link:focus-visible,.fs-rail-item:focus-visible,.fs-tab:focus-visible,.fs-proj-card:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.fs-rail-label{margin:14px 8px 6px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.fs-rail-search{width:100%;height:34px;margin:0 0 8px;padding:0 8px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.78rem}
+.fs-rail-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
+.fs-rail-item{display:block;width:100%;min-height:32px;padding:6px 8px;border:none;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.78rem;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-rail-empty,.fs-muted{color:rgba(255,255,255,.45);font-size:.78rem;padding:8px}
+.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px}
+.fs-tabs{display:flex;gap:4px;margin:0 0 20px}
+.fs-tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:none;border-radius:8px;background:transparent;color:var(--text-body);font:inherit;font-size:.84rem;cursor:pointer}
+.fs-tab.is-on{color:var(--ink);background:rgba(255,255,255,.06)}
+.fs-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:0 0 28px}
+.fs-hero.is-compact .img-empty-fan{transform:scale(.72);transform-origin:center;margin-bottom:-24px}
+.fs-hero-title{margin:0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:.9;letter-spacing:-.045em;text-transform:uppercase}
+.fs-hero-title .lead,.fs-hero-title .accent{display:block}
+.fs-hero-title .accent{color:var(--a1)}
+.fs-hero-sub{margin:0;color:rgba(245,245,244,.48);font-size:.92rem}
+.fs-composer{max-width:880px;margin:0 auto 32px;padding:14px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.03)}
+.fs-composer-row{display:flex;gap:10px;align-items:flex-start}
+.fs-topic{flex:1;min-width:0;min-height:72px;resize:vertical;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.95rem}
+.fs-topic:focus{outline:none}
+.fs-ref-add{width:40px;height:40px;flex-shrink:0;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--ink);font-size:1.2rem;cursor:pointer}
+.fs-gen{flex-shrink:0;align-self:stretch;min-width:120px}
+.fs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.fs-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:.72rem;color:var(--text-body)}
+.fs-chip select{border:none;background:transparent;color:var(--ink);font:inherit;font-size:.72rem;max-width:140px}
+.fs-composer-error,.fs-thumb-err,.fs-banner-err{color:#f3b4b8;font-size:.82rem;margin:0 0 8px}
+.fs-refs{display:flex;gap:8px;margin-top:8px}
+.fs-ref-chip{position:relative;width:48px;height:48px;border-radius:8px;overflow:hidden}
+.fs-ref-chip img{width:100%;height:100%;object-fit:cover}
+.fs-ref-chip button{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:50%;background:#000;color:#fff;cursor:pointer}
+.fs-how-h{font-family:var(--font-heading);text-transform:uppercase;letter-spacing:-.03em;font-size:clamp(1.4rem,3vw,2rem);margin:0 0 6px}
+.fs-how-sub{color:rgba(255,255,255,.45);margin:0 0 18px}
+.fs-how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fs-how-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03)}
+.fs-how-card h3{margin:12px 14px 4px;font-size:.95rem}
+.fs-how-card p{margin:0 14px 14px;font-size:.8rem;color:rgba(255,255,255,.5)}
+.fs-proj-grid,.fs-proj-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.fs-proj-row{grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);overflow:auto}
+.fs-proj-card{display:block;text-align:left;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:transparent;color:inherit;cursor:pointer;padding:0}
+.fs-proj-title{display:block;padding:10px 12px 0;font-weight:650}
+.fs-proj-meta,.fs-job-meta{display:block;padding:4px 12px 12px;font-size:.72rem;color:rgba(255,255,255,.45)}
+.fs-page-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.fs-page-head h1,.fs-workspace h2,.fs-recent h2{font-size:1.2rem;margin:0}
+.fs-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fs-search{height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit}
+.fs-state{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:24px 0;color:var(--text-body)}
+.fs-state.is-err{color:#f3b4b8}
+.fs-workspace{max-width:880px;margin:0 auto}
+.fs-ws-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.fs-title{flex:1;min-width:140px;height:40px;border:none;background:transparent;color:var(--ink);font:inherit;font-size:1.15rem;font-weight:650}
+.fs-title:focus{outline:2px solid rgba(var(--glow),.5);border-radius:8px}
+.fs-ws-status{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--a1)}
+.fs-pipeline-slot{margin-bottom:28px}
+.fs-pipeline-slot .fv-wizard{margin:0}
+.tool-shot-media.media-ph,.tool-shot-media .media-ph{border:none;border-radius:0;height:100%}
+.fs-thumb-row{display:flex;gap:8px;margin:10px 0}
+.fs-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.fs-job{display:flex;gap:12px;width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;background:transparent;color:inherit;padding:8px;cursor:pointer;margin-bottom:8px}
+.fs-job-thumb{width:120px;flex-shrink:0;border-radius:8px}
+.fs-export-list{padding-left:18px;color:var(--text-body)}
+.fs-fav-filter{font-size:.8rem;color:var(--text-body)}
+@media (max-width:1100px){
+  .fs-rail{position:absolute;z-index:5;height:100%;box-shadow:8px 0 24px rgba(0,0,0,.4)}
+  body.fs-rail-collapsed .fs-rail{width:0;padding:0;border:none;overflow:hidden}
+  .fs-main{padding:16px 14px 32px}
+}
+@media (max-width:380px){
+  .fs-composer-row,.fs-thumb-row,.fs-toolbar{flex-direction:column}
+  .fs-how-grid{grid-template-columns:1fr}
+  .fs-gen,.fs-ref-add{width:100%}
+}
 
 /* Upscale V2 */
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
@@ -3200,6 +3314,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
+    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
     <div class="topnav-drop" id="nav-tools-wrap">
@@ -3263,6 +3378,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </button>
   </div>
   <span class="nav-drawer-label">Generate</span>
+  <button type="button" class="topnav-item" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
   <span class="nav-drawer-label">Short Form Tools</span>
@@ -3427,10 +3543,10 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         </div>
         <div class="img-empty" id="img-empty" hidden>
           <div class="img-empty-fan" id="img-empty-fan" aria-hidden="true">
-            <div class="img-empty-card"></div>
-            <div class="img-empty-card"></div>
-            <div class="img-empty-card"></div>
-            <div class="img-empty-card"></div>
+            <div class="img-empty-card" data-media-ph></div>
+            <div class="img-empty-card" data-media-ph></div>
+            <div class="img-empty-card" data-media-ph></div>
+            <div class="img-empty-card" data-media-ph></div>
           </div>
           <h1 class="img-empty-title">
             <span class="lead">Start creating with</span>
@@ -4963,6 +5079,28 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
 
+    <div class="panel" id="panel-facelessstudio">
+      <div class="fs-shell">
+        <aside class="fs-rail" id="fs-rail" aria-label="Faceless Studio">
+          <div class="fs-rail-head">
+            <span class="fs-rail-brand">Faceless Studio</span>
+            <button type="button" class="fs-rail-toggle" id="fs-rail-toggle" aria-expanded="true" aria-controls="fs-rail" aria-label="Collapse studio menu">«</button>
+          </div>
+          <nav class="fs-rail-nav">
+            <button type="button" class="fs-rail-link is-on" data-fs-view="home">Home</button>
+            <button type="button" class="fs-rail-link" data-fs-view="projects">My projects</button>
+            <button type="button" class="fs-rail-link" data-fs-view="generations">My generations</button>
+            <button type="button" class="fs-rail-link" data-fs-view="favorites">Favorites</button>
+          </nav>
+          <span class="fs-rail-label">Projects</span>
+          <input type="search" class="fs-rail-search" id="fs-rail-search" placeholder="Search" aria-label="Search projects">
+          <button type="button" class="btn btn-primary btn-sm" id="fs-rail-new" style="margin:0 8px 8px">New project</button>
+          <div class="fs-rail-projects fs-rail-list" id="fs-rail-list"></div>
+        </aside>
+        <div class="fs-main" id="fs-main"></div>
+      </div>
+    </div>
+
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
         <h2>Long Form Generator</h2>
@@ -4970,16 +5108,19 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9"></div>
           <div class="fv-how-n">Step 1</div>
           <div class="fv-how-t">Script</div>
           <p class="fv-how-d">Generate and edit the narration for your topic.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9"></div>
           <div class="fv-how-n">Step 2</div>
           <div class="fv-how-t">Media</div>
           <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9"></div>
           <div class="fv-how-n">Step 3</div>
           <div class="fv-how-t">Export</div>
           <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
@@ -4989,7 +5130,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         <h3 class="ui-card-title">Long Form Generator</h3>
         <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
 
-        <div class="fv-wizard">
+        <div id="fv-wizard-home">
+        <div class="fv-wizard" id="fv-wizard">
           <div class="fv-stepper" id="fv-stepper" aria-label="Progress">
             <div class="fv-step-pill active" id="fv-pill-1"><span class="n">1</span> Script</div>
             <div class="fv-step-line"></div>
@@ -5019,8 +5161,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="field" id="fv-field-aspect">
               <label>Aspect ratio</label>
               <div class="fv-chip-row" id="fv-aspect-chips">
-                <button type="button" class="fv-chip active" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
-                <button type="button" class="fv-chip" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
+                <button type="button" class="fv-chip" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
+                <button type="button" class="fv-chip active" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
               </div>
             </div>
 
@@ -5279,6 +5421,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </div>
           </div>
         </div>
+        </div>
       </div>
     </div>
 
@@ -5387,6 +5530,9 @@ import {
   mcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
+import { initFacelessStudio } from '/lib/faceless-studio.js'
+import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
+import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
@@ -7678,13 +7824,13 @@ const DEFAULT_PATH = '/video-generation'
 const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
   home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Long Form Generator', tools:'Short Form Tools',
+  videogen:'Long Form Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
   clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', tools:'/tools',
+  videogen:'/video-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
@@ -7702,6 +7848,7 @@ function resolvePanel(id) {
 function panelFromPath() {
   const path = normalizePath(location.pathname)
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
+  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) return 'facelessstudio'
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
@@ -7716,6 +7863,10 @@ function isAuthPath() {
 }
 window.switchPanel = (id, btn, opts = {}) => {
   id = resolvePanel(id)
+  const leavingStudio = document.getElementById('panel-facelessstudio')?.classList.contains('active') && id !== 'facelessstudio'
+  if (leavingStudio) {
+    try { window.fsStudioLeave?.() } catch (_) {}
+  }
   // Hard gate: after signup onboarding, block every tool until a plan is active.
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
@@ -7743,21 +7894,28 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','facelessstudio'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
+    document.body.classList.toggle('studio-open', id === 'facelessstudio')
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') loadVoiceLibrary()
   if (id === 'videogen') fvInit()
   if (id === 'imagegen') window.imgWorkspaceShow?.()
+  if (id === 'facelessstudio') window.fsStudioShow?.()
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
     try { edRenderTL?.() } catch (_) {}
   }
   if (!opts.silent) {
-    const next = pathForPanel(id)
+    let next = pathForPanel(id)
+    if (id === 'facelessstudio') {
+      const cur = normalizePath(location.pathname)
+      if (cur === '/faceless-studio' || cur.startsWith('/faceless-studio/')) next = cur
+      else next = '/faceless-studio'
+    }
     if (normalizePath(location.pathname) !== normalizePath(next)) {
       history.pushState({ panel: id }, '', next)
     }
@@ -7871,7 +8029,7 @@ window.selectVoice = (id, preview, name) => {
 window.fvState = {
   format: 'long',
   durationId: 'long_180',
-  aspect: '9:16',
+  aspect: '16:9',
   voiceId: null,
   voicePreview: null,
   script: null,
@@ -7955,7 +8113,8 @@ window.fvClearScript = () => {
   fvSetScriptAiLock(false)
   fvShowShortScriptAction(false)
   fvShowShortRenderAction(false)
-  document.getElementById('fv-topic')?.focus?.()
+  if (!fvHydrating) document.getElementById('fv-topic')?.focus?.()
+  fvNotifyStudio()
 }
 
 function fvSetStatus(msg, kind, which) {
@@ -8092,6 +8251,7 @@ window.fvSetDuration = (id) => {
   fvRenderDurationChips()
   const picked = fvPickedDuration()
   fvLengthTrace('chip', { seconds: picked?.seconds || null, label: picked?.label || null })
+  fvNotifyStudio()
 }
 
 window.fvOpenCustomDuration = () => {
@@ -8128,6 +8288,7 @@ window.fvSetAspect = (aspect) => {
   document.querySelectorAll('#fv-aspect-chips .fv-chip').forEach(b => {
     b.classList.toggle('active', b.dataset.aspect === fvState.aspect)
   })
+  fvNotifyStudio()
 }
 
 function fvVoiceLabel(v) {
@@ -8262,6 +8423,119 @@ window.fvInit = () => {
   fvState.inited = true
 }
 
+let fvStudioBoundId = null
+let fvHydrating = false
+
+function fvNotifyStudio() {
+  if (fvHydrating) return
+  try { window.fvStudioOnChange?.() } catch (_) {}
+}
+
+function fvStudioJob(job) {
+  try { window.fvStudioRecordJob?.(job) } catch (_) {}
+}
+
+window.fvParkWizard = (slot) => {
+  const wiz = document.getElementById('fv-wizard')
+  const home = document.getElementById('fv-wizard-home')
+  if (!wiz) return
+  if (slot) {
+    if (wiz.parentElement !== slot) slot.appendChild(wiz)
+  } else if (home && wiz.parentElement !== home) {
+    home.appendChild(wiz)
+  }
+}
+
+window.fvSnapshotForStudio = () => {
+  try { fvRebuildFullScriptFromSections() } catch (_) {}
+  return {
+    format: fvState.format,
+    durationId: fvState.durationId,
+    aspect: fvState.aspect,
+    voiceId: fvState.voiceId,
+    topic: document.getElementById('fv-topic')?.value || '',
+    phase: fvState.phase,
+    script: fvState.script,
+    media: fvState.media,
+    preview: fvState.preview,
+    caption: typeof fvCapStyle === 'function' ? fvCapStyle() : null,
+    allowShortScript: fvState.allowShortScript,
+    allowShortRender: fvState.allowShortRender,
+    scriptAiUsed: fvState.scriptAiUsed,
+  }
+}
+
+window.fvHydrateFromStudio = (project) => {
+  if (!project) return
+  if (fvStudioBoundId === project.id && fvState.inited) {
+    fvInit()
+    return
+  }
+  fvHydrating = true
+  try {
+  fvStudioBoundId = project.id
+  const snap = project.pipeline && typeof project.pipeline === 'object' ? project.pipeline : {}
+  fvClearScript()
+  const topic = snap.topic || project.topic || ''
+  const aspect = snap.aspect || project.aspect || '16:9'
+  const durationId = snap.durationId || project.length || 'long_180'
+  const voiceId = snap.voiceId || project.voice_id || ''
+  fvState.format = String(durationId).startsWith('shorts') ? 'shorts' : 'long'
+  fvState.durationId = durationId
+  fvState.aspect = aspect === '9:16' ? '9:16' : '16:9'
+  fvState.voiceId = voiceId || null
+  fvState.allowShortScript = !!snap.allowShortScript
+  fvState.allowShortRender = !!snap.allowShortRender
+  const topicEl = document.getElementById('fv-topic')
+  if (topicEl) topicEl.value = topic
+  document.querySelectorAll('#fv-format-seg [data-format]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.format === fvState.format)
+  })
+  fvSetAspect(fvState.aspect)
+  fvInit()
+  if (voiceId) {
+    try { window.pickFvVoice(voiceId) } catch (_) {}
+  }
+  if (snap.script) {
+    fvState.scriptAiUsed = snap.scriptAiUsed != null ? !!snap.scriptAiUsed : true
+    fvRenderScript(snap.script)
+  }
+  if (snap.media) {
+    fvRenderMediaResult(snap.media)
+  }
+  if (snap.preview) fvState.preview = snap.preview
+  if (snap.caption) {
+    const setVal = (id, v) => {
+      const el = document.getElementById(id)
+      if (el && v != null) el.value = v
+    }
+    setVal('fv-cap-font', snap.caption.font)
+    setVal('fv-cap-size', snap.caption.size)
+    setVal('fv-cap-color', snap.caption.color)
+    setVal('fv-cap-hl', snap.caption.highlight)
+    setVal('fv-cap-ls', snap.caption.letterSpacing)
+  }
+  const phase = Number(snap.phase) || (snap.media ? 2 : snap.script ? 1 : 1)
+  document.getElementById('fv-script-box')?.classList.toggle('show', !!snap.script && phase === 1)
+  document.getElementById('fv-setup')?.classList.toggle('collapsed', phase > 1)
+  document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2 && !!snap.media)
+  document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!snap.media)
+  document.getElementById('fv-export-box')?.classList.toggle('show', phase >= 4 && !!snap.media)
+  fvState.phase = phase
+  fvSetPills(phase)
+  if (phase >= 3 && snap.media) {
+    try { fvInitPreview() } catch (_) {}
+  }
+  if (phase >= 4 && snap.media) {
+    try { window.fvContinueToExport?.() } catch (_) {}
+  }
+  } finally {
+    fvHydrating = false
+  }
+}
+
+window.fvStudioUnbind = () => { fvStudioBoundId = null }
+
 function fvRebuildFullScriptFromSections() {
   if (!fvState.script) return
   const areas = document.querySelectorAll('#fv-sections textarea[data-sid]')
@@ -8274,6 +8548,7 @@ function fvRebuildFullScriptFromSections() {
   fvState.script.full_script = fvState.script.sections.map(s => s.text).filter(Boolean).join('\n\n')
   if (fvState.script.sections[0]) fvState.script.hook = fvState.script.sections[0].text
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+  fvNotifyStudio()
 }
 window.fvRebuildFullScriptFromSections = fvRebuildFullScriptFromSections
 
@@ -8336,6 +8611,7 @@ function fvRenderScript(script) {
   if (help) help.textContent = 'AI writes the script once. Edit any section by hand, or clear to start a new video.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
   if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
+  fvNotifyStudio()
 }
 
 window.fvEnterEditor = () => {
@@ -8464,6 +8740,7 @@ function fvRenderMediaResult(job) {
     aspect: job.aspect || fvState.aspect,
     targetSeconds: fvPickedDuration()?.seconds || null,
   })
+  fvNotifyStudio()
 }
 
 function fvSyncWordHighlight(audio) {
@@ -8528,10 +8805,12 @@ window.fvStartMedia = async (force) => {
         fvState.mediaPoll = null
         if (job.status === 'error') {
           fvSetMediaStatus(job.error || 'Media failed', 'err')
+          fvStudioJob({ type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed', remote_id: jobId })
           return
         }
         fvSetMediaStatus('Ready', 'ok')
         fvRenderMediaResult(job)
+        fvStudioJob({ type: 'media', status: 'succeeded', progress: 100, remote_id: jobId })
       } catch (e) {
         clearInterval(fvState.mediaPoll)
         fvState.mediaPoll = null
@@ -8551,6 +8830,7 @@ window.fvContinueToPreview = () => {
   document.getElementById('fv-preview-box')?.classList.add('show')
   fvSetPills(3)
   fvInitPreview()
+  fvNotifyStudio()
 }
 
 window.fvBackToMedia = () => {
@@ -9315,6 +9595,7 @@ window.fvContinueToExport = () => {
     fvSetExportStatus('Ready. Click Render video', null)
   }
   fvSetYoutubeStatus('')
+  fvNotifyStudio()
 }
 
 window.fvBackToPreview = () => {
@@ -9446,6 +9727,8 @@ window.fvStartExport = async (opts = {}) => {
         dl.href = url
         document.getElementById('fv-export-result').style.display = ''
         document.getElementById('fv-export-actions').style.display = 'none'
+        fvNotifyStudio()
+        try { window.fvStudioIngestExport?.(jobId) } catch (_) {}
         fvMaybeAutoUploadYoutube()
       } catch (e) {
         clearInterval(fvState.renderPoll)
@@ -9637,6 +9920,7 @@ window.fvGenerateScript = async () => {
     fvState.phase = 1
     fvRenderScript(data)
     fvSetScriptAiLock(true)
+    fvStudioJob({ type: 'script', status: 'succeeded', progress: 100 })
     if (fvScriptIsShort(data, picked.seconds)) {
       fvShowShortScriptAction(true)
       fvSetStatus(
@@ -9654,6 +9938,7 @@ window.fvGenerateScript = async () => {
   } catch (e) {
     fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
+    fvStudioJob({ type: 'script', status: 'failed', progress: 0, error: e.message || 'Script generation failed' })
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
@@ -9936,6 +10221,45 @@ initImageWorkspace({
   loadUsage,
   loadFiles,
   resolveAccess,
+})
+try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
+initFacelessStudio({
+  api,
+  getUser: () => currentUser,
+  getVoices: () => voices,
+  loadVoices,
+  getDurationCap: () => fvDurationCapSeconds(),
+  parkWizard: (slot) => window.fvParkWizard(slot),
+  hydratePipeline: (project) => window.fvHydrateFromStudio(project),
+  snapshotPipeline: () => window.fvSnapshotForStudio(),
+  clearPipeline: () => {
+    window.fvStudioUnbind?.()
+    window.fvParkWizard?.(null)
+  },
+  generateThumb: async ({ prompt, model, aspect }) => {
+    const data = await api.generate.image({
+      prompt,
+      model: model || DEFAULT_IMAGE_MODEL,
+      aspect_ratio: aspect || '16:9',
+      quality: '2K',
+      resolution: '2K',
+      num_images: 1,
+    })
+    const url = data.urls?.[0]
+    if (!url) throw new Error('No image came back.')
+    let saved = null
+    try {
+      const pack = await api.generate.imageSave({
+        url,
+        prompt,
+        model: model || DEFAULT_IMAGE_MODEL,
+        aspect_ratio: aspect || '16:9',
+        quality: '2K',
+      })
+      saved = pack.items?.[0] || null
+    } catch (_) {}
+    return saved || { storage_url: url, url }
+  },
 })
 checkAuth()
 bindGettingStarted()

@@ -30,6 +30,14 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/faceless-studio",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/faceless-studio/:path*",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/tools",
       "destination": "/dashboard/index.html"
     },
@@ -183,6 +191,24 @@
     },
     {
       "source": "/ui",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/faceless-studio",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/faceless-studio/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

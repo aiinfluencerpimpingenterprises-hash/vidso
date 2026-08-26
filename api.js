@@ -236,6 +236,7 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
 }
 
 export const api = {
+  getToken,
   auth: {
     signup:  (email, password, name) => req('POST', '/api/auth/signup',  { email, password, name }),
     login:   (email, password)       => req('POST', '/api/auth/login',   { email, password }),
@@ -300,6 +301,46 @@ export const api = {
       const url = sameOriginApi('/api/generate/images/' + encodeURIComponent(id))
       if (!url) throw new Error('Image history is only available on the live app.')
       return reqTo(url, 'DELETE')
+    },
+  },
+  studio: {
+    list: (opts = {}) => {
+      const url = sameOriginApi('/api/faceless-studio/projects')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      const q = new URLSearchParams()
+      if (opts.offset) q.set('offset', String(opts.offset))
+      if (opts.limit) q.set('limit', String(opts.limit))
+      if (opts.q) q.set('q', opts.q)
+      if (opts.sort) q.set('sort', opts.sort)
+      if (opts.favorites) q.set('favorites', '1')
+      const qs = q.toString()
+      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
+    },
+    create: (body) => {
+      const url = sameOriginApi('/api/faceless-studio/projects')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'POST', body)
+    },
+    get: (id) => {
+      const url = sameOriginApi('/api/faceless-studio/projects/' + encodeURIComponent(id))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'GET')
+    },
+    patch: (id, body) => {
+      const url = sameOriginApi('/api/faceless-studio/projects/' + encodeURIComponent(id))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'PATCH', body)
+    },
+    jobs: (opts = {}) => {
+      const url = sameOriginApi('/api/faceless-studio/jobs')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      const q = new URLSearchParams()
+      if (opts.offset) q.set('offset', String(opts.offset))
+      if (opts.limit) q.set('limit', String(opts.limit))
+      if (opts.favorites) q.set('favorites', '1')
+      if (opts.project_id) q.set('project_id', opts.project_id)
+      const qs = q.toString()
+      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
     },
   },
   transcribe: {
