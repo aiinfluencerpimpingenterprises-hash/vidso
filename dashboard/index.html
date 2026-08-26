@@ -330,6 +330,7 @@ select option{background:var(--card)}
 .fv-script-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 16px}
 .fv-script-actions{display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .fv-script-actions.show{display:flex}
+#fv-gen-script-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
 .fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:0}
 .fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .fv-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
@@ -4537,13 +4538,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <div class="fv-script-toolbar">
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
-                  <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                 </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
               <div class="fv-sections" id="fv-sections"></div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">Use Edit manually on any section, or Regenerate with AI. Then continue to media.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">AI writes the script once. Edit any section by hand, or clear to start a new video.</p>
             </div>
           </div>
 
@@ -7265,6 +7265,8 @@ window.fvState = {
   renderUrl: null,
   phase: 1,
   inited: false,
+  scriptAiUsed: false,
+  scriptBusy: false,
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -7273,11 +7275,24 @@ function fvSetScriptActionsVisible(show) {
   if (help) help.style.display = show ? '' : 'none'
 }
 
+function fvSetScriptAiLock(used) {
+  fvState.scriptAiUsed = !!used
+  const btn = document.getElementById('fv-gen-script-btn')
+  if (!btn) return
+  btn.disabled = !!used || !!fvState.scriptBusy
+  btn.setAttribute('aria-disabled', btn.disabled ? 'true' : 'false')
+  btn.title = used
+    ? 'AI already wrote this script. Edit it by hand, or clear to start a new video.'
+    : ''
+}
+
 /** Wipe the generated script UI and return to the Generate Script form. */
 window.fvClearScript = () => {
   try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
   fvState.script = null
+  fvState.scriptAiUsed = false
+  fvState.scriptBusy = false
   fvState.media = null
   fvState.mediaJobId = null
   fvState.mediaPoll = null
@@ -7310,6 +7325,7 @@ window.fvClearScript = () => {
   try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
   try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
 
+  fvSetScriptAiLock(false)
   document.getElementById('fv-topic')?.focus?.()
 }
 
@@ -7642,7 +7658,6 @@ function fvRenderScript(script) {
         <label>${fvEsc(s.heading || s.id)}</label>
         <div class="fv-section-actions">
           <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit manually</button>
-          <button type="button" class="fv-regen-btn is-ai" onclick="fvRegenerateSection('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>Regenerate</button>
         </div>
       </div>
       <div class="fv-section-preview">${fvEsc(s.text || '')}</div>
@@ -7650,8 +7665,9 @@ function fvRenderScript(script) {
     </div>`).join('') || '<p style="color:var(--muted);font-size:.85rem">Generate a script to see sections here.</p>'
 
   const help = document.getElementById('fv-help')
-  if (help) help.textContent = 'Use Edit manually on any section, or Regenerate with AI. Then continue to media.'
+  if (help) help.textContent = 'AI writes the script once. Edit any section by hand, or clear to start a new video.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
+  if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
 }
 
 window.fvEnterEditor = () => {
@@ -8687,35 +8703,15 @@ window.fvStartExport = async () => {
 }
 
 window.fvRegenerateSection = async (sectionId) => {
-  if (!fvState.script) return
-  fvRebuildFullScriptFromSections()
-  const sec = (fvState.script.sections || []).find(s => s.id === sectionId)
-  if (!sec) return
-  const card = document.getElementById('fv-sec-' + sectionId)
-  if (card) card.classList.add('busy')
-  fvSetStatus('Rewriting section…', 'loading', 2)
-  try {
-    const topic = fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim()
-    const data = await api.faceless.rewriteSection({
-      topic,
-      section_id: sec.id,
-      heading: sec.heading,
-      text: sec.text,
-      full_script: fvState.script.full_script,
-    })
-    sec.text = data.text
-    if (data.heading) sec.heading = data.heading
-    fvRebuildFullScriptFromSections()
-    fvRenderScript(fvState.script)
-    fvSetStatus('Section updated', 'ok', 2)
-  } catch (e) {
-    fvSetStatus(e.message || 'Rewrite failed', 'err', 2)
-  } finally {
-    if (card) card.classList.remove('busy')
-  }
+  fvSetStatus('AI already wrote this script. Edit the section by hand.', 'err', 2)
 }
 
 window.fvGenerateScript = async () => {
+  if (fvState.scriptBusy) return
+  if (fvState.scriptAiUsed || fvState.script) {
+    fvSetScriptAiLock(true)
+    return fvSetStatus('AI already wrote this script. Edit it by hand, or clear to start a new video.', 'err')
+  }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
@@ -8726,6 +8722,7 @@ window.fvGenerateScript = async () => {
   }
 
   const btn = document.getElementById('fv-gen-script-btn')
+  fvState.scriptBusy = true
   if (btn) btn.disabled = true
   fvSetStatus('', null)
   fvSetScriptActionsVisible(false)
@@ -8743,6 +8740,7 @@ window.fvGenerateScript = async () => {
     data.topic = topic
     fvState.phase = 1
     fvRenderScript(data)
+    fvSetScriptAiLock(true)
     fvSetStatus('Script ready', 'ok', 2)
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
@@ -8751,7 +8749,8 @@ window.fvGenerateScript = async () => {
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
-    if (btn) btn.disabled = false
+    fvState.scriptBusy = false
+    fvSetScriptAiLock(!!(fvState.scriptAiUsed || fvState.script))
   }
 }
 
