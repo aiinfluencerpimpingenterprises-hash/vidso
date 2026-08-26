@@ -135,6 +135,7 @@ test('gated features per tier', () => {
       retention_score: false,
       high_volume_workflow: false,
       multi_channel_management: false,
+      image_4k: false,
     },
     pro: {
       video_tools: true,
@@ -143,6 +144,7 @@ test('gated features per tier', () => {
       retention_score: false,
       high_volume_workflow: false,
       multi_channel_management: false,
+      image_4k: false,
     },
     studio: {
       video_tools: true,
@@ -151,6 +153,7 @@ test('gated features per tier', () => {
       retention_score: true,
       high_volume_workflow: true,
       multi_channel_management: true,
+      image_4k: true,
     },
   }
   for (const feature of GATED_FEATURES) {
