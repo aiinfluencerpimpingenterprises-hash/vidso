@@ -7,7 +7,7 @@ import {
   publicProject,
   userIdOf,
 } from '../lib/faceless-studio-store.js'
-import { isHistorySidecarName } from '../lib/image-gen.js'
+import { isHistorySidecarName, LFG_STEP_SHOTS } from '../lib/image-gen.js'
 
 test('studio sidecars are named and hidden from My Files', () => {
   const name = projectFileName('abc-123')
@@ -55,4 +55,11 @@ test('image history filter also hides studio json once wired', () => {
   assert.equal(isHistorySidecarName('vidso-img-1.meta.json'), true)
   assert.equal(isHistorySidecarName('vidso-fs-proj-abc-123.json'), true)
   assert.equal(isHistorySidecarName('vidso-fs-file-abcd-export.mp4'), true)
+})
+
+test('LFG step shots use the shared R2 host', () => {
+  assert.equal(LFG_STEP_SHOTS.script.endsWith('/Script.png'), true)
+  assert.equal(LFG_STEP_SHOTS.media.endsWith('/Media.png'), true)
+  assert.equal(LFG_STEP_SHOTS.export.endsWith('/Export.png'), true)
+  assert.ok(LFG_STEP_SHOTS.script.includes('pub-f40c956471ff49feab622906892ec527.r2.dev'))
 })
