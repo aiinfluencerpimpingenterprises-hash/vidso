@@ -3204,10 +3204,10 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
-        Tools
+        Short Form Tools
         <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Tools">
+      <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Short Form Tools">
         <button type="button" role="menuitem" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
         <button type="button" role="menuitem" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
         <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
@@ -3265,7 +3265,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
-  <span class="nav-drawer-label">Tools</span>
+  <span class="nav-drawer-label">Short Form Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
   <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
@@ -7666,7 +7666,7 @@ const DEFAULT_PATH = '/video-generation'
 const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
   home:'Video Generation', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Video Generation', tools:'Tools',
+  videogen:'Video Generation', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
