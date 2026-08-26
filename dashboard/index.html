@@ -1783,11 +1783,70 @@ input:focus,textarea:focus,select:focus,
 .img-filter:hover{color:var(--ink)}
 .img-filter.is-on{color:var(--ink);background:rgba(255,255,255,.1)}
 .img-filter:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
-.img-empty-line{
-  position:absolute;inset:0;display:grid;place-items:center;margin:0;pointer-events:none;
-  font-size:.92rem;color:rgba(255,255,255,.45);letter-spacing:-.01em
+.img-workspace.is-empty{overflow:hidden}
+.img-workspace.is-empty .img-filters{visibility:hidden;pointer-events:none}
+.img-workspace.is-empty .img-masonry,
+.img-workspace.is-empty #img-sentinel{display:none}
+.img-empty{
+  position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:18px;padding:28px 20px 176px;text-align:center;pointer-events:none;
+  overflow:hidden;
+  background:radial-gradient(ellipse 58% 46% at 50% 38%,rgba(var(--glow),.14),transparent 72%)
 }
-.img-empty-line[hidden]{display:none}
+.img-empty[hidden]{display:none!important}
+.img-empty-fan{
+  position:relative;width:min(480px,78vw);aspect-ratio:2.15 / 1;flex-shrink:0;
+  max-height:min(220px,32vh)
+}
+.img-empty-card{
+  position:absolute;width:38%;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(245,245,244,.22);pointer-events:none;user-select:none;
+  box-shadow:0 16px 36px rgba(0,0,0,.48),0 2px 8px rgba(0,0,0,.28)
+}
+.img-empty-card:nth-child(1){
+  left:0;top:22%;z-index:1;
+  background:linear-gradient(160deg,#2c1c1e,#161618);
+  transform:rotate(-6deg) scale(.88)
+}
+.img-empty-card:nth-child(2){
+  left:18%;top:6%;z-index:3;
+  background:linear-gradient(160deg,#26181c,#121214);
+  transform:rotate(-2deg) scale(1)
+}
+.img-empty-card:nth-child(3){
+  left:40%;top:0;z-index:4;
+  background:linear-gradient(160deg,#1e1618,#101012);
+  transform:rotate(2deg) scale(1.04)
+}
+.img-empty-card:nth-child(4){
+  left:60%;top:20%;z-index:2;
+  background:linear-gradient(160deg,#2a1a1e,#141416);
+  transform:rotate(6deg) scale(.88)
+}
+.img-empty-card img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block
+}
+.img-empty-title{
+  margin:4px 0 0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);
+  line-height:.9;letter-spacing:-.045em;text-transform:uppercase;color:var(--ink)
+}
+.img-empty-title .lead,.img-empty-title .accent{display:block;white-space:nowrap}
+.img-empty-title .accent{color:var(--a1)}
+.img-empty-sub{
+  margin:0;max-width:36em;font-size:clamp(.84rem,1.5vw,.98rem);font-weight:400;line-height:1.45;
+  color:rgba(245,245,244,.48);letter-spacing:-.01em
+}
+@media (max-height:720px){
+  .img-empty{gap:12px;padding:16px 16px 176px}
+  .img-empty-fan{transform:scale(.86);transform-origin:center bottom;margin-bottom:-8px}
+  .img-empty-title{font-size:clamp(1.45rem,4vw,2.4rem)}
+}
+@media (max-height:560px){
+  .img-empty{gap:6px;padding:8px 12px 176px}
+  .img-empty-fan{transform:scale(.62);transform-origin:center bottom;margin-bottom:-8px}
+  .img-empty-title{font-size:clamp(1.15rem,3.4vw,1.7rem)}
+  .img-empty-sub{font-size:.76rem}
+}
 .img-masonry{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   gap:2px;padding:0 0 200px;align-content:start
@@ -1979,6 +2038,14 @@ input:focus,textarea:focus,select:focus,
   .img-chip{height:34px;padding:0 10px}
   .img-detail{flex-direction:column}
   .img-detail-side{width:100%}
+  .img-empty{gap:10px;padding:12px 12px 208px}
+  .img-empty-fan{width:min(320px,88vw);aspect-ratio:1.85 / 1;max-height:150px}
+  .img-empty-card{width:58%}
+  .img-empty-card:nth-child(1),
+  .img-empty-card:nth-child(4){display:none}
+  .img-empty-card:nth-child(2){left:0;top:14%;transform:rotate(-4deg) scale(.96)}
+  .img-empty-card:nth-child(3){left:34%;top:0;transform:rotate(4deg) scale(1.02)}
+  .img-empty-title{font-size:clamp(1.22rem,6.8vw,1.6rem);line-height:.92}
 }
 
 /* Video gen V2 */
@@ -3191,7 +3258,19 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <button type="button" class="img-filter is-on" id="img-filter-all" role="tab" aria-selected="true">All</button>
           <button type="button" class="img-filter" id="img-filter-favs" role="tab" aria-selected="false">Favorites</button>
         </div>
-        <p class="img-empty-line" id="img-empty">Describe a thumbnail below to generate it.</p>
+        <div class="img-empty" id="img-empty" hidden>
+          <div class="img-empty-fan" id="img-empty-fan" aria-hidden="true">
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+          </div>
+          <h1 class="img-empty-title">
+            <span class="lead">Start creating with</span>
+            <span class="accent">Vidso thumbnails</span>
+          </h1>
+          <p class="img-empty-sub">Describe a scene, a subject, a mood, or a style, and watch it come to life.</p>
+        </div>
         <div class="img-masonry" id="img-grid"></div>
         <div id="img-sentinel" aria-hidden="true"></div>
       </div>
