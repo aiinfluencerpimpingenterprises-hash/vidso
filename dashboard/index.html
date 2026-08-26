@@ -131,7 +131,7 @@
   --ease-out:cubic-bezier(.22,1,.36,1);--dur-hover:150ms;--dur-panel:250ms;
   /* Layout */
   --page-max:880px;--page-max-wide:1280px;
-  --chrome-pad-x:16px;--chrome-banner-h:44px;--chrome-nav-h:44px;
+  --chrome-pad-x:16px;--chrome-banner-h:32px;--chrome-nav-h:44px;
   --nav-gap:8px;
   --font-heading:'Clash Grotesk',sans-serif;
   /* Status */
@@ -149,19 +149,19 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 }
 .app-banner[hidden]{display:none!important}
 .app-banner-msg{
-  flex:1;min-width:0;margin:0;font-size:.84rem;font-weight:650;letter-spacing:-.01em;line-height:1;
+  flex:1;min-width:0;margin:0;font-size:.75rem;font-weight:650;letter-spacing:-.01em;line-height:1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.app-banner-end{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.app-banner-end{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
 .app-banner-cta{
-  flex-shrink:0;height:28px;padding:0 12px;border-radius:999px;
-  background:#1A0A0C;color:#fff;font:inherit;font-size:.75rem;font-weight:650;
+  flex-shrink:0;height:22px;padding:0 10px;border-radius:999px;
+  background:#1A0A0C;color:#fff;font:inherit;font-size:.68rem;font-weight:650;
   text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap
 }
 .app-banner-cta:hover{filter:brightness(1.08)}
 .app-banner-cta:focus-visible,.app-banner-x:focus-visible{outline:2px solid #2A1014;outline-offset:2px}
 .app-banner-x{
-  flex-shrink:0;width:32px;height:32px;border:none;border-radius:8px;cursor:pointer;
+  flex-shrink:0;width:24px;height:24px;border:none;border-radius:6px;cursor:pointer;
   background:transparent;color:#2A1014;display:inline-flex;align-items:center;justify-content:center
 }
 .app-banner-x:hover{background:rgba(42,16,20,.08)}
