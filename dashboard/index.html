@@ -2171,6 +2171,7 @@ body.img-detail-open{overflow:hidden}
 /* V2 punch list */
 .panel.active{width:100%}
 .content > .panel{width:100%}
+#panel-dashboard{display:none!important}
 #panel-dashboard .page-shell,
 #panel-dashboard .dash-shell{
   max-width:1280px!important;
@@ -3218,7 +3219,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-    <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
@@ -3277,7 +3277,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-  <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
@@ -5291,7 +5290,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
 
-    <div class="panel active content-glow" id="panel-dashboard">
+    <div class="panel content-glow" id="panel-dashboard" hidden>
       <div class="page-shell dash-shell">
         <div class="page-header dash-welcome" id="dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
@@ -5641,7 +5640,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/dashboard'
+  if (path === '/login' || path === '/signup') return location.origin + '/video-generation'
   return location.origin + location.pathname + location.search
 }
 
@@ -7662,43 +7661,49 @@ function populateUser() {
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
+const DEFAULT_PANEL = 'videogen'
+const DEFAULT_PATH = '/video-generation'
+const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Video Generation', tools:'Tools', dashboard:'Dashboard',
+  home:'Video Generation', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  videogen:'Video Generation', tools:'Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
-  home:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', tools:'/tools', dashboard:'/dashboard',
+  clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  videogen:'/video-generation', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
-PATH_TO_PANEL['/analytics'] = 'dashboard'
-PATH_TO_PANEL['/overview'] = 'dashboard'
-PATH_TO_PANEL['/upscale'] = 'dashboard'
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
-function pathForPanel(id) { return PANEL_PATHS[id] || '/dashboard' }
+function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
+function resolvePanel(id) {
+  if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
+  if (id && titles[id] && document.getElementById('panel-' + id)) return id
+  return DEFAULT_PANEL
+}
 function panelFromPath() {
-  const mapped = PATH_TO_PANEL[normalizePath(location.pathname)]
+  const path = normalizePath(location.pathname)
+  if (HOME_PATHS.has(path)) return DEFAULT_PANEL
+  const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
     const last = sessionStorage.getItem('vidso_last_panel')
-    if (last && titles[last]) return last
+    if (last && titles[last] && last !== 'dashboard') return last
   } catch (_) {}
-  return 'dashboard'
+  return DEFAULT_PANEL
 }
 function isAuthPath() {
   const p = normalizePath(location.pathname)
   return p === '/login' || p === '/signup'
 }
 window.switchPanel = (id, btn, opts = {}) => {
-  if (id === 'home') id = 'dashboard'
-  if (!titles[id]) id = 'dashboard'
+  id = resolvePanel(id)
   // Hard gate: after signup onboarding, block every tool until a plan is active.
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
@@ -7717,7 +7722,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     }
   }
   const panel = document.getElementById('panel-'+id)
-  if (!panel) id = 'dashboard'
+  if (!panel) id = DEFAULT_PANEL
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-'+id).classList.add('active')
   markNavActive(id)
@@ -7726,7 +7731,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -7757,8 +7762,8 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (p === '/overview' || p === '/analytics' || p === '/') {
-    history.replaceState(null, '', '/dashboard')
+  if (HOME_PATHS.has(p)) {
+    history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
   switchPanel(panel, null, { silent: true, allowLocked: true })

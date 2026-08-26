@@ -12,7 +12,7 @@
   var s = location.search || ''
   var oauth = /access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)
   var billing = /(?:[?&])(?:billing=success|status=success)/.test(s)
-  location.replace((oauth ? '/login' : billing ? '/dashboard' : '/home') + s + h)
+  location.replace((oauth ? '/login' : billing ? '/video-generation' : '/home') + s + h)
 })()
 </script>
 <noscript><meta http-equiv="refresh" content="0; url=/home"/></noscript>

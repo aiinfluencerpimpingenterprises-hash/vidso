@@ -145,7 +145,7 @@ function checkoutUrl(tier, interval, opts = {}) {
   const userId = opts.userId ? String(opts.userId) : ''
   u.searchParams.set('email', email)
   u.searchParams.set('email.disabled', '1')
-  const ret = `${opts.origin || appOrigin()}/dashboard?billing=success`
+  const ret = `${opts.origin || appOrigin()}/video-generation?billing=success`
   u.searchParams.set('redirect', ret)
   u.searchParams.set('return_url', ret)
   if (userId) {

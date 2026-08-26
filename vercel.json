@@ -105,32 +105,42 @@
     },
     {
       "source": "/upscale",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/upscale/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/overview",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/overview/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/analytics",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/analytics/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/video-generation",
       "permanent": false
     }
   ],
