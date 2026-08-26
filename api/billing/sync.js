@@ -31,6 +31,14 @@ function emailFromJwt(token) {
   }
 }
 
+async function readJson(req) {
+  if (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body)) return req.body
+  const chunks = []
+  for await (const c of req) chunks.push(c)
+  if (!chunks.length) return {}
+  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}') } catch { return {} }
+}
+
 async function requireUser(req) {
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
   if (!token) {
@@ -94,13 +102,14 @@ export default async function handler(req, res) {
     })
   }
 
-  const hit = await lookupPaidMembership(user)
+  const body = await readJson(req).catch(() => ({}))
+  const hit = await lookupPaidMembership(user, undefined, { force: !!body.force, deep: true })
   if (!hit.active) {
     return send(res, 200, {
       active: false,
       configured: true,
       reason: hit.reason || 'not_found',
-      message: hit.message || 'No active Whop membership for this email yet.',
+      message: hit.message || syncMessage(hit.reason, user),
     })
   }
 
@@ -120,4 +129,12 @@ export default async function handler(req, res) {
 function grantSource(user, stored) {
   if (stored.plan_status === 'active' && (user.plan_status === 'active' || user.active === true)) return 'clipzo'
   return 'grant'
+}
+
+function syncMessage(reason, user) {
+  const email = emailsFromUser(user)[0] || 'this account'
+  if (reason === 'bad_key') return 'The Whop API key on this deployment was rejected.'
+  if (reason === 'missing_permission') return 'The Whop API key is missing the member:email:read permission, so payments cannot be matched to an email.'
+  if (reason === 'whop_error') return 'Whop could not be reached to confirm the payment.'
+  return `No active Whop membership is attached to ${email} yet.`
 }

@@ -150,15 +150,50 @@ function checkoutUrl(tier, interval, opts = {}) {
   return u.toString()
 }
 
-async function billingSync() {
+// Why the last sync said "not paid" — the paywall shows this instead of
+// guessing, so a bad API key never looks like a missing purchase.
+let _lastSync = null
+
+async function billingSync(opts = {}) {
   const url = sameOriginApi('/api/billing/sync')
-  if (!url) return { active: false, configured: false, reason: 'local' }
+  if (!url) {
+    _lastSync = { active: false, configured: false, reason: 'local' }
+    return _lastSync
+  }
   try {
-    return await reqTo(url, 'POST', {})
+    _lastSync = await reqTo(url, 'POST', { force: !!opts.force })
+    return _lastSync
   } catch (e) {
-    if (e.status === 404 || e.status === 501) return { active: false, configured: false, reason: 'missing_route' }
+    if (e.status === 404 || e.status === 501) {
+      _lastSync = { active: false, configured: false, reason: 'missing_route' }
+      return _lastSync
+    }
+    _lastSync = { active: false, reason: 'sync_failed', message: e.message }
     throw e
   }
+}
+
+function lastSync() {
+  return _lastSync
+}
+
+/** Human copy for a failed sync, used by the paywall. */
+function syncProblem(sync) {
+  const s = sync || _lastSync
+  if (!s || s.active) return ''
+  if (s.reason === 'missing_key' || s.reason === 'missing_route') {
+    return 'Billing checks are not configured on this deployment yet. Contact support and we will unlock it by hand.'
+  }
+  if (s.reason === 'bad_key' || s.reason === 'missing_permission') {
+    return 'We could not read your payment from Whop because of a billing configuration problem on our side, not yours. Contact support and we will unlock it right away.'
+  }
+  if (s.reason === 'whop_error' || s.reason === 'sync_failed') {
+    return 'Whop did not answer when we checked your payment. Wait a moment and tap I already paid again.'
+  }
+  if (s.reason === 'missing_identity') {
+    return 'This account has no email, so there is nothing to match against Whop. Contact support.'
+  }
+  return ''
 }
 
 function mergeSync(me, sync) {
@@ -170,10 +205,16 @@ function mergeSync(me, sync) {
 async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
   const started = Date.now()
   let last = null
+  let force = true
   while (Date.now() - started < timeoutMs) {
     try {
       last = withCompedPlan(await req('GET', '/api/user/me'))
-      if (!planIsActive(last)) last = mergeSync(last, await billingSync())
+      if (!planIsActive(last)) {
+        // The first check skips the server's negative cache, which is otherwise
+        // still holding a miss from before the payment landed.
+        last = mergeSync(last, await billingSync({ force }))
+        force = false
+      }
       if (typeof onTick === 'function') onTick(last)
       const active = planIsActive(last)
       const ready = planReady(last, expectedTier)
@@ -366,6 +407,8 @@ export const api = {
     checkoutUrl,
     waitForProvisioned,
     sync: billingSync,
+    lastSync,
+    syncProblem,
     formatQuota,
     quotaView,
     unlockCopy,

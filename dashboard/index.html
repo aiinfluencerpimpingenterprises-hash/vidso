@@ -6900,7 +6900,8 @@ async function watchForPurchase(opts = {}) {
     }
     document.documentElement.classList.add('needs-paywall')
     document.documentElement.classList.remove('needs-gate')
-    setPaywallStatus('Payment is not attached to this account yet. If you already paid, tap I already paid.', 'err')
+    const problem = api.billing.syncProblem()
+    setPaywallStatus(problem || 'Payment is not attached to this account yet. If you already paid, tap I already paid.', 'err')
     return false
   }).catch((e) => {
     _planPoll = null

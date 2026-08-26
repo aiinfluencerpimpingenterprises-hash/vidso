@@ -5,6 +5,7 @@ import {
   grantFromMembership,
   membershipMatchesUser,
   pickBestGrant,
+  _internals,
 } from '../lib/whop-lookup.js'
 import { applyPaidGrant } from '../lib/paid-grant.js'
 import { grantFor, saveGrant, withStoredGrant, _resetGrantsForTests } from '../lib/grants.js'
@@ -70,6 +71,60 @@ test('mapped Pro membership becomes an active Vidso grant', () => {
   assert.equal(user.plan, 'pro')
   assert.equal(user.plan_status, 'active')
   assert.equal(planIsActive(user), true)
+})
+
+test('list filters use the array param names Whop actually reads', () => {
+  const qs = _internals.buildQuery({
+    company_id: 'biz_1',
+    first: 100,
+    statuses: ['active', 'trialing'],
+    plan_ids: [PRO_MONTHLY],
+    user_ids: ['user_1'],
+    after: undefined,
+  })
+  assert.match(qs, /statuses\[\]=active&statuses\[\]=trialing/)
+  assert.match(qs, new RegExp('plan_ids\\[\\]=' + PRO_MONTHLY))
+  assert.match(qs, /user_ids\[\]=user_1/)
+  // Whop ignores `status` and `user_id`, so a buyer would never be found.
+  assert.doesNotMatch(qs, /(^|&)status=/)
+  assert.doesNotMatch(qs, /(^|&)user_id=/)
+  assert.doesNotMatch(qs, /after=/)
+})
+
+test('membership matches on the Whop user id when the API key cannot read emails', () => {
+  const row = {
+    id: 'mem_hidden',
+    status: 'active',
+    user: { id: 'user_42', email: null },
+    plan: { id: PRO_MONTHLY },
+  }
+  const identity = { emails: ['buyer@example.com'], whopUserIds: ['user_42'] }
+  assert.equal(membershipMatchesUser(row, identity), true)
+  assert.equal(pickBestGrant([row], identity).tier, 'pro')
+  assert.equal(membershipMatchesUser(row, { emails: ['buyer@example.com'] }), false)
+})
+
+test('membership matches when Whop returns the plan and user as bare ids', () => {
+  const row = {
+    id: 'mem_flat',
+    status: 'active',
+    user: 'user_77',
+    plan_id: PRO_MONTHLY,
+  }
+  const grant = pickBestGrant([row], { emails: ['x@y.com'], whopUserIds: ['user_77'] })
+  assert.equal(grant.tier, 'pro')
+  assert.equal(grant.legacy, false)
+})
+
+test('a settled one-time purchase still grants access', () => {
+  const grant = grantFromMembership({
+    id: 'mem_done',
+    status: 'completed',
+    plan: { id: STUDIO_YEARLY },
+    user: { email: 'buyer@example.com' },
+  })
+  assert.equal(grant.active, true)
+  assert.equal(grant.tier, 'studio')
 })
 
 test('grant store unlocks the same email on a later request', () => {
