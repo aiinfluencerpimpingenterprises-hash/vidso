@@ -80,8 +80,11 @@
     }
     if (needOb) obSeen = false
   } catch (e) {}
-  if (needOb) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
-  else document.documentElement.classList.add('needs-gate')
+  // Do not paint the solid black cover on refresh. Paid users should see the
+  // app immediately; unpaid users should see onboarding or the paywall, not a
+  // blank #0B0B0C frame while /user/me runs.
+  if (needOb) document.documentElement.classList.add('needs-onboarding')
+  else if (!paid) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -139,10 +142,10 @@
 /* Viewport-locked shell: banner + top nav stay fixed; only .content scrolls. */
 body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
-#app-chrome{flex-shrink:0;width:100%;position:relative;z-index:60}
+#app-chrome{flex:0 0 auto;width:100%;position:relative}
 .app-banner{
   display:flex;align-items:center;width:100%;height:var(--chrome-banner-h);max-height:var(--chrome-banner-h);
-  padding:0 var(--chrome-pad-x);overflow:hidden;background:#F3C4C8;color:#2A1014
+  padding:0 var(--chrome-pad-x);overflow:hidden;background:#F3C4C8;color:#2A1014;position:relative;z-index:50
 }
 .app-banner[hidden]{display:none!important}
 .app-banner-msg{
@@ -165,7 +168,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 .app-topnav{
   display:flex;align-items:center;flex-wrap:nowrap;width:100%;height:var(--chrome-nav-h);
-  padding:0 var(--chrome-pad-x);gap:12px;overflow:visible;
+  padding:0 var(--chrome-pad-x);gap:12px;overflow:visible;position:relative;z-index:50;
   background:#1A1A1E;border-bottom:1px solid rgba(245,245,244,.22)
 }
 .nav-hamburger{
@@ -209,7 +212,10 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   box-shadow:0 18px 48px rgba(0,0,0,.65)
 }
 .topnav-menu.is-open,.nav-search-pop.is-open{display:flex;flex-direction:column}
-#nav-portal{position:relative;z-index:220}
+#nav-portal{
+  position:fixed;top:0;left:0;width:0;height:0;z-index:220;pointer-events:none;overflow:visible
+}
+#nav-portal > *{pointer-events:auto}
 #nav-portal .topnav-menu,#nav-portal .nav-search-pop{width:280px}
 .topnav-menu [role="menuitem"],.nav-search-item{
   display:flex;align-items:center;flex-shrink:0;width:100%;min-height:36px;text-align:left;border:none;background:transparent;
@@ -703,10 +709,10 @@ html.needs-auth body::before,html.needs-gate body::before,html.needs-paywall bod
   content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
 }
 html.needs-onboarding body::before{content:none;display:none}
-html.needs-auth #app-topnav,html.needs-auth #app-banner,html.needs-auth main,
-html.needs-gate #app-topnav,html.needs-gate #app-banner,html.needs-gate main,
-html.needs-paywall #app-topnav,html.needs-paywall #app-banner,html.needs-paywall main,
-html.needs-onboarding #app-topnav,html.needs-onboarding #app-banner,html.needs-onboarding main{visibility:hidden}
+html.needs-auth #app-chrome,html.needs-auth main,
+html.needs-gate #app-chrome,html.needs-gate main,
+html.needs-paywall #app-chrome,html.needs-paywall main,
+html.needs-onboarding #app-chrome,html.needs-onboarding main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
 html.needs-paywall #paywall-modal,
@@ -2227,7 +2233,7 @@ input:focus,textarea:focus,select:focus,
 }
 html.needs-onboarding #onboarding-modal,
 html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
-body.onboarding-open .app-topnav,body.onboarding-open .app-banner,body.onboarding-open .main{visibility:hidden}
+body.onboarding-open #app-chrome,body.onboarding-open .main{visibility:hidden}
 .onboarding-shell{
   width:100%;max-width:none;height:100%;max-height:none;min-height:100%;flex:1;
   padding:0;overflow:hidden;display:flex;flex-direction:column;
