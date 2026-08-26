@@ -2557,9 +2557,9 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <div class="paywall-plans" id="paywall-plans"></div>
     <div class="paywall-status" id="paywall-status"></div>
     <div class="paywall-foot">
-      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
+      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I already paid</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+      <p class="paywall-note">Checkout is locked to this Vidso email. After you pay, we check Whop even if Clipzo is still unpaid.</p>
       <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
@@ -4890,7 +4890,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 </main>
 
 <script type="module">
-import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
+import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
@@ -6861,7 +6861,7 @@ let _planPoll = null
 async function watchForPurchase(opts = {}) {
   if (_planPoll) return _planPoll
   const tier = pendingCheckoutTier(opts.tier)
-  setPaywallStatus('Activating your plan…', 'loading')
+  setPaywallStatus('Checking Whop for your payment…', 'loading')
   _planPoll = api.billing.waitForProvisioned({
     expectedTier: tier,
     timeoutMs: opts.timeoutMs || 120000,
@@ -6893,7 +6893,7 @@ async function watchForPurchase(opts = {}) {
     }
     document.documentElement.classList.add('needs-paywall')
     document.documentElement.classList.remove('needs-gate')
-    setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
+    setPaywallStatus('Payment is not attached to this account yet. If you already paid, tap I already paid.', 'err')
     return false
   }).catch((e) => {
     _planPoll = null
@@ -6905,10 +6905,15 @@ async function watchForPurchase(opts = {}) {
 
 window.startCheckout = (tier) => {
   pendingCheckoutTier(tier)
+  const email = String(currentUser?.email || '').trim()
+  if (!email || !email.includes('@')) {
+    setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
+    return
+  }
   const url = api.billing.checkoutUrl(tier, _paywallCycle, {
-    email: currentUser?.email,
+    email,
     userId: currentUser?.id || currentUser?.user_id,
-  }) || WHOP_CHECKOUT[`${tier}_${_paywallCycle}`]
+  })
   if (!url) {
     setPaywallStatus('Checkout link missing for this plan', 'err')
     return
@@ -6916,7 +6921,7 @@ window.startCheckout = (tier) => {
   setPaywallStatus('Opening checkout…', 'loading')
   window.open(url, '_blank', 'noopener,noreferrer')
   setTimeout(() => {
-    setPaywallStatus('Pay in the Whop tab — this page will unlock when your plan is active.', null)
+    setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)
     watchForPurchase({ tier })
   }, 600)
 }

@@ -2,6 +2,7 @@ import { WHOP_CHECKOUT } from '/lib/whop-map.js'
 import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
+import { applyPaidGrant } from '/lib/paid-grant.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -129,22 +130,41 @@ function planReady(me, expectedTier) {
 }
 
 function checkoutUrl(tier, interval, opts = {}) {
+  const email = String(opts.email || emailFromToken() || '').trim()
+  if (!email || !email.includes('@')) return ''
   const base = WHOP_CHECKOUT[`${tier}_${interval}`]
   if (!base) return ''
   const u = new URL(base)
-  const email = String(opts.email || emailFromToken() || '').trim()
   const userId = opts.userId ? String(opts.userId) : ''
-  if (email) {
-    u.searchParams.set('email', email)
-    u.searchParams.set('email.disabled', '1')
-  }
+  u.searchParams.set('email', email)
+  u.searchParams.set('email.disabled', '1')
   const ret = `${opts.origin || appOrigin()}/dashboard?billing=success`
   u.searchParams.set('redirect', ret)
   u.searchParams.set('return_url', ret)
-  if (userId) u.searchParams.set('metadata[user_id]', userId)
-  if (email) u.searchParams.set('metadata[email]', email)
+  if (userId) {
+    u.searchParams.set('metadata[user_id]', userId)
+    u.searchParams.set('metadata[vidso_user_id]', userId)
+  }
+  u.searchParams.set('metadata[email]', email)
   if (tier) u.searchParams.set('metadata[tier]', String(tier))
   return u.toString()
+}
+
+async function billingSync() {
+  const url = sameOriginApi('/api/billing/sync')
+  if (!url) return { active: false, configured: false, reason: 'local' }
+  try {
+    return await reqTo(url, 'POST', {})
+  } catch (e) {
+    if (e.status === 404 || e.status === 501) return { active: false, configured: false, reason: 'missing_route' }
+    throw e
+  }
+}
+
+function mergeSync(me, sync) {
+  if (!me || !sync?.active) return me
+  if (sync.tier) return applyPaidGrant(me, sync)
+  return { ...me, plan_status: 'active', active: true }
 }
 
 async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
@@ -153,6 +173,7 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
   while (Date.now() - started < timeoutMs) {
     try {
       last = withCompedPlan(await req('GET', '/api/user/me'))
+      if (!planIsActive(last)) last = mergeSync(last, await billingSync())
       if (typeof onTick === 'function') onTick(last)
       const active = planIsActive(last)
       const ready = planReady(last, expectedTier)
@@ -186,7 +207,11 @@ export const api = {
           me.short_form_used = u.short_form_used
         }
       } catch (_) {}
-      return withCompedPlan({ ...me, email: me.email || emailFromToken() })
+      let user = withCompedPlan({ ...me, email: me.email || emailFromToken() })
+      if (!planIsActive(user)) {
+        try { user = mergeSync(user, await billingSync()) } catch (_) {}
+      }
+      return user
     },
     usage: () => req('GET', '/api/user/usage'),
   },
@@ -338,9 +363,9 @@ export const api = {
     },
   },
   billing: {
-    // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
-    checkoutUrl: (tier, interval, opts) => checkoutUrl(tier, interval, opts) || WHOP_CHECKOUT.creator_monthly,
+    checkoutUrl,
     waitForProvisioned,
+    sync: billingSync,
     formatQuota,
     quotaView,
     unlockCopy,

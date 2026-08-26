@@ -1,7 +1,10 @@
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
 import { incrementUsage, readUsage } from '../../lib/usage-store.js'
-import { withCompedPlan } from '../../lib/comped.js'
+import { withCompedPlan, planIsActive } from '../../lib/comped.js'
+import { applyPaidGrant } from '../../lib/paid-grant.js'
+import { saveGrant, withStoredGrant } from '../../lib/grants.js'
+import { lookupPaidMembership } from '../../lib/whop-lookup.js'
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
@@ -46,7 +49,17 @@ async function railwayMe(token) {
     err.body = data
     throw err
   }
-  return withCompedPlan({ ...data, email: data.email || emailFromJwt(token) })
+  let user = withStoredGrant(withCompedPlan({ ...data, email: data.email || emailFromJwt(token) }))
+  if (planIsActive(user)) return user
+  try {
+    const hit = await lookupPaidMembership(user)
+    if (hit?.active && hit.tier) {
+      user = applyPaidGrant(user, saveGrant(user, hit))
+    } else if (hit?.active && hit.legacy) {
+      user = { ...user, plan_status: 'active', active: true }
+    }
+  } catch (_) {}
+  return user
 }
 
 async function forward(req, subpath, body) {
