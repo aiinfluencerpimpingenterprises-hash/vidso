@@ -162,8 +162,8 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 .app-topnav{
   flex-shrink:0;position:sticky;top:0;z-index:50;height:52px;
-  display:flex;align-items:center;gap:8px;padding:0 12px 0 14px;
-  flex-wrap:nowrap;
+  display:flex;align-items:center;gap:4px;padding:0 14px 0 16px;
+  flex-wrap:nowrap;overflow:visible;
   background:rgba(11,11,12,.88);border-bottom:1px solid var(--line);
   backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)
 }
@@ -173,23 +173,26 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 }
 .nav-hamburger:hover{background:rgba(255,255,255,.06)}
 .nav-hamburger:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.topnav-logo{display:flex;align-items:center;gap:8px;min-width:0;color:inherit;text-decoration:none;border-radius:10px;flex-shrink:0;padding:4px 4px 4px 0}
-.topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
-.topnav-logo img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
-.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase}
-.topnav-primary{display:flex;align-items:center;gap:0;min-width:0;flex:1;overflow:hidden}
-.topnav-group{display:flex;align-items:center;gap:0;flex-shrink:0}
-.topnav-group + .topnav-group{margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,255,255,.12)}
-.topnav-item{
-  position:relative;height:36px;padding:0 10px;border:none;border-radius:8px;cursor:pointer;
-  background:transparent;color:var(--text-body);font-family:inherit;font-size:.8rem;font-weight:500;
-  letter-spacing:-.01em;white-space:nowrap;display:inline-flex;align-items:center;gap:6px
+.topnav-logo{
+  display:flex;align-items:center;gap:8px;height:36px;min-width:0;color:inherit;text-decoration:none;
+  border-radius:10px;flex-shrink:0;padding:0 8px 0 0;line-height:1
 }
-.topnav-item:hover{color:var(--ink);background:rgba(255,255,255,.05)}
-.topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.topnav-item.active{color:var(--ink);font-weight:600}
+.topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+.topnav-logo img{width:22px;height:22px;object-fit:contain;flex-shrink:0;display:block}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.02rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase;line-height:1;display:block}
+.topnav-primary{display:flex;align-items:center;align-self:stretch;gap:0;min-width:0;flex:1;overflow:visible}
+.topnav-group{display:flex;align-items:stretch;align-self:stretch;gap:0;flex-shrink:0}
+.topnav-group + .topnav-group{margin-left:4px;padding-left:5px;border-left:1px solid rgba(255,255,255,.12)}
+.topnav-item{
+  position:relative;height:auto;align-self:stretch;padding:0 11px;border:none;border-radius:0;cursor:pointer;
+  background:transparent;color:var(--text-body);font-family:inherit;font-size:.8rem;font-weight:500;
+  letter-spacing:-.01em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:5px
+}
+.topnav-item:hover{color:var(--ink);background:transparent}
+.topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:-2px}
+.topnav-item.active{color:var(--ink);font-weight:500}
 .topnav-item.active::after{
-  content:'';position:absolute;left:10px;right:10px;bottom:4px;height:2px;border-radius:2px;background:var(--a1)
+  content:'';position:absolute;left:11px;right:11px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--a1)
 }
 .topnav-item .nav-new,.nav-drawer .nav-new{
   display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:999px;
@@ -197,18 +200,20 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   color:#fff;background:var(--a1);line-height:1
 }
 .topnav-chev{width:10px;height:10px;opacity:.55;flex-shrink:0}
-.topnav-drop{position:relative}
+.topnav-drop{position:relative;display:flex;align-items:stretch;align-self:stretch;overflow:visible}
+.topnav-drop.is-open{z-index:80}
 .topnav-menu,.nav-search-pop{
-  display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:60;min-width:220px;
-  padding:6px;border-radius:12px;background:#121214;border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 18px 48px rgba(0,0,0,.55)
+  display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:80;min-width:240px;
+  padding:6px;border-radius:12px;background:#1A1A1E;border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 48px rgba(0,0,0,.65)
 }
-.topnav-drop.is-open > .topnav-menu,.topnav-drop.is-open > .nav-search-pop{display:block}
+.topnav-drop.is-open > .topnav-menu,.topnav-drop.is-open > .nav-search-pop{display:flex;flex-direction:column}
 #nav-avatar-wrap .topnav-menu{left:auto;right:0}
-#nav-search-wrap .nav-search-pop{left:auto;right:0;width:280px}
+#nav-search-wrap{align-items:center}
+#nav-search-wrap .nav-search-pop{left:auto;right:0;width:280px;top:calc(100% + 8px)}
 .topnav-menu [role="menuitem"],.nav-search-item{
-  display:flex;align-items:center;width:100%;text-align:left;border:none;background:transparent;
-  color:var(--ink);font:inherit;font-size:.82rem;padding:8px 10px;border-radius:8px;cursor:pointer
+  display:flex;align-items:center;flex-shrink:0;width:100%;min-height:36px;text-align:left;border:none;background:transparent;
+  color:var(--ink);font:inherit;font-size:.82rem;line-height:1.2;padding:8px 10px;border-radius:8px;cursor:pointer
 }
 .topnav-menu [role="menuitem"]:hover,.nav-search-item:hover,
 .topnav-menu [role="menuitem"]:focus,.nav-search-item:focus{
@@ -220,7 +225,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.82rem
 }
 .nav-search-empty{margin:8px 10px;font-size:.78rem;color:rgba(255,255,255,.45)}
-.topnav-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.topnav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;height:36px}
 .topnav-ico-btn{
   width:36px;height:36px;padding:0;border:none;border-radius:10px;cursor:pointer;
   background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center
@@ -229,9 +234,10 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .topnav-ico-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
 .topnav-avatar{
   width:32px;height:32px;border-radius:50%;background:var(--grad);display:flex;align-items:center;
-  justify-content:center;font-size:.78rem;font-weight:700;color:#fff;border:none;cursor:pointer;padding:0
+  justify-content:center;font-size:.78rem;font-weight:700;line-height:1;color:#fff;border:none;cursor:pointer;padding:0
 }
 .topnav-avatar:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+#nav-avatar-wrap{align-items:center;height:36px}
 .nav-drawer{display:none}
 .nav-badge,.badge-soon{display:inline-flex;align-items:center;justify-content:center;height:18px;padding:0 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
 .user-profile-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:0;display:flex;flex-direction:column;overflow:hidden}
@@ -2575,7 +2581,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     color:var(--text-label);padding:10px 10px 4px
   }
   .nav-drawer .topnav-item{
-    width:100%;height:auto;min-height:44px;justify-content:flex-start;border-radius:12px
+    width:100%;height:auto;min-height:44px;align-self:stretch;justify-content:flex-start;border-radius:12px
   }
   .nav-drawer .topnav-item.active::after{display:none}
   .nav-drawer .topnav-item.active{background:rgba(var(--glow),.12);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
