@@ -10,6 +10,7 @@ import {
 import { applyPaidGrant } from '../lib/paid-grant.js'
 import { grantFor, saveGrant, withStoredGrant, _resetGrantsForTests } from '../lib/grants.js'
 import { planIsActive } from '../lib/comped.js'
+import { _internalsForTests as diagnostics } from '../api/billing/diagnose.js'
 
 const PRO_MONTHLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_MONTHLY
 const STUDIO_YEARLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_STUDIO_YEARLY
@@ -125,6 +126,40 @@ test('a settled one-time purchase still grants access', () => {
   })
   assert.equal(grant.active, true)
   assert.equal(grant.tier, 'studio')
+})
+
+test('diagnostics name the missing email permission instead of blaming the buyer', () => {
+  const { verdict, summarizeMemberSearch } = diagnostics
+  const hidden = summarizeMemberSearch({
+    ok: true,
+    data: { data: [{ user: { id: 'user_1', email: null } }] },
+  }, 'buyer@example.com')
+  assert.equal(hidden.emailReadable, false)
+  assert.match(verdict({
+    configured: true,
+    member: hidden,
+    memberships: { ok: true, rows: 0 },
+    lookup: {},
+  }), /member:email:read/)
+
+  assert.match(verdict({
+    configured: false,
+    member: {},
+    memberships: {},
+    lookup: {},
+  }), /WHOP_API_KEY is not set/)
+
+  const found = summarizeMemberSearch({
+    ok: true,
+    data: { data: [{ user: { id: 'user_1', email: 'Buyer@Example.com' } }] },
+  }, 'buyer@example.com')
+  assert.deepEqual(found.whopUserIds, ['user_1'])
+  assert.match(verdict({
+    configured: true,
+    member: found,
+    memberships: { ok: true, rows: 1 },
+    lookup: { active: true, tier: 'pro' },
+  }), /should be unlocked/)
 })
 
 test('grant store unlocks the same email on a later request', () => {
