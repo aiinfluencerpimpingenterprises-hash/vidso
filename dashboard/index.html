@@ -73,7 +73,7 @@
     }
     for (var i = 0; i < ids.length; i++) {
       if (hasSeenId(ids[i])) obSeen = true
-      if (ids[i] === 'stormdecoded@gmail.com') paid = true
+      if (ids[i] === 'stormdecoded@gmail.com' || ids[i] === 'ntuamassoma@gmail.com' || ids[i] === 'faisalym3@gmail.com') paid = true
     }
     if (paid) {
       try { localStorage.setItem('vidso_plan_active', '1') } catch (e5) {}
@@ -90,10 +90,13 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
-<noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Montserrat:wght@700&family=Baloo+2:wght@800&family=Permanent+Marker&family=Luckiest+Guy&family=Bebas+Neue&family=Oswald:wght@700&family=Black+Han+Sans&family=Geist:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></noscript>
 <style>
 @font-face{font-family:'TikTok Sans 18pt';src:url('/fonts/TikTokSans-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Semibold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
 @font-face{font-family:'SF Pro Display';font-weight:400;src:url('/fonts/SF-Pro-Display-Regular.woff2') format('woff2');font-display:swap}
 @font-face{font-family:'SF Pro Display';font-weight:500;src:url('/fonts/SF-Pro-Display-Medium.woff2') format('woff2');font-display:swap}
 @font-face{font-family:'SF Pro Display';font-weight:600;src:url('/fonts/SF-Pro-Display-Semibold.woff2') format('woff2');font-display:swap}
@@ -125,6 +128,7 @@
   --ease-out:cubic-bezier(.22,1,.36,1);--dur-hover:150ms;--dur-panel:250ms;
   /* Layout */
   --page-max:880px;--page-max-wide:1280px;
+  --font-heading:'Clash Grotesk',sans-serif;
   /* Status */
   --ok:#6fcf97;--err:#eb5757;
   color-scheme:dark;
@@ -330,6 +334,7 @@ select option{background:var(--card)}
 .fv-script-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 16px}
 .fv-script-actions{display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .fv-script-actions.show{display:flex}
+#fv-gen-script-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
 .fv-sections{display:flex;flex-direction:column;gap:10px;margin-top:0}
 .fv-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .fv-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
@@ -394,7 +399,7 @@ select option{background:var(--card)}
 .fv-word{font-size:.72rem;padding:3px 7px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border)}
 .fv-word.on{color:var(--ink);border-color:var(--a1);background:rgba(var(--glow),.2)}
 .fv-tl{display:flex;height:28px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface);margin-top:10px}
-.fv-tl > i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.08);background:rgba(var(--glow),.35)}
+.fv-tl > i{display:block;height:100%;border-right:none;background:rgba(var(--glow),.35)}
 .fv-preview-box{display:none;margin-top:8px}
 .fv-preview-box.show{display:block}
 .fv-export-box{display:none;margin-top:8px}
@@ -427,19 +432,20 @@ select option{background:var(--card)}
 .fv-clip-pick .pick img,.fv-clip-pick .pick video{width:100%;height:100%;object-fit:cover}
 .fv-broll-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .fv-search-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px}
-.fv-prev-layout{display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:18px;align-items:start;margin-top:12px}
-@media (max-width:980px){.fv-prev-layout{grid-template-columns:1fr}}
-.fv-stage-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-.fv-stage{position:relative;width:100%;max-width:320px;aspect-ratio:9/16;background:#0a0a0c;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.fv-stage.landscape{max-width:100%;aspect-ratio:16/9}
-.fv-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.fv-prev-layout{display:flex;flex-direction:column;align-items:stretch;gap:18px;margin-top:16px}
+.fv-stage-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.fv-stage{position:relative;width:100%;max-width:420px;aspect-ratio:9/16;background:#0a0a0c;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.fv-stage.landscape{max-width:min(100%,960px);aspect-ratio:16/9}
+.fv-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent}
+.fv-stage .fv-prev-vid{opacity:0;z-index:0;pointer-events:none}
+.fv-stage .fv-prev-vid.is-on{opacity:1;z-index:1}
 .fv-stage .fv-cap{position:absolute;left:6%;right:6%;bottom:12%;text-align:center;z-index:2;pointer-events:none;line-height:1.15;font-weight:800;text-wrap:balance}
 .fv-stage .fv-cap span{display:inline;margin:0 .12em;transition:color .08s,background .08s}
 .fv-stage .fv-cap span.on{border-radius:.2em;padding:0 .05em}
-.fv-stage-controls{display:flex;gap:8px;align-items:center;width:100%;max-width:320px}
-.fv-stage.landscape ~ .fv-stage-controls,.fv-stage-wrap:has(.fv-stage.landscape) .fv-stage-controls{max-width:100%}
+.fv-stage-controls{display:flex;gap:8px;align-items:center;width:100%;max-width:420px}
+.fv-stage.landscape ~ .fv-stage-controls,.fv-stage-wrap:has(.fv-stage.landscape) .fv-stage-controls{max-width:min(100%,960px)}
 .fv-seek{flex:1;accent-color:var(--a1)}
-.fv-side{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.fv-side{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .fv-side .field{margin-bottom:12px}
 .fv-side .field:last-child{margin-bottom:0}
 .fv-music-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
@@ -449,7 +455,7 @@ select option{background:var(--card)}
 .fv-prev-tracks{display:flex;flex-direction:column;gap:6px}
 .fv-track{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:.7rem;color:var(--muted)}
 .fv-track-bar{position:relative;height:22px;border-radius:6px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
-.fv-track-bar .seg{position:absolute;top:0;bottom:0;background:rgba(var(--glow),.4);border-right:1px solid rgba(255,255,255,.1)}
+.fv-track-bar .seg{position:absolute;top:0;bottom:0;background:rgba(var(--glow),.4);border-right:none}
 .fv-track-bar .seg.audio{background:rgba(111,207,151,.35)}
 .fv-track-bar .seg.music{background:rgba(240,198,116,.35)}
 .fv-track-bar .playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:2;pointer-events:none}
@@ -514,7 +520,7 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 
 /* PHASE 2: dashboard / tools / upscale */
 .dash-welcome{margin-bottom:24px}
-.dash-welcome h2{font-family:'Bricolage Grotesque','SF Pro Display',sans-serif;font-size:1.55rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);margin:0 0 6px}
+.dash-welcome h2{font-family:var(--font-heading);font-size:1.55rem;font-weight:600;letter-spacing:-.04em;text-transform:uppercase;color:var(--ink);margin:0 0 6px}
 .dash-welcome p{font-size:.9rem;color:var(--text-body);margin:0}
 .dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:28px}
 @media (max-width:900px){.dash-stats{grid-template-columns:1fr}}
@@ -690,13 +696,13 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 .auth-preview-play svg{width:20px;height:20px;margin-left:2px}
 .auth-preview-score{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;background:var(--grad);color:#fff;padding:3px 8px;border-radius:6px;z-index:2;letter-spacing:.02em}
 .auth-preview-cap{position:absolute;left:12px;right:12px;bottom:12px;font-size:12px;font-weight:600;color:var(--ink);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:8px;line-height:1.3}
-.auth-showcase h3{font-family:'Bricolage Grotesque','SF Pro Display',sans-serif;font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--ink);margin:0}
+.auth-showcase h3{font-family:var(--font-heading);font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:600;letter-spacing:-.04em;text-transform:uppercase;line-height:1.15;color:var(--ink);margin:0}
 .auth-showcase .auth-sub{font-size:.9rem;color:var(--muted);line-height:1.45;margin:0}
 .auth-chips{display:flex;flex-wrap:wrap;gap:8px}
 .auth-chips span{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.62);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:6px 11px;pointer-events:none;user-select:none}
 .auth-panel{flex:1;min-width:0;padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
 .auth-panel .auth-brand{display:flex;justify-content:center;margin:0 0 16px}
-.auth-panel h2{font-family:'Bricolage Grotesque','SF Pro Display',sans-serif;font-size:1.45rem;font-weight:800;letter-spacing:-.03em;margin:0 0 8px;text-align:center;color:var(--ink)}
+.auth-panel h2{font-family:var(--font-heading);font-size:1.45rem;font-weight:600;letter-spacing:-.04em;text-transform:uppercase;margin:0 0 8px;text-align:center;color:var(--ink)}
 .auth-panel > .auth-lead{font-size:.85rem;color:var(--muted);margin:0 0 22px;text-align:center;line-height:1.45}
 .modal-tabs{display:flex;gap:0;margin-bottom:22px;background:var(--card);border-radius:10px;padding:4px;border:1px solid var(--line)}
 .tab-btn{flex:1;padding:9px 10px;border-radius:8px;border:none;background:none;color:var(--muted);font-size:.84rem;font-weight:500;cursor:pointer;transition:all .15s}
@@ -1329,8 +1335,8 @@ body.editor-open .topbar{display:none!important}
   padding:32px 32px 28px;max-width:none;margin:0 0 36px;box-shadow:none
 }
 #panel-clipper .tool-card > .page-header h2{
-  font-family:'SF Pro Display','Inter',-apple-system,sans-serif;
-  font-size:30px;font-weight:600;letter-spacing:-.03em;margin-bottom:8px;color:var(--ink)
+  font-family:var(--font-heading);
+  font-size:30px;font-weight:600;letter-spacing:-.04em;text-transform:uppercase;margin-bottom:8px;color:var(--ink)
 }
 #panel-clipper .tool-card > .page-header p{
   font-size:14px;color:rgba(255,255,255,.45);margin-bottom:20px;max-width:720px;line-height:1.45;font-weight:400
@@ -1610,8 +1616,9 @@ body::after{
 /* V2 page header */
 .page-header{margin:0 0 24px;overflow:visible}
 .page-header h2,.page-title{
-  font-family:'SF Pro Display','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:-.03em;
-  color:var(--ink);margin:0 0 8px;line-height:1.25;overflow:visible;padding-top:.12em
+  font-family:var(--font-heading);font-size:30px;font-weight:600;letter-spacing:-.04em;
+  text-transform:uppercase;color:var(--ink);margin:0 0 8px;line-height:1.1;overflow:visible;padding-top:.12em;
+  font-synthesis:none;-webkit-font-smoothing:antialiased
 }
 .page-header p,.page-sub{font-size:14px;color:var(--text-label);margin:0;line-height:1.45;font-weight:400}
 .section-label{font-size:11px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.40);margin:0 0 12px}
@@ -1666,7 +1673,7 @@ input:focus,textarea:focus,select:focus,
 
 /* Dashboard V2 */
 .dash-welcome{margin-bottom:28px}
-.dash-welcome h2{font-size:30px!important;font-weight:600!important;letter-spacing:-.03em;margin:0 0 8px}
+.dash-welcome h2{font-family:var(--font-heading);font-size:30px!important;font-weight:600!important;letter-spacing:-.04em;text-transform:uppercase;margin:0 0 8px}
 .dash-welcome p{font-size:14px!important;color:rgba(255,255,255,.45)!important}
 .dash-stats{gap:16px;margin-bottom:32px}
 .dash-stat{padding:20px;align-items:center}
@@ -1977,10 +1984,10 @@ input:focus,textarea:focus,select:focus,
 /* Video gen V2 */
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
-.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
 .fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
 .fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
-.fv-how-t{font-size:16px;font-weight:600;color:var(--ink);margin:0 0 4px}
+.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 0 4px}
 .fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
 @media (max-width:640px){.fv-how{grid-template-columns:1fr}}
 
@@ -2061,7 +2068,7 @@ input:focus,textarea:focus,select:focus,
   #panel-imagegen .img-layout{grid-template-columns:1fr}
 }
 .page-header + .tool-card > h3.ui-card-title{font-size:16px!important;font-weight:600!important}
-#panel-videogen .page-header{margin-bottom:20px}
+#panel-videogen .page-header{margin-bottom:16px;text-align:center}
 #panel-upscale .page-shell{max-width:880px;margin:0 auto}
 .tool-tile,.qa-card,.dash-stat,.img-pane,.vr-sec{padding:20px!important}
 .dash-stat{padding:20px!important}
@@ -2151,7 +2158,7 @@ body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
   font-size:.75rem;font-weight:650;color:rgba(255,255,255,.72)
 }
-.ob-title{margin:0;font-family:'Bricolage Grotesque','Inter',sans-serif;font-size:clamp(1.7rem,4vw,2.35rem);font-weight:800;letter-spacing:-.035em;color:var(--ink);line-height:1.12;text-wrap:balance}
+.ob-title{margin:0;font-family:var(--font-heading);font-size:clamp(1.7rem,4vw,2.35rem);font-weight:600;letter-spacing:-.04em;text-transform:uppercase;color:var(--ink);line-height:1.12;text-wrap:balance}
 .ob-step[data-ob-step="1"] .ob-title{
   font-size:clamp(2.45rem,6.4vw,3.55rem);line-height:1.06;max-width:15em;letter-spacing:-.035em
 }
@@ -2405,7 +2412,7 @@ body.tour-active #fv-export-box.show{min-height:160px}
   box-shadow:0 30px 80px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:18px
 }
 .paywall-kicker{margin:0;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42);text-align:center}
-.paywall-title{margin:0;font-size:clamp(1.35rem,3vw,1.75rem);font-weight:800;letter-spacing:-.03em;text-align:center;color:var(--ink)}
+.paywall-title{margin:0;font-family:var(--font-heading);font-size:clamp(1.35rem,3vw,1.75rem);font-weight:600;letter-spacing:-.04em;text-transform:uppercase;text-align:center;color:var(--ink)}
 .paywall-sub{margin:0 auto;max-width:36em;font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.58);text-align:center}
 .paywall-toggle{display:inline-flex;align-self:center;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
 .paywall-tg{min-height:36px;padding:0 14px;border:none;border-radius:999px;background:transparent;color:rgba(255,255,255,.55);font:inherit;font-size:.78rem;font-weight:650;cursor:pointer}
@@ -2757,9 +2764,9 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <div class="paywall-plans" id="paywall-plans"></div>
     <div class="paywall-status" id="paywall-status"></div>
     <div class="paywall-foot">
-      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I've subscribed — refresh</button>
+      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I already paid</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout uses your Vidso email so the subscription attaches to this account. After you pay, this page unlocks automatically.</p>
+      <p class="paywall-note">Checkout is locked to this Vidso email. After you pay, we check Whop even if Clipzo is still unpaid.</p>
       <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
@@ -4693,6 +4700,23 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <h2>Video Generation</h2>
         <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
       </div>
+      <div class="fv-how" id="fv-how" aria-label="How it works">
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 1</div>
+          <div class="fv-how-t">Script</div>
+          <p class="fv-how-d">Generate and edit the narration for your topic.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 2</div>
+          <div class="fv-how-t">Media</div>
+          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
+        </div>
+        <div class="fv-how-item">
+          <div class="fv-how-n">Step 3</div>
+          <div class="fv-how-t">Export</div>
+          <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
+        </div>
+      </div>
       <div class="tool-card">
         <h3 class="ui-card-title">Faceless Video Generator</h3>
         <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
@@ -4782,13 +4806,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <div class="fv-script-toolbar">
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
-                  <button type="button" class="btn btn-ghost" onclick="fvGenerateScript()">↻ Regenerate full script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                 </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
               <div class="fv-sections" id="fv-sections"></div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">Use Edit manually on any section, or Regenerate with AI. Then continue to media.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">AI writes the script once. Edit any section by hand, or clear to start a new video.</p>
             </div>
           </div>
 
@@ -4848,7 +4871,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               <div class="fv-prev-layout">
                 <div class="fv-stage-wrap">
                   <div class="fv-stage" id="fv-stage">
-                    <video id="fv-prev-video" muted playsinline preload="auto"></video>
+                    <video class="fv-prev-vid is-on" id="fv-prev-video" muted playsinline preload="auto"></video>
+                    <video class="fv-prev-vid" id="fv-prev-video-b" muted playsinline preload="auto"></video>
                     <div class="fv-cap" id="fv-prev-cap"></div>
                   </div>
                   <div class="fv-stage-controls">
@@ -4908,8 +4932,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                     </select>
                   </div>
                   <div class="field">
-                    <label>Size <span id="fv-cap-size-val">42</span>px</label>
-                    <input type="range" id="fv-cap-size" min="12" max="96" value="42" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
+                    <label>Size <span id="fv-cap-size-val">14</span>px</label>
+                    <input type="range" id="fv-cap-size" min="12" max="96" value="14" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
                   <div class="cm-grid-2">
                     <div class="field" style="margin:0">
@@ -4982,23 +5006,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="fv-how" id="fv-how" aria-label="How it works">
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 1</div>
-          <div class="fv-how-t">Script</div>
-          <p class="fv-how-d">Generate and edit the narration for your topic.</p>
-        </div>
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 2</div>
-          <div class="fv-how-t">Media</div>
-          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
-        </div>
-        <div class="fv-how-item">
-          <div class="fv-how-n">Step 3</div>
-          <div class="fv-how-t">Export</div>
-          <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
         </div>
       </div>
     </div>
@@ -5136,7 +5143,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 </main>
 
 <script type="module">
-import { api, setSession, clearSession, getToken, WHOP_CHECKOUT } from '/api.js'
+import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
@@ -7108,7 +7115,7 @@ let _planPoll = null
 async function watchForPurchase(opts = {}) {
   if (_planPoll) return _planPoll
   const tier = pendingCheckoutTier(opts.tier)
-  setPaywallStatus('Activating your plan…', 'loading')
+  setPaywallStatus('Checking Whop for your payment…', 'loading')
   _planPoll = api.billing.waitForProvisioned({
     expectedTier: tier,
     timeoutMs: opts.timeoutMs || 120000,
@@ -7140,7 +7147,8 @@ async function watchForPurchase(opts = {}) {
     }
     document.documentElement.classList.add('needs-paywall')
     document.documentElement.classList.remove('needs-gate')
-    setPaywallStatus('No active plan yet. Finish checkout on Whop, then try again.', 'err')
+    const problem = api.billing.syncProblem()
+    setPaywallStatus(problem || 'Payment is not attached to this account yet. If you already paid, tap I already paid.', 'err')
     return false
   }).catch((e) => {
     _planPoll = null
@@ -7152,10 +7160,15 @@ async function watchForPurchase(opts = {}) {
 
 window.startCheckout = (tier) => {
   pendingCheckoutTier(tier)
+  const email = String(currentUser?.email || '').trim()
+  if (!email || !email.includes('@')) {
+    setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
+    return
+  }
   const url = api.billing.checkoutUrl(tier, _paywallCycle, {
-    email: currentUser?.email,
+    email,
     userId: currentUser?.id || currentUser?.user_id,
-  }) || WHOP_CHECKOUT[`${tier}_${_paywallCycle}`]
+  })
   if (!url) {
     setPaywallStatus('Checkout link missing for this plan', 'err')
     return
@@ -7163,7 +7176,7 @@ window.startCheckout = (tier) => {
   setPaywallStatus('Opening checkout…', 'loading')
   window.open(url, '_blank', 'noopener,noreferrer')
   setTimeout(() => {
-    setPaywallStatus('Pay in the Whop tab — this page will unlock when your plan is active.', null)
+    setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)
     watchForPurchase({ tier })
   }, 600)
 }
@@ -7506,6 +7519,8 @@ window.fvState = {
   renderUrl: null,
   phase: 1,
   inited: false,
+  scriptAiUsed: false,
+  scriptBusy: false,
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -7514,11 +7529,24 @@ function fvSetScriptActionsVisible(show) {
   if (help) help.style.display = show ? '' : 'none'
 }
 
+function fvSetScriptAiLock(used) {
+  fvState.scriptAiUsed = !!used
+  const btn = document.getElementById('fv-gen-script-btn')
+  if (!btn) return
+  btn.disabled = !!used || !!fvState.scriptBusy
+  btn.setAttribute('aria-disabled', btn.disabled ? 'true' : 'false')
+  btn.title = used
+    ? 'AI already wrote this script. Edit it by hand, or clear to start a new video.'
+    : ''
+}
+
 /** Wipe the generated script UI and return to the Generate Script form. */
 window.fvClearScript = () => {
   try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
   fvState.script = null
+  fvState.scriptAiUsed = false
+  fvState.scriptBusy = false
   fvState.media = null
   fvState.mediaJobId = null
   fvState.mediaPoll = null
@@ -7551,6 +7579,7 @@ window.fvClearScript = () => {
   try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
   try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
 
+  fvSetScriptAiLock(false)
   document.getElementById('fv-topic')?.focus?.()
 }
 
@@ -7883,7 +7912,6 @@ function fvRenderScript(script) {
         <label>${fvEsc(s.heading || s.id)}</label>
         <div class="fv-section-actions">
           <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit manually</button>
-          <button type="button" class="fv-regen-btn is-ai" onclick="fvRegenerateSection('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>Regenerate</button>
         </div>
       </div>
       <div class="fv-section-preview">${fvEsc(s.text || '')}</div>
@@ -7891,8 +7919,9 @@ function fvRenderScript(script) {
     </div>`).join('') || '<p style="color:var(--muted);font-size:.85rem">Generate a script to see sections here.</p>'
 
   const help = document.getElementById('fv-help')
-  if (help) help.textContent = 'Use Edit manually on any section, or Regenerate with AI. Then continue to media.'
+  if (help) help.textContent = 'AI writes the script once. Edit any section by hand, or clear to start a new video.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
+  if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
 }
 
 window.fvEnterEditor = () => {
@@ -7943,6 +7972,7 @@ function fvSetMediaStatus(msg, kind) {
 
 function fvRenderMediaResult(job) {
   fvState.media = job
+  fvCloseTimelineGaps()
   document.getElementById('fv-media-progress-wrap').style.display = 'none'
   document.getElementById('fv-media-result').style.display = ''
   document.getElementById('fv-media-title').textContent = fvState.script?.title || 'Media ready'
@@ -8096,7 +8126,7 @@ function fvFmtTime(s) {
 function fvCapStyle() {
   return {
     font: document.getElementById('fv-cap-font')?.value || 'Bangers, cursive',
-    size: parseInt(document.getElementById('fv-cap-size')?.value || '42', 10),
+    size: parseInt(document.getElementById('fv-cap-size')?.value || '14', 10),
     color: document.getElementById('fv-cap-color')?.value || '#ffffff',
     highlight: document.getElementById('fv-cap-hl')?.value || '#ff3b4a',
     letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
@@ -8237,23 +8267,138 @@ function fvRenderPreviewTimeline() {
     <div class="fv-track"><span>Music</span><div class="fv-track-bar">${hasMusic ? '<div class="seg music" style="left:0;width:100%"></div>' : ''}<div class="playhead" id="fv-tl-ph-m" style="left:0"></div></div></div>`
 }
 
+function fvCloseTimelineGaps() {
+  const tl = fvState.media?.timeline
+  if (!tl?.length) return
+  tl.sort((a, b) => Number(a.start || 0) - Number(b.start || 0))
+  const dur = Number(fvState.media.duration || tl[tl.length - 1].end || 0)
+  tl[0].start = 0
+  for (let i = 0; i < tl.length - 1; i++) {
+    if (tl[i].end < tl[i + 1].start) tl[i].end = tl[i + 1].start
+    else tl[i + 1].start = tl[i].end
+  }
+  if (dur > 0) tl[tl.length - 1].end = dur
+}
+
 function fvActiveClipAt(t) {
   const tl = fvState.media?.timeline || []
-  return tl.find(s => t >= s.start && t < s.end) || tl[0] || null
+  if (!tl.length) return null
+  const hit = tl.find(s => t >= s.start && t < s.end)
+  if (hit) return hit
+  let last = tl[0]
+  for (const s of tl) {
+    if (s.start <= t) last = s
+    else break
+  }
+  return last
+}
+
+function fvClipOffset(clip, t) {
+  return Math.max(0, Number(clip.clip_start || 0) + (t - Number(clip.start || 0)))
+}
+
+function fvNextClipAfter(clip) {
+  const tl = fvState.media?.timeline || []
+  const i = tl.indexOf(clip)
+  return i >= 0 ? (tl[i + 1] || null) : null
+}
+
+function fvVidPair() {
+  const a = document.getElementById('fv-prev-video')
+  const b = document.getElementById('fv-prev-video-b')
+  if (!a) return { on: null, off: null }
+  if (!b) return { on: a, off: null }
+  const on = b.classList.contains('is-on') && !a.classList.contains('is-on') ? b : a
+  const off = on === a ? b : a
+  return { on, off }
+}
+
+function fvPauseVideos() {
+  document.querySelectorAll('.fv-prev-vid').forEach(v => { try { v.pause() } catch (_) {} })
+}
+
+function fvShowVid(el) {
+  if (!el) return
+  el.classList.add('is-on')
+  document.querySelectorAll('.fv-prev-vid').forEach(v => {
+    if (v === el) return
+    v.classList.remove('is-on')
+    try { v.pause() } catch (_) {}
+  })
+}
+
+function fvLoadClipOn(video, clip, t, play) {
+  if (!video || !clip?.url) return false
+  const offset = fvClipOffset(clip, t)
+  const same = video.dataset.clipUrl === clip.url
+  const seekPlay = () => {
+    try {
+      if (Math.abs((video.currentTime || 0) - offset) > 0.08) video.currentTime = offset
+    } catch (_) {}
+    if (play && fvState.preview?.playing) video.play().catch(() => {})
+  }
+  if (same) {
+    seekPlay()
+    return video.readyState >= 2
+  }
+  video.dataset.clipUrl = clip.url
+  video.src = clip.url
+  video.onloadeddata = () => {
+    seekPlay()
+    video.onloadeddata = null
+  }
+  try { video.load() } catch (_) {}
+  return false
 }
 
 function fvEnsureClip(t) {
-  const video = document.getElementById('fv-prev-video')
+  const { on, off } = fvVidPair()
   const clip = fvActiveClipAt(t)
-  if (!clip || !video) return
-  if (fvState.preview?.clipUrl !== clip.url) {
-    fvState.preview.clipUrl = clip.url
-    const wasPlaying = fvState.preview.playing
-    video.src = clip.url
-    video.currentTime = Math.max(0, t - clip.start)
-    if (wasPlaying) video.play().catch(() => {})
-  } else if (Math.abs((video.currentTime || 0) - Math.max(0, t - clip.start)) > 0.45) {
-    video.currentTime = Math.max(0, t - clip.start)
+  if (!clip?.url || !on) return
+  const playing = !!fvState.preview?.playing
+
+  if (on.dataset.clipUrl === clip.url) {
+    const want = fvClipOffset(clip, t)
+    if (Math.abs((on.currentTime || 0) - want) > 0.45) {
+      try { on.currentTime = want } catch (_) {}
+    }
+    if (playing && on.paused) on.play().catch(() => {})
+  } else if (off && off.dataset.clipUrl === clip.url && off.readyState >= 2) {
+    fvLoadClipOn(off, clip, t, playing)
+    fvShowVid(off)
+  } else if (off) {
+    try {
+      if (on.ended && on.duration) on.currentTime = Math.max(0, on.duration - 0.05)
+    } catch (_) {}
+    const ready = fvLoadClipOn(off, clip, t, false)
+    const swap = () => {
+      const now = document.getElementById('fv-prev-voice')?.currentTime ?? t
+      if (fvActiveClipAt(now)?.url !== clip.url) return
+      fvShowVid(off)
+      if (fvState.preview?.playing) off.play().catch(() => {})
+    }
+    if (ready) swap()
+    else off.oncanplay = () => { off.oncanplay = null; swap() }
+  } else {
+    fvLoadClipOn(on, clip, t, playing)
+  }
+
+  const pair = fvVidPair()
+  const hidden = pair.off
+  const next = fvNextClipAfter(clip)
+  if (
+    hidden &&
+    next?.url &&
+    pair.on?.dataset.clipUrl === clip.url &&
+    hidden.dataset.clipUrl !== next.url &&
+    (clip.end - t) < 2.8
+  ) {
+    hidden.dataset.clipUrl = next.url
+    hidden.src = next.url
+    hidden.onloadeddata = () => {
+      try { hidden.currentTime = Number(next.clip_start || 0) } catch (_) {}
+      hidden.onloadeddata = null
+    }
   }
 }
 
@@ -8307,7 +8452,6 @@ window.fvTogglePreview = () => {
 window.fvPlayPreview = () => {
   const voice = document.getElementById('fv-prev-voice')
   const music = fvMusicEl()
-  const video = document.getElementById('fv-prev-video')
   if (!voice?.src) return
   if (!fvState.preview) fvState.preview = {}
   clearTimeout(fvState.preview._auditionTimer)
@@ -8315,7 +8459,7 @@ window.fvPlayPreview = () => {
   document.getElementById('fv-prev-play').textContent = '⏸ Pause'
   fvEnsureClip(voice.currentTime || 0)
   voice.play().catch(() => {})
-  video?.play().catch(() => {})
+  fvVidPair().on?.play().catch(() => {})
   if (fvMusicTrackSrc() && music) {
     music.volume = fvState.preview.musicVol ?? 0.25
     music.loop = true
@@ -8343,7 +8487,7 @@ window.fvPausePreview = () => {
   document.getElementById('fv-prev-play') && (document.getElementById('fv-prev-play').textContent = '▶ Play')
   document.getElementById('fv-prev-voice')?.pause()
   document.getElementById('fv-prev-music')?.pause()
-  document.getElementById('fv-prev-video')?.pause()
+  fvPauseVideos()
   if (fvState.preview.raf) { cancelAnimationFrame(fvState.preview.raf); fvState.preview.raf = null }
 }
 
@@ -8658,6 +8802,7 @@ function fvInitPreview() {
   fvState.preview = fvState.preview || { musicId: 'none', musicVol: 0.25, playing: false, clipUrl: null, segIdx: 0 }
   if (fvState.preview.segIdx == null) fvState.preview.segIdx = 0
   const landscape = (media.aspect || fvState.aspect) === '16:9'
+  fvCloseTimelineGaps()
   document.getElementById('fv-stage')?.classList.toggle('landscape', landscape)
   document.getElementById('fv-prev-title').textContent = fvState.script?.title || 'Preview'
   document.getElementById('fv-prev-meta').innerHTML =
@@ -8812,35 +8957,15 @@ window.fvStartExport = async () => {
 }
 
 window.fvRegenerateSection = async (sectionId) => {
-  if (!fvState.script) return
-  fvRebuildFullScriptFromSections()
-  const sec = (fvState.script.sections || []).find(s => s.id === sectionId)
-  if (!sec) return
-  const card = document.getElementById('fv-sec-' + sectionId)
-  if (card) card.classList.add('busy')
-  fvSetStatus('Rewriting section…', 'loading', 2)
-  try {
-    const topic = fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim()
-    const data = await api.faceless.rewriteSection({
-      topic,
-      section_id: sec.id,
-      heading: sec.heading,
-      text: sec.text,
-      full_script: fvState.script.full_script,
-    })
-    sec.text = data.text
-    if (data.heading) sec.heading = data.heading
-    fvRebuildFullScriptFromSections()
-    fvRenderScript(fvState.script)
-    fvSetStatus('Section updated', 'ok', 2)
-  } catch (e) {
-    fvSetStatus(e.message || 'Rewrite failed', 'err', 2)
-  } finally {
-    if (card) card.classList.remove('busy')
-  }
+  fvSetStatus('AI already wrote this script. Edit the section by hand.', 'err', 2)
 }
 
 window.fvGenerateScript = async () => {
+  if (fvState.scriptBusy) return
+  if (fvState.scriptAiUsed || fvState.script) {
+    fvSetScriptAiLock(true)
+    return fvSetStatus('AI already wrote this script. Edit it by hand, or clear to start a new video.', 'err')
+  }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
@@ -8851,6 +8976,7 @@ window.fvGenerateScript = async () => {
   }
 
   const btn = document.getElementById('fv-gen-script-btn')
+  fvState.scriptBusy = true
   if (btn) btn.disabled = true
   fvSetStatus('', null)
   fvSetScriptActionsVisible(false)
@@ -8868,6 +8994,7 @@ window.fvGenerateScript = async () => {
     data.topic = topic
     fvState.phase = 1
     fvRenderScript(data)
+    fvSetScriptAiLock(true)
     fvSetStatus('Script ready', 'ok', 2)
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
@@ -8876,7 +9003,8 @@ window.fvGenerateScript = async () => {
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
-    if (btn) btn.disabled = false
+    fvState.scriptBusy = false
+    fvSetScriptAiLock(!!(fvState.scriptAiUsed || fvState.script))
   }
 }
 

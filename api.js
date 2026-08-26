@@ -2,6 +2,7 @@ import { WHOP_CHECKOUT } from '/lib/whop-map.js'
 import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
+import { applyPaidGrant } from '/lib/paid-grant.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -136,30 +137,91 @@ function planReady(me, expectedTier) {
 }
 
 function checkoutUrl(tier, interval, opts = {}) {
+  const email = String(opts.email || emailFromToken() || '').trim()
+  if (!email || !email.includes('@')) return ''
   const base = WHOP_CHECKOUT[`${tier}_${interval}`]
   if (!base) return ''
   const u = new URL(base)
-  const email = String(opts.email || emailFromToken() || '').trim()
   const userId = opts.userId ? String(opts.userId) : ''
-  if (email) {
-    u.searchParams.set('email', email)
-    u.searchParams.set('email.disabled', '1')
-  }
+  u.searchParams.set('email', email)
+  u.searchParams.set('email.disabled', '1')
   const ret = `${opts.origin || appOrigin()}/dashboard?billing=success`
   u.searchParams.set('redirect', ret)
   u.searchParams.set('return_url', ret)
-  if (userId) u.searchParams.set('metadata[user_id]', userId)
-  if (email) u.searchParams.set('metadata[email]', email)
+  if (userId) {
+    u.searchParams.set('metadata[user_id]', userId)
+    u.searchParams.set('metadata[vidso_user_id]', userId)
+  }
+  u.searchParams.set('metadata[email]', email)
   if (tier) u.searchParams.set('metadata[tier]', String(tier))
   return u.toString()
+}
+
+// Why the last sync said "not paid" — the paywall shows this instead of
+// guessing, so a bad API key never looks like a missing purchase.
+let _lastSync = null
+
+async function billingSync(opts = {}) {
+  const url = sameOriginApi('/api/billing/sync')
+  if (!url) {
+    _lastSync = { active: false, configured: false, reason: 'local' }
+    return _lastSync
+  }
+  try {
+    _lastSync = await reqTo(url, 'POST', { force: !!opts.force })
+    return _lastSync
+  } catch (e) {
+    if (e.status === 404 || e.status === 501) {
+      _lastSync = { active: false, configured: false, reason: 'missing_route' }
+      return _lastSync
+    }
+    _lastSync = { active: false, reason: 'sync_failed', message: e.message }
+    throw e
+  }
+}
+
+function lastSync() {
+  return _lastSync
+}
+
+/** Human copy for a failed sync, used by the paywall. */
+function syncProblem(sync) {
+  const s = sync || _lastSync
+  if (!s || s.active) return ''
+  if (s.reason === 'missing_key' || s.reason === 'missing_route') {
+    return 'Billing checks are not configured on this deployment yet. Contact support and we will unlock it by hand.'
+  }
+  if (s.reason === 'bad_key' || s.reason === 'missing_permission') {
+    return 'We could not read your payment from Whop because of a billing configuration problem on our side, not yours. Contact support and we will unlock it right away.'
+  }
+  if (s.reason === 'whop_error' || s.reason === 'sync_failed') {
+    return 'Whop did not answer when we checked your payment. Wait a moment and tap I already paid again.'
+  }
+  if (s.reason === 'missing_identity') {
+    return 'This account has no email, so there is nothing to match against Whop. Contact support.'
+  }
+  return ''
+}
+
+function mergeSync(me, sync) {
+  if (!me || !sync?.active) return me
+  if (sync.tier) return applyPaidGrant(me, sync)
+  return { ...me, plan_status: 'active', active: true }
 }
 
 async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
   const started = Date.now()
   let last = null
+  let force = true
   while (Date.now() - started < timeoutMs) {
     try {
       last = withCompedPlan(await req('GET', '/api/user/me'))
+      if (!planIsActive(last)) {
+        // The first check skips the server's negative cache, which is otherwise
+        // still holding a miss from before the payment landed.
+        last = mergeSync(last, await billingSync({ force }))
+        force = false
+      }
       if (typeof onTick === 'function') onTick(last)
       const active = planIsActive(last)
       const ready = planReady(last, expectedTier)
@@ -193,7 +255,11 @@ export const api = {
           me.short_form_used = u.short_form_used
         }
       } catch (_) {}
-      return withCompedPlan({ ...me, email: me.email || emailFromToken() })
+      let user = withCompedPlan({ ...me, email: me.email || emailFromToken() })
+      if (!planIsActive(user)) {
+        try { user = mergeSync(user, await billingSync()) } catch (_) {}
+      }
+      return user
     },
     usage: () => req('GET', '/api/user/usage'),
   },
@@ -370,9 +436,11 @@ export const api = {
     },
   },
   billing: {
-    // tier: 'starter'|'creator'|'business', interval: 'monthly'|'yearly'
-    checkoutUrl: (tier, interval, opts) => checkoutUrl(tier, interval, opts) || WHOP_CHECKOUT.creator_monthly,
+    checkoutUrl,
     waitForProvisioned,
+    sync: billingSync,
+    lastSync,
+    syncProblem,
     formatQuota,
     quotaView,
     unlockCopy,
