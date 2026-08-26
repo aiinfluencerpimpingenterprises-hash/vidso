@@ -358,5 +358,21 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
   assert.equal(paidClipzo.tier, 'studio')
 })
 
+test('paid Pro email is granted when Whop has not provisioned yet', () => {
+  const off = { PAYWALL_BYPASS: '0' }
+  const paid = {
+    email: 'ntuamassoma@gmail.com',
+    plan: 'free',
+    plan_status: 'inactive',
+  }
+  const access = resolveAccess(paid, off)
+  assert.equal(access.active, true)
+  assert.equal(access.tier, 'pro')
+  assert.equal(access.entitlements.long_form_per_month, 25)
+  const q = quotaView(paid)
+  assert.equal(q.unlimited, false)
+  assert.equal(q.tier, 'pro')
+})
+
 
 

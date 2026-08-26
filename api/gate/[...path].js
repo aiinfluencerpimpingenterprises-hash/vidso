@@ -1,6 +1,7 @@
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
 import { incrementUsage, readUsage } from '../../lib/usage-store.js'
+import { withCompedPlan } from '../../lib/comped.js'
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
@@ -23,6 +24,17 @@ async function readJson(req) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}') } catch { return {} }
 }
 
+function emailFromJwt(token) {
+  try {
+    const part = String(token || '').split('.')[1]
+    if (!part) return ''
+    const json = JSON.parse(Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'))
+    return String(json.email || json.user_email || '').trim()
+  } catch {
+    return ''
+  }
+}
+
 async function railwayMe(token) {
   const res = await fetch(UPSTREAM + '/api/user/me', {
     headers: { Authorization: 'Bearer ' + token },
@@ -34,7 +46,7 @@ async function railwayMe(token) {
     err.body = data
     throw err
   }
-  return data
+  return withCompedPlan({ ...data, email: data.email || emailFromJwt(token) })
 }
 
 async function forward(req, subpath, body) {
