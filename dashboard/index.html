@@ -129,7 +129,7 @@
   /* Layout */
   --page-max:880px;--page-max-wide:1280px;
   --chrome-pad-x:16px;--chrome-banner-h:44px;--chrome-nav-h:56px;
-  --nav-gap:4px;--nav-div-mx:8px;
+  --nav-gap:4px;
   --font-heading:'Clash Grotesk',sans-serif;
   /* Status */
   --ok:#6fcf97;--err:#eb5757;
@@ -182,17 +182,15 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .topnav-logo img{width:22px;height:22px;object-fit:contain;flex-shrink:0;display:block}
 .brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase;line-height:1;display:block}
 .topnav-primary{
-  display:flex;align-items:center;gap:0;min-width:0;flex:1;height:100%;
+  display:flex;align-items:center;gap:var(--nav-gap);min-width:0;flex:1;height:100%;
   overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
   overscroll-behavior-x:contain
 }
 .topnav-primary::-webkit-scrollbar{display:none;height:0}
 .topnav-primary.is-overflow{mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent)}
 .topnav-primary.is-overflow.is-flush-end{mask-image:none}
-.topnav-group{display:flex;align-items:center;gap:var(--nav-gap);flex-shrink:0;height:100%}
-.topnav-div{display:block;width:1px;height:14px;margin:0 var(--nav-div-mx);background:rgba(255,255,255,.22);flex-shrink:0}
 .topnav-item{
-  height:32px;padding:0 8px;border:none;border-radius:0;cursor:pointer;
+  height:32px;padding:0 8px;border:none;border-radius:0;cursor:pointer;flex-shrink:0;
   background:transparent;color:var(--text-body);font-family:inherit;font-size:.74rem;font-weight:500;
   letter-spacing:-.015em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:6px
 }
@@ -3073,30 +3071,19 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     <span class="brand">vidso</span>
   </a>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
-    <div class="topnav-group">
-      <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-      <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
-    </div>
-    <span class="topnav-div" aria-hidden="true"></span>
-    <div class="topnav-group">
-      <button type="button" class="topnav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-      <button type="button" class="topnav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-    </div>
-    <span class="topnav-div" aria-hidden="true"></span>
-    <div class="topnav-group">
-      <button type="button" class="topnav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-      <button type="button" class="topnav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-      <button type="button" class="topnav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-      <button type="button" class="topnav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-      <button type="button" class="topnav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-      <button type="button" class="topnav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-    </div>
-    <span class="topnav-div" aria-hidden="true"></span>
-    <div class="topnav-group">
-      <button type="button" class="topnav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
-      <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-      <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
-    </div>
+    <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+    <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
+    <button type="button" class="topnav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+    <button type="button" class="topnav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+    <button type="button" class="topnav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+    <button type="button" class="topnav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+    <button type="button" class="topnav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+    <button type="button" class="topnav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+    <button type="button" class="topnav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+    <button type="button" class="topnav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+    <button type="button" class="topnav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">Tools</button>
+    <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
