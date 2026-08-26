@@ -128,18 +128,38 @@ test('a settled one-time purchase still grants access', () => {
   assert.equal(grant.tier, 'studio')
 })
 
-test('diagnostics name the missing email permission instead of blaming the buyer', () => {
-  const { verdict, summarizeMemberSearch } = diagnostics
+test('a single hidden-email member is still matched, and reported as a warning not a failure', () => {
+  const { verdict, warningsFor, summarizeMemberSearch } = diagnostics
   const hidden = summarizeMemberSearch({
     ok: true,
     data: { data: [{ user: { id: 'user_1', email: null } }] },
   }, 'buyer@example.com')
   assert.equal(hidden.emailReadable, false)
+  assert.deepEqual(hidden.whopUserIds, ['user_1'])
+  assert.equal(hidden.matchedBy, 'single_query_hit')
+
+  const memberships = { ok: true, rows: 3 }
   assert.match(verdict({
     configured: true,
     member: hidden,
-    memberships: { ok: true, rows: 0 },
-    lookup: {},
+    memberships,
+    lookup: { active: true, tier: 'pro', cycle: 'monthly' },
+  }), /active membership on pro monthly/)
+  assert.match(warningsFor({ member: hidden, memberships }).join(' '), /member:email:read/)
+})
+
+test('diagnostics blame the permission only when the search is genuinely ambiguous', () => {
+  const { verdict, summarizeMemberSearch } = diagnostics
+  const ambiguous = summarizeMemberSearch({
+    ok: true,
+    data: { data: [{ user: { id: 'user_1', email: null } }, { user: { id: 'user_2', email: null } }] },
+  }, 'buyer@example.com')
+  assert.deepEqual(ambiguous.whopUserIds, [])
+  assert.match(verdict({
+    configured: true,
+    member: ambiguous,
+    memberships: { ok: true, rows: 3 },
+    lookup: { active: false },
   }), /member:email:read/)
 
   assert.match(verdict({
@@ -154,12 +174,7 @@ test('diagnostics name the missing email permission instead of blaming the buyer
     data: { data: [{ user: { id: 'user_1', email: 'Buyer@Example.com' } }] },
   }, 'buyer@example.com')
   assert.deepEqual(found.whopUserIds, ['user_1'])
-  assert.match(verdict({
-    configured: true,
-    member: found,
-    memberships: { ok: true, rows: 1 },
-    lookup: { active: true, tier: 'pro' },
-  }), /should be unlocked/)
+  assert.equal(found.matchedBy, 'email')
 })
 
 test('grant store unlocks the same email on a later request', () => {

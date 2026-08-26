@@ -69,6 +69,14 @@ function summarizeMemberSearch(probe, email) {
   const rows = _internals.rowsFrom(probe.data)
   const withEmail = rows.filter((row) => row?.user?.email).length
   const matched = rows.filter((row) => String(row?.user?.email || '').trim().toLowerCase() === email)
+  // Mirror findWhopUserIds so the report reflects what the lookup really used.
+  const ids = []
+  for (const row of rows) {
+    const id = String(row?.user?.id || '').trim()
+    if (!id || ids.includes(id)) continue
+    const got = String(row?.user?.email || '').trim().toLowerCase()
+    if (got ? got === email : rows.length === 1) ids.push(id)
+  }
   return {
     ok: true,
     rows: rows.length,
@@ -76,7 +84,8 @@ function summarizeMemberSearch(probe, email) {
     // Null emails on every row is the signature of a missing member:email:read.
     emailReadable: rows.length ? withEmail > 0 : null,
     exactEmailMatches: matched.length,
-    whopUserIds: matched.map((row) => row?.user?.id).filter(Boolean),
+    whopUserIds: ids,
+    matchedBy: ids.length ? (withEmail ? 'email' : 'single_query_hit') : null,
   }
 }
 
@@ -110,17 +119,17 @@ function verdict({ configured, member, memberships, lookup }) {
   if (member.reason === 'missing_permission' || memberships.reason === 'missing_permission') {
     return 'The API key is missing member:basic:read. Grant it in Whop under Developer, Company API Keys.'
   }
-  if (member.ok && member.rows > 0 && member.emailReadable === false) {
-    return 'The API key is missing member:email:read: Whop returned members with null emails. Grant it in Whop under Developer, Company API Keys.'
+  // A resolved membership is the headline even when a permission is missing:
+  // the warnings list carries anything that still needs tightening.
+  if (lookup.active) {
+    const tier = lookup.tier ? lookup.tier + (lookup.cycle ? ' ' + lookup.cycle : '') : 'a legacy plan'
+    return `Whop confirms an active membership on ${tier}. This account should be unlocked.`
+  }
+  if (member.ok && member.rows > 0 && member.emailReadable === false && !member.whopUserIds.length) {
+    return 'The API key is missing member:email:read, and the search returned too many members to match one without emails. Grant it in Whop under Developer, Company API Keys.'
   }
   if (member.ok && member.rows === 0) {
     return 'Whop has no member matching this email. The buyer paid with a different email, or the purchase is on another business.'
-  }
-  if (member.ok && member.exactEmailMatches === 0) {
-    return 'Whop found members for this search but none with an exact email match. The buyer likely checked out under a different Whop account email.'
-  }
-  if (lookup.active) {
-    return 'Whop confirms an active membership. This account should be unlocked.'
   }
   if (memberships.ok && memberships.rows === 0) {
     return 'The buyer exists on Whop but has no membership on a Vidso plan. Check whether the charge actually completed.'
@@ -128,10 +137,24 @@ function verdict({ configured, member, memberships, lookup }) {
   if (memberships.unmappedPlanIds?.length) {
     return 'Memberships were found on plan IDs that are not in lib/whop-map.js, so the tier cannot be resolved: ' + memberships.unmappedPlanIds.join(', ')
   }
+  if (member.ok && member.exactEmailMatches === 0) {
+    return 'Whop found members for this search but none with an exact email match. The buyer likely checked out under a different Whop account email.'
+  }
   return 'No active membership resolved. See the raw sections below.'
 }
 
-export const _internalsForTests = { verdict, summarizeMemberSearch, summarizeMemberships }
+function warningsFor({ member, memberships }) {
+  const out = []
+  if (member.ok && member.rows > 0 && member.emailReadable === false) {
+    out.push('member:email:read is not granted, so Whop hides member emails. Matching still works when an email query returns exactly one member, but it cannot tell two members apart or catch a buyer who paid under a different email. Grant it in Whop under Developer, Company API Keys.')
+  }
+  if (memberships.planFilterHonored === false) out.push('Whop ignored the plan_ids[] filter. Recheck the parameter names against the current API.')
+  if (memberships.statusFilterHonored === false) out.push('Whop ignored the statuses[] filter. Recheck the parameter names against the current API.')
+  if (memberships.hitPageLimit) out.push('The first membership page came back full, so older memberships are only reachable through deeper paging.')
+  return out
+}
+
+export const _internalsForTests = { verdict, warningsFor, summarizeMemberSearch, summarizeMemberships }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
@@ -182,6 +205,7 @@ export default async function handler(req, res) {
     key: { configured: true, companyId },
     target: email,
     verdict: verdict({ configured: true, member, memberships, lookup }),
+    warnings: warningsFor({ member, memberships }),
     memberSearch: member,
     membershipList: memberships,
     resolved: {
