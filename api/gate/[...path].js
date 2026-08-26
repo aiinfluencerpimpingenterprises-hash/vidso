@@ -1,4 +1,5 @@
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
+import { enrichScriptBody } from '../../lib/faceless-length.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
 import { incrementUsage, readUsage } from '../../lib/usage-store.js'
 import { withCompedPlan, planIsActive } from '../../lib/comped.js'
@@ -119,9 +120,12 @@ export default async function handler(req, res) {
     })
   }
 
-  const body = req.method === 'GET' ? {} : await readJson(req)
+  let body = req.method === 'GET' ? {} : await readJson(req)
   const seconds = durationFromBody(body)
   const kind = generationKindFromSeconds(seconds)
+  if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'faceless/script') {
+    body = enrichScriptBody(body, seconds)
+  }
 
   if (rule.type === 'feature') {
     const gate = evaluateFeature({ user, feature: rule.feature })

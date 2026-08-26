@@ -409,7 +409,7 @@ export const api = {
   },
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
-    // body: { topic, duration_id, aspect } → structured script
+    // body: { topic, duration_id, duration (minutes), duration_seconds, target_words, aspect }
     script: (body) => gatedReq('POST', '/api/faceless/script', body),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),

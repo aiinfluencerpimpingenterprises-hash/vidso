@@ -5075,6 +5075,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
+                  <button type="button" class="btn btn-ghost" id="fv-short-continue-btn" hidden onclick="fvContinueToMedia(true)">Continue with shorter script</button>
                 </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
@@ -5272,7 +5273,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               </div>
 
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" id="fv-export-actions">
-                <button type="button" class="btn btn-primary" id="fv-export-btn" onclick="fvStartExport(false)">Render video</button>
+                <button type="button" class="btn btn-primary" id="fv-export-btn" onclick="fvStartExport()">Render video</button>
+                <button type="button" class="btn btn-ghost" id="fv-export-short-btn" hidden onclick="fvStartExport({ allowShort: true })">Render this shorter cut</button>
               </div>
             </div>
           </div>
@@ -5360,6 +5362,16 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
+import {
+  WORDS_PER_MINUTE,
+  facelessMediaPayloadExtras,
+  facelessScriptPayload,
+  formatDurationSeconds,
+  impliedSecondsFromWords,
+  isMateriallyShort,
+  scriptWordCount,
+  targetWordsFromSeconds,
+} from '/lib/faceless-length.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
@@ -7876,6 +7888,9 @@ window.fvState = {
   inited: false,
   scriptAiUsed: false,
   scriptBusy: false,
+  lengthLog: [],
+  allowShortScript: false,
+  allowShortRender: false,
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -7910,6 +7925,9 @@ window.fvClearScript = () => {
   fvState.renderPoll = null
   fvState.renderUrl = null
   fvState.phase = 1
+  fvState.allowShortScript = false
+  fvState.allowShortRender = false
+  fvState.lengthLog = []
 
   const box = document.getElementById('fv-script-box')
   if (box) box.classList.remove('show')
@@ -7935,6 +7953,8 @@ window.fvClearScript = () => {
   try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
 
   fvSetScriptAiLock(false)
+  fvShowShortScriptAction(false)
+  fvShowShortRenderAction(false)
   document.getElementById('fv-topic')?.focus?.()
 }
 
@@ -7984,7 +8004,39 @@ function fvPickedDuration() {
     if (Number.isFinite(cap) && seconds > cap) return list[list.length - 1] || null
     return { id: fvState.durationId, label: fvCustomDurationLabel(seconds), seconds, custom: true }
   }
-  return durationPresets(fvState.format).find((d) => d.id === fvState.durationId) || list[0] || null
+  return durationPresets(fvState.format).find((d) => d.id === fvState.durationId) || null
+}
+
+function fvLengthTrace(step, data) {
+  const row = { t: new Date().toISOString(), step, durationId: fvState.durationId, ...(data || {}) }
+  fvState.lengthLog = (fvState.lengthLog || []).concat(row)
+  try { console.info('[fv-length]', step, row) } catch (_) {}
+}
+
+function fvRequireDuration() {
+  const picked = fvPickedDuration()
+  if (!picked?.seconds || !picked.id) {
+    throw new Error('A video duration is required.')
+  }
+  return picked
+}
+
+function fvScriptSpokenSeconds(script) {
+  return impliedSecondsFromWords(scriptWordCount(script))
+}
+
+function fvScriptIsShort(script, targetSeconds) {
+  return isMateriallyShort(fvScriptSpokenSeconds(script), targetSeconds)
+}
+
+function fvShowShortScriptAction(show) {
+  const btn = document.getElementById('fv-short-continue-btn')
+  if (btn) btn.hidden = !show
+}
+
+function fvShowShortRenderAction(show) {
+  const btn = document.getElementById('fv-export-short-btn')
+  if (btn) btn.hidden = !show
 }
 
 
@@ -8038,6 +8090,8 @@ window.fvSetFormat = (format) => {
 window.fvSetDuration = (id) => {
   fvState.durationId = id
   fvRenderDurationChips()
+  const picked = fvPickedDuration()
+  fvLengthTrace('chip', { seconds: picked?.seconds || null, label: picked?.label || null })
 }
 
 window.fvOpenCustomDuration = () => {
@@ -8238,6 +8292,7 @@ window.fvFinishSectionEdit = (sid) => {
   const preview = card?.querySelector('.fv-section-preview')
   if (preview && sec) preview.textContent = sec.text || ''
   card?.classList.remove('editing')
+  if (fvState.script) fvRenderScript(fvState.script)
 }
 
 function fvEsc(s) {
@@ -8252,10 +8307,14 @@ function fvRenderScript(script) {
   document.getElementById('fv-setup')?.classList.remove('collapsed')
   fvSetPills(1)
   document.getElementById('fv-script-title').textContent = script.title || 'Untitled'
-  const dur = script.estimated_duration_sec || 0
-  const durLabel = dur >= 120 ? `${Math.round(dur / 60)} min` : `${dur}s`
+  const targetSec = fvPickedDuration()?.seconds || 0
+  const words = scriptWordCount(script)
+  const implied = impliedSecondsFromWords(words)
+  const targetLabel = targetSec ? formatDurationSeconds(targetSec) : 'not set'
+  const targetWordLabel = targetSec ? String(targetWordsFromSeconds(targetSec)) : '—'
   document.getElementById('fv-script-meta').innerHTML =
-    `<span><b>${durLabel}</b> target</span>` +
+    `<span>Target <b>${fvEsc(targetLabel)}</b> (${fvEsc(targetWordLabel)} words)</span>` +
+    `<span>Script <b>${words}</b> words · ~${fvEsc(formatDurationSeconds(implied))}</span>` +
     `<span><b>${script.aspect || fvState.aspect}</b></span>` +
     `<span><b>${(script.sections || []).length}</b> sections</span>` +
     (script.keywords?.length ? `<span>B-roll: <b>${fvEsc(script.keywords.slice(0, 4).join(', '))}</b></span>` : '')
@@ -8289,10 +8348,29 @@ window.fvEnterEditor = () => {
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 
-window.fvContinueToMedia = () => {
+window.fvContinueToMedia = (allowShort) => {
   fvRebuildFullScriptFromSections()
   if (!fvState.script?.full_script) return fvSetStatus('Script is empty', 'err', 2)
   if (!fvState.voiceId && !fvState.script.voice_id) return fvSetStatus('Select a narrator voice', 'err', 2)
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetStatus(e.message, 'err', 2)
+  }
+  const words = scriptWordCount(fvState.script)
+  const implied = impliedSecondsFromWords(words)
+  fvLengthTrace('continue-media', { seconds: picked.seconds, words, implied })
+  if (!allowShort && fvScriptIsShort(fvState.script, picked.seconds) && !fvState.allowShortScript) {
+    fvShowShortScriptAction(true)
+    return fvSetStatus(
+      'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '), short of the ' +
+      formatDurationSeconds(picked.seconds) + ' target (~' + targetWordsFromSeconds(picked.seconds) +
+      ' words). Edit it longer, or continue with this shorter script.',
+      'err',
+      2,
+    )
+  }
+  if (allowShort) fvState.allowShortScript = true
+  fvShowShortScriptAction(false)
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
   fvState.phase = 2
   document.getElementById('fv-setup')?.classList.add('collapsed')
@@ -8378,6 +8456,14 @@ function fvRenderMediaResult(job) {
       voice_id: job.voice_id,
     }))
   } catch {}
+  const tlEnd = Math.max(0, ...((job.timeline || []).map((s) => Number(s.end) || 0)))
+  fvLengthTrace('media-result', {
+    voiceoverSeconds: job.duration || null,
+    timedWords: (job.words || []).length,
+    timelineEnd: tlEnd || null,
+    aspect: job.aspect || fvState.aspect,
+    targetSeconds: fvPickedDuration()?.seconds || null,
+  })
 }
 
 function fvSyncWordHighlight(audio) {
@@ -8400,6 +8486,17 @@ window.fvStartMedia = async (force) => {
   fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
 
   const voiceId = fvState.voiceId || fvState.script.voice_id
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetMediaStatus(e.message, 'err')
+  }
+  const extras = facelessMediaPayloadExtras(picked.id, picked.seconds)
+  fvLengthTrace('media-request', {
+    seconds: extras.duration_seconds,
+    voiceId,
+    aspect: fvState.script.aspect || fvState.aspect,
+    scriptWords: scriptWordCount(fvState.script),
+  })
   try {
     const { jobId } = await api.faceless.startMedia({
       script: {
@@ -8410,12 +8507,13 @@ window.fvStartMedia = async (force) => {
         sections: fvState.script.sections || [],
         aspect: fvState.script.aspect || fvState.aspect,
         voice_id: voiceId,
-        duration_id: fvState.durationId,
+        duration_id: extras.duration_id,
+        duration_seconds: extras.duration_seconds,
+        target_words: extras.target_words,
       },
       voice_id: voiceId,
       aspect: fvState.script.aspect || fvState.aspect,
-      duration_id: fvState.durationId,
-      duration: fvPickedDuration()?.seconds,
+      ...extras,
     })
     fvState.mediaJobId = jobId
     fvState.mediaPoll = setInterval(async () => {
@@ -9194,15 +9292,28 @@ window.fvContinueToExport = () => {
   document.getElementById('fv-export-box')?.classList.add('show')
   fvSetPills(4)
   document.getElementById('fv-export-title').textContent = fvState.script?.title || 'Render final MP4'
+  const targetSec = fvPickedDuration()?.seconds
   document.getElementById('fv-export-meta').innerHTML =
-    `<span><b>${fvFmtTime(fvState.media.duration)}</b></span>` +
+    `<span>Voiceover <b>${fvFmtTime(fvState.media.duration)}</b></span>` +
+    (targetSec ? `<span>Target <b>${fvEsc(formatDurationSeconds(targetSec))}</b></span>` : '') +
     `<span><b>${(fvState.media.aspect || fvState.aspect)}</b></span>` +
     `<span><b>${(fvState.media.timeline || []).length}</b> clips</span>`
   document.getElementById('fv-export-result').style.display = 'none'
   document.getElementById('fv-export-progress-wrap').style.display = ''
   document.getElementById('fv-export-actions').style.display = ''
   document.getElementById('fv-export-bar').style.width = '0%'
-  fvSetExportStatus('Ready. Click Render video', null)
+  fvShowShortRenderAction(false)
+  if (targetSec && isMateriallyShort(Number(fvState.media.duration), targetSec) && !fvState.allowShortRender) {
+    fvShowShortRenderAction(true)
+    fvSetExportStatus(
+      'Voiceover is ' + formatDurationSeconds(fvState.media.duration) +
+      ' but you asked for ' + formatDurationSeconds(targetSec) +
+      '. Go back and extend the script, or render this shorter cut.',
+      'err',
+    )
+  } else {
+    fvSetExportStatus('Ready. Click Render video', null)
+  }
   fvSetYoutubeStatus('')
 }
 
@@ -9224,11 +9335,38 @@ function fvSetExportStatus(msg, kind) {
     : (msg || '')
 }
 
-window.fvStartExport = async () => {
+window.fvStartExport = async (opts = {}) => {
+  if (opts === true) opts = { again: true }
   if (!fvState.media?.voiceover_url) return fvSetExportStatus('Missing voiceover', 'err')
   if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
 
-  const seconds = fvPickedDuration()?.seconds || Number(fvState.media.duration)
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetExportStatus(e.message, 'err')
+  }
+  const voiceoverSeconds = Number(fvState.media.duration)
+  const tlEnd = Math.max(0, ...((fvState.media.timeline || []).map((s) => Number(s.end) || 0)))
+  const assembled = tlEnd || voiceoverSeconds
+  fvLengthTrace('export-request', {
+    seconds: picked.seconds,
+    voiceoverSeconds,
+    timelineEnd: tlEnd || null,
+    aspect: fvState.media.aspect || fvState.aspect,
+    allowShort: !!(opts.allowShort || fvState.allowShortRender),
+  })
+  if (!opts.allowShort && !fvState.allowShortRender && isMateriallyShort(assembled, picked.seconds)) {
+    fvShowShortRenderAction(true)
+    return fvSetExportStatus(
+      'Voiceover is ' + formatDurationSeconds(voiceoverSeconds) +
+      ' but you asked for ' + formatDurationSeconds(picked.seconds) +
+      '. Go back and extend the script, or render this shorter cut.',
+      'err',
+    )
+  }
+  if (opts.allowShort) fvState.allowShortRender = true
+  fvShowShortRenderAction(false)
+
+  const seconds = picked.seconds
   const counts = parseUsageCounts(currentUser, lastUsage)
   const kind = generationKindFromFormat(fvState.format)
   const used = kind === 'short_form' ? counts.short_form_used : counts.long_form_used
@@ -9258,7 +9396,8 @@ window.fvStartExport = async () => {
     const { jobId } = await api.faceless.startRender({
       voiceover_url: fvState.media.voiceover_url,
       duration: fvState.media.duration,
-      duration_id: fvState.durationId,
+      duration_id: picked.id,
+      duration_seconds: picked.seconds,
       words: fvState.media.words || [],
       timeline: fvState.media.timeline || [],
       aspect: fvState.media.aspect || fvState.aspect,
@@ -9296,6 +9435,13 @@ window.fvStartExport = async () => {
         fvState.renderUrl = url
         const vid = document.getElementById('fv-export-video')
         vid.src = url
+        vid.onloadedmetadata = () => {
+          fvLengthTrace('render-mp4', {
+            seconds: vid.duration,
+            targetSeconds: picked.seconds,
+            voiceoverSeconds: fvState.media?.duration || null,
+          })
+        }
         const dl = document.getElementById('fv-export-dl')
         dl.href = url
         document.getElementById('fv-export-result').style.display = ''
@@ -9412,33 +9558,98 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
-  const dur = fvPickedDuration()
-  const lengthGate = evaluateLength({ user: currentUser, durationSeconds: dur?.seconds })
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetStatus(e.message, 'err')
+  }
+  const lengthGate = evaluateLength({ user: currentUser, durationSeconds: picked.seconds })
   if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
     return fvSetStatus(lengthGate.message, 'err')
   }
 
   const btn = document.getElementById('fv-gen-script-btn')
   fvState.scriptBusy = true
+  fvState.allowShortScript = false
   if (btn) btn.disabled = true
   fvSetStatus('', null)
   fvSetScriptActionsVisible(false)
+  fvShowShortScriptAction(false)
   document.getElementById('fv-script-box')?.classList.add('show')
   fvSetStatus('Writing your script…', 'loading', 2)
   try {
-    const data = await api.faceless.script({
+    const payload = facelessScriptPayload({
       topic,
-      duration_id: fvState.durationId,
       aspect: fvState.aspect,
+      durationId: picked.id,
+      durationSeconds: picked.seconds,
     })
-    data.voice_id = fvState.voiceId
-    data.voice_preview = fvState.voicePreview
-    data.duration_id = fvState.durationId
-    data.topic = topic
+    fvLengthTrace('script-request', {
+      seconds: payload.duration_seconds,
+      durationMinutes: payload.duration,
+      targetWords: payload.target_words,
+      aspect: payload.aspect,
+      voiceId: fvState.voiceId,
+      format: fvState.format,
+    })
+    let data = await api.faceless.script(payload)
+    const stamp = (script) => {
+      script.voice_id = fvState.voiceId
+      script.voice_preview = fvState.voicePreview
+      script.duration_id = picked.id
+      script.duration_seconds = picked.seconds
+      script.topic = topic
+      return script
+    }
+    stamp(data)
+    let words = scriptWordCount(data)
+    let implied = impliedSecondsFromWords(words)
+    fvLengthTrace('script-response', {
+      seconds: picked.seconds,
+      words,
+      implied,
+      estimated_duration_sec: data.estimated_duration_sec || null,
+      title: data.title || '',
+    })
+    if (fvScriptIsShort(data, picked.seconds)) {
+      fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading', 2)
+      const retryPayload = facelessScriptPayload({
+        topic: topic + '\n\nWrite a spoken narration of ' + payload.target_words +
+          ' words, about ' + formatDurationSeconds(picked.seconds) + ' at ' + WORDS_PER_MINUTE + ' words per minute.',
+        aspect: fvState.aspect,
+        durationId: picked.id,
+        durationSeconds: picked.seconds,
+      })
+      fvLengthTrace('script-retry', { targetWords: retryPayload.target_words, seconds: picked.seconds })
+      try {
+        const retry = stamp(await api.faceless.script(retryPayload))
+        retry.topic = topic
+        const retryWords = scriptWordCount(retry)
+        if (retryWords > words) {
+          data = retry
+          words = retryWords
+          implied = impliedSecondsFromWords(words)
+        }
+        fvLengthTrace('script-retry-response', { words, implied })
+      } catch (retryErr) {
+        fvLengthTrace('script-retry-error', { message: retryErr.message || String(retryErr) })
+      }
+    }
     fvState.phase = 1
     fvRenderScript(data)
     fvSetScriptAiLock(true)
-    fvSetStatus('Script ready', 'ok', 2)
+    if (fvScriptIsShort(data, picked.seconds)) {
+      fvShowShortScriptAction(true)
+      fvSetStatus(
+        'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '). You asked for ' +
+        formatDurationSeconds(picked.seconds) + ' (~' + payload.target_words +
+        ' words). Edit it longer, or continue with this shorter script.',
+        'err',
+        2,
+      )
+    } else {
+      fvShowShortScriptAction(false)
+      fvSetStatus('Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')', 'ok', 2)
+    }
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
     fvSetStatus('', null)
