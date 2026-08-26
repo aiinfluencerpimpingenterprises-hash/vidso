@@ -1830,9 +1830,9 @@ input:focus,textarea:focus,select:focus,
   background:var(--bg)
 }
 .img-filters{
-  position:sticky;top:12px;left:12px;z-index:5;display:inline-flex;gap:6px;
-  margin:12px 12px 0;padding:4px;border-radius:999px;
-  background:rgba(12,12,14,.72);border:1px solid rgba(255,255,255,.1);
+  position:sticky;top:12px;left:16px;z-index:5;display:inline-flex;gap:6px;
+  margin:16px 16px 20px;padding:4px;border-radius:999px;
+  background:rgba(12,12,14,.88);border:1px solid rgba(255,255,255,.1);
   backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2)
 }
 .img-filter{
@@ -1908,9 +1908,9 @@ input:focus,textarea:focus,select:focus,
 }
 .img-masonry{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:2px;padding:0 0 200px;align-content:start
+  gap:10px;padding:0 16px 200px;align-content:start
 }
-.img-tile{position:relative;background:#111;overflow:hidden;aspect-ratio:var(--ar,16/9);z-index:0}
+.img-tile{position:relative;background:#111;overflow:hidden;aspect-ratio:var(--ar,16/9);z-index:0;border-radius:12px}
 .img-tile.is-menu{overflow:visible;z-index:6}
 .img-tile img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .img-tile-hit{
@@ -1934,17 +1934,16 @@ input:focus,textarea:focus,select:focus,
 }
 .img-retry:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
 .img-tile-hover{
-  position:absolute;top:0;right:0;left:auto;bottom:auto;display:flex;flex-direction:row;align-items:flex-start;
-  gap:6px;padding:8px;opacity:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.45),transparent)
+  position:absolute;top:8px;right:8px;left:auto;bottom:auto;display:flex;flex-direction:row;align-items:center;
+  gap:4px;padding:0;opacity:0;pointer-events:none;background:transparent
 }
 .img-tile:hover .img-tile-hover,.img-tile:focus-within .img-tile-hover{opacity:1}
 .img-tile-hover .img-ico,.img-tile-hover .img-more{pointer-events:auto}
 .img-ico{
-  width:32px;height:32px;border:none;border-radius:999px;cursor:pointer;color:#fff;
-  background:rgba(12,12,14,.55);backdrop-filter:blur(10px);display:grid;place-items:center;flex-shrink:0
+  width:28px;height:28px;border:1px solid rgba(255,255,255,.16);border-radius:8px;cursor:pointer;color:#fff;
+  background:rgba(12,12,14,.78);backdrop-filter:blur(12px);display:grid;place-items:center;flex-shrink:0
 }
-.img-ico:hover{background:rgba(12,12,14,.78)}
+.img-ico:hover{background:rgba(12,12,14,.94);border-color:rgba(255,255,255,.28)}
 .img-ico.is-on{color:var(--a1);background:rgba(var(--glow),.28)}
 .img-ico:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
 .img-more{position:relative}
@@ -5404,7 +5403,7 @@ function afterAuthReady(opts = {}) {
     loadUsage()
     loadVoices()
     loadFiles()
-    if (opts.restoreRoute) restorePanelFromHash()
+    if (opts.restoreRoute !== false) restorePanelFromHash()
     return
   }
   obClearNeedFlag()
@@ -5413,12 +5412,12 @@ function afterAuthReady(opts = {}) {
   loadFiles()
   if (funnelLocked() && !introPending()) {
     maybeShowPaywall()
-    if (opts.restoreRoute) restorePanelFromHash()
+    if (opts.restoreRoute !== false) restorePanelFromHash()
     return
   }
   document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
   closePaywall()
-  if (opts.restoreRoute) restorePanelFromHash()
+  if (opts.restoreRoute !== false) restorePanelFromHash()
   maybeStartUiTour()
 }
 
@@ -7473,7 +7472,15 @@ function normalizePath(p) {
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
 function pathForPanel(id) { return PANEL_PATHS[id] || '/dashboard' }
-function panelFromPath() { return PATH_TO_PANEL[normalizePath(location.pathname)] || 'dashboard' }
+function panelFromPath() {
+  const mapped = PATH_TO_PANEL[normalizePath(location.pathname)]
+  if (mapped) return mapped
+  try {
+    const last = sessionStorage.getItem('vidso_last_panel')
+    if (last && titles[last]) return last
+  } catch (_) {}
+  return 'dashboard'
+}
 function isAuthPath() {
   const p = normalizePath(location.pathname)
   return p === '/login' || p === '/signup'
@@ -7503,6 +7510,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-'+id).classList.add('active')
   markNavActive(id)
+  try { sessionStorage.setItem('vidso_last_panel', id) } catch (_) {}
   try { closeNavMenusPublic() } catch (_) {}
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
@@ -7530,7 +7538,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     setTimeout(() => maybeStartPageTour(id), 220)
   }
 }
-function restorePanelFromPath() {
+function restorePanelFromPath(opts = {}) {
   if (isAuthPath()) {
     showModal()
     if (normalizePath(location.pathname) === '/signup') switchTab('signup')
@@ -7542,8 +7550,8 @@ function restorePanelFromPath() {
     history.replaceState(null, '', '/dashboard')
   }
   const panel = panelFromPath()
-  switchPanel(panel, null, { silent: true })
-  if (tourIsCompleted('core') && !tourQueryId()) {
+  switchPanel(panel, null, { silent: true, allowLocked: true })
+  if (!opts.skipTour && tourIsCompleted('core') && !tourQueryId()) {
     setTimeout(() => maybeStartPageTour(panel), 220)
   }
 }
@@ -7561,6 +7569,7 @@ function restorePanelFromHash() {
 }
 window.addEventListener('popstate', restorePanelFromPath)
 window.addEventListener('hashchange', restorePanelFromHash)
+restorePanelFromPath({ skipTour: true })
 
 // ── USAGE ────────────────────────────────────────────────────────────────────
 async function loadUsage() {
