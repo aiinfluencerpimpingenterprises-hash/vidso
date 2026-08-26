@@ -134,66 +134,106 @@
   color-scheme:dark;
 }
 
-/* Viewport-locked shell: the sidebar + topbar stay fixed and only .content
-   scrolls, so position:sticky elements inside it (the ranking preview) pin. */
-body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex}
+/* Viewport-locked shell: banner + top nav stay fixed; only .content scrolls. */
+body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
-/* SIDEBAR */
-.sidebar{width:240px;height:100vh;max-height:100vh;background:rgba(11,11,12,.78);backdrop-filter:blur(16px) saturate(1.3);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;flex-shrink:0;overflow:hidden}
-.sidebar-logo{height:64px;padding:0 12px 0 16px;border-bottom:none;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sidebar-collapse{
-  margin-left:auto;width:32px;height:32px;padding:0;border:none;border-radius:8px;
-  background:transparent;color:var(--text-label);cursor:pointer;flex-shrink:0;
-  display:inline-flex;align-items:center;justify-content:center
+.app-banner{
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  min-height:40px;padding:7px 14px 7px 18px;z-index:40;
+  background:#F3C4C8;color:#2A1014
 }
-.sidebar-collapse:hover{color:var(--ink);background:rgba(255,255,255,.06)}
-.sidebar-collapse:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.sidebar-collapse svg{transition:transform .2s var(--ease-out)}
-@media (min-width:769px){
-  .sidebar{transition:width .2s var(--ease-out)}
-  body.sidebar-collapsed .sidebar{width:72px}
-  body.sidebar-collapsed .brand,
-  body.sidebar-collapsed .nav-item-label,
-  body.sidebar-collapsed .nav-section,
-  body.sidebar-collapsed .user-info,
-  body.sidebar-collapsed .user-settings-btn,
-  body.sidebar-collapsed .sidebar-hide-lbl{display:none}
-  body.sidebar-collapsed .sidebar-logo{justify-content:center;padding:12px 8px 8px;height:auto;flex-wrap:wrap}
-  body.sidebar-collapsed .sidebar-logo-link{margin:0}
-  body.sidebar-collapsed .sidebar-collapse{margin:0}
-  body.sidebar-collapsed .sidebar-collapse svg{transform:rotate(180deg)}
-  body.sidebar-collapsed .sidebar-nav{padding:8px 8px 12px;align-items:center}
-  body.sidebar-collapsed .nav-item{justify-content:center;padding:0;width:44px;height:40px}
-  body.sidebar-collapsed .nav-item.active::before{display:none}
-  body.sidebar-collapsed .user-profile-top{justify-content:center;padding:10px}
-  body.sidebar-collapsed .user-signout-btn{justify-content:center;padding:10px}
-  body.sidebar-collapsed .sidebar-footer{padding:8px}
+.app-banner[hidden]{display:none!important}
+.app-banner-msg{
+  flex:1;min-width:0;margin:0;font-size:.84rem;font-weight:650;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.sidebar-logo-link{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px}
-.sidebar-logo-link:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
-.sidebar-logo img{width:42px;height:42px;object-fit:contain;flex-shrink:0}
-.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase}
-.sidebar-nav{flex:1;min-height:0;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
-.sidebar-nav::-webkit-scrollbar{width:6px}
-.sidebar-nav::-webkit-scrollbar-track{background:transparent}
-.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:6px}
-.sidebar-nav::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26)}
-.nav-section{margin:10px 0 4px;padding:0 10px}
-.nav-section:first-child{margin-top:2px}
-.nav-section-label{display:block;font-size:.65rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--text-label);line-height:1}
-.nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:12px;cursor:pointer;font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:.875rem;font-weight:500;color:var(--text-body);transition:background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);border:none;background:transparent;width:100%;text-align:left;letter-spacing:-.01em;position:relative;flex-shrink:0}
-.nav-item:hover{background:rgba(255,255,255,.05);color:var(--ink)}
-.nav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.nav-item.active{background:rgba(var(--glow),.12);color:var(--ink);font-weight:600;box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
-.nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--a1)}
-.nav-item-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-ico{width:20px;height:20px;border-radius:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent;border:none;color:inherit;padding:0}
-.nav-ico svg{width:16px;height:16px;opacity:.9}
-.nav-item:hover .nav-ico{color:var(--ink)}
-.nav-item.active .nav-ico{color:var(--a1)}
-.nav-item.active .nav-ico svg{opacity:1;color:var(--a1)}
+.app-banner-cta{
+  flex-shrink:0;height:28px;padding:0 12px;border-radius:999px;
+  background:#1A0A0C;color:#fff;font:inherit;font-size:.75rem;font-weight:650;
+  text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap
+}
+.app-banner-cta:hover{filter:brightness(1.08)}
+.app-banner-cta:focus-visible,.app-banner-x:focus-visible{outline:2px solid #2A1014;outline-offset:2px}
+.app-banner-x{
+  flex-shrink:0;width:32px;height:32px;border:none;border-radius:8px;cursor:pointer;
+  background:transparent;color:#2A1014;display:inline-flex;align-items:center;justify-content:center
+}
+.app-banner-x:hover{background:rgba(42,16,20,.08)}
+
+.app-topnav{
+  flex-shrink:0;position:sticky;top:0;z-index:50;height:52px;
+  display:flex;align-items:center;gap:8px;padding:0 12px 0 14px;
+  flex-wrap:nowrap;
+  background:rgba(11,11,12,.88);border-bottom:1px solid var(--line);
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)
+}
+.nav-hamburger{
+  display:none;width:36px;height:36px;padding:0;border:none;border-radius:10px;cursor:pointer;
+  background:transparent;color:var(--ink);align-items:center;justify-content:center;flex-shrink:0
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.06)}
+.nav-hamburger:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.topnav-logo{display:flex;align-items:center;gap:8px;min-width:0;color:inherit;text-decoration:none;border-radius:10px;flex-shrink:0;padding:4px 4px 4px 0}
+.topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+.topnav-logo img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase}
+.topnav-primary{display:flex;align-items:center;gap:0;min-width:0;flex:1;overflow:hidden}
+.topnav-group{display:flex;align-items:center;gap:0;flex-shrink:0}
+.topnav-group + .topnav-group{margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,255,255,.12)}
+.topnav-item{
+  position:relative;height:36px;padding:0 10px;border:none;border-radius:8px;cursor:pointer;
+  background:transparent;color:var(--text-body);font-family:inherit;font-size:.8rem;font-weight:500;
+  letter-spacing:-.01em;white-space:nowrap;display:inline-flex;align-items:center;gap:6px
+}
+.topnav-item:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.topnav-item.active{color:var(--ink);font-weight:600}
+.topnav-item.active::after{
+  content:'';position:absolute;left:10px;right:10px;bottom:4px;height:2px;border-radius:2px;background:var(--a1)
+}
+.topnav-item .nav-new,.nav-drawer .nav-new{
+  display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:999px;
+  font-size:.58rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:#fff;background:var(--a1);line-height:1
+}
+.topnav-chev{width:10px;height:10px;opacity:.55;flex-shrink:0}
+.topnav-drop{position:relative}
+.topnav-menu,.nav-search-pop{
+  display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:60;min-width:220px;
+  padding:6px;border-radius:12px;background:#121214;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 48px rgba(0,0,0,.55)
+}
+.topnav-drop.is-open > .topnav-menu,.topnav-drop.is-open > .nav-search-pop{display:block}
+#nav-avatar-wrap .topnav-menu{left:auto;right:0}
+#nav-search-wrap .nav-search-pop{left:auto;right:0;width:280px}
+.topnav-menu [role="menuitem"],.nav-search-item{
+  display:flex;align-items:center;width:100%;text-align:left;border:none;background:transparent;
+  color:var(--ink);font:inherit;font-size:.82rem;padding:8px 10px;border-radius:8px;cursor:pointer
+}
+.topnav-menu [role="menuitem"]:hover,.nav-search-item:hover,
+.topnav-menu [role="menuitem"]:focus,.nav-search-item:focus{
+  background:rgba(255,255,255,.06);outline:none
+}
+.topnav-menu [role="menuitem"].active{color:var(--a1)}
+.nav-search-input{
+  width:100%;height:36px;margin:0 0 6px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.82rem
+}
+.nav-search-empty{margin:8px 10px;font-size:.78rem;color:rgba(255,255,255,.45)}
+.topnav-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.topnav-ico-btn{
+  width:36px;height:36px;padding:0;border:none;border-radius:10px;cursor:pointer;
+  background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center
+}
+.topnav-ico-btn:hover{background:rgba(255,255,255,.06)}
+.topnav-ico-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.topnav-avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--grad);display:flex;align-items:center;
+  justify-content:center;font-size:.78rem;font-weight:700;color:#fff;border:none;cursor:pointer;padding:0
+}
+.topnav-avatar:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+.nav-drawer{display:none}
 .nav-badge,.badge-soon{display:inline-flex;align-items:center;justify-content:center;height:18px;padding:0 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--line);flex-shrink:0}
 .user-profile-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;background:transparent;text-decoration:none;color:inherit;cursor:default}
 .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
@@ -211,28 +251,12 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
-.topbar{padding:12px 28px;border-bottom:none;display:flex;align-items:center;justify-content:space-between;min-height:60px;position:relative}
-.topbar::after{content:'';position:absolute;left:28px;right:28px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);pointer-events:none}
-.topbar-title{font-family:'SF Pro Display','Inter',sans-serif;font-size:1.1rem;font-weight:650;letter-spacing:-.02em;color:var(--ink)}
-.topbar-title.is-hidden{visibility:hidden;pointer-events:none}
-/* Desktop: in-page titles already exist — don't leave a blank 60px topbar that
-   clips the first heading inside the overflow:auto content pane. */
-@media (min-width:769px){
-  body.has-page-header .topbar{
-    position:absolute;top:18px;right:28px;left:auto;width:auto;
-    min-height:0;height:auto;padding:0;background:transparent;z-index:6;
-    pointer-events:none
-  }
-  body.has-page-header .topbar::after,
-  body.has-page-header .topbar-title,
-  body.has-page-header .mobile-nav-toggle{display:none!important}
-  body.has-page-header .topbar-actions{pointer-events:auto}
-}
-.credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 12px 7px 10px;font-size:.78rem;color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
+.topbar{display:none}
+.credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 10px 5px 8px;font-size:.75rem;color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:6px;height:32px;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
 .credits-pill:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
 .credits-pill-icon{width:12px;height:12px;flex-shrink:0;color:var(--a1)}
 .credits-pill-count{font-variant-numeric:tabular-nums}
-.credits-pill-label{color:var(--text-body);font-weight:500}
+.credits-pill-label{display:none;color:var(--text-body);font-weight:500}
 .topbar-actions{display:inline-flex;align-items:center;gap:10px}
 
 
@@ -673,10 +697,10 @@ html.needs-auth body::before,html.needs-gate body::before,html.needs-paywall bod
   content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
 }
 html.needs-onboarding body::before{content:none;display:none}
-html.needs-auth #app-sidebar,html.needs-auth main,
-html.needs-gate #app-sidebar,html.needs-gate main,
-html.needs-paywall #app-sidebar,html.needs-paywall main,
-html.needs-onboarding #app-sidebar,html.needs-onboarding main{visibility:hidden}
+html.needs-auth #app-topnav,html.needs-auth #app-banner,html.needs-auth main,
+html.needs-gate #app-topnav,html.needs-gate #app-banner,html.needs-gate main,
+html.needs-paywall #app-topnav,html.needs-paywall #app-banner,html.needs-paywall main,
+html.needs-onboarding #app-topnav,html.needs-onboarding #app-banner,html.needs-onboarding main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
 html.needs-paywall #paywall-modal,
@@ -752,7 +776,7 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 .clip-playhead{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--a3);pointer-events:none;z-index:3;transform:translateX(-1px)}
 
 /* ── VIDEO EDITOR ────────────────── */
-.editor-wrap{display:flex;flex-direction:column;height:calc(100vh - 60px);overflow:hidden;background:var(--bg)}
+.editor-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--bg)}
 .editor-wrap.ed-drag{outline:2px dashed var(--a2);outline-offset:-6px}
 .editor-bar{padding:8px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--surface)}
 .ed-bar-group{display:flex;align-items:center;gap:4px}
@@ -1592,7 +1616,7 @@ body::after{
   bottom:-120px;left:-80px;width:520px;height:480px;
   background:radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.03),transparent 68%)
 }
-.sidebar,.main{position:relative;z-index:1}
+.app-topnav,.app-banner,.main{position:relative;z-index:1}
 .main{isolation:isolate}
 .main::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.016;
@@ -2176,7 +2200,7 @@ input:focus,textarea:focus,select:focus,
 }
 html.needs-onboarding #onboarding-modal,
 html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
-body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
+body.onboarding-open .app-topnav,body.onboarding-open .app-banner,body.onboarding-open .main{visibility:hidden}
 .onboarding-shell{
   width:100%;max-width:none;height:100%;max-height:none;min-height:100%;flex:1;
   padding:0;overflow:hidden;display:flex;flex-direction:column;
@@ -2528,21 +2552,37 @@ body.tour-active #fv-export-box.show{min-height:160px}
   .paywall-plan .feat-row{min-height:0}
 }
 body.paywalled{overflow:hidden}
-body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-events:none;user-select:none}
+body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointer-events:none;user-select:none}
 
 /* Mobile chrome (drawer) — desktop unchanged */
 .mobile-nav-toggle,.mobile-nav-close{display:none}
 .nav-backdrop{display:none}
 
-@media (max-width:768px){
-  body{overflow-x:hidden}
+@media (max-width:1100px){
   body.nav-open{overflow:hidden}
-  .sidebar{
-    position:fixed;top:0;left:0;bottom:0;z-index:80;width:min(288px,86vw);
-    transform:translateX(-105%);transition:transform 220ms var(--ease-out);
-    border-right:1px solid var(--line);box-shadow:none
+  .nav-hamburger{display:inline-flex}
+  .topnav-primary{display:none}
+  .nav-drawer{
+    display:flex;flex-direction:column;gap:4px;position:fixed;top:0;left:0;bottom:0;z-index:80;
+    width:min(300px,86vw);padding:16px 12px 24px;overflow:auto;
+    background:rgba(11,11,12,.96);border-right:1px solid var(--line);
+    transform:translateX(-105%);transition:transform 220ms var(--ease-out)
   }
-  body.nav-open .sidebar{transform:translateX(0);box-shadow:24px 0 60px rgba(0,0,0,.45)}
+  body.nav-open .nav-drawer{transform:translateX(0);box-shadow:24px 0 60px rgba(0,0,0,.45)}
+  .nav-drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .nav-drawer-label{
+    display:block;font-size:.65rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-label);padding:10px 10px 4px
+  }
+  .nav-drawer .topnav-item{
+    width:100%;height:auto;min-height:44px;justify-content:flex-start;border-radius:12px
+  }
+  .nav-drawer .topnav-item.active::after{display:none}
+  .nav-drawer .topnav-item.active{background:rgba(var(--glow),.12);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
+  .nav-drawer .topnav-menu{
+    position:static;display:none;box-shadow:none;border:none;background:transparent;padding:0 0 0 8px
+  }
+  .nav-drawer .topnav-drop.is-open > .topnav-menu{display:block}
   .nav-backdrop{
     display:block;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);
     opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-out)
@@ -2550,29 +2590,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
   .nav-backdrop[hidden]{display:none!important}
   body.nav-open .nav-backdrop[hidden]{display:block!important}
-  .mobile-nav-toggle{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:44px;height:44px;margin:0;padding:0;border:none;border-radius:12px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--ink);cursor:pointer;flex-shrink:0
-  }
-  .mobile-nav-toggle:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:1px}
-  .sidebar-collapse{display:none!important}
-  .mobile-nav-close{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:44px;height:44px;margin:0 0 0 auto;padding:0;border:none;border-radius:12px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--ink);cursor:pointer;order:3
-  }
-  .sidebar-logo{gap:8px}
-  .sidebar-logo-link{order:2;gap:8px}
-  .topbar{
-    padding:8px 12px;min-height:56px;gap:10px;
-    display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center
-  }
-  .topbar::after{left:12px;right:12px}
-  .topbar-title{font-size:1rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .topbar-title.is-hidden{visibility:visible;pointer-events:auto}
-  .credits-pill{padding:6px 10px;gap:5px;max-width:100%}
   .credits-pill-label{display:none}
+}
+
+@media (max-width:768px){
+  body{overflow-x:hidden}
+  .credits-pill{padding:6px 10px;gap:5px;max-width:100%}
   .content{padding:16px 12px;overflow-x:hidden}
   .page-header{margin-bottom:16px!important}
   .page-header h2{font-size:1.35rem!important}
@@ -2589,7 +2612,6 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   }
   #panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:120px!important}
   #panel-ranking .page-shell-wide{padding:0}
-  .nav-item{min-height:44px;height:auto;padding:10px 12px}
   .user-settings-btn,.user-signout-btn{min-height:44px}
   .img-layout,.fv-prev-layout,.cm-layout,.clip-layout{grid-template-columns:1fr!important;flex-direction:column!important}
   body, .main, .content{max-width:100vw}
@@ -2597,8 +2619,9 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 }
 @media (max-width:390px){
   .content{padding:14px 10px}
-  .topbar{padding:8px 10px}
   .credits-pill{padding:6px 8px}
+  .app-banner{padding:6px 8px 6px 12px;gap:8px}
+  .app-banner-msg{font-size:.78rem}
 }
 </style>
 <script src="/brand.js" defer></script>
@@ -3004,118 +3027,115 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="app-sidebar" aria-label="Main navigation">
-  <div class="sidebar-logo">
-    <button type="button" class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <a href="/home" class="sidebar-logo-link" aria-label="Vidso home">
-      <img data-vidso-logo width="42" height="42" alt="" decoding="async">
-      <span class="brand">vidso</span>
-    </a>
-    <button type="button" class="sidebar-collapse" id="sidebar-collapse" onclick="toggleSidebar()" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/><path d="M9 6l-6 6 6 6"/></svg>
-    </button>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section"><span class="nav-section-label">Long form</span></div>
-    <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-      <span class="nav-item-label">Thumbnail Generator</span>
-    </button>
-    <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
-      <span class="nav-item-label">Video Generation</span>
-    </button>
-    <div class="nav-section"><span class="nav-section-label">Short form</span></div>
-    <button class="nav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-      <span class="nav-item-label">Clipping</span>
-    </button>
-    <button class="nav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/><path d="M5 4h2M17 4h2"/><path d="M12 8v4"/></svg></span>
-      <span class="nav-item-label">Ranking</span>
-    </button>
-    <button class="nav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
-      <span class="nav-item-label">AI Captions</span>
-    </button>
-    <button class="nav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
-      <span class="nav-item-label">AI Voiceover</span>
-    </button>
-    <button class="nav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
-      <span class="nav-item-label">AI Reframe</span>
-    </button>
-    <button class="nav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
-      <span class="nav-item-label">Video Editor</span>
-    </button>
-    <button class="nav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-      <span class="nav-item-label">Video Downloader</span>
-    </button>
-    <button class="nav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-      <span class="nav-item-label">Video Commentary</span>
-    </button>
-    <div class="nav-section"><span class="nav-section-label">Workspace</span></div>
-    <button class="nav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
-      <span class="nav-item-label">Tools</span>
-    </button>
-    <button class="nav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-      <span class="nav-item-label">My Files</span>
-    </button>
-    <button class="nav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span class="nav-item-label">Dashboard</span>
-    </button>
+<!-- APP CHROME -->
+<div class="app-banner" id="app-banner" hidden>
+  <p class="app-banner-msg" id="app-banner-msg"></p>
+  <a class="app-banner-cta" id="app-banner-cta" href="/image-generation">Try it</a>
+  <button type="button" class="app-banner-x" id="app-banner-dismiss" aria-label="Dismiss announcement">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<header class="app-topnav" id="app-topnav">
+  <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="nav-drawer" aria-expanded="false">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <a href="/home" class="topnav-logo" aria-label="Vidso home">
+    <img data-vidso-logo width="28" height="28" alt="" decoding="async">
+    <span class="brand">vidso</span>
+  </a>
+  <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
+    <div class="topnav-group">
+      <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+      <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
+    </div>
+    <div class="topnav-group">
+      <button type="button" class="topnav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+      <button type="button" class="topnav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+    </div>
+    <div class="topnav-group">
+      <div class="topnav-drop" id="nav-tools-wrap">
+        <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
+          Tools
+          <svg class="topnav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Tools">
+          <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+          <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+          <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+          <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+          <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+          <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+        </div>
+      </div>
+    </div>
+    <div class="topnav-group">
+      <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+      <button type="button" class="topnav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
+    </div>
   </nav>
-  <div class="sidebar-footer">
-    <div class="user-profile-card">
-      <div class="user-profile-top">
-        <span class="user-avatar" id="user-avatar">?</span>
-        <div class="user-info">
+  <div class="topnav-right">
+    <div class="topnav-drop" id="nav-search-wrap">
+      <button type="button" class="topnav-ico-btn" id="nav-search-btn" aria-label="Search tools" aria-haspopup="true" aria-expanded="false" aria-controls="nav-search-pop">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+      </button>
+      <div class="nav-search-pop" id="nav-search-pop" role="menu" aria-label="Search tools">
+        <label class="sr-only" for="nav-search-input">Search tools</label>
+        <input class="nav-search-input" id="nav-search-input" type="search" placeholder="Jump to a tool" autocomplete="off">
+        <div id="nav-search-list"></div>
+      </div>
+    </div>
+    <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
+      <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+      <span class="credits-pill-count" id="credits-count">—</span>
+      <span class="credits-pill-label">videos</span>
+    </span>
+    <div class="topnav-drop" id="nav-avatar-wrap">
+      <button type="button" class="topnav-avatar" id="nav-avatar-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-avatar-menu">
+        <span id="user-avatar">?</span>
+      </button>
+      <div class="topnav-menu" id="nav-avatar-menu" role="menu" aria-label="Account">
+        <div class="user-info" style="padding:8px 10px 10px">
           <div class="user-name" id="user-name">Your account</div>
           <div class="user-email" id="user-email">...</div>
         </div>
-        <button type="button" class="user-settings-btn" id="user-settings-btn" onclick="openAccountSettings()" aria-label="Account settings">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </button>
+        <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
+        <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
-      <button type="button" class="user-signout-btn" id="user-getting-started-btn" aria-label="Open getting started tours" title="Getting started">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19h14"/></svg>
-        <span class="sidebar-hide-lbl">Getting started</span>
-      </button>
-      <button type="button" class="user-signout-btn" onclick="doLogout()" title="Sign out">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span class="sidebar-hide-lbl">Sign out</span>
-      </button>
     </div>
   </div>
+</header>
+
+<aside class="nav-drawer" id="nav-drawer" aria-label="Main navigation">
+  <div class="nav-drawer-head">
+    <span class="brand">vidso</span>
+    <button type="button" class="topnav-ico-btn" onclick="closeMobileNav()" aria-label="Close menu">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <span class="nav-drawer-label">Create</span>
+  <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+  <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Video Generation</button>
+  <span class="nav-drawer-label">Short form</span>
+  <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+  <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+  <span class="nav-drawer-label">Tools</span>
+  <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+  <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+  <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+  <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+  <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+  <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+  <span class="nav-drawer-label">Workspace</span>
+  <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
 
 <!-- MAIN -->
 <main class="main">
-  <div class="topbar">
-    <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
-    <span class="topbar-title" id="topbar-title">Dashboard</span>
-    <div class="topbar-actions">
-      <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
-        <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-        <span class="credits-pill-count" id="credits-count">—</span>
-        <span class="credits-pill-label">videos</span>
-      </span>
-    </div>
-  </div>
   <div class="content content-scrim">
 
 
@@ -5230,6 +5250,7 @@ import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { isHistorySidecarName } from '/lib/image-gen.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
+import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import {
   tourById,
   tourStepsOf,
@@ -5595,7 +5616,7 @@ window.closeMobileNav = () => {
   document.body.classList.remove('nav-open')
   const backdrop = document.getElementById('nav-backdrop')
   if (backdrop) backdrop.hidden = true
-  const toggle = document.getElementById('mobile-nav-toggle')
+  const toggle = document.getElementById('nav-hamburger')
   if (toggle) {
     toggle.setAttribute('aria-expanded', 'false')
     toggle.setAttribute('aria-label', 'Open menu')
@@ -5605,7 +5626,7 @@ window.openMobileNav = () => {
   document.body.classList.add('nav-open')
   const backdrop = document.getElementById('nav-backdrop')
   if (backdrop) backdrop.hidden = false
-  const toggle = document.getElementById('mobile-nav-toggle')
+  const toggle = document.getElementById('nav-hamburger')
   if (toggle) {
     toggle.setAttribute('aria-expanded', 'true')
     toggle.setAttribute('aria-label', 'Close menu')
@@ -5615,31 +5636,16 @@ window.toggleMobileNav = () => {
   if (document.body.classList.contains('nav-open')) window.closeMobileNav()
   else window.openMobileNav()
 }
-
-const SIDEBAR_COLLAPSE_KEY = 'vidso_sidebar_collapsed'
-function applySidebarCollapsed(on) {
-  document.body.classList.toggle('sidebar-collapsed', !!on)
-  const btn = document.getElementById('sidebar-collapse')
-  if (btn) {
-    btn.setAttribute('aria-expanded', on ? 'false' : 'true')
-    btn.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar')
-    btn.title = on ? 'Expand sidebar' : 'Collapse sidebar'
-  }
-  document.querySelectorAll('.nav-item').forEach((el) => {
-    const label = el.querySelector('.nav-item-label')?.textContent?.trim()
-    if (label) el.title = label
-  })
-}
-window.toggleSidebar = () => {
-  const next = !document.body.classList.contains('sidebar-collapsed')
-  applySidebarCollapsed(next)
-  try { localStorage.setItem(SIDEBAR_COLLAPSE_KEY, next ? '1' : '0') } catch (_) {}
-}
-try { if (localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1') applySidebarCollapsed(true) } catch (_) {}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !document.body.classList.contains('nav-open')) return
+  window.closeMobileNav()
+  document.getElementById('nav-hamburger')?.focus()
+})
 
 let _settingsPrevFocus = null
 window.openAccountSettings = () => {
   if (!currentUser) { showModal(); return }
+  try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
   const modal = document.getElementById('settings-modal')
   if (!modal) return
   _settingsPrevFocus = document.activeElement
@@ -6201,7 +6207,6 @@ let _tourGen = 0
 let _tourDemoOn = false
 let _tourDir = 1
 let _tourSkipHops = 0
-let _tourExpandedSidebar = false
 let _tourResolvedEl = null
 
 function tourSteps() { return tourStepsOf(_tourId) }
@@ -6314,7 +6319,7 @@ function tourObReady() {
   return obHasSeen() || _obDoneThisSession
 }
 function tourIsMobile() {
-  try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
+  try { return window.matchMedia('(max-width:1100px)').matches } catch (_) { return false }
 }
 function tourNarrowSheet() {
   try { return window.matchMedia('(max-width:380px)').matches } catch (_) { return false }
@@ -6497,10 +6502,16 @@ function tourElVisible(el) {
   return r.width >= 2 && r.height >= 2
 }
 
+function tourQuery(selector) {
+  if (!selector) return null
+  const nodes = [...document.querySelectorAll(selector)]
+  return nodes.find(tourElVisible) || nodes[0] || null
+}
+
 function tourWaitFor(selector, timeoutMs = 1600) {
   if (!selector) return Promise.resolve(true)
   const hit = () => {
-    const el = document.querySelector(selector)
+    const el = tourQuery(selector)
     return tourElVisible(el) ? el : null
   }
   const now = hit()
@@ -6522,20 +6533,18 @@ function tourWaitFor(selector, timeoutMs = 1600) {
   })
 }
 
-function tourSidebarCollapsed() {
-  return document.body.classList.contains('sidebar-collapsed')
-}
-
-function tourEnsureSidebarExpanded() {
-  if (tourIsMobile()) return
-  if (!tourSidebarCollapsed()) return
-  try { applySidebarCollapsed(false) } catch (_) {}
-  _tourExpandedSidebar = true
+function tourEnsureNavReady(step) {
+  if (tourIsMobile() && (step.needsNav || step.needsSidebar)) {
+    try { openMobileNav() } catch (_) {}
+  }
+  if (step.needsAvatarMenu) {
+    try { openAvatarMenu() } catch (_) {}
+  }
 }
 
 async function tourPrepareStep(step) {
   const route = tourRouteOf(step)
-  if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
+  if (step.needsNav || step.needsSidebar) tourEnsureNavReady(step)
   if (route) {
     try { switchPanel(route, null, { silent: true, allowLocked: true, fromTour: true }) } catch (_) {}
     await tourWaitFor('#panel-' + route, 1200)
@@ -6556,9 +6565,10 @@ async function tourPrepareStep(step) {
       try { closeMobileNav() } catch (_) {}
       await new Promise(r => setTimeout(r, tourReduceMotion() ? 0 : 160))
     }
-  } else {
-    try { closeMobileNav() } catch (_) {}
-    if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
+  }
+  if (step.needsAvatarMenu) {
+    try { openAvatarMenu() } catch (_) {}
+    await new Promise(r => setTimeout(r, 40))
   }
 }
 
@@ -6601,7 +6611,7 @@ function tourPickPlacement(preferred, r, tw, th, gap, vw, vh) {
   const order = []
   const add = (p) => { if (p && !order.includes(p)) order.push(p) }
   if (preferred && preferred !== 'auto' && preferred !== 'center' && preferred !== 'sheet') add(preferred)
-  if (!tourIsMobile() && r.left < 320) add('right')
+  if (r.top < 72) add('bottom')
   add('bottom')
   add('top')
   add('right')
@@ -6646,7 +6656,7 @@ function tourPosition() {
   const selector = tourTargetOf(step)
   let target = _tourResolvedEl
   if (!target || !document.body.contains(target)) {
-    target = selector ? document.querySelector(selector) : null
+    target = selector ? tourQuery(selector) : null
   }
   if (target && !tourElVisible(target) && target !== _tourResolvedEl) target = null
 
@@ -6841,7 +6851,6 @@ window.openUiTour = (opts = {}) => {
   _tourId = requested
   _tourFromMenu = !!opts.fromMenu
   _tourPrevFocus = document.activeElement
-  _tourExpandedSidebar = false
   if (opts.fromMenu) {
     tourClearProgress(_tourId)
     _tourStep = 0
@@ -7452,9 +7461,8 @@ window.switchPanel = (id, btn, opts = {}) => {
   if (!panel) id = 'dashboard'
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-'+id).classList.add('active')
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'))
-  if (btn) btn.classList.add('active')
-  else document.querySelector(`[data-panel="${id}"]`)?.classList.add('active')
+  markNavActive(id)
+  try { closeNavMenusPublic() } catch (_) {}
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
@@ -9343,11 +9351,15 @@ function bindGettingStarted() {
     e.preventDefault()
     e.stopPropagation()
     try { closeAccountSettings() } catch (_) {}
+    try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
     openTourMenu()
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
 }
+
+initBanner()
+initTopNav()
 
 initImageWorkspace({
   api,
