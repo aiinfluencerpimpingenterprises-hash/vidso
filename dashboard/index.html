@@ -8496,6 +8496,7 @@ window.fvInit = () => {
 
 let fvStudioBoundId = null
 let fvHydrating = false
+window.fvStudioAutoRun = false
 
 function fvNotifyStudio() {
   if (fvHydrating) return
@@ -8522,7 +8523,12 @@ function fvReadStudioDraft(projectId) {
 }
 
 function fvStudioJob(job) {
-  try { window.fvStudioRecordJob?.(job) } catch (_) {}
+  try { return window.fvStudioRecordJob?.(job) } catch (_) {}
+}
+
+function fvStudioJobPatch(remoteId, patch) {
+  if (!remoteId) return
+  try { window.fvStudioPatchJob?.(remoteId, patch) } catch (_) {}
 }
 
 window.fvParkWizard = (slot) => {
@@ -8625,7 +8631,10 @@ window.fvHydrateFromStudio = (project) => {
   }
 }
 
-window.fvStudioUnbind = () => { fvStudioBoundId = null }
+window.fvStudioUnbind = () => {
+  fvStudioBoundId = null
+  window.fvStudioAutoRun = false
+}
 
 function fvRebuildFullScriptFromSections() {
   if (!fvState.script) return
@@ -8884,32 +8893,43 @@ window.fvStartMedia = async (force) => {
       ...extras,
     })
     fvState.mediaJobId = jobId
+    await fvStudioJob({ type: 'media', status: 'running', progress: 5, remote_id: jobId })
     fvState.mediaPoll = setInterval(async () => {
       try {
         const job = await api.faceless.pollMedia(jobId)
         document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
         if (job.status === 'processing' || job.status === 'queued') {
           fvSetMediaStatus(job.step || 'Processing…', 'loading')
+          fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 5 })
           return
         }
         clearInterval(fvState.mediaPoll)
         fvState.mediaPoll = null
         if (job.status === 'error') {
           fvSetMediaStatus(job.error || 'Media failed', 'err')
-          fvStudioJob({ type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed', remote_id: jobId })
+          fvStudioJobPatch(jobId, { type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed' })
+          window.fvStudioAutoRun = false
           return
         }
         fvSetMediaStatus('Ready', 'ok')
         fvRenderMediaResult(job)
-        fvStudioJob({ type: 'media', status: 'succeeded', progress: 100, remote_id: jobId })
+        fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
+        if (fvStudioBoundId && window.fvStudioAutoRun) {
+          setTimeout(() => {
+            try { window.fvContinueToPreview() } catch (_) {}
+            window.fvStudioAutoRun = false
+          }, 400)
+        }
       } catch (e) {
         clearInterval(fvState.mediaPoll)
         fvState.mediaPoll = null
         fvSetMediaStatus(e.message || 'Poll failed', 'err')
+        window.fvStudioAutoRun = false
       }
     }, 1200)
   } catch (e) {
     fvSetMediaStatus(e.message || 'Could not start media job', 'err')
+    window.fvStudioAutoRun = false
   }
 }
 
@@ -9785,12 +9805,14 @@ window.fvStartExport = async (opts = {}) => {
         : null,
     })
     fvState.renderJobId = jobId
+    await fvStudioJob({ type: 'export', status: 'running', progress: 3, remote_id: jobId })
     fvState.renderPoll = setInterval(async () => {
       try {
         const job = await api.faceless.pollRender(jobId)
         document.getElementById('fv-export-bar').style.width = Math.max(3, job.progress || 0) + '%'
         if (job.status === 'queued' || job.status === 'processing') {
           fvSetExportStatus(job.step || 'Rendering…', 'loading')
+          fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 3 })
           return
         }
         clearInterval(fvState.renderPoll)
@@ -9798,10 +9820,12 @@ window.fvStartExport = async (opts = {}) => {
         if (btn) btn.disabled = false
         if (job.status === 'error') {
           fvSetExportStatus(job.error || 'Render failed', 'err')
+          fvStudioJobPatch(jobId, { status: 'failed', progress: 0, error: job.error || 'Render failed' })
           return
         }
         fvSetExportStatus('Render complete', 'ok')
         document.getElementById('fv-export-bar').style.width = '100%'
+        fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
         const url = await api.faceless.downloadRender(jobId)
         if (fvState.renderUrl) URL.revokeObjectURL(fvState.renderUrl)
         fvState.renderUrl = url
@@ -10021,15 +10045,22 @@ window.fvGenerateScript = async () => {
         'err',
         2,
       )
+      window.fvStudioAutoRun = false
     } else {
       fvShowShortScriptAction(false)
       fvSetStatus('Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')', 'ok', 2)
+      if (fvStudioBoundId && window.fvStudioAutoRun) {
+        setTimeout(() => {
+          try { window.fvContinueToMedia() } catch (_) {}
+        }, 350)
+      }
     }
     try { fvPersistLocalDraft(data) } catch {}
   } catch (e) {
     fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
     fvStudioJob({ type: 'script', status: 'failed', progress: 0, error: e.message || 'Script generation failed' })
+    window.fvStudioAutoRun = false
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
