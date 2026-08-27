@@ -2213,12 +2213,48 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .fs-rail-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
 .fs-rail-item{display:block;width:100%;min-height:32px;padding:6px 8px;border:none;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.78rem;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fs-rail-empty,.fs-muted{color:rgba(255,255,255,.45);font-size:.78rem;padding:8px}
-.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px}
+.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:0;display:flex;flex-direction:column}
+.fs-main:has(.has-composer){padding-bottom:12px;overflow:hidden}
+.fs-home.has-composer{position:relative;flex:1;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.fs-home.has-composer .fs-tabs{flex-shrink:0}
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:auto;padding-bottom:var(--fs-composer-h,168px)}
+.fs-composer-dock{
+  position:absolute;left:0;right:0;bottom:8px;z-index:8;padding:12px 0 0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(16,16,18,0),rgba(16,16,18,.88) 36%,rgba(16,16,18,.96) 70%);
+}
+.fs-home.has-composer .fs-composer{
+  pointer-events:auto;max-width:920px;margin:0 auto;padding:12px 14px;
+  border:1px solid var(--border);border-radius:18px;
+  background:rgba(18,18,20,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+}
+.fs-gallery{padding:0 0 28px}
+.fs-filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
+.fs-filter{
+  height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);
+  background:transparent;color:var(--text-body);font:inherit;font-size:.82rem;cursor:pointer
+}
+.fs-filter:hover{color:var(--ink);border-color:rgba(255,255,255,.28)}
+.fs-filter.is-on{background:#fff;color:#111;border-color:#fff;font-weight:650}
+.fs-filter:focus-visible,.fs-preset:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.fs-g-sec{margin:0 0 36px}
+.fs-g-h{margin:0 0 6px;font-family:var(--font-heading);font-weight:700;letter-spacing:-.04em;text-transform:uppercase;font-size:clamp(1.35rem,3vw,2.1rem);line-height:.95}
+.fs-g-h .accent,.fs-how-h .accent{color:var(--a1)}
+.fs-g-sub{margin:0 0 16px;color:rgba(255,255,255,.48);font-size:.9rem}
+.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.fs-preset{
+  display:flex;flex-direction:column;padding:0;border:none;border-radius:16px;
+  background:transparent;color:inherit;cursor:pointer;text-align:left
+}
+.fs-preset-shot{border-radius:14px;border:1px solid rgba(245,245,244,.18)}
+.fs-preset-row{display:flex;align-items:center;gap:8px;padding:10px 4px 0;min-height:32px}
+.fs-preset-ico{display:inline-flex;color:rgba(255,255,255,.7);flex-shrink:0}
+.fs-preset-name{flex:1;min-width:0;font-size:.86rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-preset-tag{flex-shrink:0;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)}
 .fs-tabs{display:flex;gap:4px;margin:0 0 20px}
 .fs-tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:none;border-radius:8px;background:transparent;color:var(--text-body);font:inherit;font-size:.84rem;cursor:pointer}
 .fs-tab.is-on{color:var(--ink);background:rgba(255,255,255,.06)}
 .fs-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:0 0 28px}
-.fs-hero.is-compact .img-empty-fan{transform:scale(.72);transform-origin:center;margin-bottom:-24px}
 .fs-hero-title{margin:0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:.9;letter-spacing:-.045em;text-transform:uppercase}
 .fs-hero-title .lead,.fs-hero-title .accent{display:block}
 .fs-hero-title .accent{color:var(--a1)}
@@ -2272,11 +2308,34 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
   .fs-rail{position:absolute;z-index:5;height:100%;box-shadow:8px 0 24px rgba(0,0,0,.4)}
   body.fs-rail-collapsed .fs-rail{width:0;padding:0;border:none;overflow:hidden}
   .fs-main{padding:16px 14px 32px}
+  .fs-g-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .fs-g-grid{grid-template-columns:1fr}
+  .fs-how-grid{grid-template-columns:1fr}
 }
 @media (max-width:380px){
-  .fs-composer-row,.fs-thumb-row,.fs-toolbar{flex-direction:column}
-  .fs-how-grid{grid-template-columns:1fr}
-  .fs-gen,.fs-ref-add{width:100%}
+  .fs-filters{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .fs-filter{flex-shrink:0}
+  .fs-thumb-row,.fs-toolbar{flex-direction:column}
+  .fs-home.has-composer .fs-composer{
+    display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:6px;
+    padding:6px 8px;border-radius:14px
+  }
+  .fs-home.has-composer .fs-composer-error[hidden]{display:none!important}
+  .fs-home.has-composer .fs-composer-row{display:contents}
+  .fs-home.has-composer #fs-ref-input{display:none}
+  .fs-home.has-composer .fs-ref-add{order:1;width:36px;height:36px;font-size:1rem}
+  .fs-home.has-composer .fs-topic{order:2;flex:1;min-width:0;min-height:36px;max-height:36px;padding:6px 0;font-size:.84rem}
+  .fs-home.has-composer .fs-chips{
+    order:3;flex:0 1 36%;min-width:0;max-width:42%;margin:0;padding:0;
+    flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch
+  }
+  .fs-home.has-composer .fs-chip{flex-shrink:0}
+  .fs-home.has-composer .fs-gen{order:4;align-self:center;min-width:76px;height:36px;padding:0 10px}
+  .fs-home.has-composer .fs-refs[hidden]{display:none!important}
+  .fs-home.has-composer .fs-refs:not([hidden]){order:5;flex:1 0 100%;margin-top:0}
+  .fs-gen,.fs-ref-add{width:auto}
 }
 
 /* Upscale V2 */
@@ -10235,6 +10294,7 @@ initFacelessStudio({
   getVoices: () => voices,
   loadVoices,
   getDurationCap: () => fvDurationCapSeconds(),
+  getVoicesState: () => voicesLoadState,
   parkWizard: (slot) => window.fvParkWizard(slot),
   hydratePipeline: (project) => window.fvHydrateFromStudio(project),
   snapshotPipeline: () => window.fvSnapshotForStudio(),

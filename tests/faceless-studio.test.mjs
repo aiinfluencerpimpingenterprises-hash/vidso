@@ -8,6 +8,14 @@ import {
   userIdOf,
 } from '../lib/faceless-studio-store.js'
 import { isHistorySidecarName, LFG_STEP_SHOTS } from '../lib/image-gen.js'
+import {
+  STUDIO_FILTERS,
+  STUDIO_SECTIONS,
+  studioHeadingHtml,
+  studioPresetById,
+  studioPresetsAll,
+  studioSectionsForFilter,
+} from '../lib/faceless-studio-presets.js'
 
 test('studio sidecars are named and hidden from My Files', () => {
   const name = projectFileName('abc-123')
@@ -62,4 +70,38 @@ test('LFG step shots use the shared R2 host', () => {
   assert.equal(LFG_STEP_SHOTS.media.endsWith('/Media.png'), true)
   assert.equal(LFG_STEP_SHOTS.export.endsWith('/Export.png'), true)
   assert.ok(LFG_STEP_SHOTS.script.includes('pub-f40c956471ff49feab622906892ec527.r2.dev'))
+})
+
+test('studio gallery config is unique, filterable, and has no em dashes', () => {
+  const all = studioPresetsAll()
+  const ids = all.map((c) => c.id)
+  assert.equal(new Set(ids).size, ids.length)
+  assert.equal(STUDIO_FILTERS[0].id, 'all')
+  assert.equal(studioSectionsForFilter('all').length, STUDIO_SECTIONS.length)
+  assert.equal(studioSectionsForFilter('shorts').length, 1)
+  assert.equal(studioSectionsForFilter('shorts')[0].cards.length, 6)
+  const dump = JSON.stringify(STUDIO_SECTIONS) + STUDIO_FILTERS.map((f) => f.label).join('')
+  assert.equal(dump.includes('\u2014') || dump.includes('\u2013'), false)
+  for (const card of all) {
+    assert.ok(card.scaffold && card.scaffold.length > 20)
+    assert.equal(card.image, '')
+  }
+})
+
+test('renamed presets avoid existing tool names and Thumbnail Pack routes out', () => {
+  assert.equal(studioPresetById('numbered-countdown').name, 'Numbered Countdown')
+  assert.equal(studioPresetById('process-walkthrough').name, 'Process Walkthrough')
+  assert.equal(studioPresetById('hook-burst').name, 'Hook Burst')
+  assert.equal(studioPresetById('how-it-works'), null)
+  assert.equal(studioPresetById('viral-moment'), null)
+  assert.equal(studioPresetById('ranked-countdown'), null)
+  const pack = studioPresetById('thumbnail-pack')
+  assert.equal(pack.route, 'imagegen')
+  assert.match(pack.scaffold, /thumbnail/i)
+})
+
+test('section headings put the first words in the accent span', () => {
+  const esc = (s) => s
+  assert.equal(studioHeadingHtml('LONG FORM', 2, esc), '<span class="accent">LONG FORM</span>')
+  assert.equal(studioHeadingHtml('EXPLAINERS', 1, esc), '<span class="accent">EXPLAINERS</span>')
 })
