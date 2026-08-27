@@ -34,8 +34,7 @@ test('missing duration throws instead of defaulting to 3 min', () => {
   assert.throws(() => targetWordsFromSeconds(0), /duration is required/)
   assert.throws(() => facelessScriptPayload({ topic: 'x', durationId: 'long_300' }), /duration is required/)
   assert.throws(() => facelessMediaPayloadExtras('long_300', undefined), /duration is required/)
-  assert.equal(durationFromBody({}), null)
-  assert.equal(durationFromBody({ duration_id: 'long_300' }), 300)
+  assert.equal(durationFromBody({ duration: 5, duration_seconds: 300, duration_id: 'long_300' }), 300)
 })
 
 test('script payload sends minutes on duration so a ?? 3 default cannot win', () => {

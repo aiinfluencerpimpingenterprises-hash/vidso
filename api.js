@@ -270,10 +270,10 @@ export const api = {
     del:  (id)       => req('DELETE', `/api/upload/${id}`),
   },
   tts: {
-    voices:   ()      => req('GET',  '/api/tts/voices'),
-    generate: (body)  => req('POST', '/api/tts/generate', body),
-    library:  ()      => req('GET',  '/api/tts/library'),
-    deleteVo: (id)    => req('DELETE', `/api/tts/library/${id}`),
+    voices:   ()      => gatedReq('GET',  '/api/tts/voices'),
+    generate: (body)  => gatedReq('POST', '/api/tts/generate', body),
+    library:  ()      => gatedReq('GET',  '/api/tts/library'),
+    deleteVo: (id)    => gatedReq('DELETE', `/api/tts/library/${id}`),
   },
   generate: {
     image: (body) => generateImageFal(body),
@@ -453,15 +453,15 @@ export const api = {
     // body: { topic, duration_id, duration (minutes), duration_seconds, target_words, aspect }
     script: (body) => gatedReq('POST', '/api/faceless/script', body),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
-    rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
+    rewriteSection: (body) => gatedReq('POST', '/api/faceless/script/section', body),
     // body: { script, voice_id, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
-    pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
+    pollMedia: (jobId) => gatedReq('GET', `/api/faceless/media/${jobId}`),
     // body: { query, aspect } → { clips }
-    searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
+    searchBroll: (body) => gatedReq('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
     startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
-    pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
+    pollRender: (jobId) => gatedReq('GET', `/api/faceless/render/${jobId}`),
     downloadRender: async (jobId) => {
       const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
         headers: { Authorization: `Bearer ${getToken()}` },

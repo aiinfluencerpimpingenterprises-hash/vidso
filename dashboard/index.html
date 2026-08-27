@@ -5648,15 +5648,14 @@ function uiPreviewMode() {
       clearUiPreviewFlag()
       return false
     }
-    if (uiPreviewForced()) {
-      localStorage.setItem(UI_PREVIEW_KEY, '1')
-      return true
-    }
-    // A real session always wins on app routes. Visiting /preview used to
-    // stick this flag and overwrite every later login as Preview.
+    // A real session always wins. ?ui=1 is layout-only when logged out.
     if (getToken()) {
       clearUiPreviewFlag()
       return false
+    }
+    if (uiPreviewForced()) {
+      localStorage.setItem(UI_PREVIEW_KEY, '1')
+      return true
     }
     return localStorage.getItem(UI_PREVIEW_KEY) === '1'
   } catch (_) { return false }
@@ -5699,7 +5698,7 @@ function applyAuthRouteTab() {
 }
 
 function afterAuthReady(opts = {}) {
-  if (!uiPreviewForced()) clearUiPreviewFlag()
+  clearUiPreviewFlag()
   persistPlanActive(hasActivePlan())
   // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
   if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
@@ -5715,6 +5714,7 @@ function afterAuthReady(opts = {}) {
     loadUsage()
     loadVoices()
     loadFiles()
+    try { window.fsStudioOnAuth?.() } catch (_) {}
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
     return
@@ -5723,6 +5723,7 @@ function afterAuthReady(opts = {}) {
   loadUsage()
   loadVoices()
   loadFiles()
+  try { window.fsStudioOnAuth?.() } catch (_) {}
   if (funnelLocked() && !introPending()) {
     maybeShowPaywall()
     if (opts.restoreRoute !== false) restorePanelFromHash()
@@ -5865,6 +5866,13 @@ function showAuthError(message) {
 }
 
 function authRedirectTarget() {
+  try {
+    const pending = sessionStorage.getItem('vidso_after_login')
+    if (pending && pending.startsWith('/')) {
+      sessionStorage.removeItem('vidso_after_login')
+      return location.origin + pending
+    }
+  } catch (_) {}
   const path = normalizePath(location.pathname)
   if (path === '/login' || path === '/signup') return location.origin + '/video-generation'
   return location.origin + location.pathname + location.search
@@ -8851,8 +8859,34 @@ function fvSetMediaStatus(msg, kind) {
     : msg
 }
 
+function fvEnsureMediaTimeline(job) {
+  if (!job || typeof job !== 'object') return job
+  const dur = Number(job.duration) > 0 ? Number(job.duration) : 1
+  const hasTl = Array.isArray(job.timeline) && job.timeline.length
+  const hasClips = Array.isArray(job.clips) && job.clips.length
+  if (hasTl && hasClips) return job
+  const fallback = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard1.mp4'
+  const src = job.clips?.[0] || {
+    id: 'placeholder',
+    url: fallback,
+    preview: '',
+    query: 'placeholder',
+  }
+  if (!hasClips) job.clips = [src]
+  if (!hasTl) {
+    job.timeline = [{
+      ...src,
+      start: 0,
+      end: dur,
+      clip_start: 0,
+    }]
+  }
+  job.warning = job.warning || 'No stock B-roll came back. Using a placeholder clip. Search Pexels or upload your own.'
+  return job
+}
+
 function fvRenderMediaResult(job) {
-  fvState.media = job
+  fvState.media = fvEnsureMediaTimeline(job)
   fvCloseTimelineGaps()
   document.getElementById('fv-media-progress-wrap').style.display = 'none'
   document.getElementById('fv-media-result').style.display = ''
@@ -10475,6 +10509,8 @@ async function loadFiles() {
     if (list) list.innerHTML = `<div style="color:var(--muted);">${e.message}</div>`
   }
 }
+
+window.loadFiles = loadFiles
 
 window.uploadFile = async (input) => {
   const file = input.files[0]; if (!file) return
