@@ -22,6 +22,8 @@ import {
   stitchSectionText,
   trimSpokenText,
   capScriptToTarget,
+  packScriptRequest,
+  RAILWAY_TOPIC_MAX,
   outlineTargetWords,
   scriptUpstreamBody,
   shouldOutlineFirst,
@@ -171,6 +173,25 @@ test('duration_seconds wins over duration minutes when id is missing', () => {
   assert.equal(durationFromBody({ duration: 30, duration_seconds: 1800 }), 1800)
   assert.equal(durationFromBody({ target_minutes: 30 }), 1800)
   assert.equal(durationFromBody({ duration: 45 }), 45)
+})
+
+test('script request keeps topic under the Railway 500 cap', () => {
+  const brief = scriptLengthBrief({
+    topic: 'Oak Ridge: the secret city',
+    durationSeconds: 600,
+    targetWords: 1500,
+  })
+  const user = 'Oak Ridge: the secret city behind the atomic bomb, how it was built in secret, the people who lived there, and why it still matters today. ' +
+    Array.from({ length: 40 }, () => 'More detail about the lab, the fences, and the cover story.').join(' ')
+  const packed = packScriptRequest({ topic: user, brief, extra: 'Write 8 sections.' })
+  assert.ok(packed.topic.length <= RAILWAY_TOPIC_MAX)
+  assert.ok(user.length > RAILWAY_TOPIC_MAX)
+  assert.equal(packed.prompt, user)
+  assert.match(packed.brief, /Hard length/)
+  assert.ok(packed.brief.includes(user))
+  const short = packScriptRequest({ topic: '15 biggest tigers', brief })
+  assert.equal(short.topic, '15 biggest tigers')
+  assert.equal(short.brief, brief)
 })
 
 test('capScriptToTarget trims a 30 min overshoot back to 4500 words', () => {

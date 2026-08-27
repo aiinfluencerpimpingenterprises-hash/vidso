@@ -5092,6 +5092,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="field" id="fv-field-topic">
               <label>Topic / Prompt</label>
               <textarea id="fv-topic" placeholder='e.g. "12 Airport Secrets Airlines Don’t Want You to Know"' style="min-height:88px"></textarea>
+              <p class="voice-settings-hint" id="fv-topic-hint" style="margin-top:8px">A title is enough, or paste a longer brief.</p>
             </div>
 
             <div class="field" id="fv-field-length">
@@ -5509,6 +5510,7 @@ import {
   mergeNewSections,
   needsMoreSections,
   padListSections,
+  packScriptRequest,
   rebuildFullScript,
   scriptTimeoutMs,
   scriptWordCount,
@@ -10058,10 +10060,14 @@ function fvUnwrapScript(data) {
 }
 
 function fvFriendlyScriptError(err) {
+  const raw = (err && err.message) ? err.message : 'Script generation failed'
   if (err && (err.code === 'json_parse' || isJsonSyntaxError(err))) {
     return 'Script JSON was incomplete. Try Generate Script again.'
   }
-  return (err && err.message) ? err.message : 'Script generation failed'
+  if (/topic too long/i.test(raw)) {
+    return 'That prompt is long, but it should still generate. Try again — if this repeats, shorten the first sentence.'
+  }
+  return raw
 }
 
 function fvSectionRewriteText(out) {
@@ -10092,9 +10098,10 @@ async function fvMapPool(items, limit, fn) {
 }
 
 async function fvRequestScript(payload, topic, picked, timeoutMs, extra, retried) {
+  const packed = packScriptRequest({ topic, brief: payload.brief, extra })
   const body = {
     ...payload,
-    topic: [topic, payload.brief, extra].filter(Boolean).join('\n\n'),
+    ...packed,
   }
   let raw
   try {
