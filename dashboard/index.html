@@ -80,8 +80,11 @@
     }
     if (needOb) obSeen = false
   } catch (e) {}
-  if (needOb) document.documentElement.classList.add('needs-gate', 'needs-onboarding')
-  else document.documentElement.classList.add('needs-gate')
+  // Do not paint the solid black cover on refresh. Paid users should see the
+  // app immediately; unpaid users should see onboarding or the paywall, not a
+  // blank #0B0B0C frame while /user/me runs.
+  if (needOb) document.documentElement.classList.add('needs-onboarding')
+  else if (!paid) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -128,72 +131,126 @@
   --ease-out:cubic-bezier(.22,1,.36,1);--dur-hover:150ms;--dur-panel:250ms;
   /* Layout */
   --page-max:880px;--page-max-wide:1280px;
+  --chrome-pad-x:16px;--chrome-banner-h:32px;--chrome-nav-h:44px;
+  --nav-gap:8px;
   --font-heading:'Clash Grotesk',sans-serif;
   /* Status */
   --ok:#6fcf97;--err:#eb5757;
   color-scheme:dark;
 }
 
-/* Viewport-locked shell: the sidebar + topbar stay fixed and only .content
-   scrolls, so position:sticky elements inside it (the ranking preview) pin. */
-body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex}
+/* Viewport-locked shell: banner + top nav stay fixed; only .content scrolls. */
+body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
-/* SIDEBAR */
-.sidebar{width:240px;height:100vh;max-height:100vh;background:rgba(11,11,12,.78);backdrop-filter:blur(16px) saturate(1.3);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;flex-shrink:0;overflow:hidden}
-.sidebar-logo{height:64px;padding:0 12px 0 16px;border-bottom:none;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sidebar-collapse{
-  margin-left:auto;width:32px;height:32px;padding:0;border:none;border-radius:8px;
-  background:transparent;color:var(--text-label);cursor:pointer;flex-shrink:0;
-  display:inline-flex;align-items:center;justify-content:center
+#app-chrome{flex:0 0 auto;width:100%;position:relative}
+.app-banner{
+  display:flex;align-items:center;width:100%;height:var(--chrome-banner-h);max-height:var(--chrome-banner-h);
+  padding:0 var(--chrome-pad-x);overflow:hidden;background:#F3C4C8;color:#2A1014;position:relative;z-index:50
 }
-.sidebar-collapse:hover{color:var(--ink);background:rgba(255,255,255,.06)}
-.sidebar-collapse:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.sidebar-collapse svg{transition:transform .2s var(--ease-out)}
-@media (min-width:769px){
-  .sidebar{transition:width .2s var(--ease-out)}
-  body.sidebar-collapsed .sidebar{width:72px}
-  body.sidebar-collapsed .brand,
-  body.sidebar-collapsed .nav-item-label,
-  body.sidebar-collapsed .nav-section,
-  body.sidebar-collapsed .user-info,
-  body.sidebar-collapsed .user-settings-btn,
-  body.sidebar-collapsed .sidebar-hide-lbl{display:none}
-  body.sidebar-collapsed .sidebar-logo{justify-content:center;padding:12px 8px 8px;height:auto;flex-wrap:wrap}
-  body.sidebar-collapsed .sidebar-logo-link{margin:0}
-  body.sidebar-collapsed .sidebar-collapse{margin:0}
-  body.sidebar-collapsed .sidebar-collapse svg{transform:rotate(180deg)}
-  body.sidebar-collapsed .sidebar-nav{padding:8px 8px 12px;align-items:center}
-  body.sidebar-collapsed .nav-item{justify-content:center;padding:0;width:44px;height:40px}
-  body.sidebar-collapsed .nav-item.active::before{display:none}
-  body.sidebar-collapsed .user-profile-top{justify-content:center;padding:10px}
-  body.sidebar-collapsed .user-signout-btn{justify-content:center;padding:10px}
-  body.sidebar-collapsed .sidebar-footer{padding:8px}
+.app-banner[hidden]{display:none!important}
+.app-banner-msg{
+  flex:1;min-width:0;margin:0;font-size:.75rem;font-weight:650;letter-spacing:-.01em;line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.sidebar-logo-link{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px}
-.sidebar-logo-link:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
-.sidebar-logo img{width:42px;height:42px;object-fit:contain;flex-shrink:0}
-.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-transform:lowercase}
-.sidebar-nav{flex:1;min-height:0;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
-.sidebar-nav::-webkit-scrollbar{width:6px}
-.sidebar-nav::-webkit-scrollbar-track{background:transparent}
-.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:6px}
-.sidebar-nav::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.26)}
-.nav-section{margin:10px 0 4px;padding:0 10px}
-.nav-section:first-child{margin-top:2px}
-.nav-section-label{display:block;font-size:.65rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--text-label);line-height:1}
-.nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:12px;cursor:pointer;font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-size:.875rem;font-weight:500;color:var(--text-body);transition:background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);border:none;background:transparent;width:100%;text-align:left;letter-spacing:-.01em;position:relative;flex-shrink:0}
-.nav-item:hover{background:rgba(255,255,255,.05);color:var(--ink)}
-.nav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.nav-item.active{background:rgba(var(--glow),.12);color:var(--ink);font-weight:600;box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
-.nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--a1)}
-.nav-item-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-ico{width:20px;height:20px;border-radius:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent;border:none;color:inherit;padding:0}
-.nav-ico svg{width:16px;height:16px;opacity:.9}
-.nav-item:hover .nav-ico{color:var(--ink)}
-.nav-item.active .nav-ico{color:var(--a1)}
-.nav-item.active .nav-ico svg{opacity:1;color:var(--a1)}
+.app-banner-end{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.app-banner-cta{
+  flex-shrink:0;height:22px;padding:0 10px;border-radius:999px;
+  background:#1A0A0C;color:#fff;font:inherit;font-size:.68rem;font-weight:650;
+  text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap
+}
+.app-banner-cta:hover{filter:brightness(1.08)}
+.app-banner-cta:focus-visible,.app-banner-x:focus-visible{outline:2px solid #2A1014;outline-offset:2px}
+.app-banner-x{
+  flex-shrink:0;width:24px;height:24px;border:none;border-radius:6px;cursor:pointer;
+  background:transparent;color:#2A1014;display:inline-flex;align-items:center;justify-content:center
+}
+.app-banner-x:hover{background:rgba(42,16,20,.08)}
+
+.app-topnav{
+  display:flex;align-items:center;flex-wrap:nowrap;width:100%;height:var(--chrome-nav-h);
+  padding:0 var(--chrome-pad-x);gap:8px;overflow:visible;position:relative;z-index:50;
+  background:var(--bg)
+}
+.topnav-start{
+  display:flex;align-items:center;gap:8px;flex:1 1 0;min-width:0;justify-content:flex-start
+}
+.nav-hamburger{
+  display:none;width:28px;height:28px;padding:0;border:none;border-radius:8px;cursor:pointer;
+  background:transparent;color:var(--ink);align-items:center;justify-content:center;flex-shrink:0
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.06)}
+.nav-hamburger:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.topnav-logo{
+  display:flex;align-items:center;gap:7px;color:inherit;text-decoration:none;
+  border-radius:8px;flex-shrink:0;padding:0;line-height:1;white-space:nowrap
+}
+.topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+.topnav-logo img{width:26px;height:26px;object-fit:contain;flex-shrink:0;display:block}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.22rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1;display:block}
+.topnav-primary{
+  display:flex;align-items:center;justify-content:center;gap:var(--nav-gap);min-width:0;flex:0 1 auto;height:100%;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
+  overscroll-behavior-x:contain
+}
+.topnav-primary::-webkit-scrollbar{display:none;height:0}
+.topnav-primary.is-overflow{mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent)}
+.topnav-primary.is-overflow.is-flush-end{mask-image:none}
+.topnav-item{
+  height:32px;padding:0 10px;border:none;border-radius:0;cursor:pointer;flex-shrink:0;
+  background:transparent;color:var(--text-body);font-family:inherit;font-size:.88rem;font-weight:500;
+  letter-spacing:-.015em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:6px
+}
+.topnav-item:hover{color:var(--ink);background:transparent}
+.topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:-2px}
+.topnav-item.active{color:var(--a1);font-weight:600}
+.topnav-item .nav-new,.nav-drawer .nav-new{
+  display:inline-flex;align-items:center;justify-content:center;height:14px;padding:0 5px;border-radius:4px;
+  font-size:.58rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:#fff;background:var(--a1);line-height:1;flex-shrink:0
+}
+.topnav-drop{position:relative;display:flex;align-items:center;flex-shrink:0}
+.topnav-item .nav-caret{width:10px;height:10px;opacity:.55;flex-shrink:0;transition:transform .15s ease}
+.topnav-drop.is-open .nav-caret{transform:rotate(180deg);opacity:.9}
+.topnav-menu,.nav-search-pop{
+  display:none;min-width:240px;padding:6px;border-radius:12px;
+  background:#1A1A1E;border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 48px rgba(0,0,0,.65)
+}
+.topnav-menu.is-open,.nav-search-pop.is-open{display:flex;flex-direction:column;max-height:min(70vh,480px);overflow-y:auto}
+#nav-portal{
+  position:fixed;top:0;left:0;width:0;height:0;z-index:400;pointer-events:none;overflow:visible
+}
+#nav-portal > *{pointer-events:auto}
+#nav-portal .topnav-menu,#nav-portal .nav-search-pop{width:280px;background:#1A1A1E}
+.topnav-menu [role="menuitem"],.nav-search-item{
+  display:flex;align-items:center;flex-shrink:0;width:100%;min-height:36px;text-align:left;border:none;background:transparent;
+  color:var(--ink);font:inherit;font-size:.82rem;line-height:1.2;padding:8px 10px;border-radius:8px;cursor:pointer
+}
+.topnav-menu [role="menuitem"]:hover,.nav-search-item:hover,
+.topnav-menu [role="menuitem"]:focus,.nav-search-item:focus{
+  background:rgba(255,255,255,.06);outline:none
+}
+.topnav-menu [role="menuitem"].active{color:var(--a1)}
+.nav-search-input{
+  width:100%;height:36px;margin:0 0 6px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.82rem
+}
+.nav-search-empty{margin:8px 10px;font-size:.78rem;color:rgba(255,255,255,.45)}
+.topnav-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:1 1 0;min-width:0;margin-left:0}
+.topnav-ico-btn{
+  width:28px;height:28px;padding:0;border:none;border-radius:8px;cursor:pointer;
+  background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center
+}
+.topnav-ico-btn:hover{background:rgba(255,255,255,.06)}
+.topnav-ico-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
+.topnav-ico-btn svg{width:16px;height:16px;display:block}
+.topnav-avatar{
+  width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;
+  justify-content:center;font-size:.72rem;font-weight:700;line-height:1;color:#fff;border:none;cursor:pointer;padding:0
+}
+.topnav-avatar:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
+.nav-drawer{display:none}
 .nav-badge,.badge-soon{display:inline-flex;align-items:center;justify-content:center;height:18px;padding:0 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--line);flex-shrink:0}
 .user-profile-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;background:transparent;text-decoration:none;color:inherit;cursor:default}
 .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
@@ -211,28 +268,12 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
-.topbar{padding:12px 28px;border-bottom:none;display:flex;align-items:center;justify-content:space-between;min-height:60px;position:relative}
-.topbar::after{content:'';position:absolute;left:28px;right:28px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);pointer-events:none}
-.topbar-title{font-family:'SF Pro Display','Inter',sans-serif;font-size:1.1rem;font-weight:650;letter-spacing:-.02em;color:var(--ink)}
-.topbar-title.is-hidden{visibility:hidden;pointer-events:none}
-/* Desktop: in-page titles already exist — don't leave a blank 60px topbar that
-   clips the first heading inside the overflow:auto content pane. */
-@media (min-width:769px){
-  body.has-page-header .topbar{
-    position:absolute;top:18px;right:28px;left:auto;width:auto;
-    min-height:0;height:auto;padding:0;background:transparent;z-index:6;
-    pointer-events:none
-  }
-  body.has-page-header .topbar::after,
-  body.has-page-header .topbar-title,
-  body.has-page-header .mobile-nav-toggle{display:none!important}
-  body.has-page-header .topbar-actions{pointer-events:auto}
-}
-.credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 12px 7px 10px;font-size:.78rem;color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
+.topbar{display:none}
+.credits-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:0 9px 0 7px;font-size:.72rem;color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:5px;height:28px;flex-shrink:0;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out)}
 .credits-pill:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
 .credits-pill-icon{width:12px;height:12px;flex-shrink:0;color:var(--a1)}
 .credits-pill-count{font-variant-numeric:tabular-nums}
-.credits-pill-label{color:var(--text-body);font-weight:500}
+.credits-pill-label{display:none;color:var(--text-body);font-weight:500}
 .topbar-actions{display:inline-flex;align-items:center;gap:10px}
 
 
@@ -673,10 +714,10 @@ html.needs-auth body::before,html.needs-gate body::before,html.needs-paywall bod
   content:'';position:fixed;inset:0;z-index:19990;background:#0B0B0C
 }
 html.needs-onboarding body::before{content:none;display:none}
-html.needs-auth #app-sidebar,html.needs-auth main,
-html.needs-gate #app-sidebar,html.needs-gate main,
-html.needs-paywall #app-sidebar,html.needs-paywall main,
-html.needs-onboarding #app-sidebar,html.needs-onboarding main{visibility:hidden}
+html.needs-auth #app-chrome,html.needs-auth main,
+html.needs-gate #app-chrome,html.needs-gate main,
+html.needs-paywall #app-chrome,html.needs-paywall main,
+html.needs-onboarding #app-chrome,html.needs-onboarding main{visibility:hidden}
 #auth-modal{z-index:20000}
 html.needs-auth #auth-modal{display:flex!important}
 html.needs-paywall #paywall-modal,
@@ -752,7 +793,7 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 .clip-playhead{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--a3);pointer-events:none;z-index:3;transform:translateX(-1px)}
 
 /* ── VIDEO EDITOR ────────────────── */
-.editor-wrap{display:flex;flex-direction:column;height:calc(100vh - 60px);overflow:hidden;background:var(--bg)}
+.editor-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--bg)}
 .editor-wrap.ed-drag{outline:2px dashed var(--a2);outline-offset:-6px}
 .editor-bar{padding:8px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--surface)}
 .ed-bar-group{display:flex;align-items:center;gap:4px}
@@ -1592,7 +1633,7 @@ body::after{
   bottom:-120px;left:-80px;width:520px;height:480px;
   background:radial-gradient(ellipse at 30% 70%,rgba(255,255,255,.03),transparent 68%)
 }
-.sidebar,.main{position:relative;z-index:1}
+.main{position:relative;z-index:1}
 .main{isolation:isolate}
 .main::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.016;
@@ -1639,10 +1680,10 @@ body::after{
 }
 
 /* Card hover signature + press */
-.tool-card,.ui-card,.qa-card,.tool-tile,.dash-stat,.img-pane,.vr-sec,.upscale-soon,.shortcut{
+.tool-card,.ui-card,.qa-card,.tool-tile,.tool-shot,.dash-stat,.img-pane,.vr-sec,.upscale-soon,.shortcut{
   transition:transform 150ms var(--ease-out),border-color 150ms var(--ease-out),box-shadow 150ms var(--ease-out),background 150ms var(--ease-out)
 }
-.qa-card:hover,.tool-tile:hover,.shortcut:hover{
+.qa-card:hover,.tool-tile:hover,.tool-shot:hover,.shortcut:hover{
   transform:translateY(-2px);border-color:rgba(255,255,255,.22);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(var(--glow),.22),0 12px 28px rgba(0,0,0,.28)
 }
@@ -1708,9 +1749,30 @@ input:focus,textarea:focus,select:focus,
 .tools-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:1024px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.tools-grid{grid-template-columns:1fr}}
-.tool-tile{padding:20px;min-height:140px;height:100%}
-.tool-tile-chev{position:absolute;right:16px;bottom:16px;opacity:0;color:rgba(255,255,255,.55);transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out);transform:translateX(-4px)}
-.tool-tile:hover .tool-tile-chev{opacity:1;transform:translateX(0)}
+.tool-shot{
+  display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:0 0 14px;
+  text-decoration:none;color:inherit;background:var(--card-grad);border:1px solid var(--border);
+  border-radius:var(--radius-card);overflow:hidden;cursor:pointer;
+  transition:border-color var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out),box-shadow var(--dur-hover) var(--ease-out);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.tool-shot:hover{
+  border-color:rgba(255,255,255,.22);transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(var(--glow),.22),0 12px 28px rgba(0,0,0,.28)
+}
+.tool-shot:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.tool-shot-media{
+  position:relative;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(160deg,#2c1c1e,#161618);border-bottom:1px solid var(--border)
+}
+.tool-shot-ph{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
+.tool-shot-ph svg{width:32px;height:32px}
+.tool-shot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.tool-shot-name{display:block;padding:0 14px;font-size:.9rem;font-weight:650;color:var(--ink);line-height:1.3}
+.tool-shot-desc{
+  display:block;padding:0 14px;font-size:.75rem;color:var(--text-body);line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
 
 /* Clipping V2: no outer card */
 #panel-clipper .tool-card{
@@ -1771,9 +1833,9 @@ input:focus,textarea:focus,select:focus,
   background:var(--bg)
 }
 .img-filters{
-  position:sticky;top:12px;left:12px;z-index:5;display:inline-flex;gap:6px;
-  margin:12px 12px 0;padding:4px;border-radius:999px;
-  background:rgba(12,12,14,.72);border:1px solid rgba(255,255,255,.1);
+  position:sticky;top:12px;left:16px;z-index:5;display:inline-flex;gap:6px;
+  margin:16px 16px 20px;padding:4px;border-radius:999px;
+  background:rgba(12,12,14,.88);border:1px solid rgba(255,255,255,.1);
   backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2)
 }
 .img-filter{
@@ -1783,17 +1845,77 @@ input:focus,textarea:focus,select:focus,
 .img-filter:hover{color:var(--ink)}
 .img-filter.is-on{color:var(--ink);background:rgba(255,255,255,.1)}
 .img-filter:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
-.img-empty-line{
-  position:absolute;inset:0;display:grid;place-items:center;margin:0;pointer-events:none;
-  font-size:.92rem;color:rgba(255,255,255,.45);letter-spacing:-.01em
+.img-workspace.is-empty{overflow:hidden}
+.img-workspace.is-empty .img-filters{visibility:hidden;pointer-events:none}
+.img-workspace.is-empty .img-masonry,
+.img-workspace.is-empty #img-sentinel{display:none}
+.img-empty{
+  position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:18px;padding:28px 20px 176px;text-align:center;pointer-events:none;
+  overflow:hidden;
+  background:radial-gradient(ellipse 58% 46% at 50% 38%,rgba(var(--glow),.14),transparent 72%)
 }
-.img-empty-line[hidden]{display:none}
+.img-empty[hidden]{display:none!important}
+.img-empty-fan{
+  position:relative;width:min(480px,78vw);aspect-ratio:2.15 / 1;flex-shrink:0;
+  max-height:min(220px,32vh)
+}
+.img-empty-card{
+  position:absolute;width:38%;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(245,245,244,.22);pointer-events:none;user-select:none;
+  box-shadow:0 16px 36px rgba(0,0,0,.48),0 2px 8px rgba(0,0,0,.28)
+}
+.img-empty-card:nth-child(1){
+  left:0;top:22%;z-index:1;
+  background:linear-gradient(160deg,#2c1c1e,#161618);
+  transform:rotate(-6deg) scale(.88)
+}
+.img-empty-card:nth-child(2){
+  left:18%;top:6%;z-index:3;
+  background:linear-gradient(160deg,#26181c,#121214);
+  transform:rotate(-2deg) scale(1)
+}
+.img-empty-card:nth-child(3){
+  left:40%;top:0;z-index:4;
+  background:linear-gradient(160deg,#1e1618,#101012);
+  transform:rotate(2deg) scale(1.04)
+}
+.img-empty-card:nth-child(4){
+  left:60%;top:20%;z-index:2;
+  background:linear-gradient(160deg,#2a1a1e,#141416);
+  transform:rotate(6deg) scale(.88)
+}
+.img-empty-card img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block
+}
+.img-empty-title{
+  margin:4px 0 0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);
+  line-height:.9;letter-spacing:-.045em;text-transform:uppercase;color:var(--ink)
+}
+.img-empty-title .lead,.img-empty-title .accent{display:block;white-space:nowrap}
+.img-empty-title .accent{color:var(--a1)}
+.img-empty-sub{
+  margin:0;max-width:36em;font-size:clamp(.84rem,1.5vw,.98rem);font-weight:400;line-height:1.45;
+  color:rgba(245,245,244,.48);letter-spacing:-.01em
+}
+@media (max-height:720px){
+  .img-empty{gap:12px;padding:16px 16px 176px}
+  .img-empty-fan{transform:scale(.86);transform-origin:center bottom;margin-bottom:-8px}
+  .img-empty-title{font-size:clamp(1.45rem,4vw,2.4rem)}
+}
+@media (max-height:560px){
+  .img-empty{gap:6px;padding:8px 12px 176px}
+  .img-empty-fan{transform:scale(.62);transform-origin:center bottom;margin-bottom:-8px}
+  .img-empty-title{font-size:clamp(1.15rem,3.4vw,1.7rem)}
+  .img-empty-sub{font-size:.76rem}
+}
 .img-masonry{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:2px;padding:0 0 200px;align-content:start
+  gap:10px;padding:0 16px 200px;align-content:start
 }
-.img-tile{position:relative;background:#111;overflow:hidden;aspect-ratio:var(--ar,16/9)}
-.img-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.img-tile{position:relative;background:#111;overflow:hidden;aspect-ratio:var(--ar,16/9);z-index:0;border-radius:12px}
+.img-tile.is-menu{overflow:visible;z-index:6}
+.img-tile img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .img-tile-hit{
   display:block;width:100%;height:100%;padding:0;border:none;background:transparent;cursor:pointer;font:inherit
 }
@@ -1815,25 +1937,25 @@ input:focus,textarea:focus,select:focus,
 }
 .img-retry:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
 .img-tile-hover{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;
-  padding:10px;opacity:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 42%)
+  position:absolute;top:8px;right:8px;left:auto;bottom:auto;display:flex;flex-direction:row;align-items:center;
+  gap:4px;padding:0;opacity:0;pointer-events:none;background:transparent
 }
-.img-tile:hover .img-tile-hover,.img-tile:focus-within .img-tile-hover{opacity:1;pointer-events:auto}
+.img-tile:hover .img-tile-hover,.img-tile:focus-within .img-tile-hover{opacity:1}
+.img-tile-hover .img-ico,.img-tile-hover .img-more{pointer-events:auto}
 .img-ico{
-  width:32px;height:32px;border:none;border-radius:999px;cursor:pointer;color:#fff;
-  background:rgba(12,12,14,.55);backdrop-filter:blur(10px);display:grid;place-items:center;flex-shrink:0
+  width:28px;height:28px;border:1px solid rgba(255,255,255,.16);border-radius:8px;cursor:pointer;color:#fff;
+  background:rgba(12,12,14,.78);backdrop-filter:blur(12px);display:grid;place-items:center;flex-shrink:0
 }
-.img-ico:hover{background:rgba(12,12,14,.78)}
+.img-ico:hover{background:rgba(12,12,14,.94);border-color:rgba(255,255,255,.28)}
 .img-ico.is-on{color:var(--a1);background:rgba(var(--glow),.28)}
 .img-ico:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
 .img-more{position:relative}
-.img-more-menu,.img-detail-overflow .img-more-menu{
+.img-more-menu{
   display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:8;min-width:120px;
   padding:6px;border-radius:12px;background:#121214;border:1px solid rgba(255,255,255,.12);
   box-shadow:0 18px 48px rgba(0,0,0,.55)
 }
-.img-more.is-open .img-more-menu,.img-detail-overflow.is-open .img-more-menu{display:block}
+.img-more.is-open .img-more-menu{display:block}
 .img-more-menu button{
   width:100%;text-align:left;border:none;background:transparent;color:var(--ink);font:inherit;
   font-size:.8rem;padding:8px 10px;border-radius:8px;cursor:pointer
@@ -1924,24 +2046,67 @@ input:focus,textarea:focus,select:focus,
 #panel-imagegen .img-stepper-val{min-width:36px;text-align:center;font-size:.8rem;font-weight:650}
 .img-gen-btn{margin-left:auto;height:36px;padding:0 16px}
 .img-detail{
-  position:absolute!important;inset:0;z-index:30;display:flex;background:rgba(8,8,10,.96)
+  position:fixed;inset:0;z-index:240;display:flex;align-items:stretch;justify-content:stretch;
+  background:#0B0B0C
 }
 .img-detail.hidden{display:none}
-.img-detail-close{
-  position:absolute;top:12px;right:12px;z-index:4;width:40px;height:40px;border:none;border-radius:12px;
-  background:rgba(255,255,255,.06);color:var(--ink);cursor:pointer;display:grid;place-items:center
+.img-detail-bg{
+  position:absolute;inset:-40px;background:center / cover no-repeat #0B0B0C;
+  filter:blur(52px) saturate(1.15);transform:scale(1.08);opacity:.42;pointer-events:none
 }
-.img-detail-close:hover{background:rgba(255,255,255,.1)}
-.img-detail-close:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-detail-bg::after{
+  content:'';position:absolute;inset:0;background:rgba(11,11,12,.62)
+}
+.img-detail-frame{
+  position:relative;z-index:1;flex:1;min-width:0;min-height:0;display:flex;align-items:stretch
+}
 .img-detail-stage{
-  flex:1;min-width:0;display:grid;place-items:center;padding:24px 16px
+  flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:24px 12px 24px 24px
 }
-.img-detail-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.img-detail-pic{position:relative;max-width:100%;max-height:100%;display:flex}
+.img-detail-pic img{
+  display:block;max-width:100%;max-height:calc(100vh - 48px);width:auto;height:auto;
+  object-fit:contain;border-radius:6px;box-shadow:0 28px 80px rgba(0,0,0,.55)
+}
+.img-detail-float{
+  position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:8px
+}
+.img-detail-float .img-ico{
+  width:40px;height:40px;border-radius:10px;background:rgba(12,12,14,.28);
+  border:1px solid rgba(255,255,255,.38);backdrop-filter:blur(8px)
+}
+.img-detail-float .img-ico:hover{background:rgba(12,12,14,.55);border-color:#fff}
+.img-detail-float .img-ico.is-on{color:var(--a1);border-color:rgba(var(--glow),.7);background:rgba(var(--glow),.18)}
 .img-detail-side{
-  width:min(360px,38%);flex-shrink:0;overflow:auto;padding:56px 20px 24px;
-  border-left:1px solid rgba(255,255,255,.08);background:rgba(12,12,14,.6)
+  width:min(380px,36vw);flex-shrink:0;margin:16px 16px 16px 8px;padding:18px 18px 20px;
+  overflow:auto;display:flex;flex-direction:column;gap:18px;
+  border-radius:16px;background:rgba(18,18,20,.94);border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 24px 64px rgba(0,0,0,.45)
 }
-.img-detail-block{margin-bottom:22px}
+.img-detail-head{display:flex;align-items:center;gap:12px}
+.img-detail-author{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.img-detail-avatar{
+  width:36px;height:36px;border-radius:50%;background:var(--grad);color:#fff;
+  display:grid;place-items:center;font-size:.82rem;font-weight:700;flex-shrink:0
+}
+.img-detail-who{min-width:0}
+.img-detail-name{font-size:.88rem;font-weight:650;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.img-detail-role{font-size:.68rem;color:rgba(255,255,255,.45);margin-top:1px}
+.img-detail-close{
+  width:36px;height:36px;border:none;border-radius:10px;cursor:pointer;flex-shrink:0;
+  background:transparent;color:rgba(255,255,255,.7);display:grid;place-items:center
+}
+.img-detail-close:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.img-detail-close:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.img-detail-tabs{display:flex;gap:6px}
+.img-detail-tab{
+  height:34px;padding:0 12px;border:none;border-radius:10px;cursor:default;font:inherit;
+  font-size:.78rem;font-weight:650;color:rgba(255,255,255,.5);background:transparent;
+  display:inline-flex;align-items:center;gap:6px
+}
+.img-detail-tab.is-on{color:var(--ink);background:rgba(255,255,255,.1)}
+.img-detail-tab svg{width:14px;height:14px}
+.img-detail-block{margin:0}
 .img-detail-kicker{
   display:flex;align-items:center;justify-content:space-between;gap:8px;
   font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);
@@ -1949,27 +2114,30 @@ input:focus,textarea:focus,select:focus,
 }
 .img-detail-copy{
   border:none;background:transparent;color:var(--ink);font:inherit;font-size:.75rem;font-weight:600;
-  letter-spacing:0;text-transform:none;cursor:pointer
+  letter-spacing:0;text-transform:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px
 }
+.img-detail-copy:hover{color:var(--a1)}
 .img-detail-copy:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
 .img-detail-prompt{font-size:.88rem;line-height:1.45;color:var(--ink);white-space:pre-wrap}
 .img-detail-refs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .img-detail-refs[hidden]{display:none}
-.img-detail-refs img{width:44px;height:44px;object-fit:cover;border-radius:8px}
-.img-detail-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin:0}
-.img-detail-meta div{min-width:0}
-.img-detail-meta dt{font-size:.68rem;color:rgba(255,255,255,.45);margin-bottom:2px}
-.img-detail-meta dd{margin:0;font-size:.82rem;color:var(--ink);word-break:break-word}
-.img-detail-actions{display:flex;flex-direction:column;gap:8px}
-.img-detail-utils{display:flex;align-items:center;gap:8px;margin-top:4px}
-.img-detail-overflow{position:relative;margin-left:auto}
+.img-detail-refs img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.1)}
+.img-detail-meta{display:flex;flex-direction:column;gap:10px;margin:0}
+.img-detail-meta div{display:grid;grid-template-columns:88px 1fr;gap:12px;align-items:baseline;min-width:0}
+.img-detail-meta dt{font-size:.78rem;color:rgba(255,255,255,.45);margin:0}
+.img-detail-meta dd{margin:0;font-size:.82rem;font-weight:550;color:var(--ink);word-break:break-word}
+.img-detail-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.img-detail-actions .btn{width:100%;justify-content:center}
+.img-detail-del{color:#f87171!important}
 #img-sentinel{height:1px}
+body.img-detail-open{overflow:hidden}
 
 @media (max-width:720px){
   .img-masonry{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .img-detail{flex-direction:column}
-  .img-detail-side{width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.08);padding-top:20px}
-  .img-detail-stage{min-height:42vh}
+  .img-detail-frame{flex-direction:column}
+  .img-detail-stage{padding:12px 12px 0;flex:1 1 auto}
+  .img-detail-pic img{max-height:46vh}
+  .img-detail-side{width:auto;margin:8px 12px 12px;max-height:48vh}
 }
 @media (max-width:380px){
   .img-masonry{grid-template-columns:1fr}
@@ -1977,19 +2145,35 @@ input:focus,textarea:focus,select:focus,
   .img-bar-row{gap:6px}
   .img-gen-btn{width:100%;margin-left:0}
   .img-chip{height:34px;padding:0 10px}
-  .img-detail{flex-direction:column}
-  .img-detail-side{width:100%}
+  .img-empty{gap:10px;padding:12px 12px 208px}
+  .img-empty-fan{width:min(320px,88vw);aspect-ratio:1.85 / 1;max-height:150px}
+  .img-empty-card{width:58%}
+  .img-empty-card:nth-child(1),
+  .img-empty-card:nth-child(4){display:none}
+  .img-empty-card:nth-child(2){left:0;top:14%;transform:rotate(-4deg) scale(.96)}
+  .img-empty-card:nth-child(3){left:34%;top:0;transform:rotate(4deg) scale(1.02)}
+  .img-empty-title{font-size:clamp(1.22rem,6.8vw,1.6rem);line-height:.92}
 }
 
 /* Video gen V2 */
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
 .fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
-.fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
-.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
-.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 0 4px}
-.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+.fv-how-item{padding:0 0 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left;overflow:hidden}
+.fv-how-item .media-ph,.fv-how-shot{border-radius:0;border:none;border-bottom:1px solid var(--border)}
+.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,244,.4);margin:14px 16px 8px}
+.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 16px 4px}
+.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0 16px;line-height:1.4}
 @media (max-width:640px){.fv-how{grid-template-columns:1fr}}
+
+.media-ph{
+  position:relative;width:100%;overflow:hidden;
+  background:linear-gradient(160deg,#2c1c1e,#161618);
+  border:1px solid rgba(245,245,244,.22)
+}
+.media-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
+.media-ph-icon svg{width:32px;height:32px}
 
 /* Upscale V2 */
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
@@ -1997,6 +2181,7 @@ input:focus,textarea:focus,select:focus,
 /* V2 punch list */
 .panel.active{width:100%}
 .content > .panel{width:100%}
+#panel-dashboard{display:none!important}
 #panel-dashboard .page-shell,
 #panel-dashboard .dash-shell{
   max-width:1280px!important;
@@ -2077,7 +2262,7 @@ input:focus,textarea:focus,select:focus,
 .card-pad-24{padding:24px!important}
 
 /* Account settings */
-.settings-shell{max-width:420px;width:calc(100% - 32px);padding:0;overflow:hidden;background:rgba(18,18,20,.96);border:1px solid var(--border);backdrop-filter:blur(12px)}
+.settings-shell{max-width:460px;width:calc(100% - 32px);padding:0;overflow:auto;max-height:min(92vh,740px);background:rgba(18,18,20,.96);border:1px solid var(--border);backdrop-filter:blur(12px)}
 .settings-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 0}
 .settings-head h2{margin:0;font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
 .settings-close{width:44px;height:44px;border:none;border-radius:12px;background:transparent;color:rgba(255,255,255,.7);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
@@ -2101,6 +2286,37 @@ input:focus,textarea:focus,select:focus,
 .settings-row-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
 .settings-row-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
 .settings-row-btn .settings-row-value{color:rgba(255,255,255,.4);font-weight:500;font-size:.78rem}
+.settings-yt{
+  margin-top:4px;padding:12px;border-radius:12px;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);display:flex;flex-direction:column;gap:10px
+}
+.settings-yt-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.settings-yt-head strong{font-size:.85rem;font-weight:650;color:var(--ink)}
+.settings-yt-state{font-size:.72rem;font-weight:650;color:rgba(255,255,255,.45)}
+.settings-yt-state.is-on{color:#7dce8a}
+.settings-yt-sub{margin:0;font-size:.78rem;line-height:1.45;color:rgba(255,255,255,.48)}
+.settings-yt-channel{display:flex;align-items:center;gap:10px}
+.settings-yt-channel img{width:36px;height:36px;border-radius:99px;object-fit:cover;background:#111}
+.settings-yt-channel .settings-yt-title{font-size:.85rem;font-weight:650;color:var(--ink)}
+.settings-yt-channel .settings-yt-id{font-size:.72rem;color:rgba(255,255,255,.42);margin-top:2px}
+.settings-yt-toggle,.settings-yt-privacy{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:.8rem;color:rgba(255,255,255,.78)
+}
+.settings-yt-privacy select{
+  background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--border);
+  border-radius:8px;padding:6px 8px;font:inherit
+}
+.settings-yt details{border-top:1px solid var(--border);padding-top:10px}
+.settings-yt summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
+.settings-yt pre{
+  margin:8px 0 0;padding:10px;border-radius:8px;background:#111;font-size:.68rem;
+  overflow:auto;white-space:pre-wrap;color:rgba(255,255,255,.72);max-height:140px
+}
+.settings-yt-msg{margin:0;font-size:.75rem;color:rgba(255,255,255,.5)}
+.settings-yt-msg.is-err{color:#ff8a94}
+.settings-yt-msg.is-ok{color:#7dce8a}
+#fv-yt-status{display:none;margin-top:10px}
 
 /* ── Onboarding (full-page setup) ─────────────────────────────────────── */
 #onboarding-modal{
@@ -2109,7 +2325,7 @@ input:focus,textarea:focus,select:focus,
 }
 html.needs-onboarding #onboarding-modal,
 html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
-body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
+body.onboarding-open #app-chrome,body.onboarding-open .main{visibility:hidden}
 .onboarding-shell{
   width:100%;max-width:none;height:100%;max-height:none;min-height:100%;flex:1;
   padding:0;overflow:hidden;display:flex;flex-direction:column;
@@ -2120,8 +2336,8 @@ body.onboarding-open .sidebar,body.onboarding-open .main{visibility:hidden}
   align-items:center;gap:16px;padding:18px 28px 10px;flex-shrink:0
 }
 .ob-brand-lockup{display:flex;align-items:center;gap:10px;min-width:0}
-.ob-brand-lockup img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
-.ob-brand-lockup .brand{font-size:1.05rem}
+.ob-brand-lockup img{width:32px;height:32px;object-fit:contain;flex-shrink:0}
+.ob-brand-lockup .brand{font-size:1.22rem}
 .ob-progress{display:flex;align-items:center;gap:10px;min-width:0}
 .ob-segs{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
 .ob-seg{
@@ -2461,21 +2677,33 @@ body.tour-active #fv-export-box.show{min-height:160px}
   .paywall-plan .feat-row{min-height:0}
 }
 body.paywalled{overflow:hidden}
-body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-events:none;user-select:none}
+body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointer-events:none;user-select:none}
 
 /* Mobile chrome (drawer) — desktop unchanged */
 .mobile-nav-toggle,.mobile-nav-close{display:none}
 .nav-backdrop{display:none}
 
-@media (max-width:768px){
-  body{overflow-x:hidden}
+@media (max-width:1000px){
   body.nav-open{overflow:hidden}
-  .sidebar{
-    position:fixed;top:0;left:0;bottom:0;z-index:80;width:min(288px,86vw);
-    transform:translateX(-105%);transition:transform 220ms var(--ease-out);
-    border-right:1px solid var(--line);box-shadow:none
+  .nav-hamburger{display:inline-flex}
+  .topnav-primary{display:none}
+  .nav-drawer{
+    display:flex;flex-direction:column;gap:4px;position:fixed;top:0;left:0;bottom:0;z-index:80;
+    width:min(300px,86vw);padding:16px 12px 24px;overflow:auto;
+    background:rgba(11,11,12,.96);border-right:1px solid var(--line);
+    transform:translateX(-105%);transition:transform 220ms var(--ease-out)
   }
-  body.nav-open .sidebar{transform:translateX(0);box-shadow:24px 0 60px rgba(0,0,0,.45)}
+  body.nav-open .nav-drawer{transform:translateX(0);box-shadow:24px 0 60px rgba(0,0,0,.45)}
+  .nav-drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .nav-drawer-label{
+    display:block;font-size:.65rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-label);padding:10px 10px 4px
+  }
+  .nav-drawer .topnav-item{
+    width:100%;height:auto;min-height:44px;justify-content:flex-start;border-radius:12px;
+    font-size:.84rem;padding:0 12px
+  }
+  .nav-drawer .topnav-item.active{background:rgba(var(--glow),.12);color:var(--a1);box-shadow:inset 0 0 0 1px rgba(var(--glow),.18)}
   .nav-backdrop{
     display:block;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);
     opacity:0;pointer-events:none;transition:opacity 220ms var(--ease-out)
@@ -2483,36 +2711,18 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   body.nav-open .nav-backdrop{opacity:1;pointer-events:auto}
   .nav-backdrop[hidden]{display:none!important}
   body.nav-open .nav-backdrop[hidden]{display:block!important}
-  .mobile-nav-toggle{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:44px;height:44px;margin:0;padding:0;border:none;border-radius:12px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--ink);cursor:pointer;flex-shrink:0
-  }
-  .mobile-nav-toggle:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:1px}
-  .sidebar-collapse{display:none!important}
-  .mobile-nav-close{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:44px;height:44px;margin:0 0 0 auto;padding:0;border:none;border-radius:12px;
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--ink);cursor:pointer;order:3
-  }
-  .sidebar-logo{gap:8px}
-  .sidebar-logo-link{order:2;gap:8px}
-  .topbar{
-    padding:8px 12px;min-height:56px;gap:10px;
-    display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center
-  }
-  .topbar::after{left:12px;right:12px}
-  .topbar-title{font-size:1rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .topbar-title.is-hidden{visibility:visible;pointer-events:auto}
-  .credits-pill{padding:6px 10px;gap:5px;max-width:100%}
   .credits-pill-label{display:none}
+}
+
+@media (max-width:768px){
+  body{overflow-x:hidden}
+  .credits-pill{padding:6px 10px;gap:5px;max-width:100%}
   .content{padding:16px 12px;overflow-x:hidden}
   .page-header{margin-bottom:16px!important}
   .page-header h2{font-size:1.35rem!important}
   .dash-stats{grid-template-columns:1fr!important;gap:10px}
   .qa-grid{grid-template-columns:1fr!important;gap:10px}
   .qa-card{min-height:0!important;padding:16px!important}
-  .tools-grid{grid-template-columns:1fr!important}
   .vr-layout{flex-direction:column!important}
   .vr-right{width:100%!important}
   .vr-preview-card{position:static!important;max-width:320px;margin:0 auto}
@@ -2522,16 +2732,17 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   }
   #panel-ranking .vr-left > .tool-card > .vr-sec:last-of-type{margin-bottom:120px!important}
   #panel-ranking .page-shell-wide{padding:0}
-  .nav-item{min-height:44px;height:auto;padding:10px 12px}
   .user-settings-btn,.user-signout-btn{min-height:44px}
   .img-layout,.fv-prev-layout,.cm-layout,.clip-layout{grid-template-columns:1fr!important;flex-direction:column!important}
   body, .main, .content{max-width:100vw}
   .tool-card,.ui-card,.page-shell,.page-shell-wide{max-width:100%}
 }
-@media (max-width:390px){
+@media (max-width:400px){
+  :root{--chrome-pad-x:12px}
   .content{padding:14px 10px}
-  .topbar{padding:8px 10px}
   .credits-pill{padding:6px 8px}
+  .app-banner-msg{font-size:.7rem}
+  .brand{font-size:1.1rem}
 }
 </style>
 <script src="/brand.js" defer></script>
@@ -2543,7 +2754,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     <div class="ob-top">
       <div class="ob-brand-lockup">
         <img data-vidso-logo width="28" height="28" alt="" decoding="async">
-        <span class="brand">vidso</span>
+        <span class="brand">Vidso</span>
       </div>
       <div class="ob-progress" aria-label="Onboarding progress">
         <div class="ob-segs" id="ob-segs">
@@ -2711,12 +2922,12 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div class="ob-step is-center" data-ob-step="6">
         <div class="ob-ready-intro">
           <h2 class="ob-title" id="ob-ready-title">Your first long-form video is ready</h2>
-          <p class="ob-sub" id="ob-ready-sub">We’ll open Video Generation and start you with a topic that fits. You can edit anything before you generate.</p>
+          <p class="ob-sub" id="ob-ready-sub">We’ll open Long Form Generator and start you with a topic that fits. You can edit anything before you generate.</p>
         </div>
         <div class="ob-ready">
           <div class="ob-ready-hero">
             <span class="ob-card-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.1 6.3H21l-5.4 3.9 2.1 6.3L12 15.6 6.3 19.5l2.1-6.3L3 9.3h6.9z"/></svg></span>
-            <p id="ob-ready-method-copy">Long-form Video Generation is ready</p>
+            <p id="ob-ready-method-copy">Long Form Generator is ready</p>
           </div>
           <ul class="ob-ready-list" id="ob-ready-list"></ul>
         </div>
@@ -2756,7 +2967,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
   <div class="paywall-shell" tabindex="-1">
     <p class="paywall-kicker">Unlock Vidso</p>
     <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
-    <p class="paywall-sub">Pick a plan to unlock long-form Video Generation.</p>
+    <p class="paywall-sub">Pick a plan to unlock Long Form Generator.</p>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
       <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
       <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
@@ -2876,6 +3087,45 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
+      <div class="settings-yt" id="settings-yt">
+        <div class="settings-yt-head">
+          <strong>YouTube</strong>
+          <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
+        </div>
+        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically, or from Cursor via the Vidso YouTube MCP.</p>
+        <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
+        <div id="settings-yt-disconnected">
+          <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
+        </div>
+        <div id="settings-yt-connected" hidden>
+          <div class="settings-yt-channel">
+            <img id="settings-yt-thumb" alt="" width="36" height="36" hidden>
+            <div>
+              <div class="settings-yt-title" id="settings-yt-title">YouTube channel</div>
+              <div class="settings-yt-id" id="settings-yt-id"></div>
+            </div>
+          </div>
+          <label class="settings-yt-toggle">
+            <span>Upload after export</span>
+            <input type="checkbox" id="settings-yt-auto" checked>
+          </label>
+          <label class="settings-yt-privacy">
+            <span>Visibility</span>
+            <select id="settings-yt-privacy" aria-label="YouTube visibility">
+              <option value="unlisted">Unlisted</option>
+              <option value="private">Private</option>
+              <option value="public">Public</option>
+            </select>
+          </label>
+          <details id="settings-yt-mcp-wrap">
+            <summary>MCP for Cursor</summary>
+            <p class="settings-yt-sub" style="margin-top:8px">Paste this into Cursor MCP settings. The token is your current Vidso session and will expire when you sign out.</p>
+            <pre id="settings-yt-mcp"></pre>
+            <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
+          </details>
+          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
+        </div>
+      </div>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
         <span class="badge-soon">Coming soon</span>
@@ -2923,7 +3173,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div>
         <p class="tour-menu-kicker">Getting started</p>
         <h2 class="tour-menu-title" id="tour-menu-title">Pick a tour</h2>
-        <p class="tour-menu-sub">Video Generation is first. Then pick any other tool, or play every tour in order.</p>
+        <p class="tour-menu-sub">Long Form Generator is first. Then pick any other tool, or play every tour in order.</p>
       </div>
       <button type="button" class="tour-close" onclick="dismissTourMenu()" aria-label="Close getting started">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -2931,124 +3181,118 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
     </div>
     <div class="tour-menu-actions">
       <button type="button" class="tour-menu-play" id="tour-play-all-btn" onclick="playAllUiTours()">Play the full tutorial</button>
-      <p class="tour-menu-play-sub">Starts with Video Generation, then every other tool in order.</p>
+      <p class="tour-menu-play-sub">Starts with Long Form Generator, then every other tool in order.</p>
     </div>
     <div class="tour-menu-list" id="tour-menu-list"></div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="app-sidebar" aria-label="Main navigation">
-  <div class="sidebar-logo">
-    <button type="button" class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <a href="/home" class="sidebar-logo-link" aria-label="Vidso home">
-      <img data-vidso-logo width="42" height="42" alt="" decoding="async">
-      <span class="brand">vidso</span>
-    </a>
-    <button type="button" class="sidebar-collapse" id="sidebar-collapse" onclick="toggleSidebar()" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/><path d="M9 6l-6 6 6 6"/></svg>
+<!-- APP CHROME -->
+<div id="app-chrome">
+<div class="app-banner" id="app-banner" hidden>
+  <p class="app-banner-msg" id="app-banner-msg"></p>
+  <div class="app-banner-end">
+    <a class="app-banner-cta" id="app-banner-cta" href="/image-generation">Try it</a>
+    <button type="button" class="app-banner-x" id="app-banner-dismiss" aria-label="Dismiss announcement">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section"><span class="nav-section-label">Long form</span></div>
-    <button class="nav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-      <span class="nav-item-label">Thumbnail Generator</span>
+</div>
+
+<header class="app-topnav" id="app-topnav">
+  <div class="topnav-start">
+    <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="nav-drawer" aria-expanded="false">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <button class="nav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/><path d="M7 18h6"/></svg></span>
-      <span class="nav-item-label">Video Generation</span>
-    </button>
-    <div class="nav-section"><span class="nav-section-label">Short form</span></div>
-    <button class="nav-item" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-      <span class="nav-item-label">Clipping</span>
-    </button>
-    <button class="nav-item" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/><path d="M5 4h2M17 4h2"/><path d="M12 8v4"/></svg></span>
-      <span class="nav-item-label">Ranking</span>
-    </button>
-    <button class="nav-item" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
-      <span class="nav-item-label">AI Captions</span>
-    </button>
-    <button class="nav-item" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
-      <span class="nav-item-label">AI Voiceover</span>
-    </button>
-    <button class="nav-item" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
-      <span class="nav-item-label">AI Reframe</span>
-    </button>
-    <button class="nav-item" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
-      <span class="nav-item-label">Video Editor</span>
-    </button>
-    <button class="nav-item" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-      <span class="nav-item-label">Video Downloader</span>
-    </button>
-    <button class="nav-item" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-      <span class="nav-item-label">Video Commentary</span>
-    </button>
-    <div class="nav-section"><span class="nav-section-label">Workspace</span></div>
-    <button class="nav-item" id="nav-tools" data-panel="tools" onclick="switchPanel('tools',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
-      <span class="nav-item-label">Tools</span>
-    </button>
-    <button class="nav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-      <span class="nav-item-label">My Files</span>
-    </button>
-    <button class="nav-item active" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
-      <span class="nav-ico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span class="nav-item-label">Dashboard</span>
-    </button>
+    <a href="/home" class="topnav-logo" aria-label="Vidso home">
+      <img data-vidso-logo width="28" height="28" alt="" decoding="async">
+      <span class="brand">Vidso</span>
+    </a>
+  </div>
+  <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
+    <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+    <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+    <div class="topnav-drop" id="nav-tools-wrap">
+      <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
+        Short Form Tools
+        <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Short Form Tools">
+        <button type="button" role="menuitem" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+        <button type="button" role="menuitem" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+        <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+        <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+        <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+        <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+        <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+        <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+      </div>
+    </div>
+    <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
   </nav>
-  <div class="sidebar-footer">
-    <div class="user-profile-card">
-      <div class="user-profile-top">
-        <span class="user-avatar" id="user-avatar">?</span>
-        <div class="user-info">
+  <div class="topnav-right">
+    <div class="topnav-drop" id="nav-search-wrap">
+      <button type="button" class="topnav-ico-btn" id="nav-search-btn" aria-label="Search tools" aria-haspopup="true" aria-expanded="false" aria-controls="nav-search-pop">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+      </button>
+      <div class="nav-search-pop" id="nav-search-pop" role="menu" aria-label="Search tools">
+        <label class="sr-only" for="nav-search-input">Search tools</label>
+        <input class="nav-search-input" id="nav-search-input" type="search" placeholder="Jump to a tool" autocomplete="off">
+        <div id="nav-search-list"></div>
+      </div>
+    </div>
+    <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
+      <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+      <span class="credits-pill-count" id="credits-count">—</span>
+      <span class="credits-pill-label">videos</span>
+    </span>
+    <div class="topnav-drop" id="nav-avatar-wrap">
+      <button type="button" class="topnav-avatar" id="nav-avatar-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-avatar-menu">
+        <span id="user-avatar">?</span>
+      </button>
+      <div class="topnav-menu" id="nav-avatar-menu" role="menu" aria-label="Account">
+        <div class="user-info" style="padding:8px 10px 10px">
           <div class="user-name" id="user-name">Your account</div>
           <div class="user-email" id="user-email">...</div>
         </div>
-        <button type="button" class="user-settings-btn" id="user-settings-btn" onclick="openAccountSettings()" aria-label="Account settings">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </button>
+        <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
+        <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
-      <button type="button" class="user-signout-btn" id="user-getting-started-btn" aria-label="Open getting started tours" title="Getting started">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19h14"/></svg>
-        <span class="sidebar-hide-lbl">Getting started</span>
-      </button>
-      <button type="button" class="user-signout-btn" onclick="doLogout()" title="Sign out">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span class="sidebar-hide-lbl">Sign out</span>
-      </button>
     </div>
   </div>
+</header>
+</div>
+<div id="nav-portal"></div>
+
+<aside class="nav-drawer" id="nav-drawer" aria-label="Main navigation">
+  <div class="nav-drawer-head">
+    <span class="brand">Vidso</span>
+    <button type="button" class="topnav-ico-btn" onclick="closeMobileNav()" aria-label="Close menu">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <span class="nav-drawer-label">Generate</span>
+  <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+  <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+  <span class="nav-drawer-label">Short Form Tools</span>
+  <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+  <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+  <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+  <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+  <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+  <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+  <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+  <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+  <span class="nav-drawer-label">Workspace</span>
+  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
+  <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
 
 <!-- MAIN -->
 <main class="main">
-  <div class="topbar">
-    <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
-    <span class="topbar-title" id="topbar-title">Dashboard</span>
-    <div class="topbar-actions">
-      <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
-        <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-        <span class="credits-pill-count" id="credits-count">—</span>
-        <span class="credits-pill-label">videos</span>
-      </span>
-    </div>
-  </div>
   <div class="content content-scrim">
 
 
@@ -3191,7 +3435,19 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
           <button type="button" class="img-filter is-on" id="img-filter-all" role="tab" aria-selected="true">All</button>
           <button type="button" class="img-filter" id="img-filter-favs" role="tab" aria-selected="false">Favorites</button>
         </div>
-        <p class="img-empty-line" id="img-empty">Describe a thumbnail below to generate it.</p>
+        <div class="img-empty" id="img-empty" hidden>
+          <div class="img-empty-fan" id="img-empty-fan" aria-hidden="true">
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+          </div>
+          <h1 class="img-empty-title">
+            <span class="lead">Start creating with</span>
+            <span class="accent">Vidso thumbnails</span>
+          </h1>
+          <p class="img-empty-sub">Describe a scene, a subject, a mood, or a style, and watch it come to life.</p>
+        </div>
         <div class="img-masonry" id="img-grid"></div>
         <div id="img-sentinel" aria-hidden="true"></div>
       </div>
@@ -3252,47 +3508,69 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       </form>
 
       <div class="img-detail hidden" id="img-detail" role="dialog" aria-modal="true" aria-labelledby="img-detail-heading" aria-hidden="true">
-        <button type="button" class="img-detail-close" id="img-detail-close" aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <div class="img-detail-stage">
-          <img id="img-detail-img" alt="Generated thumbnail">
-        </div>
-        <aside class="img-detail-side">
-          <h2 class="sr-only" id="img-detail-heading">Thumbnail details</h2>
-          <div class="img-detail-block">
-            <div class="img-detail-kicker">
-              <span>Prompt</span>
-              <button type="button" class="img-detail-copy" id="img-detail-copy">Copy</button>
-            </div>
-            <div class="img-detail-refs" id="img-detail-refs" hidden></div>
-            <p class="img-detail-prompt" id="img-detail-prompt"></p>
-          </div>
-          <div class="img-detail-block">
-            <div class="img-detail-kicker"><span>Details</span></div>
-            <dl class="img-detail-meta">
-              <div><dt>Model</dt><dd id="img-detail-model">—</dd></div>
-              <div><dt>Quality</dt><dd id="img-detail-quality">—</dd></div>
-              <div><dt>Size</dt><dd id="img-detail-size">—</dd></div>
-              <div><dt>Created</dt><dd id="img-detail-created">—</dd></div>
-            </dl>
-          </div>
-          <div class="img-detail-actions">
-            <button type="button" class="btn btn-primary" id="img-detail-recreate">Recreate</button>
-            <button type="button" class="btn btn-secondary" id="img-detail-ref">Reference</button>
-            <div class="img-detail-utils">
-              <button type="button" class="btn btn-ghost" id="img-detail-dl">Download</button>
-              <button type="button" class="img-ico" id="img-detail-fav" aria-pressed="false" aria-label="Favorite"></button>
-              <button type="button" class="btn btn-ghost" id="img-detail-share">Share</button>
-              <div class="img-detail-overflow" id="img-detail-overflow">
-                <button type="button" class="img-ico" id="img-detail-more" aria-haspopup="true" aria-label="More">···</button>
-                <div class="img-more-menu" role="menu">
-                  <button type="button" role="menuitem" id="img-detail-del">Delete</button>
-                </div>
+        <div class="img-detail-bg" id="img-detail-bg" aria-hidden="true"></div>
+        <div class="img-detail-frame">
+          <div class="img-detail-stage" id="img-detail-stage">
+            <div class="img-detail-pic">
+              <img id="img-detail-img" alt="Generated thumbnail">
+              <div class="img-detail-float">
+                <button type="button" class="img-ico" id="img-detail-fav" aria-pressed="false" aria-label="Favorite"></button>
+                <button type="button" class="img-ico" id="img-detail-dl" aria-label="Download">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+                </button>
+                <button type="button" class="img-ico" id="img-detail-share" aria-label="Copy link">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+                </button>
               </div>
             </div>
           </div>
-        </aside>
+          <aside class="img-detail-side">
+            <div class="img-detail-head">
+              <div class="img-detail-author">
+                <span class="img-detail-avatar" id="img-detail-avatar">?</span>
+                <div class="img-detail-who">
+                  <div class="img-detail-name" id="img-detail-name">You</div>
+                  <div class="img-detail-role">Author</div>
+                </div>
+              </div>
+              <button type="button" class="img-detail-close" id="img-detail-close" aria-label="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="img-detail-tabs" role="tablist" aria-label="Thumbnail details">
+              <button type="button" class="img-detail-tab is-on" role="tab" aria-selected="true" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                Info
+              </button>
+            </div>
+            <h2 class="sr-only" id="img-detail-heading">Thumbnail details</h2>
+            <div class="img-detail-block">
+              <div class="img-detail-kicker">
+                <span>Prompt</span>
+                <button type="button" class="img-detail-copy" id="img-detail-copy">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="img-detail-refs" id="img-detail-refs" hidden></div>
+              <p class="img-detail-prompt" id="img-detail-prompt"></p>
+            </div>
+            <div class="img-detail-block">
+              <div class="img-detail-kicker"><span>Details</span></div>
+              <dl class="img-detail-meta">
+                <div><dt>Model</dt><dd id="img-detail-model">—</dd></div>
+                <div><dt>Quality</dt><dd id="img-detail-quality">—</dd></div>
+                <div><dt>Size</dt><dd id="img-detail-size">—</dd></div>
+                <div><dt>Created</dt><dd id="img-detail-created">—</dd></div>
+              </dl>
+            </div>
+            <div class="img-detail-actions">
+              <button type="button" class="btn btn-primary" id="img-detail-recreate">Recreate</button>
+              <button type="button" class="btn btn-secondary" id="img-detail-ref">Use as reference</button>
+              <button type="button" class="btn btn-ghost img-detail-del" id="img-detail-del">Delete</button>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
 
@@ -4697,28 +4975,37 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
-        <h2>Video Generation</h2>
+        <h2>Long Form Generator</h2>
         <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Script.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 1</div>
           <div class="fv-how-t">Script</div>
           <p class="fv-how-d">Generate and edit the narration for your topic.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Media.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 2</div>
           <div class="fv-how-t">Media</div>
           <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Export.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 3</div>
           <div class="fv-how-t">Export</div>
           <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
         </div>
       </div>
       <div class="tool-card">
-        <h3 class="ui-card-title">Faceless Video Generator</h3>
+        <h3 class="ui-card-title">Long Form Generator</h3>
         <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
 
         <div class="fv-wizard">
@@ -4751,8 +5038,8 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
             <div class="field" id="fv-field-aspect">
               <label>Aspect ratio</label>
               <div class="fv-chip-row" id="fv-aspect-chips">
-                <button type="button" class="fv-chip active" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
-                <button type="button" class="fv-chip" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
+                <button type="button" class="fv-chip" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
+                <button type="button" class="fv-chip active" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
               </div>
             </div>
 
@@ -4807,6 +5094,7 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
+                  <button type="button" class="btn btn-ghost" id="fv-short-continue-btn" hidden onclick="fvContinueToMedia(true)">Continue with shorter script</button>
                 </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
@@ -4997,12 +5285,15 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
                 <video id="fv-export-video" controls playsinline style="width:100%;max-width:360px;border-radius:12px;background:#000;display:block;margin:0 auto"></video>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center">
                   <a class="btn btn-primary" id="fv-export-dl" download="vidso-faceless.mp4">⬇ Download Video</a>
+                  <button type="button" class="btn btn-secondary" id="fv-yt-upload" onclick="fvUploadToYoutube()">Upload to YouTube</button>
                   <button type="button" class="btn btn-ghost" onclick="fvStartExport(true)">↻ Render again</button>
                 </div>
+                <div class="status" id="fv-yt-status"></div>
               </div>
 
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" id="fv-export-actions">
-                <button type="button" class="btn btn-primary" id="fv-export-btn" onclick="fvStartExport(false)">Render video</button>
+                <button type="button" class="btn btn-primary" id="fv-export-btn" onclick="fvStartExport()">Render video</button>
+                <button type="button" class="btn btn-ghost" id="fv-export-short-btn" hidden onclick="fvStartExport({ allowShort: true })">Render this shorter cut</button>
               </div>
             </div>
           </div>
@@ -5014,69 +5305,13 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
       <div class="tools-page">
         <div class="page-header">
           <h2>Tools</h2>
-          <p>Captions, voiceover, editor, and file utilities.</p>
+          <p>Every Vidso tool in one place.</p>
         </div>
-          <div class="tools-group" id="tools-group-create">
-            <div class="section-label">Create</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('captions',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
-                <span class="tool-tile-title">AI Captions</span>
-                <span class="tool-tile-desc">Auto-transcribe any video</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('voiceover',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
-                <span class="tool-tile-title">AI Voiceover</span>
-                <span class="tool-tile-desc">35+ ElevenLabs voices</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('reframe',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg></span>
-                <span class="tool-tile-title">AI Reframe</span>
-                <span class="tool-tile-desc">Auto-fit to 9:16</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
-          <div class="tools-group" id="tools-group-edit">
-            <div class="section-label">Edit</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('editor',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2"/></svg></span>
-                <span class="tool-tile-title">Video Editor</span>
-                <span class="tool-tile-desc">Multi-track timeline</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('downloader',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                <span class="tool-tile-title">Video Downloader</span>
-                <span class="tool-tile-desc">Download from any platform</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-              <button type="button" class="tool-tile" onclick="switchPanel('commentary',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-                <span class="tool-tile-title">Video Commentary</span>
-                <span class="tool-tile-desc">Voice and captions on clips</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
-          <div class="tools-group" id="tools-group-manage">
-            <div class="section-label">Manage</div>
-            <div class="tools-grid">
-              <button type="button" class="tool-tile" onclick="switchPanel('files',null)">
-                <span class="tool-tile-ico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-                <span class="tool-tile-title">My Files</span>
-                <span class="tool-tile-desc">Uploads and exports</span>
-                <span class="tool-tile-chev" aria-hidden="true"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
-              </button>
-            </div>
-          </div>
+        <div id="tools-gallery"></div>
       </div>
     </div>
 
-    <div class="panel active content-glow" id="panel-dashboard">
+    <div class="panel content-glow" id="panel-dashboard" hidden>
       <div class="page-shell dash-shell">
         <div class="page-header dash-welcome" id="dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
@@ -5146,11 +5381,34 @@ body.paywalled #sidebar,body.paywalled main,body.paywalled .topbar{pointer-event
 import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
+import {
+  WORDS_PER_MINUTE,
+  facelessMediaPayloadExtras,
+  facelessScriptPayload,
+  formatDurationSeconds,
+  impliedSecondsFromWords,
+  isMateriallyShort,
+  scriptWordCount,
+  targetWordsFromSeconds,
+} from '/lib/faceless-length.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { isHistorySidecarName } from '/lib/image-gen.js'
+import {
+  youtubeStatus,
+  youtubeConnect,
+  youtubeDisconnect,
+  youtubeSaveSettings,
+  youtubeAccessToken,
+  uploadBlobToYoutube,
+  uploadViaServer,
+  mcpConfigJson,
+} from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
+import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
+import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
+import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
   tourById,
   tourStepsOf,
@@ -5263,7 +5521,8 @@ function afterAuthReady(opts = {}) {
     loadUsage()
     loadVoices()
     loadFiles()
-    if (opts.restoreRoute) restorePanelFromHash()
+    if (opts.restoreRoute !== false) restorePanelFromHash()
+    try { consumeYoutubeQuery() } catch (_) {}
     return
   }
   obClearNeedFlag()
@@ -5272,13 +5531,15 @@ function afterAuthReady(opts = {}) {
   loadFiles()
   if (funnelLocked() && !introPending()) {
     maybeShowPaywall()
-    if (opts.restoreRoute) restorePanelFromHash()
+    if (opts.restoreRoute !== false) restorePanelFromHash()
+    try { consumeYoutubeQuery() } catch (_) {}
     return
   }
   document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
   closePaywall()
-  if (opts.restoreRoute) restorePanelFromHash()
+  if (opts.restoreRoute !== false) restorePanelFromHash()
   maybeStartUiTour()
+  try { consumeYoutubeQuery() } catch (_) {}
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -5411,7 +5672,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/dashboard'
+  if (path === '/login' || path === '/signup') return location.origin + '/video-generation'
   return location.origin + location.pathname + location.search
 }
 
@@ -5516,7 +5777,7 @@ window.closeMobileNav = () => {
   document.body.classList.remove('nav-open')
   const backdrop = document.getElementById('nav-backdrop')
   if (backdrop) backdrop.hidden = true
-  const toggle = document.getElementById('mobile-nav-toggle')
+  const toggle = document.getElementById('nav-hamburger')
   if (toggle) {
     toggle.setAttribute('aria-expanded', 'false')
     toggle.setAttribute('aria-label', 'Open menu')
@@ -5526,7 +5787,7 @@ window.openMobileNav = () => {
   document.body.classList.add('nav-open')
   const backdrop = document.getElementById('nav-backdrop')
   if (backdrop) backdrop.hidden = false
-  const toggle = document.getElementById('mobile-nav-toggle')
+  const toggle = document.getElementById('nav-hamburger')
   if (toggle) {
     toggle.setAttribute('aria-expanded', 'true')
     toggle.setAttribute('aria-label', 'Close menu')
@@ -5536,31 +5797,16 @@ window.toggleMobileNav = () => {
   if (document.body.classList.contains('nav-open')) window.closeMobileNav()
   else window.openMobileNav()
 }
-
-const SIDEBAR_COLLAPSE_KEY = 'vidso_sidebar_collapsed'
-function applySidebarCollapsed(on) {
-  document.body.classList.toggle('sidebar-collapsed', !!on)
-  const btn = document.getElementById('sidebar-collapse')
-  if (btn) {
-    btn.setAttribute('aria-expanded', on ? 'false' : 'true')
-    btn.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar')
-    btn.title = on ? 'Expand sidebar' : 'Collapse sidebar'
-  }
-  document.querySelectorAll('.nav-item').forEach((el) => {
-    const label = el.querySelector('.nav-item-label')?.textContent?.trim()
-    if (label) el.title = label
-  })
-}
-window.toggleSidebar = () => {
-  const next = !document.body.classList.contains('sidebar-collapsed')
-  applySidebarCollapsed(next)
-  try { localStorage.setItem(SIDEBAR_COLLAPSE_KEY, next ? '1' : '0') } catch (_) {}
-}
-try { if (localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1') applySidebarCollapsed(true) } catch (_) {}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !document.body.classList.contains('nav-open')) return
+  window.closeMobileNav()
+  document.getElementById('nav-hamburger')?.focus()
+})
 
 let _settingsPrevFocus = null
 window.openAccountSettings = () => {
   if (!currentUser) { showModal(); return }
+  try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
   const modal = document.getElementById('settings-modal')
   if (!modal) return
   _settingsPrevFocus = document.activeElement
@@ -5585,6 +5831,7 @@ window.openAccountSettings = () => {
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
   window.closeMobileNav?.()
+  refreshYoutubeSettings()
 }
 window.closeAccountSettings = () => {
   const modal = document.getElementById('settings-modal')
@@ -5594,6 +5841,126 @@ window.closeAccountSettings = () => {
     try { _settingsPrevFocus.focus() } catch (_) {}
   }
   _settingsPrevFocus = null
+}
+
+function ytSetSettingsMsg(text, kind) {
+  const el = document.getElementById('settings-yt-msg')
+  if (!el) return
+  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
+  el.hidden = false
+  el.textContent = text
+  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
+}
+
+let _ytStatus = null
+async function refreshYoutubeSettings() {
+  const disconnected = document.getElementById('settings-yt-disconnected')
+  const connected = document.getElementById('settings-yt-connected')
+  const stateEl = document.getElementById('settings-yt-state')
+  if (!disconnected || !connected) return
+  ytSetSettingsMsg('')
+  if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
+    _ytStatus = { configured: true, connected: false, autoUpload: true, privacy: 'unlisted' }
+    if (stateEl) { stateEl.textContent = 'Not connected'; stateEl.classList.remove('is-on') }
+    disconnected.hidden = false
+    connected.hidden = true
+    return
+  }
+  try {
+    _ytStatus = await youtubeStatus()
+  } catch (e) {
+    _ytStatus = { configured: false, connected: false }
+    ytSetSettingsMsg(e.message || 'Could not load YouTube status', 'err')
+  }
+  const st = _ytStatus || {}
+  const on = !!st.connected
+  stateEl.textContent = on ? 'Connected' : (st.configured === false ? 'Not set up' : 'Not connected')
+  stateEl.classList.toggle('is-on', on)
+  disconnected.hidden = on
+  connected.hidden = !on
+  if (st.configured === false) {
+    disconnected.hidden = true
+    ytSetSettingsMsg('YouTube publishing is not configured on this deployment yet. Add Google OAuth credentials on Vercel.', 'err')
+  }
+  if (!on) return
+  const title = document.getElementById('settings-yt-title')
+  const idEl = document.getElementById('settings-yt-id')
+  const thumb = document.getElementById('settings-yt-thumb')
+  if (title) title.textContent = st.channel?.title || 'YouTube channel'
+  if (idEl) idEl.textContent = st.channel?.id || ''
+  if (thumb) {
+    if (st.channel?.thumb) { thumb.src = st.channel.thumb; thumb.hidden = false }
+    else { thumb.removeAttribute('src'); thumb.hidden = true }
+  }
+  const auto = document.getElementById('settings-yt-auto')
+  if (auto) auto.checked = st.autoUpload !== false
+  const priv = document.getElementById('settings-yt-privacy')
+  if (priv) priv.value = st.privacy || 'unlisted'
+  const mcp = document.getElementById('settings-yt-mcp')
+  if (mcp) mcp.textContent = mcpConfigJson(st.mcpUrl, getToken())
+}
+
+window.connectYoutubeChannel = async () => {
+  ytSetSettingsMsg('Redirecting to Google…')
+  try { await youtubeConnect(location.pathname || '/video-generation') }
+  catch (e) { ytSetSettingsMsg(e.message || 'Could not start YouTube connect', 'err') }
+}
+
+async function saveYoutubePrefs() {
+  const auto = document.getElementById('settings-yt-auto')
+  const priv = document.getElementById('settings-yt-privacy')
+  try {
+    _ytStatus = await youtubeSaveSettings({
+      autoUpload: !!auto?.checked,
+      privacy: priv?.value || 'unlisted',
+    })
+    ytSetSettingsMsg('Saved', 'ok')
+  } catch (e) {
+    ytSetSettingsMsg(e.message || 'Could not save YouTube settings', 'err')
+  }
+}
+
+document.getElementById('settings-yt-connect')?.addEventListener('click', () => window.connectYoutubeChannel())
+document.getElementById('settings-yt-disconnect')?.addEventListener('click', async () => {
+  try {
+    _ytStatus = await youtubeDisconnect()
+    await refreshYoutubeSettings()
+    ytSetSettingsMsg('YouTube disconnected', 'ok')
+  } catch (e) {
+    ytSetSettingsMsg(e.message || 'Could not disconnect', 'err')
+  }
+})
+document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
+document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
+document.getElementById('settings-yt-mcp-copy')?.addEventListener('click', async () => {
+  const text = document.getElementById('settings-yt-mcp')?.textContent || ''
+  try {
+    await navigator.clipboard.writeText(text)
+    ytSetSettingsMsg('MCP config copied', 'ok')
+  } catch (_) {
+    ytSetSettingsMsg('Copy the config from the box', 'err')
+  }
+})
+
+function consumeYoutubeQuery() {
+  const q = new URLSearchParams(location.search)
+  const yt = q.get('youtube')
+  if (!yt) return
+  const err = q.get('youtube_error') || ''
+  q.delete('youtube')
+  q.delete('youtube_error')
+  const next = location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash
+  history.replaceState(null, '', next)
+  if (yt === 'connect') {
+    if (!currentUser) { showModal(); return }
+    window.connectYoutubeChannel()
+    return
+  }
+  if (yt === 'connected' || yt === 'error') {
+    openAccountSettings()
+    if (yt === 'connected') ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
+    else ytSetSettingsMsg(err === 'not_configured' ? 'YouTube publishing is not configured yet.' : ('Could not connect YouTube' + (err ? ' (' + err + ')' : '')), 'err')
+  }
 }
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return
@@ -5892,7 +6259,7 @@ function obReadyCopy() {
   const length = OB_LABELS.length[_obLength] || 'long-form'
   return {
     title: _obNiche ? `Your ${nicheLabel} video is ready` : 'Your first long-form video is ready',
-    sub: 'We’ll open Video Generation and start you with a topic that fits. You can edit anything before you generate.',
+    sub: 'We’ll open Long Form Generator and start you with a topic that fits. You can edit anything before you generate.',
     method: `A ${length} ${OB_LABELS.format[_obFormat] || 'long-form'} video`
   }
 }
@@ -5907,7 +6274,7 @@ function obReadyItems() {
     { title: niche, sub: (OB_LABELS.experience[_obExperience] || 'Long-form YouTube') },
     { title: OB_LABELS.format[_obFormat] || 'Long-form format', sub: OB_LABELS.goal[_obGoal] || 'Goal' },
     { title: OB_LABELS.length[_obLength] || 'Target length', sub: 'YouTube · ' + (OB_LABELS.frequency[_obFrequency] || 'Cadence TBD') },
-    { title: 'Ready to generate', sub: 'Open Video Generation' }
+    { title: 'Ready to generate', sub: 'Open Long Form Generator' }
   ].map(item => `<li>${check}<div><b>${obEsc(item.title)}</b><span>${obEsc(item.sub)}</span></div></li>`).join('')
 }
 
@@ -6111,7 +6478,7 @@ revealOnboardingNow()
 // ── UI TOUR (coachmarks) ─────────────────────────────────────────────────
 // Persistence: vidso_tour_{id}_completed, vidso_tour_{id}_step.
 // Legacy vidso_tour_completed:<userKey> / vidso_ui_tour_seen:<userKey> count as core done.
-// Video Generation first, then Getting started. Preview: ?tour=1, ?tour=<id>, or ?tour=all
+// Long Form Generator first, then Getting started. Preview: ?tour=1, ?tour=<id>, or ?tour=all
 let _tourId = 'core'
 let _tourStep = 0
 let _tourActive = false
@@ -6122,7 +6489,6 @@ let _tourGen = 0
 let _tourDemoOn = false
 let _tourDir = 1
 let _tourSkipHops = 0
-let _tourExpandedSidebar = false
 let _tourResolvedEl = null
 
 function tourSteps() { return tourStepsOf(_tourId) }
@@ -6235,7 +6601,7 @@ function tourObReady() {
   return obHasSeen() || _obDoneThisSession
 }
 function tourIsMobile() {
-  try { return window.matchMedia('(max-width:768px)').matches } catch (_) { return false }
+  try { return window.matchMedia('(max-width:1000px)').matches } catch (_) { return false }
 }
 function tourNarrowSheet() {
   try { return window.matchMedia('(max-width:380px)').matches } catch (_) { return false }
@@ -6418,10 +6784,16 @@ function tourElVisible(el) {
   return r.width >= 2 && r.height >= 2
 }
 
+function tourQuery(selector) {
+  if (!selector) return null
+  const nodes = [...document.querySelectorAll(selector)]
+  return nodes.find(tourElVisible) || nodes[0] || null
+}
+
 function tourWaitFor(selector, timeoutMs = 1600) {
   if (!selector) return Promise.resolve(true)
   const hit = () => {
-    const el = document.querySelector(selector)
+    const el = tourQuery(selector)
     return tourElVisible(el) ? el : null
   }
   const now = hit()
@@ -6443,20 +6815,18 @@ function tourWaitFor(selector, timeoutMs = 1600) {
   })
 }
 
-function tourSidebarCollapsed() {
-  return document.body.classList.contains('sidebar-collapsed')
-}
-
-function tourEnsureSidebarExpanded() {
-  if (tourIsMobile()) return
-  if (!tourSidebarCollapsed()) return
-  try { applySidebarCollapsed(false) } catch (_) {}
-  _tourExpandedSidebar = true
+function tourEnsureNavReady(step) {
+  if (tourIsMobile() && (step.needsNav || step.needsSidebar)) {
+    try { openMobileNav() } catch (_) {}
+  }
+  if (step.needsAvatarMenu) {
+    try { openAvatarMenu() } catch (_) {}
+  }
 }
 
 async function tourPrepareStep(step) {
   const route = tourRouteOf(step)
-  if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
+  if (step.needsNav || step.needsSidebar) tourEnsureNavReady(step)
   if (route) {
     try { switchPanel(route, null, { silent: true, allowLocked: true, fromTour: true }) } catch (_) {}
     await tourWaitFor('#panel-' + route, 1200)
@@ -6477,9 +6847,10 @@ async function tourPrepareStep(step) {
       try { closeMobileNav() } catch (_) {}
       await new Promise(r => setTimeout(r, tourReduceMotion() ? 0 : 160))
     }
-  } else {
-    try { closeMobileNav() } catch (_) {}
-    if (step.needsNav || step.needsSidebar) tourEnsureSidebarExpanded()
+  }
+  if (step.needsAvatarMenu) {
+    try { openAvatarMenu() } catch (_) {}
+    await new Promise(r => setTimeout(r, 40))
   }
 }
 
@@ -6522,7 +6893,7 @@ function tourPickPlacement(preferred, r, tw, th, gap, vw, vh) {
   const order = []
   const add = (p) => { if (p && !order.includes(p)) order.push(p) }
   if (preferred && preferred !== 'auto' && preferred !== 'center' && preferred !== 'sheet') add(preferred)
-  if (!tourIsMobile() && r.left < 320) add('right')
+  if (r.top < 72) add('bottom')
   add('bottom')
   add('top')
   add('right')
@@ -6567,7 +6938,7 @@ function tourPosition() {
   const selector = tourTargetOf(step)
   let target = _tourResolvedEl
   if (!target || !document.body.contains(target)) {
-    target = selector ? document.querySelector(selector) : null
+    target = selector ? tourQuery(selector) : null
   }
   if (target && !tourElVisible(target) && target !== _tourResolvedEl) target = null
 
@@ -6762,7 +7133,6 @@ window.openUiTour = (opts = {}) => {
   _tourId = requested
   _tourFromMenu = !!opts.fromMenu
   _tourPrevFocus = document.activeElement
-  _tourExpandedSidebar = false
   if (opts.fromMenu) {
     tourClearProgress(_tourId)
     _tourStep = 0
@@ -7323,35 +7693,49 @@ function populateUser() {
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
+const DEFAULT_PANEL = 'videogen'
+const DEFAULT_PATH = '/video-generation'
+const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Video Generation', tools:'Tools', dashboard:'Dashboard',
+  home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  videogen:'Long Form Generator', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
-  home:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', tools:'/tools', dashboard:'/dashboard',
+  clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  videogen:'/video-generation', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
-PATH_TO_PANEL['/analytics'] = 'dashboard'
-PATH_TO_PANEL['/overview'] = 'dashboard'
-PATH_TO_PANEL['/upscale'] = 'dashboard'
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
-function pathForPanel(id) { return PANEL_PATHS[id] || '/dashboard' }
-function panelFromPath() { return PATH_TO_PANEL[normalizePath(location.pathname)] || 'dashboard' }
+function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
+function resolvePanel(id) {
+  if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
+  if (id && titles[id] && document.getElementById('panel-' + id)) return id
+  return DEFAULT_PANEL
+}
+function panelFromPath() {
+  const path = normalizePath(location.pathname)
+  if (HOME_PATHS.has(path)) return DEFAULT_PANEL
+  const mapped = PATH_TO_PANEL[path]
+  if (mapped) return mapped
+  try {
+    const last = sessionStorage.getItem('vidso_last_panel')
+    if (last && titles[last] && last !== 'dashboard') return last
+  } catch (_) {}
+  return DEFAULT_PANEL
+}
 function isAuthPath() {
   const p = normalizePath(location.pathname)
   return p === '/login' || p === '/signup'
 }
 window.switchPanel = (id, btn, opts = {}) => {
-  if (id === 'home') id = 'dashboard'
-  if (!titles[id]) id = 'dashboard'
+  id = resolvePanel(id)
   // Hard gate: after signup onboarding, block every tool until a plan is active.
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
@@ -7370,16 +7754,16 @@ window.switchPanel = (id, btn, opts = {}) => {
     }
   }
   const panel = document.getElementById('panel-'+id)
-  if (!panel) id = 'dashboard'
+  if (!panel) id = DEFAULT_PANEL
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-'+id).classList.add('active')
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'))
-  if (btn) btn.classList.add('active')
-  else document.querySelector(`[data-panel="${id}"]`)?.classList.add('active')
+  markNavActive(id)
+  try { sessionStorage.setItem('vidso_last_panel', id) } catch (_) {}
+  try { closeNavMenusPublic() } catch (_) {}
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','dashboard','tools','ranking','imagegen','videogen'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -7402,7 +7786,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     setTimeout(() => maybeStartPageTour(id), 220)
   }
 }
-function restorePanelFromPath() {
+function restorePanelFromPath(opts = {}) {
   if (isAuthPath()) {
     showModal()
     if (normalizePath(location.pathname) === '/signup') switchTab('signup')
@@ -7410,12 +7794,12 @@ function restorePanelFromPath() {
     return
   }
   const p = normalizePath(location.pathname)
-  if (p === '/overview' || p === '/analytics' || p === '/') {
-    history.replaceState(null, '', '/dashboard')
+  if (HOME_PATHS.has(p)) {
+    history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
-  switchPanel(panel, null, { silent: true })
-  if (tourIsCompleted('core') && !tourQueryId()) {
+  switchPanel(panel, null, { silent: true, allowLocked: true })
+  if (!opts.skipTour && tourIsCompleted('core') && !tourQueryId()) {
     setTimeout(() => maybeStartPageTour(panel), 220)
   }
 }
@@ -7433,6 +7817,7 @@ function restorePanelFromHash() {
 }
 window.addEventListener('popstate', restorePanelFromPath)
 window.addEventListener('hashchange', restorePanelFromHash)
+restorePanelFromPath({ skipTour: true })
 
 // ── USAGE ────────────────────────────────────────────────────────────────────
 async function loadUsage() {
@@ -7506,7 +7891,7 @@ window.selectVoice = (id, preview, name) => {
 window.fvState = {
   format: 'long',
   durationId: 'long_180',
-  aspect: '9:16',
+  aspect: '16:9',
   voiceId: null,
   voicePreview: null,
   script: null,
@@ -7517,10 +7902,15 @@ window.fvState = {
   renderJobId: null,
   renderPoll: null,
   renderUrl: null,
+  ytBusy: false,
+  ytVideoId: null,
   phase: 1,
   inited: false,
   scriptAiUsed: false,
   scriptBusy: false,
+  lengthLog: [],
+  allowShortScript: false,
+  allowShortRender: false,
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -7555,6 +7945,9 @@ window.fvClearScript = () => {
   fvState.renderPoll = null
   fvState.renderUrl = null
   fvState.phase = 1
+  fvState.allowShortScript = false
+  fvState.allowShortRender = false
+  fvState.lengthLog = []
 
   const box = document.getElementById('fv-script-box')
   if (box) box.classList.remove('show')
@@ -7580,6 +7973,8 @@ window.fvClearScript = () => {
   try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
 
   fvSetScriptAiLock(false)
+  fvShowShortScriptAction(false)
+  fvShowShortRenderAction(false)
   document.getElementById('fv-topic')?.focus?.()
 }
 
@@ -7629,7 +8024,39 @@ function fvPickedDuration() {
     if (Number.isFinite(cap) && seconds > cap) return list[list.length - 1] || null
     return { id: fvState.durationId, label: fvCustomDurationLabel(seconds), seconds, custom: true }
   }
-  return durationPresets(fvState.format).find((d) => d.id === fvState.durationId) || list[0] || null
+  return durationPresets(fvState.format).find((d) => d.id === fvState.durationId) || null
+}
+
+function fvLengthTrace(step, data) {
+  const row = { t: new Date().toISOString(), step, durationId: fvState.durationId, ...(data || {}) }
+  fvState.lengthLog = (fvState.lengthLog || []).concat(row)
+  try { console.info('[fv-length]', step, row) } catch (_) {}
+}
+
+function fvRequireDuration() {
+  const picked = fvPickedDuration()
+  if (!picked?.seconds || !picked.id) {
+    throw new Error('A video duration is required.')
+  }
+  return picked
+}
+
+function fvScriptSpokenSeconds(script) {
+  return impliedSecondsFromWords(scriptWordCount(script))
+}
+
+function fvScriptIsShort(script, targetSeconds) {
+  return isMateriallyShort(fvScriptSpokenSeconds(script), targetSeconds)
+}
+
+function fvShowShortScriptAction(show) {
+  const btn = document.getElementById('fv-short-continue-btn')
+  if (btn) btn.hidden = !show
+}
+
+function fvShowShortRenderAction(show) {
+  const btn = document.getElementById('fv-export-short-btn')
+  if (btn) btn.hidden = !show
 }
 
 
@@ -7683,6 +8110,8 @@ window.fvSetFormat = (format) => {
 window.fvSetDuration = (id) => {
   fvState.durationId = id
   fvRenderDurationChips()
+  const picked = fvPickedDuration()
+  fvLengthTrace('chip', { seconds: picked?.seconds || null, label: picked?.label || null })
 }
 
 window.fvOpenCustomDuration = () => {
@@ -7883,6 +8312,7 @@ window.fvFinishSectionEdit = (sid) => {
   const preview = card?.querySelector('.fv-section-preview')
   if (preview && sec) preview.textContent = sec.text || ''
   card?.classList.remove('editing')
+  if (fvState.script) fvRenderScript(fvState.script)
 }
 
 function fvEsc(s) {
@@ -7897,10 +8327,14 @@ function fvRenderScript(script) {
   document.getElementById('fv-setup')?.classList.remove('collapsed')
   fvSetPills(1)
   document.getElementById('fv-script-title').textContent = script.title || 'Untitled'
-  const dur = script.estimated_duration_sec || 0
-  const durLabel = dur >= 120 ? `${Math.round(dur / 60)} min` : `${dur}s`
+  const targetSec = fvPickedDuration()?.seconds || 0
+  const words = scriptWordCount(script)
+  const implied = impliedSecondsFromWords(words)
+  const targetLabel = targetSec ? formatDurationSeconds(targetSec) : 'not set'
+  const targetWordLabel = targetSec ? String(targetWordsFromSeconds(targetSec)) : '—'
   document.getElementById('fv-script-meta').innerHTML =
-    `<span><b>${durLabel}</b> target</span>` +
+    `<span>Target <b>${fvEsc(targetLabel)}</b> (${fvEsc(targetWordLabel)} words)</span>` +
+    `<span>Script <b>${words}</b> words · ~${fvEsc(formatDurationSeconds(implied))}</span>` +
     `<span><b>${script.aspect || fvState.aspect}</b></span>` +
     `<span><b>${(script.sections || []).length}</b> sections</span>` +
     (script.keywords?.length ? `<span>B-roll: <b>${fvEsc(script.keywords.slice(0, 4).join(', '))}</b></span>` : '')
@@ -7934,10 +8368,29 @@ window.fvEnterEditor = () => {
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 
-window.fvContinueToMedia = () => {
+window.fvContinueToMedia = (allowShort) => {
   fvRebuildFullScriptFromSections()
   if (!fvState.script?.full_script) return fvSetStatus('Script is empty', 'err', 2)
   if (!fvState.voiceId && !fvState.script.voice_id) return fvSetStatus('Select a narrator voice', 'err', 2)
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetStatus(e.message, 'err', 2)
+  }
+  const words = scriptWordCount(fvState.script)
+  const implied = impliedSecondsFromWords(words)
+  fvLengthTrace('continue-media', { seconds: picked.seconds, words, implied })
+  if (!allowShort && fvScriptIsShort(fvState.script, picked.seconds) && !fvState.allowShortScript) {
+    fvShowShortScriptAction(true)
+    return fvSetStatus(
+      'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '), short of the ' +
+      formatDurationSeconds(picked.seconds) + ' target (~' + targetWordsFromSeconds(picked.seconds) +
+      ' words). Edit it longer, or continue with this shorter script.',
+      'err',
+      2,
+    )
+  }
+  if (allowShort) fvState.allowShortScript = true
+  fvShowShortScriptAction(false)
   try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
   fvState.phase = 2
   document.getElementById('fv-setup')?.classList.add('collapsed')
@@ -8023,6 +8476,14 @@ function fvRenderMediaResult(job) {
       voice_id: job.voice_id,
     }))
   } catch {}
+  const tlEnd = Math.max(0, ...((job.timeline || []).map((s) => Number(s.end) || 0)))
+  fvLengthTrace('media-result', {
+    voiceoverSeconds: job.duration || null,
+    timedWords: (job.words || []).length,
+    timelineEnd: tlEnd || null,
+    aspect: job.aspect || fvState.aspect,
+    targetSeconds: fvPickedDuration()?.seconds || null,
+  })
 }
 
 function fvSyncWordHighlight(audio) {
@@ -8045,6 +8506,17 @@ window.fvStartMedia = async (force) => {
   fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
 
   const voiceId = fvState.voiceId || fvState.script.voice_id
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetMediaStatus(e.message, 'err')
+  }
+  const extras = facelessMediaPayloadExtras(picked.id, picked.seconds)
+  fvLengthTrace('media-request', {
+    seconds: extras.duration_seconds,
+    voiceId,
+    aspect: fvState.script.aspect || fvState.aspect,
+    scriptWords: scriptWordCount(fvState.script),
+  })
   try {
     const { jobId } = await api.faceless.startMedia({
       script: {
@@ -8055,12 +8527,13 @@ window.fvStartMedia = async (force) => {
         sections: fvState.script.sections || [],
         aspect: fvState.script.aspect || fvState.aspect,
         voice_id: voiceId,
-        duration_id: fvState.durationId,
+        duration_id: extras.duration_id,
+        duration_seconds: extras.duration_seconds,
+        target_words: extras.target_words,
       },
       voice_id: voiceId,
       aspect: fvState.script.aspect || fvState.aspect,
-      duration_id: fvState.durationId,
-      duration: fvPickedDuration()?.seconds,
+      ...extras,
     })
     fvState.mediaJobId = jobId
     fvState.mediaPoll = setInterval(async () => {
@@ -8839,15 +9312,29 @@ window.fvContinueToExport = () => {
   document.getElementById('fv-export-box')?.classList.add('show')
   fvSetPills(4)
   document.getElementById('fv-export-title').textContent = fvState.script?.title || 'Render final MP4'
+  const targetSec = fvPickedDuration()?.seconds
   document.getElementById('fv-export-meta').innerHTML =
-    `<span><b>${fvFmtTime(fvState.media.duration)}</b></span>` +
+    `<span>Voiceover <b>${fvFmtTime(fvState.media.duration)}</b></span>` +
+    (targetSec ? `<span>Target <b>${fvEsc(formatDurationSeconds(targetSec))}</b></span>` : '') +
     `<span><b>${(fvState.media.aspect || fvState.aspect)}</b></span>` +
     `<span><b>${(fvState.media.timeline || []).length}</b> clips</span>`
   document.getElementById('fv-export-result').style.display = 'none'
   document.getElementById('fv-export-progress-wrap').style.display = ''
   document.getElementById('fv-export-actions').style.display = ''
   document.getElementById('fv-export-bar').style.width = '0%'
-  fvSetExportStatus('Ready. Click Render video', null)
+  fvShowShortRenderAction(false)
+  if (targetSec && isMateriallyShort(Number(fvState.media.duration), targetSec) && !fvState.allowShortRender) {
+    fvShowShortRenderAction(true)
+    fvSetExportStatus(
+      'Voiceover is ' + formatDurationSeconds(fvState.media.duration) +
+      ' but you asked for ' + formatDurationSeconds(targetSec) +
+      '. Go back and extend the script, or render this shorter cut.',
+      'err',
+    )
+  } else {
+    fvSetExportStatus('Ready. Click Render video', null)
+  }
+  fvSetYoutubeStatus('')
 }
 
 window.fvBackToPreview = () => {
@@ -8868,11 +9355,38 @@ function fvSetExportStatus(msg, kind) {
     : (msg || '')
 }
 
-window.fvStartExport = async () => {
+window.fvStartExport = async (opts = {}) => {
+  if (opts === true) opts = { again: true }
   if (!fvState.media?.voiceover_url) return fvSetExportStatus('Missing voiceover', 'err')
   if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
 
-  const seconds = fvPickedDuration()?.seconds || Number(fvState.media.duration)
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetExportStatus(e.message, 'err')
+  }
+  const voiceoverSeconds = Number(fvState.media.duration)
+  const tlEnd = Math.max(0, ...((fvState.media.timeline || []).map((s) => Number(s.end) || 0)))
+  const assembled = tlEnd || voiceoverSeconds
+  fvLengthTrace('export-request', {
+    seconds: picked.seconds,
+    voiceoverSeconds,
+    timelineEnd: tlEnd || null,
+    aspect: fvState.media.aspect || fvState.aspect,
+    allowShort: !!(opts.allowShort || fvState.allowShortRender),
+  })
+  if (!opts.allowShort && !fvState.allowShortRender && isMateriallyShort(assembled, picked.seconds)) {
+    fvShowShortRenderAction(true)
+    return fvSetExportStatus(
+      'Voiceover is ' + formatDurationSeconds(voiceoverSeconds) +
+      ' but you asked for ' + formatDurationSeconds(picked.seconds) +
+      '. Go back and extend the script, or render this shorter cut.',
+      'err',
+    )
+  }
+  if (opts.allowShort) fvState.allowShortRender = true
+  fvShowShortRenderAction(false)
+
+  const seconds = picked.seconds
   const counts = parseUsageCounts(currentUser, lastUsage)
   const kind = generationKindFromFormat(fvState.format)
   const used = kind === 'short_form' ? counts.short_form_used : counts.long_form_used
@@ -8892,6 +9406,8 @@ window.fvStartExport = async () => {
   document.getElementById('fv-export-progress-wrap').style.display = ''
   document.getElementById('fv-export-bar').style.width = '3%'
   fvSetExportStatus('Starting render…', 'loading')
+  fvSetYoutubeStatus('')
+  fvState.ytVideoId = null
 
   const musicTrack = FV_MUSIC.find(m => m.id === (fvState.preview?.musicId || 'none'))
   const caption = fvCapStyle()
@@ -8900,7 +9416,8 @@ window.fvStartExport = async () => {
     const { jobId } = await api.faceless.startRender({
       voiceover_url: fvState.media.voiceover_url,
       duration: fvState.media.duration,
-      duration_id: fvState.durationId,
+      duration_id: picked.id,
+      duration_seconds: picked.seconds,
       words: fvState.media.words || [],
       timeline: fvState.media.timeline || [],
       aspect: fvState.media.aspect || fvState.aspect,
@@ -8938,10 +9455,18 @@ window.fvStartExport = async () => {
         fvState.renderUrl = url
         const vid = document.getElementById('fv-export-video')
         vid.src = url
+        vid.onloadedmetadata = () => {
+          fvLengthTrace('render-mp4', {
+            seconds: vid.duration,
+            targetSeconds: picked.seconds,
+            voiceoverSeconds: fvState.media?.duration || null,
+          })
+        }
         const dl = document.getElementById('fv-export-dl')
         dl.href = url
         document.getElementById('fv-export-result').style.display = ''
         document.getElementById('fv-export-actions').style.display = 'none'
+        fvMaybeAutoUploadYoutube()
       } catch (e) {
         clearInterval(fvState.renderPoll)
         fvState.renderPoll = null
@@ -8954,6 +9479,90 @@ window.fvStartExport = async () => {
     if (e.needsPlan) fvSetExportStatus(e.message || 'Active plan required to export', 'err')
     else fvSetExportStatus(e.message || 'Could not start render', 'err')
   }
+}
+
+function fvSetYoutubeStatus(msg, kind) {
+  const el = document.getElementById('fv-yt-status')
+  if (!el) return
+  if (!msg) { el.style.display = 'none'; el.textContent = ''; return }
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.innerHTML = kind === 'loading'
+    ? `<span class="spinner"></span> ${msg}`
+    : (msg || '')
+}
+
+window.fvUploadToYoutube = async (opts = {}) => {
+  if (fvState.ytBusy) return
+  if (!fvState.renderUrl && !fvState.renderJobId) {
+    return fvSetYoutubeStatus('Render a video first', 'err')
+  }
+  fvState.ytBusy = true
+  const btn = document.getElementById('fv-yt-upload')
+  if (btn) btn.disabled = true
+  fvSetYoutubeStatus(opts.auto ? 'Uploading to YouTube…' : 'Connecting to YouTube…', 'loading')
+  try {
+    let st = _ytStatus
+    try { st = await youtubeStatus(); _ytStatus = st } catch (_) {}
+    if (!st?.configured) {
+      throw new Error('YouTube publishing is not configured on this deployment yet.')
+    }
+    if (!st?.connected) {
+      fvSetYoutubeStatus('Connect YouTube in Account settings first', 'err')
+      openAccountSettings()
+      return
+    }
+    const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
+    const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
+    const privacy = st.privacy || 'unlisted'
+    let result
+    try {
+      const tok = await youtubeAccessToken()
+      const blob = await fetch(fvState.renderUrl).then((r) => {
+        if (!r.ok) throw new Error('Could not read the rendered video')
+        return r.blob()
+      })
+      result = await uploadBlobToYoutube({
+        accessToken: tok.accessToken,
+        blob,
+        title,
+        description,
+        privacy: tok.privacy || privacy,
+        onProgress: (pct) => fvSetYoutubeStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
+      })
+    } catch (e) {
+      if (!fvState.renderJobId) throw e
+      fvSetYoutubeStatus('Uploading to YouTube from Vidso…', 'loading')
+      result = await uploadViaServer({
+        renderJobId: fvState.renderJobId,
+        title,
+        description,
+        privacy,
+      })
+    }
+    fvState.ytVideoId = result.videoId
+    const link = result.studioUrl || result.url
+    fvSetYoutubeStatus(
+      link
+        ? `Uploaded (${result.privacy || privacy}). <a href="${link}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>`
+        : 'Uploaded to YouTube',
+      'ok',
+    )
+  } catch (e) {
+    fvSetYoutubeStatus(e.message || 'YouTube upload failed', 'err')
+  } finally {
+    fvState.ytBusy = false
+    if (btn) btn.disabled = false
+  }
+}
+
+async function fvMaybeAutoUploadYoutube() {
+  if (!fvState.renderUrl) return
+  try {
+    const st = await youtubeStatus()
+    _ytStatus = st
+    if (st?.connected && st.autoUpload) await window.fvUploadToYoutube({ auto: true })
+  } catch (_) {}
 }
 
 window.fvRegenerateSection = async (sectionId) => {
@@ -8969,33 +9578,98 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
-  const dur = fvPickedDuration()
-  const lengthGate = evaluateLength({ user: currentUser, durationSeconds: dur?.seconds })
+  let picked
+  try { picked = fvRequireDuration() } catch (e) {
+    return fvSetStatus(e.message, 'err')
+  }
+  const lengthGate = evaluateLength({ user: currentUser, durationSeconds: picked.seconds })
   if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
     return fvSetStatus(lengthGate.message, 'err')
   }
 
   const btn = document.getElementById('fv-gen-script-btn')
   fvState.scriptBusy = true
+  fvState.allowShortScript = false
   if (btn) btn.disabled = true
   fvSetStatus('', null)
   fvSetScriptActionsVisible(false)
+  fvShowShortScriptAction(false)
   document.getElementById('fv-script-box')?.classList.add('show')
   fvSetStatus('Writing your script…', 'loading', 2)
   try {
-    const data = await api.faceless.script({
+    const payload = facelessScriptPayload({
       topic,
-      duration_id: fvState.durationId,
       aspect: fvState.aspect,
+      durationId: picked.id,
+      durationSeconds: picked.seconds,
     })
-    data.voice_id = fvState.voiceId
-    data.voice_preview = fvState.voicePreview
-    data.duration_id = fvState.durationId
-    data.topic = topic
+    fvLengthTrace('script-request', {
+      seconds: payload.duration_seconds,
+      durationMinutes: payload.duration,
+      targetWords: payload.target_words,
+      aspect: payload.aspect,
+      voiceId: fvState.voiceId,
+      format: fvState.format,
+    })
+    let data = await api.faceless.script(payload)
+    const stamp = (script) => {
+      script.voice_id = fvState.voiceId
+      script.voice_preview = fvState.voicePreview
+      script.duration_id = picked.id
+      script.duration_seconds = picked.seconds
+      script.topic = topic
+      return script
+    }
+    stamp(data)
+    let words = scriptWordCount(data)
+    let implied = impliedSecondsFromWords(words)
+    fvLengthTrace('script-response', {
+      seconds: picked.seconds,
+      words,
+      implied,
+      estimated_duration_sec: data.estimated_duration_sec || null,
+      title: data.title || '',
+    })
+    if (fvScriptIsShort(data, picked.seconds)) {
+      fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading', 2)
+      const retryPayload = facelessScriptPayload({
+        topic: topic + '\n\nWrite a spoken narration of ' + payload.target_words +
+          ' words, about ' + formatDurationSeconds(picked.seconds) + ' at ' + WORDS_PER_MINUTE + ' words per minute.',
+        aspect: fvState.aspect,
+        durationId: picked.id,
+        durationSeconds: picked.seconds,
+      })
+      fvLengthTrace('script-retry', { targetWords: retryPayload.target_words, seconds: picked.seconds })
+      try {
+        const retry = stamp(await api.faceless.script(retryPayload))
+        retry.topic = topic
+        const retryWords = scriptWordCount(retry)
+        if (retryWords > words) {
+          data = retry
+          words = retryWords
+          implied = impliedSecondsFromWords(words)
+        }
+        fvLengthTrace('script-retry-response', { words, implied })
+      } catch (retryErr) {
+        fvLengthTrace('script-retry-error', { message: retryErr.message || String(retryErr) })
+      }
+    }
     fvState.phase = 1
     fvRenderScript(data)
     fvSetScriptAiLock(true)
-    fvSetStatus('Script ready', 'ok', 2)
+    if (fvScriptIsShort(data, picked.seconds)) {
+      fvShowShortScriptAction(true)
+      fvSetStatus(
+        'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '). You asked for ' +
+        formatDurationSeconds(picked.seconds) + ' (~' + payload.target_words +
+        ' words). Edit it longer, or continue with this shorter script.',
+        'err',
+        2,
+      )
+    } else {
+      fvShowShortScriptAction(false)
+      fvSetStatus('Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')', 'ok', 2)
+    }
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
     fvSetStatus('', null)
@@ -9264,11 +9938,17 @@ function bindGettingStarted() {
     e.preventDefault()
     e.stopPropagation()
     try { closeAccountSettings() } catch (_) {}
+    try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
     openTourMenu()
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
 }
+
+initBanner()
+initTopNav()
+initToolsGallery()
+try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
 
 initImageWorkspace({
   api,

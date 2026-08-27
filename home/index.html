@@ -11,7 +11,7 @@
   if (/access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)) {
     location.replace('/login' + s + h)
   } else if (/(?:[?&])(?:billing=success|status=success)/.test(s)) {
-    location.replace('/dashboard' + s + h)
+    location.replace('/video-generation' + s + h)
   }
 })()
 </script>

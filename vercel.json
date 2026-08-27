@@ -105,32 +105,42 @@
     },
     {
       "source": "/upscale",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/upscale/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/overview",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/overview/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/analytics",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
       "permanent": false
     },
     {
       "source": "/analytics/",
-      "destination": "/dashboard",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/video-generation",
       "permanent": false
     }
   ],
@@ -227,6 +237,15 @@
     },
     {
       "source": "/api/generate/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/youtube/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
