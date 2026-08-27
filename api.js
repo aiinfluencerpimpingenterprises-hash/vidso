@@ -453,7 +453,7 @@ export const api = {
     rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
       timeoutMs: opts.timeoutMs || 60000,
     }),
-    // body: { script, voice_id, aspect, duration_id } → { jobId }
+    // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
     // body: { query, aspect } → { clips }

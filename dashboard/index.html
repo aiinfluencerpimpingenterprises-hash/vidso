@@ -814,6 +814,18 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 
 /* RANGE helpers (base thumb styles live in the design-system block above) */
 .range-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-label);margin-top:4px}
+.voice-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:12px}
+.voice-settings .field{margin:0}
+.voice-settings .field>label{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.voice-settings .field>label span{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:500}
+.voice-boost{
+  grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:2px 0 0;
+  font-size:.78rem;color:var(--ink);cursor:pointer;user-select:none;
+}
+.voice-boost input{accent-color:var(--a1);width:15px;height:15px}
+.voice-settings-hint{grid-column:1/-1;margin:0;font-size:.72rem;color:var(--muted);line-height:1.4}
+#vo-controls{margin:0 0 16px}
+@media (max-width:640px){.voice-settings{grid-template-columns:1fr}}
 
 /* CLIPPER TIMELINE */
 .clip-track{position:relative;height:48px;background:var(--bg);border-radius:6px;overflow:visible;cursor:crosshair;border:1px solid var(--border);user-select:none}
@@ -3431,17 +3443,31 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <label>Script <span style="color:var(--muted);font-size:.72rem" id="char-count">(0/5000)</span></label>
           <textarea id="tts-text" placeholder="Type your voiceover script here..." oninput="updateCharCount()"></textarea>
         </div>
-        <div id="vo-controls" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div class="field" style="margin:0">
-            <label>Stability <span id="stab-val">0.5</span></label>
-            <input type="range" min="0" max="1" step="0.05" value="0.5" id="stab-range" oninput="document.getElementById('stab-val').textContent=this.value"/>
+        <div class="voice-settings" id="vo-controls">
+          <div class="field">
+            <label>Stability <span id="stab-val">0.50</span></label>
+            <input type="range" min="0" max="1" step="0.05" value="0.5" id="stab-range" oninput="voOnVoiceSetting()"/>
             <div class="range-row"><span>Varied</span><span>Stable</span></div>
           </div>
-          <div class="field" style="margin:0">
-            <label>Speed <span id="speed-val">1.0</span></label>
-            <input type="range" min="0.7" max="1.3" step="0.05" value="1.0" id="speed-range" oninput="document.getElementById('speed-val').textContent=parseFloat(this.value).toFixed(2)"/>
+          <div class="field">
+            <label>Similarity <span id="sim-val">0.75</span></label>
+            <input type="range" min="0" max="1" step="0.05" value="0.75" id="sim-range" oninput="voOnVoiceSetting()"/>
+            <div class="range-row"><span>Loose</span><span>Close</span></div>
+          </div>
+          <div class="field">
+            <label>Style <span id="style-val">0.00</span></label>
+            <input type="range" min="0" max="1" step="0.05" value="0" id="style-range" oninput="voOnVoiceSetting()"/>
+            <div class="range-row"><span>None</span><span>Exaggerated</span></div>
+          </div>
+          <div class="field">
+            <label>Speed <span id="speed-val">1.00</span></label>
+            <input type="range" min="0.7" max="1.2" step="0.05" value="1.0" id="speed-range" oninput="voOnVoiceSetting()"/>
             <div class="range-row"><span>Slower</span><span>Faster</span></div>
           </div>
+          <label class="voice-boost">
+            <input type="checkbox" id="boost-check" checked onchange="voOnVoiceSetting()"/>
+            Speaker boost
+          </label>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
           <button class="btn btn-primary" id="tts-btn" onclick="generateVoiceover()">
@@ -5128,6 +5154,33 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               <div class="fv-voice-preview" id="fv-voice-preview">
                 <audio id="fv-voice-audio" controls preload="none"></audio>
               </div>
+              <div class="voice-settings" id="fv-voice-settings">
+                <div class="field">
+                  <label>Stability <span id="fv-stab-val">0.50</span></label>
+                  <input type="range" min="0" max="1" step="0.05" value="0.5" id="fv-stab-range" oninput="fvOnVoiceSetting()"/>
+                  <div class="range-row"><span>Varied</span><span>Stable</span></div>
+                </div>
+                <div class="field">
+                  <label>Similarity <span id="fv-sim-val">0.75</span></label>
+                  <input type="range" min="0" max="1" step="0.05" value="0.75" id="fv-sim-range" oninput="fvOnVoiceSetting()"/>
+                  <div class="range-row"><span>Loose</span><span>Close</span></div>
+                </div>
+                <div class="field">
+                  <label>Style <span id="fv-style-val">0.00</span></label>
+                  <input type="range" min="0" max="1" step="0.05" value="0" id="fv-style-range" oninput="fvOnVoiceSetting()"/>
+                  <div class="range-row"><span>None</span><span>Exaggerated</span></div>
+                </div>
+                <div class="field">
+                  <label>Speed <span id="fv-speed-val">1.00</span></label>
+                  <input type="range" min="0.7" max="1.2" step="0.05" value="1" id="fv-speed-range" oninput="fvOnVoiceSetting()"/>
+                  <div class="range-row"><span>Slower</span><span>Faster</span></div>
+                </div>
+                <label class="voice-boost">
+                  <input type="checkbox" id="fv-boost" checked onchange="fvOnVoiceSetting()"/>
+                  Speaker boost
+                </label>
+                <p class="voice-settings-hint">ElevenLabs voice controls. They apply when the voiceover is generated, not to the stock preview.</p>
+              </div>
             </div>
 
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
@@ -5462,6 +5515,7 @@ import {
   countSpokenWords,
 } from '/lib/faceless-length.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
+import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
@@ -7991,6 +8045,7 @@ window.fvState = {
   aspect: '16:9',
   voiceId: null,
   voicePreview: null,
+  voiceSettings: { ...VOICE_SETTING_DEFAULTS },
   script: null,
   media: null,
   mediaJobId: null,
@@ -8445,6 +8500,65 @@ window.fvPreviewVoice = () => {
   audio.play().catch(() => {})
 }
 
+const VOICE_CONTROL_MAP = {
+  fv: {
+    stability: ['fv-stab-range', 'fv-stab-val'],
+    similarity_boost: ['fv-sim-range', 'fv-sim-val'],
+    style: ['fv-style-range', 'fv-style-val'],
+    speed: ['fv-speed-range', 'fv-speed-val'],
+    boost: 'fv-boost',
+  },
+  vo: {
+    stability: ['stab-range', 'stab-val'],
+    similarity_boost: ['sim-range', 'sim-val'],
+    style: ['style-range', 'style-val'],
+    speed: ['speed-range', 'speed-val'],
+    boost: 'boost-check',
+  },
+}
+
+function readVoiceControls(kind) {
+  const map = VOICE_CONTROL_MAP[kind]
+  if (!map) return normalizeVoiceSettings()
+  return normalizeVoiceSettings({
+    stability: document.getElementById(map.stability[0])?.value,
+    similarity_boost: document.getElementById(map.similarity_boost[0])?.value,
+    style: document.getElementById(map.style[0])?.value,
+    speed: document.getElementById(map.speed[0])?.value,
+    use_speaker_boost: document.getElementById(map.boost)?.checked,
+  })
+}
+
+function applyVoiceControls(kind, input) {
+  const v = normalizeVoiceSettings(input)
+  const map = VOICE_CONTROL_MAP[kind]
+  if (!map) return v
+  for (const key of ['stability', 'similarity_boost', 'style', 'speed']) {
+    const [rangeId, valId] = map[key]
+    const range = document.getElementById(rangeId)
+    const label = document.getElementById(valId)
+    if (range) range.value = String(v[key])
+    if (label) label.textContent = Number(v[key]).toFixed(2)
+  }
+  const boost = document.getElementById(map.boost)
+  if (boost) boost.checked = !!v.use_speaker_boost
+  return v
+}
+
+function fvCurrentVoiceSettings() {
+  fvState.voiceSettings = readVoiceControls('fv')
+  return fvState.voiceSettings
+}
+
+window.fvOnVoiceSetting = () => {
+  fvCurrentVoiceSettings()
+  applyVoiceControls('fv', fvState.voiceSettings)
+}
+
+window.voOnVoiceSetting = () => {
+  applyVoiceControls('vo', readVoiceControls('vo'))
+}
+
 function fvBindGenerateScript() {
   const btn = document.getElementById('fv-gen-script-btn')
   if (!btn || btn.dataset.bound === '1') return
@@ -8460,6 +8574,8 @@ function fvInit() {
   fvBindGenerateScript()
   fvRenderDurationChips()
   fvSyncBrollSourceUi()
+  applyVoiceControls('fv', fvState.voiceSettings || VOICE_SETTING_DEFAULTS)
+  applyVoiceControls('vo', VOICE_SETTING_DEFAULTS)
   if (voices.length) fvPopulateVoices()
   else loadVoices().then(() => fvPopulateVoices())
   fvState.inited = true
@@ -8754,11 +8870,15 @@ window.fvStartMedia = async (force) => {
     return fvSetMediaStatus(e.message, 'err')
   }
   const extras = facelessMediaPayloadExtras(picked.id, picked.seconds)
+  const voiceOpts = voiceSettingsPayload(
+    fvState.voiceSettings || fvState.script.voice_settings || readVoiceControls('fv'),
+  )
   fvLengthTrace('media-request', {
     seconds: extras.duration_seconds,
     voiceId,
     aspect: fvState.script.aspect || fvState.aspect,
     scriptWords: scriptWordCount(fvState.script),
+    voiceSettings: voiceOpts.voice_settings,
   })
   try {
     const { jobId } = await api.faceless.startMedia({
@@ -8770,6 +8890,7 @@ window.fvStartMedia = async (force) => {
         sections: fvState.script.sections || [],
         aspect: fvState.script.aspect || fvState.aspect,
         voice_id: voiceId,
+        voice_settings: voiceOpts.voice_settings,
         duration_id: extras.duration_id,
         duration_seconds: extras.duration_seconds,
         target_words: extras.target_words,
@@ -8777,6 +8898,7 @@ window.fvStartMedia = async (force) => {
       voice_id: voiceId,
       aspect: fvState.script.aspect || fvState.aspect,
       ...extras,
+      ...voiceOpts,
     })
     fvState.mediaJobId = jobId
     fvState.mediaPoll = setInterval(async () => {
@@ -9981,18 +10103,16 @@ async function fvRequestScript(payload, topic, picked, timeoutMs, extra, retried
   if (!data || typeof data !== 'object') throw new Error('Script generation returned nothing')
   if (!Array.isArray(data.sections) && !String(data.full_script || '').trim()) {
     const repaired = parseScriptResponse(typeof raw === 'string' ? raw : JSON.stringify(raw || {}))
-    if (repaired) {
-      repaired.voice_id = fvState.voiceId
-      repaired.voice_preview = fvState.voicePreview
-      repaired.duration_id = picked.id
-      repaired.duration_seconds = picked.seconds
-      repaired.topic = topic
-      return repaired
-    }
+    if (repaired) return fvStampVoiceOnScript(repaired, topic, picked)
     throw new Error('Script JSON was incomplete. Try Generate Script again.')
   }
+  return fvStampVoiceOnScript(data, topic, picked)
+}
+
+function fvStampVoiceOnScript(data, topic, picked) {
   data.voice_id = fvState.voiceId
   data.voice_preview = fvState.voicePreview
+  data.voice_settings = fvCurrentVoiceSettings()
   data.duration_id = picked.id
   data.duration_seconds = picked.seconds
   data.topic = topic
@@ -10181,8 +10301,7 @@ window.generateVoiceover = async () => {
     const data = await api.tts.generate({
       text,
       voice_id: selectedVoiceId,
-      stability: parseFloat(document.getElementById('stab-range').value),
-      speed:     parseFloat(document.getElementById('speed-range').value),
+      ...voiceSettingsPayload(readVoiceControls('vo')),
     })
     const res = document.getElementById('tts-result')
     document.getElementById('tts-audio').src = data.url
@@ -11491,7 +11610,11 @@ window.edGenerateVoice = async () => {
   }
   if (status) status.textContent = 'Generating…'
   try {
-    const data = await api.tts.generate({ text, voice_id: voiceId, stability: 0.5, speed: 1 })
+    const data = await api.tts.generate({
+      text,
+      voice_id: voiceId,
+      ...voiceSettingsPayload(readVoiceControls('vo')),
+    })
     const blob = await fetch(data.url).then(r => r.blob())
     const file = new File([blob], 'voiceover.mp3', { type: blob.type || 'audio/mpeg' })
     edAddVoiceFile(file)
