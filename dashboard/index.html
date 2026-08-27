@@ -8183,6 +8183,8 @@ window.fvClearScript = (opts = {}) => {
     try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
     if (fvStudioBoundId) {
       try { sessionStorage.removeItem('vidso-fs-draft:' + fvStudioBoundId) } catch (_) {}
+      try { sessionStorage.removeItem('vidso-fs-media:' + fvStudioBoundId) } catch (_) {}
+      try { sessionStorage.removeItem('vidso-fs-preview:' + fvStudioBoundId) } catch (_) {}
     }
   }
   if (!fvHydrating) document.getElementById('fv-topic')?.focus?.()
@@ -8515,14 +8517,34 @@ function fvPersistLocalDraft(script) {
   }
 }
 
-function fvReadStudioDraft(projectId) {
-  if (!projectId) return null
+function fvReadJsonSession(key) {
   try {
-    const raw = sessionStorage.getItem('vidso-fs-draft:' + projectId)
+    const raw = sessionStorage.getItem(key)
     return raw ? JSON.parse(raw) : null
   } catch (_) {
     return null
   }
+}
+
+function fvReadStudioDraft(projectId) {
+  if (!projectId) return null
+  return fvReadJsonSession('vidso-fs-draft:' + projectId)
+}
+
+function fvReadStudioMedia(projectId) {
+  if (projectId) {
+    const hit = fvReadJsonSession('vidso-fs-media:' + projectId)
+    if (hit) return hit
+  }
+  return fvReadJsonSession('vidso_faceless_media')
+}
+
+function fvReadStudioPreview(projectId) {
+  if (projectId) {
+    const hit = fvReadJsonSession('vidso-fs-preview:' + projectId)
+    if (hit) return hit
+  }
+  return fvReadJsonSession('vidso_faceless_preview')
 }
 
 function fvStudioJob(job) {
@@ -8573,6 +8595,7 @@ window.fvHydrateFromStudio = (project) => {
     return
   }
   fvHydrating = true
+  let recoveredFromSession = false
   try {
   fvStudioBoundId = project.id
   const snap = project.pipeline && typeof project.pipeline === 'object' ? project.pipeline : {}
@@ -8604,30 +8627,43 @@ window.fvHydrateFromStudio = (project) => {
     fvState.scriptAiUsed = snap.scriptAiUsed != null ? !!snap.scriptAiUsed : true
     fvRenderScript(script)
   }
-  if (snap.media) {
-    fvRenderMediaResult(snap.media)
+  const media = snap.media || fvReadStudioMedia(project.id)
+  if (media) {
+    fvRenderMediaResult(media)
+    if (!snap.media) recoveredFromSession = true
   }
-  if (snap.preview) fvState.preview = snap.preview
-  if (snap.caption) {
+  const preview = snap.preview || fvReadStudioPreview(project.id)
+  if (preview) {
+    fvState.preview = preview.musicId != null || preview.caption ? {
+      musicId: preview.musicId || 'none',
+      musicVol: preview.musicVol ?? 0.25,
+    } : preview
+    if (preview.caption) {
+      snap.caption = snap.caption || preview.caption
+    }
+    if (!snap.preview) recoveredFromSession = true
+  }
+  if (snap.caption || preview?.caption) {
+    const cap = snap.caption || preview.caption
     const setVal = (id, v) => {
       const el = document.getElementById(id)
       if (el && v != null) el.value = v
     }
-    setVal('fv-cap-font', snap.caption.font)
-    setVal('fv-cap-size', snap.caption.size)
-    setVal('fv-cap-color', snap.caption.color)
-    setVal('fv-cap-hl', snap.caption.highlight)
-    setVal('fv-cap-ls', snap.caption.letterSpacing)
+    setVal('fv-cap-font', cap.font)
+    setVal('fv-cap-size', cap.size)
+    setVal('fv-cap-color', cap.color)
+    setVal('fv-cap-hl', cap.highlight)
+    setVal('fv-cap-ls', cap.letterSpacing)
   }
-  const runningMedia = !!(snap.mediaJobId && !snap.media?.voiceover_url)
+  const runningMedia = !!(snap.mediaJobId && !media?.voiceover_url)
   const renderJobRow = (project.jobs || []).find((j) => j.remote_id && j.remote_id === snap.renderJobId)
-  const runningRender = !!(snap.renderJobId && snap.media && (!renderJobRow || renderJobRow.status === 'queued' || renderJobRow.status === 'running'))
-  const phase = runningRender ? 4 : runningMedia ? 2 : (Number(snap.phase) || (snap.media ? 3 : script ? 1 : 1))
+  const runningRender = !!(snap.renderJobId && media && (!renderJobRow || renderJobRow.status === 'queued' || renderJobRow.status === 'running'))
+  const phase = runningRender ? 4 : runningMedia ? 2 : (Number(snap.phase) || (media ? 3 : script ? 1 : 1))
   document.getElementById('fv-script-box')?.classList.toggle('show', !!script && phase === 1)
   document.getElementById('fv-setup')?.classList.toggle('collapsed', phase > 1)
   document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2)
-  document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!snap.media)
-  document.getElementById('fv-export-box')?.classList.toggle('show', phase >= 4 && !!snap.media)
+  document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!media)
+  document.getElementById('fv-export-box')?.classList.toggle('show', phase >= 4 && !!media)
   fvState.phase = phase
   fvSetPills(phase)
   if (runningMedia) {
@@ -8636,7 +8672,7 @@ window.fvHydrateFromStudio = (project) => {
     document.getElementById('fv-media-result').style.display = 'none'
     fvSetMediaStatus('Resuming media job from the server…', 'loading')
     fvPollMediaJob(snap.mediaJobId)
-  } else if (phase >= 3 && snap.media) {
+  } else if (phase >= 3 && media) {
     try { fvInitPreview() } catch (_) {}
   }
   if (runningRender) {
@@ -8645,7 +8681,7 @@ window.fvHydrateFromStudio = (project) => {
     fvSetExportStatus('Resuming render from the server…', 'loading')
     document.getElementById('fv-export-progress-wrap').style.display = ''
     fvPollRenderJob(snap.renderJobId)
-  } else if (phase >= 4 && snap.media) {
+  } else if (phase >= 4 && media) {
     try { window.fvContinueToExport?.() } catch (_) {}
     const lastExport = (project.assets || []).filter((a) => a.type === 'export').slice(-1)[0]
     if (lastExport?.storage_url) {
@@ -8663,6 +8699,7 @@ window.fvHydrateFromStudio = (project) => {
   } finally {
     fvHydrating = false
   }
+  if (recoveredFromSession) fvNotifyStudio()
 }
 
 window.fvStudioUnbind = () => {
@@ -8876,6 +8913,11 @@ function fvRenderMediaResult(job) {
       voice_id: job.voice_id,
     }))
   } catch {}
+  if (fvStudioBoundId) {
+    try {
+      sessionStorage.setItem('vidso-fs-media:' + fvStudioBoundId, sessionStorage.getItem('vidso_faceless_media'))
+    } catch {}
+  }
   const tlEnd = Math.max(0, ...((job.timeline || []).map((s) => Number(s.end) || 0)))
   fvLengthTrace('media-result', {
     voiceoverSeconds: job.duration || null,
@@ -9062,13 +9104,15 @@ window.fvApplyCapStyle = () => {
 }
 
 function fvPersistPreviewSettings() {
-  try {
-    sessionStorage.setItem('vidso_faceless_preview', JSON.stringify({
-      caption: fvCapStyle(),
-      musicId: fvState.preview?.musicId || 'none',
-      musicVol: fvState.preview?.musicVol ?? 0.25,
-    }))
-  } catch {}
+  const payload = {
+    caption: fvCapStyle(),
+    musicId: fvState.preview?.musicId || 'none',
+    musicVol: fvState.preview?.musicVol ?? 0.25,
+  }
+  try { sessionStorage.setItem('vidso_faceless_preview', JSON.stringify(payload)) } catch {}
+  if (fvStudioBoundId) {
+    try { sessionStorage.setItem('vidso-fs-preview:' + fvStudioBoundId, JSON.stringify(payload)) } catch {}
+  }
 }
 
 function fvMusicEl() {
@@ -9419,18 +9463,20 @@ window.fvSeekPreview = (v) => {
 
 function fvPersistMedia() {
   if (!fvState.media) return
-  try {
-    sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
-      jobId: fvState.media.jobId,
-      voiceover_url: fvState.media.voiceover_url,
-      duration: fvState.media.duration,
-      words: fvState.media.words,
-      clips: fvState.media.clips,
-      timeline: fvState.media.timeline,
-      aspect: fvState.media.aspect,
-      voice_id: fvState.media.voice_id,
-    }))
-  } catch {}
+  const payload = {
+    jobId: fvState.media.jobId,
+    voiceover_url: fvState.media.voiceover_url,
+    duration: fvState.media.duration,
+    words: fvState.media.words,
+    clips: fvState.media.clips,
+    timeline: fvState.media.timeline,
+    aspect: fvState.media.aspect,
+    voice_id: fvState.media.voice_id,
+  }
+  try { sessionStorage.setItem('vidso_faceless_media', JSON.stringify(payload)) } catch {}
+  if (fvStudioBoundId) {
+    try { sessionStorage.setItem('vidso-fs-media:' + fvStudioBoundId, JSON.stringify(payload)) } catch {}
+  }
   fvNotifyStudio()
 }
 
