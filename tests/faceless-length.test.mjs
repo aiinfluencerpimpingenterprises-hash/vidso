@@ -20,6 +20,8 @@ import {
   scriptWordCount,
   sectionNeedsExpand,
   stitchSectionText,
+  trimSpokenText,
+  capScriptToTarget,
   outlineTargetWords,
   scriptUpstreamBody,
   shouldOutlineFirst,
@@ -169,4 +171,22 @@ test('duration_seconds wins over duration minutes when id is missing', () => {
   assert.equal(durationFromBody({ duration: 30, duration_seconds: 1800 }), 1800)
   assert.equal(durationFromBody({ target_minutes: 30 }), 1800)
   assert.equal(durationFromBody({ duration: 45 }), 45)
+})
+
+test('capScriptToTarget trims a 30 min overshoot back to 4500 words', () => {
+  const sentence = 'The tiger moved through the trees with quiet power. '
+  const long = Array.from({ length: 40 }, () => sentence).join('')
+  const script = {
+    sections: Array.from({ length: 15 }, (_, i) => ({
+      id: 's' + (i + 1),
+      heading: 'Tiger ' + (i + 1),
+      text: long,
+    })),
+  }
+  rebuildFullScript(script)
+  assert.ok(scriptWordCount(script) > 4500)
+  capScriptToTarget(script, 4500)
+  assert.ok(scriptWordCount(script) <= 4500)
+  assert.ok(scriptWordCount(script) >= 3600)
+  assert.match(trimSpokenText('One two three. Four five six seven.', 4), /One two three\./)
 })
