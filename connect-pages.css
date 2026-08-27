@@ -25,7 +25,7 @@ h1,h2{
   text-wrap:balance;
 }
 
-header{position:sticky;top:0;z-index:50;padding:14px 0;background:transparent}
+header{position:sticky;top:0;z-index:50;padding:14px 0;background:var(--bg)}
 nav{
   display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:54px;
   padding:0 14px;border:1px solid var(--line);border-radius:16px;
@@ -50,32 +50,36 @@ nav{
 .nav-drawer{display:none}
 
 .promo{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
-  margin:18px auto 0;max-width:720px;padding:8px 10px 8px 16px;
-  border:1px solid var(--line-2);border-radius:999px;background:rgba(233,75,88,.08)
+  display:flex;align-items:center;gap:10px 14px;flex-wrap:nowrap;
+  margin:0 auto 12px;max-width:1140px;padding:10px 14px 10px 16px;
+  border:1px solid var(--line-2);border-radius:16px;background:rgba(233,75,88,.08)
 }
 .promo[hidden]{display:none!important}
-.promo p{font-size:13px;color:var(--txt);margin:0}
-.promo a{font-size:12px;font-weight:700;color:#fff;background:var(--a1);padding:6px 10px;border-radius:999px}
-.promo-x{width:32px;height:32px;border:none;background:transparent;color:var(--muted);border-radius:99px;cursor:pointer;font-size:18px;line-height:1}
+.promo p{font-size:13px;color:var(--txt);margin:0;flex:1;min-width:0;text-align:left;line-height:1.4}
+.promo a{flex-shrink:0;font-size:12px;font-weight:700;color:#fff;background:var(--a1);padding:8px 12px;border-radius:999px}
+.promo-x{flex-shrink:0;width:32px;height:32px;border:none;background:transparent;color:var(--muted);border-radius:99px;cursor:pointer;font-size:18px;line-height:1}
 
-.hero{padding:48px 0 32px;text-align:center}
+.hero{padding:36px 0 32px;text-align:center}
 .pair-lockup{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 16px;
-  margin:0 auto 22px;max-width:420px
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin:0 auto 22px
 }
+.pair-row{display:flex;align-items:center;justify-content:center;gap:18px}
 .pair-logo{
-  width:72px;height:72px;border-radius:18px;overflow:hidden;display:grid;place-items:center;
-  background:#fff;border:1px solid rgba(245,245,244,.18);
-  box-shadow:0 12px 28px rgba(0,0,0,.35)
+  width:auto;height:52px;background:transparent;border:none;box-shadow:none;
+  display:flex;align-items:center;justify-content:center
 }
-.pair-logo img{width:52px;height:52px;object-fit:contain;display:block}
-.pair-vidso{background:#fff}
+.pair-logo img{
+  height:52px;width:auto;max-width:72px;object-fit:contain;display:block;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))
+}
+.pair-vidso{background:transparent}
 .pair-x{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;color:var(--faint);line-height:1
+  display:flex;align-items:center;height:52px;
+  font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;font-weight:800;color:var(--faint);line-height:1
 }
 .pair-caption{
-  flex-basis:100%;margin:2px 0 0;font-size:13px;font-weight:700;letter-spacing:.08em;
+  margin:0;font-size:13px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted)
 }
 .hero-fan{
@@ -238,9 +242,13 @@ footer{border-top:1px solid var(--line);padding:40px 0 28px;margin-top:20px}
   }
   .connect-steps,.demo-grid,.wf-layout,.wf-grid,.features-grid,.teaser-row{grid-template-columns:1fr}
   .tools-grid{grid-template-columns:1fr}
-  .hero{padding:28px 0 16px}
-  .pair-logo{width:56px;height:56px;border-radius:14px}
-  .pair-logo img{width:40px;height:40px}
+  .hero{padding:24px 0 16px}
+  .pair-logo{height:44px}
+  .pair-logo img{height:44px;max-width:60px}
+  .pair-x{height:44px}
+  .promo{flex-wrap:wrap;margin:0 auto 8px}
+  .promo p{flex-basis:calc(100% - 44px)}
+  .promo a{width:100%}
   .sec{padding:56px 0}
   .hero-fan{max-height:160px}
   .hero-fan-card:nth-child(1),.hero-fan-card:nth-child(5){display:none}
@@ -248,5 +256,4 @@ footer{border-top:1px solid var(--line);padding:40px 0 28px;margin-top:20px}
 @media (max-width:420px){
   .hero h1{font-size:1.7rem}
   .s-head h2{font-size:1.45rem}
-  .promo{border-radius:16px}
 }
