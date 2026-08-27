@@ -2159,11 +2159,21 @@ body.img-detail-open{overflow:hidden}
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
 .fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
-.fv-how-item{padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left}
-.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
-.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 0 4px}
-.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0;line-height:1.4}
+.fv-how-item{padding:0 0 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left;overflow:hidden}
+.fv-how-item .media-ph,.fv-how-shot{border-radius:0;border:none;border-bottom:1px solid var(--border)}
+.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,244,.4);margin:14px 16px 8px}
+.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 16px 4px}
+.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0 16px;line-height:1.4}
 @media (max-width:640px){.fv-how{grid-template-columns:1fr}}
+
+.media-ph{
+  position:relative;width:100%;overflow:hidden;
+  background:linear-gradient(160deg,#2c1c1e,#161618);
+  border:1px solid rgba(245,245,244,.22)
+}
+.media-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
+.media-ph-icon svg{width:32px;height:32px}
 
 /* Upscale V2 */
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
@@ -4970,16 +4980,25 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Script.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 1</div>
           <div class="fv-how-t">Script</div>
           <p class="fv-how-d">Generate and edit the narration for your topic.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Media.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 2</div>
           <div class="fv-how-t">Media</div>
           <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
         </div>
         <div class="fv-how-item">
+          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Export.png" alt="" loading="lazy" decoding="async">
+          </div>
           <div class="fv-how-n">Step 3</div>
           <div class="fv-how-t">Export</div>
           <p class="fv-how-d">Preview the timeline, then render the final MP4.</p>
@@ -5019,8 +5038,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="field" id="fv-field-aspect">
               <label>Aspect ratio</label>
               <div class="fv-chip-row" id="fv-aspect-chips">
-                <button type="button" class="fv-chip active" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
-                <button type="button" class="fv-chip" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
+                <button type="button" class="fv-chip" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
+                <button type="button" class="fv-chip active" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
               </div>
             </div>
 
@@ -5387,6 +5406,7 @@ import {
   mcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
+import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
@@ -7871,7 +7891,7 @@ window.selectVoice = (id, preview, name) => {
 window.fvState = {
   format: 'long',
   durationId: 'long_180',
-  aspect: '9:16',
+  aspect: '16:9',
   voiceId: null,
   voicePreview: null,
   script: null,
@@ -9928,6 +9948,7 @@ function bindGettingStarted() {
 initBanner()
 initTopNav()
 initToolsGallery()
+try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
 
 initImageWorkspace({
   api,
