@@ -42,10 +42,12 @@ test('new projects default to 16:9 and belong to the creating user', () => {
 test('create honors 9:16 and keeps a pipeline seed', () => {
   const rec = createProjectRecord(
     { id: 'u' },
-    { aspect: '9:16', pipeline: { topic: 'x', phase: 1 } },
+    { aspect: '9:16', pipeline: { topic: 'x', phase: 1 }, references: [{ url: 'https://example.com/a.jpg', file_id: 'f1' }] },
   )
   assert.equal(rec.aspect, '9:16')
   assert.equal(rec.pipeline.phase, 1)
+  assert.equal(rec.references.length, 1)
+  assert.equal(rec.references[0].file_id, 'f1')
 })
 
 test('publicProject strips internal file handles', () => {

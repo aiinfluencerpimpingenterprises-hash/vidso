@@ -2292,6 +2292,8 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .fs-state.is-err{color:#f3b4b8}
 .fs-workspace{max-width:880px;margin:0 auto}
 .fs-ws-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.fs-refs-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.fs-refs-row img{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
 .fs-title{flex:1;min-width:140px;height:40px;border:none;background:transparent;color:var(--ink);font:inherit;font-size:1.15rem;font-weight:650}
 .fs-title:focus{outline:2px solid rgba(var(--glow),.5);border-radius:8px}
 .fs-ws-status{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--a1)}
@@ -8134,7 +8136,7 @@ function fvSetScriptAiLock(used) {
 }
 
 /** Wipe the generated script UI and return to the Generate Script form. */
-window.fvClearScript = () => {
+window.fvClearScript = (opts = {}) => {
   try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
   fvState.script = null
@@ -8171,13 +8173,17 @@ window.fvClearScript = () => {
   fvSetStatus('', null, 2)
   fvSetPills(1)
 
-  try { sessionStorage.removeItem('vidso_faceless_draft') } catch (_) {}
-  try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
-  try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
-
   fvSetScriptAiLock(false)
   fvShowShortScriptAction(false)
   fvShowShortRenderAction(false)
+  if (!opts.keepDrafts) {
+    try { sessionStorage.removeItem('vidso_faceless_draft') } catch (_) {}
+    try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
+    try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
+    if (fvStudioBoundId) {
+      try { sessionStorage.removeItem('vidso-fs-draft:' + fvStudioBoundId) } catch (_) {}
+    }
+  }
   if (!fvHydrating) document.getElementById('fv-topic')?.focus?.()
   fvNotifyStudio()
 }
@@ -8493,7 +8499,26 @@ let fvHydrating = false
 
 function fvNotifyStudio() {
   if (fvHydrating) return
+  fvPersistLocalDraft(fvState.script)
   try { window.fvStudioOnChange?.() } catch (_) {}
+}
+
+function fvPersistLocalDraft(script) {
+  if (!script) return
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(script)) } catch (_) {}
+  if (fvStudioBoundId) {
+    try { sessionStorage.setItem('vidso-fs-draft:' + fvStudioBoundId, JSON.stringify(script)) } catch (_) {}
+  }
+}
+
+function fvReadStudioDraft(projectId) {
+  if (!projectId) return null
+  try {
+    const raw = sessionStorage.getItem('vidso-fs-draft:' + projectId)
+    return raw ? JSON.parse(raw) : null
+  } catch (_) {
+    return null
+  }
 }
 
 function fvStudioJob(job) {
@@ -8540,7 +8565,7 @@ window.fvHydrateFromStudio = (project) => {
   try {
   fvStudioBoundId = project.id
   const snap = project.pipeline && typeof project.pipeline === 'object' ? project.pipeline : {}
-  fvClearScript()
+  fvClearScript({ keepDrafts: true })
   const topic = snap.topic || project.topic || ''
   const aspect = snap.aspect || project.aspect || '16:9'
   const durationId = snap.durationId || project.length || 'long_180'
@@ -8561,9 +8586,10 @@ window.fvHydrateFromStudio = (project) => {
   if (voiceId) {
     try { window.pickFvVoice(voiceId) } catch (_) {}
   }
-  if (snap.script) {
+  const script = snap.script || fvReadStudioDraft(project.id)
+  if (script) {
     fvState.scriptAiUsed = snap.scriptAiUsed != null ? !!snap.scriptAiUsed : true
-    fvRenderScript(snap.script)
+    fvRenderScript(script)
   }
   if (snap.media) {
     fvRenderMediaResult(snap.media)
@@ -8580,8 +8606,8 @@ window.fvHydrateFromStudio = (project) => {
     setVal('fv-cap-hl', snap.caption.highlight)
     setVal('fv-cap-ls', snap.caption.letterSpacing)
   }
-  const phase = Number(snap.phase) || (snap.media ? 2 : snap.script ? 1 : 1)
-  document.getElementById('fv-script-box')?.classList.toggle('show', !!snap.script && phase === 1)
+  const phase = Number(snap.phase) || (snap.media ? 2 : script ? 1 : 1)
+  document.getElementById('fv-script-box')?.classList.toggle('show', !!script && phase === 1)
   document.getElementById('fv-setup')?.classList.toggle('collapsed', phase > 1)
   document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2 && !!snap.media)
   document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!snap.media)
@@ -8612,7 +8638,7 @@ function fvRebuildFullScriptFromSections() {
   }))
   fvState.script.full_script = fvState.script.sections.map(s => s.text).filter(Boolean).join('\n\n')
   if (fvState.script.sections[0]) fvState.script.hook = fvState.script.sections[0].text
-  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+  fvPersistLocalDraft(fvState.script)
   fvNotifyStudio()
 }
 window.fvRebuildFullScriptFromSections = fvRebuildFullScriptFromSections
@@ -8686,7 +8712,7 @@ window.fvEnterEditor = () => {
   fvRenderScript(fvState.script)
   fvSetStatus('', null)
   fvSetStatus('Edit any section, then continue to media', 'ok', 2)
-  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+  fvPersistLocalDraft(fvState.script)
 }
 
 window.fvContinueToMedia = (allowShort) => {
@@ -8712,7 +8738,7 @@ window.fvContinueToMedia = (allowShort) => {
   }
   if (allowShort) fvState.allowShortScript = true
   fvShowShortScriptAction(false)
-  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
+  fvPersistLocalDraft(fvState.script)
   fvState.phase = 2
   document.getElementById('fv-setup')?.classList.add('collapsed')
   document.getElementById('fv-script-box')?.classList.remove('show')
@@ -9999,7 +10025,7 @@ window.fvGenerateScript = async () => {
       fvShowShortScriptAction(false)
       fvSetStatus('Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')', 'ok', 2)
     }
-    try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
+    try { fvPersistLocalDraft(data) } catch {}
   } catch (e) {
     fvSetStatus('', null)
     fvSetStatus(e.message || 'Script generation failed', 'err', 2)
@@ -10302,7 +10328,8 @@ initFacelessStudio({
     window.fvStudioUnbind?.()
     window.fvParkWizard?.(null)
   },
-  generateThumb: async ({ prompt, model, aspect }) => {
+  generateThumb: async ({ prompt, model, aspect, image_urls }) => {
+    const refs = Array.isArray(image_urls) ? image_urls.filter(Boolean) : []
     const data = await api.generate.image({
       prompt,
       model: model || DEFAULT_IMAGE_MODEL,
@@ -10310,6 +10337,7 @@ initFacelessStudio({
       quality: '2K',
       resolution: '2K',
       num_images: 1,
+      ...(refs.length ? { image_urls: refs } : {}),
     })
     const url = data.urls?.[0]
     if (!url) throw new Error('No image came back.')
@@ -10321,6 +10349,7 @@ initFacelessStudio({
         model: model || DEFAULT_IMAGE_MODEL,
         aspect_ratio: aspect || '16:9',
         quality: '2K',
+        reference_images: refs,
       })
       saved = pack.items?.[0] || null
     } catch (_) {}
