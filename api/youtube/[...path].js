@@ -3,22 +3,27 @@ import { cors, readJson, requireUser, send } from '../_lib/http.js'
 import {
   bridgeCookieHeader,
   deleteYoutubeRecord,
-  downloadRenderVideo,
-  ensureAccessToken,
   exchangeGoogleCode,
   fetchYoutubeChannel,
+  googleAuthUrl,
   loadYoutubeRecord,
+  mcpInitializeResult,
+  MCP_PROTOCOL,
+  mcpText,
   mcpTools,
   normalizePrivacy,
   parseCookies,
+  parseMcpToolArgs,
   publicYoutubeStatus,
   requestOrigin,
+  requireYoutubeAccess,
+  runMcpTool,
   saveYoutubeRecord,
   signPayload,
+  uploadYoutubeFromArgs,
   verifyPayload,
   youtubeConfigured,
   youtubeRedirectUri,
-  youtubeResumableUpload,
   youtubeSecrets,
   YT_BRIDGE_COOKIE,
 } from '../../lib/youtube.js'
@@ -51,20 +56,6 @@ function rpc(res, id, result) {
 
 function rpcErr(res, id, code, message) {
   return send(res, 200, { jsonrpc: '2.0', id: id ?? null, error: { code, message } })
-}
-
-async function loadFresh(token) {
-  const rec = await loadYoutubeRecord(token)
-  if (!rec) return null
-  try {
-    const next = await ensureAccessToken(rec)
-    if (next.access_token !== rec.access_token || next.expiry !== rec.expiry) {
-      await saveYoutubeRecord(token, next)
-    }
-    return next
-  } catch (_) {
-    return rec
-  }
 }
 
 async function connectUrlFor(req, token, returnTo) {
@@ -154,16 +145,17 @@ async function handleDisconnect(req, res, token) {
 }
 
 async function handleToken(req, res, token) {
-  const rec = await loadFresh(token)
-  if (!rec?.refresh_token) return send(res, 409, { error: 'Connect a YouTube channel first', code: 'not_connected' })
-  const next = await ensureAccessToken(rec)
-  if (next.access_token !== rec.access_token) await saveYoutubeRecord(token, next)
-  return send(res, 200, {
-    accessToken: next.access_token,
-    expiresAt: next.expiry,
-    channel: { id: next.channel_id, title: next.channel_title, thumb: next.channel_thumb },
-    privacy: normalizePrivacy(next.privacy),
-  })
+  try {
+    const rec = await requireYoutubeAccess(token)
+    return send(res, 200, {
+      accessToken: rec.access_token,
+      expiresAt: rec.expiry,
+      channel: { id: rec.channel_id, title: rec.channel_title, thumb: rec.channel_thumb },
+      privacy: normalizePrivacy(rec.privacy),
+    })
+  } catch (e) {
+    return send(res, e.status || 400, { error: e.message || 'Could not get a YouTube token', code: e.code })
+  }
 }
 
 async function handleSettings(req, res, token, body) {
@@ -175,101 +167,66 @@ async function handleSettings(req, res, token, body) {
   return send(res, 200, publicYoutubeStatus(rec, req, { configured: true }))
 }
 
-async function runUpload(token, body) {
-  const rec = await loadFresh(token)
-  if (!rec?.refresh_token) {
-    const err = new Error('Connect a YouTube channel first')
-    err.status = 409
-    err.code = 'not_connected'
-    throw err
-  }
-  const next = await ensureAccessToken(rec)
-  const file = await downloadRenderVideo(token, {
-    renderJobId: body.renderJobId,
-    videoUrl: body.video_url || body.videoUrl,
-  })
-  const result = await youtubeResumableUpload({
-    accessToken: next.access_token,
-    buffer: file.buffer,
-    mime: file.mime,
-    title: body.title,
-    description: body.description,
-    tags: body.tags,
-    privacy: body.privacy || next.privacy,
-  })
-  return result
-}
-
 async function handleUpload(req, res, token, body) {
   try {
-    const result = await runUpload(token, body)
+    const result = await uploadYoutubeFromArgs(token, body)
     return send(res, 200, result)
   } catch (e) {
     return send(res, e.status || 400, { error: e.message || 'Upload failed', code: e.code })
   }
 }
 
-async function handleMcp(req, res, token) {
-  if (req.method === 'GET') {
-    res.statusCode = 405
-    res.setHeader('Allow', 'POST')
-    return res.end()
-  }
-  const body = await readJson(req)
-  const id = body.id ?? null
-  const method = String(body.method || '')
-  if (method === 'initialize') {
-    return rpc(res, id, {
-      protocolVersion: '2025-03-26',
-      capabilities: { tools: {} },
-      serverInfo: { name: 'vidso-youtube', version: '1.0.0' },
-    })
-  }
-  if (method === 'notifications/initialized' || method === 'initialized') {
+const MCP_OPEN_TOOLS = new Set(['youtube_status', 'youtube_connect_url'])
+
+async function handleMcpMessage(req, res, token, user, body) {
+  const id = body?.id ?? null
+  const method = String(body?.method || '')
+  if (method === 'initialize') return rpc(res, id, mcpInitializeResult())
+  if (
+    method === 'notifications/initialized' ||
+    method === 'initialized' ||
+    method === 'notifications/cancelled'
+  ) {
     res.statusCode = 202
     return res.end()
   }
   if (method === 'ping') return rpc(res, id, {})
   if (method === 'tools/list') return rpc(res, id, { tools: mcpTools() })
+  if (method === 'resources/list') return rpc(res, id, { resources: [] })
+  if (method === 'prompts/list') return rpc(res, id, { prompts: [] })
   if (method !== 'tools/call') return rpcErr(res, id, -32601, 'Unknown method')
 
   const name = String(body.params?.name || '')
-  const args = body.params?.arguments || {}
+  const args = parseMcpToolArgs(body.params)
+  if (!MCP_OPEN_TOOLS.has(name)) {
+    const plan = evaluatePlan(user)
+    if (!plan.ok) return rpc(res, id, { ...mcpText(plan.message), isError: true })
+  }
   try {
-    if (name === 'youtube_status') {
-      const rec = await loadYoutubeRecord(token).catch(() => null)
-      return rpc(res, id, {
-        content: [{ type: 'text', text: JSON.stringify(publicYoutubeStatus(rec, req, { configured: youtubeConfigured() }), null, 2) }],
-      })
-    }
-    if (name === 'youtube_connect_url') {
-      const origin = requestOrigin(req)
-      return rpc(res, id, {
-        content: [{
-          type: 'text',
-          text: 'Open Vidso while logged in and connect YouTube from Account settings:\n' + origin + '/video-generation?youtube=connect',
-        }],
-      })
-    }
-    if (name === 'youtube_upload') {
-      const result = await runUpload(token, {
-        videoUrl: args.video_url,
-        title: args.title,
-        description: args.description,
-        privacy: args.privacy,
-        tags: args.tags,
-      })
-      return rpc(res, id, {
-        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-      })
-    }
-    return rpcErr(res, id, -32601, 'Unknown tool')
+    const result = await runMcpTool(name, args, { token, req })
+    return rpc(res, id, result)
   } catch (e) {
-    return rpc(res, id, {
-      content: [{ type: 'text', text: e.message || 'Tool failed' }],
-      isError: true,
+    if (e.code === -32601) return rpcErr(res, id, -32601, e.message || 'Unknown tool')
+    return rpc(res, id, { ...mcpText(e.message || 'Tool failed'), isError: true })
+  }
+}
+
+async function handleMcp(req, res, token, user) {
+  res.setHeader('MCP-Protocol-Version', MCP_PROTOCOL)
+  if (req.method === 'GET') {
+    res.setHeader('Allow', 'POST, OPTIONS')
+    return send(res, 405, {
+      error: 'Streamable HTTP MCP: POST JSON-RPC to this URL',
+      name: 'vidso-youtube',
+      protocolVersion: MCP_PROTOCOL,
     })
   }
+  const body = await readJson(req)
+  if (Array.isArray(body)) {
+    if (!body.length) return rpcErr(res, null, -32600, 'Empty batch')
+    return handleMcpMessage(req, res, token, user, body[0])
+  }
+  return handleMcpMessage(req, res, token, user, body)
 }
 
 export default async function handler(req, res) {
@@ -292,7 +249,7 @@ export default async function handler(req, res) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
 
-  if (sub === 'mcp') return handleMcp(req, res, token)
+  if (sub === 'mcp') return handleMcp(req, res, token, user)
 
   const plan = evaluatePlan(user)
   if (!plan.ok && sub !== 'status') {

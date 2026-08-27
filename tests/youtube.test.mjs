@@ -1,13 +1,20 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  clampMaxResults,
   decryptRecord,
   encryptRecord,
   googleAuthUrl,
   isYoutubeSidecarName,
+  mapPlaylistItems,
+  mcpInitializeResult,
+  MCP_PROTOCOL,
   mcpTools,
   normalizePrivacy,
+  parseMcpToolArgs,
+  publicVideo,
   publicYoutubeStatus,
+  runMcpTool,
   signPayload,
   verifyPayload,
   youtubeConfigured,
@@ -66,17 +73,20 @@ test('public status never includes tokens', () => {
   assert.equal(dump.includes('refresh'), false)
 })
 
-test('google auth URL asks for offline consent and upload scope', () => {
+test('google auth URL asks for offline consent and channel manage scope', () => {
   const url = googleAuthUrl({
     clientId: env.GOOGLE_YOUTUBE_CLIENT_ID,
     redirectUri: 'https://vidso.pro/api/youtube/callback',
     state: 'abc',
   })
   const u = new URL(url)
+  const scope = u.searchParams.get('scope')
+  const scopes = scope.split(' ')
   assert.equal(u.searchParams.get('access_type'), 'offline')
   assert.equal(u.searchParams.get('prompt'), 'consent')
-  assert.ok(u.searchParams.get('scope').includes('youtube.upload'))
-  assert.equal(YT_SCOPES.includes('youtube.readonly'), true)
+  assert.equal(scope, YT_SCOPES)
+  assert.equal(scopes.includes('https://www.googleapis.com/auth/youtube.upload'), true)
+  assert.equal(scopes.includes('https://www.googleapis.com/auth/youtube'), true)
 })
 
 test('redirect URI prefers env then request host', () => {
@@ -101,13 +111,71 @@ test('oauth sidecar is hidden from My Files', () => {
   assert.equal(isHistorySidecarName('Thumbnail-demo-abcd.jpg'), false)
 })
 
-test('MCP tool list covers status connect and upload', () => {
+test('MCP tool list covers channel inspect upload and update', () => {
   const names = mcpTools().map((t) => t.name)
-  assert.deepEqual(names, ['youtube_status', 'youtube_connect_url', 'youtube_upload'])
+  assert.deepEqual(names, [
+    'youtube_status',
+    'youtube_connect_url',
+    'youtube_list_videos',
+    'youtube_get_video',
+    'youtube_update_video',
+    'youtube_upload',
+  ])
+  const init = mcpInitializeResult()
+  assert.equal(init.protocolVersion, MCP_PROTOCOL)
+  assert.equal(init.serverInfo.name, 'vidso-youtube')
+  assert.ok(init.instructions.includes('youtube_status'))
+})
+
+test('MCP tool arguments accept objects or JSON strings', () => {
+  assert.deepEqual(parseMcpToolArgs({ arguments: { video_id: 'abc' } }), { video_id: 'abc' })
+  assert.deepEqual(parseMcpToolArgs({ arguments: '{"title":"Oak Ridge"}' }), { title: 'Oak Ridge' })
+  assert.deepEqual(parseMcpToolArgs({ arguments: 'not-json' }), {})
+  assert.deepEqual(parseMcpToolArgs({}), {})
+})
+
+test('playlist and video mappers stay public-safe', () => {
+  assert.equal(clampMaxResults(100), 25)
+  assert.equal(clampMaxResults('nope'), 10)
+  const videos = mapPlaylistItems([
+    {
+      contentDetails: { videoId: 'vid1' },
+      snippet: { title: 'Tiger 1', description: 'x'.repeat(400), publishedAt: '2026-01-01T00:00:00Z' },
+    },
+    { snippet: { title: 'missing id' } },
+  ])
+  assert.equal(videos.length, 1)
+  assert.equal(videos[0].videoId, 'vid1')
+  assert.equal(videos[0].url, 'https://www.youtube.com/watch?v=vid1')
+  assert.equal(videos[0].description.length, 280)
+  const video = publicVideo({
+    id: 'vid1',
+    snippet: { title: 'Tiger 1', description: 'hello', tags: ['vidso'], categoryId: '22' },
+    status: { privacyStatus: 'unlisted' },
+    statistics: { viewCount: '3' },
+    contentDetails: { duration: 'PT4M13S' },
+  })
+  assert.equal(video.studioUrl, 'https://studio.youtube.com/video/vid1/edit')
+  assert.equal(video.privacy, 'unlisted')
+  assert.equal(publicVideo(null), null)
+})
+
+test('unknown MCP tool is rejected without calling YouTube', async () => {
+  await assert.rejects(
+    () => runMcpTool('youtube_hack', {}, { token: 'tok', req: { headers: {} } }),
+    (err) => err.code === -32601,
+  )
+  const connect = await runMcpTool('youtube_connect_url', {}, {
+    token: 'tok',
+    req: { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } },
+  })
+  assert.equal(connect.isError, undefined)
+  assert.match(connect.content[0].text, /vidso\.pro\/video-generation\?youtube=connect/)
 })
 
 test('MCP config JSON points at the Vidso YouTube server', () => {
   const json = JSON.parse(mcpConfigJson('https://vidso.pro/api/youtube/mcp', 'tok_123'))
   assert.equal(json.mcpServers['vidso-youtube'].url, 'https://vidso.pro/api/youtube/mcp')
   assert.equal(json.mcpServers['vidso-youtube'].headers.Authorization, 'Bearer tok_123')
+  assert.ok(json.mcpServers['vidso-youtube'].headers.Accept.includes('application/json'))
 })
