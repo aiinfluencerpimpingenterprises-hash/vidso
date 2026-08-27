@@ -5461,6 +5461,7 @@ import {
   wordsPerSection,
   countSpokenWords,
 } from '/lib/faceless-length.js'
+import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
@@ -9921,8 +9922,17 @@ async function fvEnsureVoice() {
 }
 
 function fvUnwrapScript(data) {
+  const recovered = recoverScriptData(data, data && data.raw)
+  if (recovered) return recovered
   if (data && data.script && typeof data.script === 'object') return data.script
   return data
+}
+
+function fvFriendlyScriptError(err) {
+  if (err && (err.code === 'json_parse' || isJsonSyntaxError(err))) {
+    return 'Script JSON was incomplete. Try Generate Script again.'
+  }
+  return (err && err.message) ? err.message : 'Script generation failed'
 }
 
 function fvSectionRewriteText(out) {
@@ -9945,14 +9955,42 @@ async function fvMapPool(items, limit, fn) {
   return out
 }
 
-async function fvRequestScript(payload, topic, picked, timeoutMs, extra) {
+async function fvRequestScript(payload, topic, picked, timeoutMs, extra, retried) {
   const body = {
     ...payload,
     topic: [topic, payload.brief, extra].filter(Boolean).join('\n\n'),
   }
-  const raw = await api.faceless.script(body, { timeoutMs })
+  let raw
+  try {
+    raw = await api.faceless.script(body, { timeoutMs })
+  } catch (e) {
+    const recovered = recoverScriptData(e.body || e.data, e.raw)
+    if (recovered) raw = recovered
+    else if (!retried && (e.code === 'json_parse' || isJsonSyntaxError(e))) {
+      fvSetStatus('The last draft came back as broken JSON. Writing a shorter outline…', 'loading')
+      fvSetStatus('The last draft came back as broken JSON. Writing a shorter outline…', 'loading', 2)
+      const shorter = 'Return valid JSON only. Maximum 40 spoken words per section. No markdown. No commentary.'
+      return fvRequestScript(payload, topic, picked, timeoutMs, [extra, shorter].filter(Boolean).join('\n\n'), true)
+    } else if (e.code === 'json_parse' || isJsonSyntaxError(e)) {
+      throw new Error('Script JSON was incomplete. Try Generate Script again.')
+    } else {
+      throw e
+    }
+  }
   const data = fvUnwrapScript(raw)
   if (!data || typeof data !== 'object') throw new Error('Script generation returned nothing')
+  if (!Array.isArray(data.sections) && !String(data.full_script || '').trim()) {
+    const repaired = parseScriptResponse(typeof raw === 'string' ? raw : JSON.stringify(raw || {}))
+    if (repaired) {
+      repaired.voice_id = fvState.voiceId
+      repaired.voice_preview = fvState.voicePreview
+      repaired.duration_id = picked.id
+      repaired.duration_seconds = picked.seconds
+      repaired.topic = topic
+      return repaired
+    }
+    throw new Error('Script JSON was incomplete. Try Generate Script again.')
+  }
   data.voice_id = fvState.voiceId
   data.voice_preview = fvState.voicePreview
   data.duration_id = picked.id
@@ -9987,9 +10025,9 @@ async function fvExpandThinSections(script, topic, perWords) {
         section_id: row.sec.id,
         heading: row.sec.heading,
         text: row.sec.text,
-        full_script: script.full_script,
+        full_script: String(script.full_script || '').slice(0, 4000),
         target_words: perWords,
-      })
+      }, { timeoutMs: 90000 })
       const text = fvSectionRewriteText(out)
       if (countSpokenWords(text) > countSpokenWords(row.sec.text)) {
         sections[row.index] = { ...row.sec, text }
@@ -10002,8 +10040,22 @@ async function fvExpandThinSections(script, topic, perWords) {
 
 async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs) {
   let data = script
-  const targetWords = payload.target_words
-  for (let pass = 1; pass <= 3; pass++) {
+  const targetWords = payload.final_target_words || payload.target_words
+  const wantSections = payload.target_sections || 1
+  const haveSections = (data.sections || []).length
+  if (haveSections < Math.max(3, Math.ceil(wantSections * 0.7))) {
+    fvSetStatus('Adding the missing sections…', 'loading')
+    fvSetStatus('Adding the missing sections…', 'loading', 2)
+    try {
+      const extra = 'The last JSON was incomplete. Return valid JSON with exactly ' +
+        wantSections + ' sections, at most 60 spoken words each. No markdown.'
+      const retry = await fvRequestScript(payload, topic, picked, timeoutMs, extra)
+      if ((retry.sections || []).length > haveSections) data = retry
+    } catch (retryErr) {
+      fvLengthTrace('script-expand-error', { pass: 0, message: retryErr.message || String(retryErr) })
+    }
+  }
+  for (let pass = 1; pass <= 2; pass++) {
     if (!fvScriptIsShort(data, picked.seconds)) return data
     const have = scriptWordCount(data)
     const sectionN = Math.max(1, (data.sections || []).length)
@@ -10011,33 +10063,8 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
     fvLengthTrace('script-expand-pass', { pass, have, targetWords, sections: sectionN, per })
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading')
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading', 2)
-
-    const wantSections = payload.target_sections || 1
-    const haveSections = (data.sections || []).length
-    const structureOk = haveSections >= Math.max(3, Math.ceil(wantSections * 0.7))
-    if (haveSections && structureOk) {
-      data = await fvExpandThinSections(data, topic, per)
-      if (!fvScriptIsShort(data, picked.seconds)) return data
-    }
-
-    const afterExpand = scriptWordCount(data)
-    fvSetStatus('Writing a longer draft (' + afterExpand + ' / ' + targetWords + ' words)…', 'loading')
-    fvSetStatus('Writing a longer draft (' + afterExpand + ' / ' + targetWords + ' words)…', 'loading', 2)
-    try {
-      const extra = 'The last draft was only ' + afterExpand + ' words across ' +
-        ((data.sections || []).length || 0) + ' sections. Write the complete ' +
-        targetWords + ' word spoken script now, with exactly ' + wantSections +
-        ' separate sections. Do not recap. Do not shorten.'
-      const retry = await fvRequestScript(payload, topic, picked, timeoutMs, extra)
-      if (scriptWordCount(retry) > afterExpand) data = retry
-      fvLengthTrace('script-expand-retry', {
-        pass,
-        words: scriptWordCount(data),
-        sections: (data.sections || []).length,
-      })
-    } catch (retryErr) {
-      fvLengthTrace('script-expand-error', { pass, message: retryErr.message || String(retryErr) })
-    }
+    if (!(data.sections || []).length) break
+    data = await fvExpandThinSections(data, topic, per)
   }
   return data
 }
@@ -10110,9 +10137,10 @@ window.fvGenerateScript = async () => {
     fvSetScriptAiLock(true)
     if (fvScriptIsShort(data, picked.seconds)) {
       fvShowShortScriptAction(true)
+      const targetWords = payload.final_target_words || payload.target_words
       const shortMsg =
         'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '). You asked for ' +
-        formatDurationSeconds(picked.seconds) + ' (~' + payload.target_words +
+        formatDurationSeconds(picked.seconds) + ' (~' + targetWords +
         ' words). Edit it longer, or continue with this shorter script.'
       fvSetStatus(shortMsg, 'err')
       fvSetStatus(shortMsg, 'err', 2)
@@ -10124,7 +10152,7 @@ window.fvGenerateScript = async () => {
     }
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
-    const msg = (e && e.message) ? e.message : 'Script generation failed'
+    const msg = fvFriendlyScriptError(e)
     fvSetStatus(msg, 'err')
     fvSetStatus(msg, 'err', 2)
     fvSetScriptActionsVisible(!!fvState.script)

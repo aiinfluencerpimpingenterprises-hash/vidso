@@ -16,6 +16,9 @@ import {
   scriptTimeoutMs,
   scriptWordCount,
   sectionNeedsExpand,
+  outlineTargetWords,
+  scriptUpstreamBody,
+  shouldOutlineFirst,
   targetSectionCount,
   targetWordsFromSeconds,
   wordsPerSection,
@@ -111,10 +114,31 @@ test('script payload includes section budget for long targets', () => {
     durationId: 'long_1800',
     durationSeconds: 1800,
   })
-  assert.equal(body.target_words, 4500)
+  assert.equal(body.outline, true)
+  assert.equal(body.final_target_words, 4500)
   assert.equal(body.target_sections, 12)
-  assert.equal(body.words_per_section, 375)
-  assert.match(body.brief, /30 min/)
+  assert.equal(body.target_words, 720)
+  assert.equal(body.words_per_section, 60)
+  assert.equal(shouldOutlineFirst(4500), true)
+  assert.equal(shouldOutlineFirst(750), false)
+  assert.equal(outlineTargetWords(15), 900)
+  assert.match(body.brief, /valid JSON/i)
+  assert.equal(scriptUpstreamBody(body).duration_id, undefined)
+})
+
+test('gate enrich keeps an outline word budget', () => {
+  const next = enrichScriptBody({
+    topic: '15 biggest tigers of all time',
+    duration_id: 'long_1800',
+    outline: true,
+    target_words: 900,
+    duration: 6,
+    final_target_words: 4500,
+  }, 1800)
+  assert.equal(next.target_words, 900)
+  assert.equal(next.duration, 6)
+  assert.equal(next.final_target_words, 4500)
+  assert.equal(next.duration_seconds, 360)
 })
 
 test('duration_seconds wins over duration minutes when id is missing', () => {

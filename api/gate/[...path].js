@@ -1,11 +1,12 @@
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
-import { enrichScriptBody } from '../../lib/faceless-length.js'
+import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
 import { incrementUsage, readUsage } from '../../lib/usage-store.js'
 import { withCompedPlan, planIsActive } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { saveGrant, withStoredGrant } from '../../lib/grants.js'
 import { lookupPaidMembership } from '../../lib/whop-lookup.js'
+import { isJsonSyntaxError, recoverScriptData } from '../../lib/json-repair.js'
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
@@ -76,7 +77,7 @@ async function forward(req, subpath, body) {
   const text = await res.text()
   let data
   try { data = JSON.parse(text) } catch { data = { raw: text } }
-  return { status: res.status, data }
+  return { status: res.status, data, text }
 }
 
 function send(res, status, body) {
@@ -150,7 +151,19 @@ export default async function handler(req, res) {
     }
   }
 
-  const upstream = await forward(req, subpath, body)
+  const path = String(subpath).replace(/^\/+|\/+$/g, '')
+  const forwardBody = path === 'faceless/script' ? scriptUpstreamBody(body) : body
+  const upstream = await forward(req, subpath, forwardBody)
+  if (path === 'faceless/script') {
+    const recovered = recoverScriptData(upstream.data, upstream.text)
+    if (recovered && (
+      upstream.status < 400 ||
+      isJsonSyntaxError(upstream.data?.error || upstream.data?.message || upstream.text)
+    )) {
+      upstream.status = 200
+      upstream.data = recovered
+    }
+  }
   if (upstream.status >= 200 && upstream.status < 300 && rule.type === 'generate') {
     const g = evaluateGeneration({
       user,

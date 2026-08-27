@@ -3,6 +3,7 @@ import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
 import { applyPaidGrant } from '/lib/paid-grant.js'
+import { isJsonSyntaxError, recoverScriptData } from '/lib/json-repair.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
@@ -46,16 +47,23 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
   }
   let data = {}
   try { data = raw ? JSON.parse(raw) : {} } catch { data = { raw } }
+  const recovered = opts.recoverScript ? recoverScriptData(data, raw) : null
   if (!res.ok) {
+    if (recovered) return recovered
     const fallback = raw && !raw.trim().startsWith('{') ? raw.trim().slice(0, 180) : 'Request failed'
-    const err = new Error(data.message || data.error || fallback)
+    const msg = data.message || data.error || fallback
+    const err = new Error(
+      isJsonSyntaxError(msg)
+        ? 'Script JSON was incomplete. Try Generate Script again.'
+        : msg,
+    )
     err.status = res.status
-    err.code = data.error
+    err.code = isJsonSyntaxError(msg) ? 'json_parse' : data.error
     err.needsPlan = res.status === 402
     err.needsUpgrade = res.status === 403
     throw err
   }
-  return data
+  return recovered || data
 }
 
 async function req(method, path, body, isFormData = false) {
@@ -439,6 +447,7 @@ export const api = {
     // body: { topic, duration_id, duration (minutes), duration_seconds, target_words, aspect }
     script: (body, opts = {}) => gatedReq('POST', '/api/faceless/script', body, {
       timeoutMs: opts.timeoutMs || 120000,
+      recoverScript: true,
     }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
