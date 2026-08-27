@@ -424,6 +424,29 @@ select option{background:var(--card)}
 .fv-voice-dd.is-open .fv-voice-dd-btn svg.chev{transform:rotate(180deg);opacity:.9}
 .fv-voice-dd .clip-dd-menu{left:0;right:0;transform:none;min-width:0;width:100%;max-height:min(280px,50vh)}
 .fv-voice-dd.is-open .clip-dd-menu{display:block}
+.fv-font-dd{position:relative;z-index:8;width:100%}
+.fv-font-dd-btn{
+  appearance:none;display:flex;align-items:center;gap:10px;width:100%;height:44px;
+  padding:0 12px 0 14px;background:#16161a;border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;color:var(--ink);font:inherit;font-size:.9rem;font-weight:700;
+  cursor:pointer;text-align:left
+}
+.fv-font-dd-btn > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.fv-font-dd-btn:hover,.fv-font-dd.is-open .fv-font-dd-btn{
+  border-color:rgba(var(--glow),.55);box-shadow:0 0 0 3px rgba(var(--glow),.14)
+}
+.fv-font-dd-btn:focus-visible{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
+.fv-font-dd-btn svg.chev{margin-left:auto;flex-shrink:0;opacity:.55;transition:transform .15s}
+.fv-font-dd.is-open .fv-font-dd-btn svg.chev{transform:rotate(180deg);opacity:.9}
+.fv-font-dd .clip-dd-menu{
+  left:0;right:0;transform:none;min-width:0;width:100%;max-height:min(340px,46vh);z-index:12
+}
+.fv-font-dd.is-open{z-index:24}
+.fv-font-dd.is-open .clip-dd-menu{display:block}
+.fv-font-dd .clip-dd-menu button .fv-font-sample{
+  flex:1;min-width:0;font-size:1.08rem;font-weight:700;line-height:1.25;letter-spacing:.01em
+}
+.fv-font-dd .clip-dd-menu button[data-compact] .fv-font-sample{font-size:.78rem;letter-spacing:0}
 .fv-setup.collapsed{display:none}
 .fv-media-box{display:none;margin-top:8px}
 .fv-media-box.show{display:block}
@@ -2236,7 +2259,7 @@ body.img-detail-open{overflow:hidden}
   height:44px;border-radius:12px;overflow:hidden;
   background:rgba(255,255,255,.04);border:1px solid var(--border)
 }
-.fv-voice-skel[hidden],.fv-voice-error[hidden],#fv-voice[hidden],#fv-voice-dd[hidden]{display:none!important}
+.fv-voice-skel[hidden],.fv-voice-error[hidden],#fv-voice[hidden],#fv-voice-dd[hidden],#fv-cap-font[hidden]{display:none!important}
 .fv-voice-error{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   min-height:44px;padding:8px 12px;border-radius:12px;
@@ -5220,7 +5243,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                   <div class="result-label" style="margin-bottom:10px">Caption style</div>
                   <div class="field">
                     <label>Font</label>
-                    <select id="fv-cap-font" class="cm-input" onchange="fvApplyCapStyle()">
+                    <select id="fv-cap-font" hidden aria-hidden="true" tabindex="-1" onchange="fvApplyCapStyle()">
                       <option value="Anton, Impact, sans-serif">Anton</option>
                       <option value="Bangers, cursive" selected>Bangers</option>
                       <option value="'Montserrat', sans-serif">Montserrat</option>
@@ -5234,6 +5257,13 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                       <option value="'Press Start 2P', monospace">Press Start 2P</option>
                       <option value="Georgia, serif">Georgia</option>
                     </select>
+                    <div class="fv-font-dd" id="fv-font-dd">
+                      <button type="button" class="fv-font-dd-btn" id="fv-font-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="fv-font-menu" onclick="toggleFvFontDd(event)">
+                        <span id="fv-font-value" style="font-family:Bangers, cursive">Bangers</span>
+                        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      <ul class="clip-dd-menu" id="fv-font-menu" role="listbox" aria-label="Caption font"></ul>
+                    </div>
                   </div>
                   <div class="field">
                     <label>Size <span id="fv-cap-size-val">14</span>px</label>
@@ -8645,7 +8675,74 @@ function fvCapStyle() {
   }
 }
 
+function fvCapFontCheckSvg() {
+  return '<svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>'
+}
+
+function fvRenderFontMenu() {
+  const sel = document.getElementById('fv-cap-font')
+  const menu = document.getElementById('fv-font-menu')
+  if (!sel || !menu) return
+  const cur = sel.value
+  menu.innerHTML = [...sel.options].map((opt) => {
+    const value = opt.value
+    const label = opt.textContent || value
+    const on = value === cur
+    const compact = /Press Start/i.test(label) ? ' data-compact' : ''
+    return `<li><button type="button" role="option" data-value="${fvEsc(value)}" class="${on ? 'is-on' : ''}"${compact} onclick="pickFvFont(this)">${fvCapFontCheckSvg()}<span class="fv-font-sample" style="font-family:${fvEsc(value)}">${fvEsc(label)}</span></button></li>`
+  }).join('')
+  syncFvFontUi()
+}
+
+function syncFvFontUi() {
+  const sel = document.getElementById('fv-cap-font')
+  const label = document.getElementById('fv-font-value')
+  if (!sel) return
+  const opt = sel.selectedOptions?.[0]
+  const name = opt ? opt.textContent : 'Bangers'
+  const family = sel.value || 'Bangers, cursive'
+  if (label) {
+    label.textContent = name
+    label.style.fontFamily = family
+  }
+  document.querySelectorAll('#fv-font-menu [data-value]').forEach((el) => {
+    const on = el.dataset.value === sel.value
+    el.classList.toggle('is-on', on)
+    el.setAttribute('aria-selected', on ? 'true' : 'false')
+  })
+}
+
+function closeFvFontDd() {
+  const dd = document.getElementById('fv-font-dd')
+  const btn = document.getElementById('fv-font-btn')
+  dd?.classList.remove('is-open')
+  if (btn) btn.setAttribute('aria-expanded', 'false')
+}
+
+window.toggleFvFontDd = (e) => {
+  e?.stopPropagation?.()
+  const dd = document.getElementById('fv-font-dd')
+  const btn = document.getElementById('fv-font-btn')
+  if (!dd) return
+  const open = !dd.classList.contains('is-open')
+  try { closeFvVoiceDd() } catch (_) {}
+  try { closeClipCtypeDd() } catch (_) {}
+  dd.classList.toggle('is-open', open)
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+  if (open) fvRenderFontMenu()
+}
+
+window.pickFvFont = (el) => {
+  const sel = document.getElementById('fv-cap-font')
+  const value = el?.dataset?.value
+  if (sel && value) sel.value = value
+  syncFvFontUi()
+  closeFvFontDd()
+  fvApplyCapStyle()
+}
+
 window.fvApplyCapStyle = () => {
+  syncFvFontUi()
   const cap = document.getElementById('fv-prev-cap')
   if (!cap) return
   const s = fvCapStyle()
@@ -8658,6 +8755,7 @@ window.fvApplyCapStyle = () => {
     el.style.color = s.highlight
     el.style.background = 'transparent'
   })
+  syncFvFontUi()
   fvPersistPreviewSettings()
 }
 
@@ -9032,6 +9130,7 @@ function fvPersistMedia() {
 }
 
 window.fvSideTab = (pane) => {
+  try { closeFvFontDd() } catch (_) {}
   document.querySelectorAll('.fv-side-tab').forEach(b => b.classList.toggle('active', b.dataset.pane === pane))
   document.querySelectorAll('.fv-side-pane').forEach(p => p.classList.toggle('active', p.id === 'fv-pane-' + pane))
 }
@@ -9338,6 +9437,7 @@ function fvInitPreview() {
   fvSelectMusic(musicId)
   fvSideTab('broll')
   fvRenderBrollEditor()
+  fvRenderFontMenu()
   fvApplyCapStyle()
   fvSeekPreview(0)
 }
@@ -10169,11 +10269,14 @@ document.addEventListener('click', (e) => {
   if (dd && !dd.contains(e.target)) closeClipCtypeDd()
   const voice = document.getElementById('fv-voice-dd')
   if (voice && !voice.contains(e.target)) closeFvVoiceDd()
+  const font = document.getElementById('fv-font-dd')
+  if (font && !font.contains(e.target)) closeFvFontDd()
 })
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeClipCtypeDd()
     closeFvVoiceDd()
+    closeFvFontDd()
   }
 })
 
