@@ -19,6 +19,7 @@ import {
   scriptTimeoutMs,
   scriptWordCount,
   sectionNeedsExpand,
+  stitchSectionText,
   outlineTargetWords,
   scriptUpstreamBody,
   shouldOutlineFirst,
@@ -95,6 +96,11 @@ test('list topics drive section count and the length brief', () => {
   assert.equal(wordsPerSection(4500, 12), 375)
   assert.equal(sectionNeedsExpand('short text here', 375), true)
   assert.equal(sectionNeedsExpand(Array.from({ length: 400 }, () => 'word').join(' '), 375), false)
+  assert.equal(sectionNeedsExpand(Array.from({ length: 220 }, () => 'word').join(' '), 300, 0.7), false)
+  assert.equal(sectionNeedsExpand(Array.from({ length: 220 }, () => 'word').join(' '), 300, 0.9), true)
+  const stitched = stitchSectionText('Hello there friends.', 'And then the tiger stepped closer to the river bank.')
+  assert.match(stitched, /Hello there friends/)
+  assert.match(stitched, /river bank/)
   assert.equal(scriptTimeoutMs(1800), 144000)
   assert.equal(scriptTimeoutMs(60), 90000)
   const brief = scriptLengthBrief({

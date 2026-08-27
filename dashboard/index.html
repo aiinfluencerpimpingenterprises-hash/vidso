@@ -5513,6 +5513,7 @@ import {
   scriptTimeoutMs,
   scriptWordCount,
   sectionNeedsExpand,
+  stitchSectionText,
   targetWordsFromSeconds,
   wordsPerSection,
   countSpokenWords,
@@ -10211,13 +10212,18 @@ async function fvExpandOneSection(script, topic, row, perWords, payload, picked,
   let heading = row.sec.heading
   let text = row.sec.text || ''
   const covered = fvCoveredHeadings(script.sections).filter((h) => h !== heading).join(', ')
-  for (let attempt = 0; attempt < 2; attempt++) {
-    if (!sectionNeedsExpand(text, perWords)) return { ...row.sec, heading, text }
+  const ratio = 0.9
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (!sectionNeedsExpand(text, perWords, ratio)) return { ...row.sec, heading, text }
+    const have = countSpokenWords(text)
+    const need = Math.max(80, perWords - have)
+    const continuePrompt = have > 40
+      ? 'Keep every sentence already written. Then CONTINUE with about ' + need +
+        ' more spoken words. Do not restart. Do not recap.'
+      : 'Write about ' + perWords + ' spoken words of narration. Do not summarize. Do not list extra items.'
     try {
       const out = await api.faceless.rewriteSection({
-        topic: topic + '\n\nThis is item ' + (row.index + 1) + ' of ' + want +
-          '. Expand this section to about ' + perWords +
-          ' spoken words of narration. Do not summarize. Do not list extra items.' +
+        topic: topic + '\n\nThis is item ' + (row.index + 1) + ' of ' + want + '. ' + continuePrompt +
           (covered ? ' Already covered: ' + covered + '.' : ''),
         section_id: row.sec.id,
         heading,
@@ -10227,19 +10233,22 @@ async function fvExpandOneSection(script, topic, row, perWords, payload, picked,
       }, { timeoutMs: 90000 })
       const next = fvSectionRewriteText(out)
       const nextHeading = out?.heading || out?.section?.heading
-      if (countSpokenWords(next) > countSpokenWords(text)) text = next
-      if (nextHeading) heading = nextHeading
+      text = stitchSectionText(text, next)
+      if (nextHeading && !/^item \d+/i.test(nextHeading)) heading = nextHeading
     } catch (_) {
       break
     }
   }
-  if (!sectionNeedsExpand(text, perWords)) return { ...row.sec, heading, text }
+  if (!sectionNeedsExpand(text, perWords, ratio)) return { ...row.sec, heading, text }
   try {
     const one = await fvWriteOneSection(
       topic, heading, row.index, want, perWords, payload, picked, timeoutMs, covered,
     )
-    if (one && countSpokenWords(one.text) > countSpokenWords(text)) {
-      return { ...row.sec, heading: one.heading || heading, text: one.text }
+    if (one?.text) {
+      const next = stitchSectionText(text, one.text)
+      if (countSpokenWords(next) > countSpokenWords(text)) {
+        return { ...row.sec, heading: one.heading || heading, text: next }
+      }
     }
   } catch (err) {
     fvLengthTrace('script-section-fallback-error', { heading, message: err.message || String(err) })
@@ -10247,12 +10256,20 @@ async function fvExpandOneSection(script, topic, row, perWords, payload, picked,
   return { ...row.sec, heading, text }
 }
 
-async function fvExpandThinSections(script, topic, perWords, payload, picked, timeoutMs, want) {
+function fvThinSectionRows(sections, perWords, forceShortest) {
+  const rows = (sections || []).map((sec, index) => ({
+    sec, index, words: countSpokenWords(sec?.text),
+  }))
+  const thin = rows.filter((row) => sectionNeedsExpand(row.sec.text, perWords, 0.9))
+  if (thin.length) return thin
+  if (!forceShortest) return []
+  return rows.filter((row) => row.words < perWords).sort((a, b) => a.words - b.words).slice(0, 8)
+}
+
+async function fvExpandThinSections(script, topic, perWords, payload, picked, timeoutMs, want, forceShortest) {
   const sections = Array.isArray(script.sections) ? script.sections : []
   if (!sections.length) return script
-  const thin = sections
-    .map((sec, index) => ({ sec, index }))
-    .filter((row) => sectionNeedsExpand(row.sec.text, perWords))
+  const thin = fvThinSectionRows(sections, perWords, forceShortest)
   if (!thin.length) return script
   let done = 0
   await fvMapPool(thin, 2, async (row) => {
@@ -10280,13 +10297,12 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
   const wantSections = payload.target_sections || 1
   if (needsMoreSections(data, wantSections)) {
     data = await fvFillMissingSections(data, topic, payload, picked, timeoutMs)
-    try { fvRenderScript(data) } catch (_) {}
   } else {
     data.sections = padListSections(data.sections || [], wantSections)
     data = rebuildFullScript(data)
   }
-  const per = wordsPerSection(targetWords, wantSections)
-  for (let pass = 1; pass <= 3; pass++) {
+  const per = Math.round(wordsPerSection(targetWords, wantSections) * 1.08)
+  for (let pass = 1; pass <= 6; pass++) {
     if (!fvScriptIsShort(data, picked.seconds) && !needsMoreSections(data, wantSections)) return data
     const have = scriptWordCount(data)
     fvLengthTrace('script-expand-pass', {
@@ -10296,9 +10312,10 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading', 2)
     if (!(data.sections || []).length) break
     const before = have
-    data = await fvExpandThinSections(data, topic, per, payload, picked, timeoutMs, wantSections)
-    try { fvRenderScript(data) } catch (_) {}
-    if (scriptWordCount(data) <= before) break
+    data = await fvExpandThinSections(
+      data, topic, per, payload, picked, timeoutMs, wantSections, pass >= 2,
+    )
+    if (scriptWordCount(data) <= before && pass >= 5) break
   }
   return data
 }
@@ -10376,7 +10393,7 @@ window.fvGenerateScript = async () => {
         'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '). You asked for ' +
         formatDurationSeconds(picked.seconds) + ' (~' + targetWords +
         ' words). Edit it longer, or continue with this shorter script.'
-      fvSetStatus(shortMsg, 'err')
+      fvSetStatus('', null)
       fvSetStatus(shortMsg, 'err', 2)
     } else {
       fvShowShortScriptAction(false)
