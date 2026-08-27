@@ -2,6 +2,7 @@ import {
   MCP_CONNECT_STEPS,
   MCP_DEMOS,
   MCP_FAQ,
+  MCP_FEATURE_CARDS,
   MCP_HERO,
   MCP_PROMO,
   MCP_WORKFLOW_CATEGORIES,
@@ -9,7 +10,7 @@ import {
 } from '/lib/mcp-page.js'
 import {
   bindPlaceholders,
-  demoHtml,
+  claudeDemoHtml,
   faqHtml,
   initAccordion,
   initCopyButtons,
@@ -59,11 +60,12 @@ document.getElementById('connect-steps').innerHTML = MCP_CONNECT_STEPS.map((s) =
 
 const demoTabs = document.getElementById('demo-tabs')
 const demoRoot = document.getElementById('demo-root')
+if (MCP_DEMOS.length < 2) demoTabs.hidden = true
 demoTabs.innerHTML = MCP_DEMOS.map((d, i) =>
   `<button type="button" role="tab" id="demo-tab-${d.id}" data-tab="${d.id}" aria-selected="${i === 0 ? 'true' : 'false'}" aria-controls="demo-panel-${d.id}" tabindex="${i === 0 ? 0 : -1}">${d.label}</button>`
 ).join('')
 demoRoot.innerHTML = MCP_DEMOS.map((d, i) =>
-  `<div id="demo-panel-${d.id}" role="tabpanel" aria-labelledby="demo-tab-${d.id}" ${i === 0 ? '' : 'hidden'}>${demoHtml(d)}</div>`
+  `<div id="demo-panel-${d.id}" role="tabpanel" aria-labelledby="demo-tab-${d.id}" ${i === 0 ? '' : 'hidden'}>${claudeDemoHtml(d, MCP_FEATURE_CARDS)}</div>`
 ).join('')
 initTabs({
   tabsId: 'demo-tabs',
