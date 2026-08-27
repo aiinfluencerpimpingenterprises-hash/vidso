@@ -21,6 +21,7 @@ import {
   youtubeDedicatedOAuth,
   youtubeRedirectUri,
   supabaseGoogleYoutubeUrl,
+  youtubeApiSubpath,
   SIGNIN_GOOGLE_CLIENT_ID,
   YT_OAUTH_FILENAME,
   YT_SCOPES,
@@ -45,6 +46,14 @@ test('YouTube Connect can reuse Google sign-in OAuth', () => {
   assert.equal(u.searchParams.get('provider'), 'google')
   assert.ok(u.searchParams.get('scopes').includes('youtube.upload'))
   assert.ok(SIGNIN_GOOGLE_CLIENT_ID.endsWith('.apps.googleusercontent.com'))
+})
+
+test('YouTube API subpath is read from the URL when Vercel omits query.path', () => {
+  assert.equal(youtubeApiSubpath({ query: { path: 'connect' } }), 'connect')
+  assert.equal(youtubeApiSubpath({ query: { path: ['mcp'] } }), 'mcp')
+  assert.equal(youtubeApiSubpath({ url: '/api/youtube/connect' }), 'connect')
+  assert.equal(youtubeApiSubpath({ url: '/api/youtube/status?x=1' }), 'status')
+  assert.equal(youtubeApiSubpath({ url: '/api/youtube/import' }), 'import')
 })
 
 test('OAuth state round-trips and expires', () => {

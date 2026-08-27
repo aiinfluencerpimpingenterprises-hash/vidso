@@ -24,6 +24,7 @@ import {
   supabaseGoogleYoutubeUrl,
   uploadYoutubeFromArgs,
   verifyPayload,
+  youtubeApiSubpath,
   youtubeConfigured,
   youtubeDedicatedOAuth,
   youtubeRedirectUri,
@@ -34,7 +35,7 @@ import {
 export const config = { maxDuration: 300 }
 
 function pathOf(req) {
-  return [].concat(req.query.path || []).join('/')
+  return youtubeApiSubpath(req)
 }
 
 function redirect(res, url) {
