@@ -1,14 +1,16 @@
 ---
-description: Always commit and push shipped work to origin/main. Never ask first.
+description: Never push to live. Always ship a preview link instead.
 alwaysApply: true
 ---
 
-# Push live
+# Preview only, never live
 
-After finishing a user-requested change, commit it and `git push origin HEAD` without asking.
+Do not deploy user-requested work to production. Do not `git push origin HEAD` to `main` / `master`.
 
-- Do not wait for "push live" or "is it live?"
-- Follow the repo commit-message style (why, not a file dump)
-- Never force-push `main` / `master`
-- Still skip secrets (`.env`, credentials)
-- If commit or push fails, fix it and retry; do not leave the work unpushed
+After finishing a change:
+- Commit on a preview branch (not `main`)
+- Push that branch so Vercel creates a preview deployment
+- Send the preview URL in the reply
+- Do not merge to `main` or promote the preview to production unless the user explicitly asks
+
+Never force-push `main` / `master`. Still skip secrets (`.env`, credentials).

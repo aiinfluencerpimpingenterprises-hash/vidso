@@ -294,6 +294,7 @@ test('duration_id long_600 is 600 seconds', () => {
   assert.equal(durationFromBody({ duration_id: 'long_600' }), 600)
   assert.equal(durationFromBody({ duration: 45 }), 45)
   assert.equal(durationFromBody({ duration: 612, duration_id: 'long_600' }), 600)
+  assert.equal(durationFromBody({ duration: 5, duration_seconds: 300 }), 300)
   assert.equal(durationFromBody({ script: { duration_id: 'long_900' } }), 900)
   assert.equal(secondsFromDurationId('long_1200'), 1200)
   assert.equal(secondsFromDurationId('long_420'), 420)
