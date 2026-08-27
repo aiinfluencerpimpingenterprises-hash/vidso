@@ -723,6 +723,12 @@ input[type=color]{width:36px;height:32px;padding:2px;border-radius:10px;border:1
 .fv-seg{border-radius:12px;padding:3px;background:rgba(255,255,255,.04)}
 .fv-seg-btn.active{background:var(--grad)!important;box-shadow:0 4px 14px rgba(196,16,40,.3)}
 .fv-chip{border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-body);padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color var(--dur-hover) var(--ease-out),background var(--dur-hover) var(--ease-out),color var(--dur-hover) var(--ease-out)}
+.fv-pro-tag{
+  display:inline-flex;align-items:center;margin-left:6px;padding:1px 6px;border-radius:999px;
+  background:rgba(var(--glow),.18);border:1px solid rgba(var(--glow),.4);
+  color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase
+}
+.fv-broll-source-hint{font-size:.72rem;color:var(--muted);margin:8px 0 0;line-height:1.4}
 .fv-chip:hover{color:var(--ink);border-color:rgba(255,255,255,.2)}
 .fv-chip.active{background:rgba(var(--glow),.14);border-color:rgba(var(--glow),.5);color:var(--ink)}
 #panel-videogen > .tool-card,#panel-imagegen .img-pane{max-width:none}
@@ -5039,7 +5045,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
       <div class="tool-card">
         <h3 class="ui-card-title">Long Form Generator</h3>
-        <p class="ui-card-desc">Set topic, length, aspect, and voice, then generate a script.</p>
+        <p class="ui-card-desc">Set topic, length, footage source, and voice, then generate a script.</p>
 
         <div class="fv-wizard">
           <div class="fv-stepper" id="fv-stepper" aria-label="Progress">
@@ -5080,6 +5086,15 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                 <button type="button" class="fv-chip" data-aspect="9:16" onclick="fvSetAspect('9:16')">9:16 Vertical</button>
                 <button type="button" class="fv-chip active" data-aspect="16:9" onclick="fvSetAspect('16:9')">16:9 Horizontal</button>
               </div>
+            </div>
+
+            <div class="field" id="fv-field-broll-source">
+              <label>Footage</label>
+              <div class="fv-chip-row" id="fv-broll-source-chips">
+                <button type="button" class="fv-chip active" data-src="pexels" onclick="fvSetBrollSource('pexels')">Stock footage</button>
+                <button type="button" class="fv-chip" data-src="youtube" onclick="fvSetBrollSource('youtube')">YouTube clips <span class="fv-pro-tag">Pro</span></button>
+              </div>
+              <p class="fv-broll-source-hint" id="fv-broll-source-hint">Stock clips from Pexels, matched to your script. Pro can pull real YouTube footage for each section.</p>
             </div>
 
             <div class="field" id="fv-field-voice">
@@ -5438,6 +5453,7 @@ import {
   targetWordsFromSeconds,
 } from '/lib/faceless-length.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
+import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { isHistorySidecarName } from '/lib/image-gen.js'
@@ -7970,6 +7986,7 @@ window.fvState = {
   lengthLog: [],
   allowShortScript: false,
   allowShortRender: false,
+  brollSource: 'pexels',
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -8210,6 +8227,34 @@ window.fvSetAspect = (aspect) => {
   })
 }
 
+function fvSyncBrollSourceUi() {
+  const src = fvState.brollSource === 'youtube' ? 'youtube' : 'pexels'
+  document.querySelectorAll('#fv-broll-source-chips .fv-chip').forEach((b) => {
+    b.classList.toggle('active', b.dataset.src === src)
+  })
+  const hint = document.getElementById('fv-broll-source-hint')
+  if (hint) {
+    hint.textContent = src === 'youtube'
+      ? 'After voiceover, Vidso searches YouTube for each section (for example each plane) and lays those clips on the timeline.'
+      : 'Stock clips from Pexels, matched to your script. Pro can pull real YouTube footage for each section.'
+  }
+  const q = document.getElementById('fv-broll-query')
+  if (q) q.placeholder = src === 'youtube' ? 'Search YouTube…' : 'Search Pexels…'
+}
+
+window.fvSetBrollSource = (src) => {
+  if (src === 'youtube') {
+    const gate = evaluateFeature({ user: currentUser, feature: 'youtube_sourced_broll' })
+    if (!gate.ok) {
+      try { openPaywall({ force: true, reason: 'upgrade' }) } catch (_) {}
+      fvSetStatus(gate.message || 'YouTube clips are on Pro.', 'err')
+      return
+    }
+  }
+  fvState.brollSource = src === 'youtube' ? 'youtube' : 'pexels'
+  fvSyncBrollSourceUi()
+}
+
 function fvVoiceLabel(v) {
   const label = String(v.name || '').split(' - ')[0]
   const cat = v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : (v.category || '')
@@ -8345,6 +8390,7 @@ window.fvPreviewVoice = () => {
 
 function fvInit() {
   fvRenderDurationChips()
+  fvSyncBrollSourceUi()
   if (voices.length) fvPopulateVoices()
   else loadVoices().then(() => fvPopulateVoices())
   fvState.inited = true
@@ -8524,7 +8570,7 @@ function fvRenderMediaResult(job) {
         ${c.preview ? `<img src="${fvEsc(c.preview)}" alt="" loading="lazy">` : `<video src="${fvEsc(c.url)}" muted playsinline></video>`}
         <div class="tag">${fvEsc(c.query || 'clip')}</div>
       </div>`).join('')
-    : '<div style="color:var(--muted);font-size:.78rem;grid-column:1/-1">No B-roll yet. Add a Pexels API key on the backend, or re-run after richer keywords.</div>'
+    : '<div style="color:var(--muted);font-size:.78rem;grid-column:1/-1">No B-roll yet. Search below, upload a clip, or re-run after a richer script.</div>'
 
   const tl = document.getElementById('fv-media-timeline')
   const total = job.duration || 1
@@ -8561,6 +8607,65 @@ function fvSyncWordHighlight(audio) {
     const s = parseFloat(el.dataset.start)
     const e = parseFloat(el.dataset.end)
     el.classList.toggle('on', t >= s && t < e)
+  })
+}
+
+function fvMapYoutubeClip(video, query) {
+  return {
+    id: 'yt_' + (video.id || Date.now()),
+    url: api.download.streamUrl(video.url),
+    preview: video.thumbnail || '',
+    query,
+    title: video.title || query,
+    photographer: video.channel || '',
+    pexels_url: video.url,
+    youtube_url: video.url,
+    source: 'youtube',
+    duration: video.duration || 0,
+  }
+}
+
+async function fvAttachYoutubeBroll(job) {
+  const gate = evaluateFeature({ user: currentUser, feature: 'youtube_sourced_broll' })
+  if (!gate.ok) {
+    job.warning = gate.message || 'YouTube clips are on Pro.'
+    return job
+  }
+  fvSetMediaStatus('Searching YouTube for each section…', 'loading')
+  const duration = job.duration || fvPickedDuration()?.seconds || 180
+  const result = await assembleYoutubeBroll({
+    script: fvState.script,
+    duration,
+    concurrency: 2,
+    search: (q) => api.download.search(q, 5),
+    mapClip: fvMapYoutubeClip,
+    onProgress: ({ query, index, total }) => {
+      fvSetMediaStatus('YouTube: ' + query + ' (' + index + '/' + total + ')', 'loading')
+    },
+  })
+  if (!result.found) {
+    job.warning = 'No YouTube clips found. Using stock B-roll.'
+    return job
+  }
+  job.clips = result.clips
+  job.timeline = result.timeline
+  job.broll_source = 'youtube'
+  job.warning = result.found + ' YouTube clips matched to the script'
+  return job
+}
+
+function fvTimelineForRender(timeline) {
+  const aspect = fvState.media?.aspect || fvState.aspect
+  const frame = aspect === '9:16' ? '9:16' : 'original'
+  return (timeline || []).map((seg) => {
+    const watch = seg.youtube_url || (seg.source === 'youtube' ? seg.pexels_url : '')
+    if (!watch) return seg
+    const start = Number(seg.clip_start) || 0
+    const len = Math.max(4, (Number(seg.end) || 0) - (Number(seg.start) || 0))
+    return {
+      ...seg,
+      url: api.download.clipUrl(watch, start, +(start + len).toFixed(2), frame),
+    }
   })
 }
 
@@ -8619,8 +8724,15 @@ window.fvStartMedia = async (force) => {
           fvSetMediaStatus(job.error || 'Media failed', 'err')
           return
         }
+        let ready = job
+        if (fvState.brollSource === 'youtube') {
+          try { ready = await fvAttachYoutubeBroll(job) } catch (e) {
+            job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using stock clips'
+            ready = job
+          }
+        }
         fvSetMediaStatus('Ready', 'ok')
-        fvRenderMediaResult(job)
+        fvRenderMediaResult(ready)
       } catch (e) {
         clearInterval(fvState.mediaPoll)
         fvState.mediaPoll = null
@@ -9210,7 +9322,7 @@ function fvRenderClipPicker(extraClips) {
       <button type="button" class="pick${landscape ? ' landscape' : ''}" title="${fvEsc(c.query || '')}" onclick="fvApplyLibraryClip(${i})">
         ${c.preview ? `<img src="${fvEsc(c.preview)}" alt="" loading="lazy">` : `<video src="${fvEsc(c.url)}" muted></video>`}
       </button>`).join('')
-    : '<div style="grid-column:1/-1;color:var(--muted);font-size:.75rem">Search Pexels or upload a clip to fill the library.</div>'
+    : '<div style="grid-column:1/-1;color:var(--muted);font-size:.75rem">Search or upload a clip to fill the library.</div>'
 }
 
 window.fvSelectSeg = (i) => {
@@ -9297,7 +9409,11 @@ window.fvApplyLibraryClip = (libIdx) => {
     height: clip.height,
     duration: clip.duration || 0,
     photographer: clip.photographer || null,
-    pexels_url: clip.pexels_url || null,
+    pexels_url: clip.pexels_url || clip.youtube_url || null,
+    source: clip.source || prev.source || null,
+    youtube_url: clip.youtube_url || (clip.source === 'youtube' ? clip.pexels_url : prev.youtube_url) || null,
+    clip_start: clip.clip_start != null ? clip.clip_start : (clip.source === 'youtube' ? 8 : (prev.clip_start || 0)),
+    title: clip.title || prev.title || '',
   }
   // Also add to pool if new
   if (!fvState.media.clips) fvState.media.clips = []
@@ -9348,17 +9464,30 @@ window.fvRedistributeBroll = () => {
 window.fvSearchBroll = async () => {
   const q = (document.getElementById('fv-broll-query')?.value || '').trim()
   if (!q) return fvSetBrollStatus('Enter a search term', 'err')
-  fvSetBrollStatus('Searching Pexels…', 'loading')
+  const youtube = fvState.brollSource === 'youtube' || fvState.media?.broll_source === 'youtube'
+  fvSetBrollStatus(youtube ? 'Searching YouTube…' : 'Searching Pexels…', 'loading')
   try {
-    const data = await api.faceless.searchBroll({
-      query: q,
-      aspect: fvState.media?.aspect || fvState.aspect,
-      per_page: 10,
-    })
+    let clips = []
+    if (youtube) {
+      const gate = evaluateFeature({ user: currentUser, feature: 'youtube_sourced_broll' })
+      if (!gate.ok) {
+        try { openPaywall({ force: true, reason: 'upgrade' }) } catch (_) {}
+        return fvSetBrollStatus(gate.message || 'YouTube search is on Pro.', 'err')
+      }
+      const { videos } = await api.download.search(q, 10)
+      clips = (videos || []).map((v) => fvMapYoutubeClip(v, q))
+    } else {
+      const data = await api.faceless.searchBroll({
+        query: q,
+        aspect: fvState.media?.aspect || fvState.aspect,
+        per_page: 10,
+      })
+      clips = (data.clips || []).map((c) => ({ ...c, query: q }))
+    }
     if (!fvState.preview) fvState.preview = {}
-    fvState.preview.searchClips = (data.clips || []).map(c => ({ ...c, query: q }))
+    fvState.preview.searchClips = clips
     fvRenderClipPicker(fvState.preview.searchClips)
-    fvSetBrollStatus((data.clips?.length || 0) + ' clips found. Click one to apply', 'ok')
+    fvSetBrollStatus(clips.length + ' clips found. Click one to apply', 'ok')
   } catch (e) {
     fvSetBrollStatus(e.message || 'Search failed', 'err')
   }
@@ -9558,7 +9687,7 @@ window.fvStartExport = async (opts = {}) => {
       duration_id: picked.id,
       duration_seconds: picked.seconds,
       words: fvState.media.words || [],
-      timeline: fvState.media.timeline || [],
+      timeline: fvTimelineForRender(fvState.media.timeline || []),
       aspect: fvState.media.aspect || fvState.aspect,
       caption: {
         font: caption.font,

@@ -41,7 +41,7 @@ function user(tier, extra = {}) {
 
 test('max video length marketing row matches the matrix and is included on every tier', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Max video length')
-  assert.equal(FEATURE_ROWS.length, 17)
+  assert.equal(FEATURE_ROWS.length, 18)
   assert.equal(row.plus, '10 min')
   assert.equal(row.pro, '15 min')
   assert.equal(row.studio, '30 min')
@@ -131,6 +131,7 @@ test('gated features per tier', () => {
     plus: {
       video_tools: false,
       viral_moment_clipping: false,
+      youtube_sourced_broll: false,
       custom_brand_kit: false,
       retention_score: false,
       high_volume_workflow: false,
@@ -140,6 +141,7 @@ test('gated features per tier', () => {
     pro: {
       video_tools: true,
       viral_moment_clipping: true,
+      youtube_sourced_broll: true,
       custom_brand_kit: true,
       retention_score: false,
       high_volume_workflow: false,
@@ -149,6 +151,7 @@ test('gated features per tier', () => {
     studio: {
       video_tools: true,
       viral_moment_clipping: true,
+      youtube_sourced_broll: true,
       custom_brand_kit: true,
       retention_score: true,
       high_volume_workflow: true,
