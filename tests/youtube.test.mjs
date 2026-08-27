@@ -18,7 +18,10 @@ import {
   signPayload,
   verifyPayload,
   youtubeConfigured,
+  youtubeDedicatedOAuth,
   youtubeRedirectUri,
+  supabaseGoogleYoutubeUrl,
+  SIGNIN_GOOGLE_CLIENT_ID,
   YT_OAUTH_FILENAME,
   YT_SCOPES,
 } from '../lib/youtube.js'
@@ -31,10 +34,17 @@ const env = {
   YOUTUBE_TOKEN_SECRET: 'unit-test-token-secret',
 }
 
-test('youtubeConfigured requires both Google client values', () => {
-  assert.equal(youtubeConfigured({}), false)
-  assert.equal(youtubeConfigured({ GOOGLE_YOUTUBE_CLIENT_ID: 'x' }), false)
-  assert.equal(youtubeConfigured(env), true)
+test('YouTube Connect can reuse Google sign-in OAuth', () => {
+  assert.equal(youtubeDedicatedOAuth({}), false)
+  assert.equal(youtubeConfigured({}), true)
+  assert.equal(youtubeDedicatedOAuth(env), true)
+  assert.equal(youtubeConfigured({ YOUTUBE_OAUTH: '0' }), false)
+  const url = supabaseGoogleYoutubeUrl('https://www.vidso.pro/video-generation')
+  const u = new URL(url)
+  assert.equal(u.origin + u.pathname, 'https://ymtmgpgcmrazqeklixwf.supabase.co/auth/v1/authorize')
+  assert.equal(u.searchParams.get('provider'), 'google')
+  assert.ok(u.searchParams.get('scopes').includes('youtube.upload'))
+  assert.ok(SIGNIN_GOOGLE_CLIENT_ID.endsWith('.apps.googleusercontent.com'))
 })
 
 test('OAuth state round-trips and expires', () => {

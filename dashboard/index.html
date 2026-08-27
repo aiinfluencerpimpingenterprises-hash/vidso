@@ -5536,6 +5536,7 @@ import {
   youtubeDisconnect,
   youtubeSaveSettings,
   youtubeAccessToken,
+  youtubeImportProvider,
   uploadBlobToYoutube,
   uploadViaServer,
   mcpConfigJson,
@@ -5658,6 +5659,7 @@ function afterAuthReady(opts = {}) {
     loadFiles()
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
+    try { finishYoutubeProviderImport() } catch (_) {}
     return
   }
   obClearNeedFlag()
@@ -5668,6 +5670,7 @@ function afterAuthReady(opts = {}) {
     maybeShowPaywall()
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
+    try { finishYoutubeProviderImport() } catch (_) {}
     return
   }
   document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
@@ -5675,6 +5678,7 @@ function afterAuthReady(opts = {}) {
   if (opts.restoreRoute !== false) restorePanelFromHash()
   maybeStartUiTour()
   try { consumeYoutubeQuery() } catch (_) {}
+  try { finishYoutubeProviderImport() } catch (_) {}
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -5817,6 +5821,23 @@ function consumeOAuthReturn() {
   const query = new URLSearchParams(location.search || '')
   const access = hash.get('access_token') || query.get('access_token')
   const refresh = hash.get('refresh_token') || query.get('refresh_token')
+  const providerToken = hash.get('provider_token') || query.get('provider_token')
+  const providerRefresh = hash.get('provider_refresh_token') || query.get('provider_refresh_token')
+  const providerExpires = hash.get('expires_in') || query.get('expires_in')
+  let wantYoutube = false
+  try { wantYoutube = sessionStorage.getItem('vidso_yt_oauth') === '1' } catch (_) {}
+  if (wantYoutube) {
+    try { sessionStorage.removeItem('vidso_yt_oauth') } catch (_) {}
+    if (providerRefresh || providerToken) {
+      window.__ytProviderPending = {
+        accessToken: providerToken,
+        refreshToken: providerRefresh,
+        expiresIn: providerExpires,
+      }
+    } else {
+      window.__ytProviderError = 'Google did not return YouTube access. Enable YouTube Data API and YouTube scopes on the Google sign-in OAuth client, then connect again.'
+    }
+  }
   if (!access) return false
   setSession({ access_token: access, refresh_token: refresh || '' })
   // Strip token params from the URL so refresh does not re-apply a stale session.
@@ -6015,7 +6036,7 @@ async function refreshYoutubeSettings() {
   connected.hidden = !on
   if (st.configured === false) {
     disconnected.hidden = true
-    ytSetSettingsMsg('YouTube publishing is not configured on this deployment yet. Add Google OAuth credentials on Vercel.', 'err')
+    ytSetSettingsMsg('YouTube publishing is turned off on this deployment.', 'err')
   }
   if (!on) return
   const title = document.getElementById('settings-yt-title')
@@ -6039,6 +6060,27 @@ window.connectYoutubeChannel = async () => {
   ytSetSettingsMsg('Redirecting to Google…')
   try { await youtubeConnect(location.pathname || '/video-generation') }
   catch (e) { ytSetSettingsMsg(e.message || 'Could not start YouTube connect', 'err') }
+}
+
+async function finishYoutubeProviderImport() {
+  const pending = window.__ytProviderPending
+  const pendingErr = window.__ytProviderError
+  window.__ytProviderPending = null
+  window.__ytProviderError = ''
+  if (!pending && !pendingErr) return
+  openAccountSettings()
+  if (pendingErr) {
+    ytSetSettingsMsg(pendingErr, 'err')
+    return
+  }
+  ytSetSettingsMsg('Connecting YouTube…')
+  try {
+    _ytStatus = await youtubeImportProvider(pending)
+    ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
+    await refreshYoutubeSettings()
+  } catch (e) {
+    ytSetSettingsMsg(e.message || 'Could not connect YouTube', 'err')
+  }
 }
 
 async function saveYoutubePrefs() {

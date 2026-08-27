@@ -18,11 +18,14 @@ import {
   requestOrigin,
   requireYoutubeAccess,
   runMcpTool,
+  saveYoutubeFromGoogleTokens,
   saveYoutubeRecord,
   signPayload,
+  supabaseGoogleYoutubeUrl,
   uploadYoutubeFromArgs,
   verifyPayload,
   youtubeConfigured,
+  youtubeDedicatedOAuth,
   youtubeRedirectUri,
   youtubeSecrets,
   YT_BRIDGE_COOKIE,
@@ -89,18 +92,36 @@ async function handleStatus(req, res, token) {
 
 async function handleConnect(req, res, token, body) {
   if (!youtubeConfigured()) {
-    return send(res, 501, { error: 'YouTube publishing is not configured. Add GOOGLE_YOUTUBE_CLIENT_ID and GOOGLE_YOUTUBE_CLIENT_SECRET.' })
+    return send(res, 501, { error: 'YouTube publishing is turned off on this deployment.' })
   }
-  const { url, bridge } = await connectUrlFor(req, token, body.returnTo || req.query.returnTo)
-  res.setHeader('Set-Cookie', bridgeCookieHeader(bridge))
-  return send(res, 200, { url })
+  if (youtubeDedicatedOAuth()) {
+    const { url, bridge } = await connectUrlFor(req, token, body.returnTo || req.query.returnTo)
+    res.setHeader('Set-Cookie', bridgeCookieHeader(bridge))
+    return send(res, 200, { url, mode: 'dedicated' })
+  }
+  const origin = requestOrigin(req)
+  const ret = String(body.returnTo || req.query.returnTo || '/video-generation')
+  const dest = new URL(ret.startsWith('/') ? ret : '/video-generation', origin)
+  return send(res, 200, {
+    url: supabaseGoogleYoutubeUrl(dest.toString()),
+    mode: 'supabase',
+  })
+}
+
+async function handleImport(req, res, token, body) {
+  try {
+    const rec = await saveYoutubeFromGoogleTokens(token, body)
+    return send(res, 200, publicYoutubeStatus(rec, req, { configured: true }))
+  } catch (e) {
+    return send(res, e.status || 400, { error: e.message || 'Could not connect YouTube', code: e.code })
+  }
 }
 
 async function handleCallback(req, res) {
   const originPath = '/video-generation'
   const cookies = parseCookies(req)
   const fail = (message) => redirect(res, appReturn(req, originPath, { youtube: 'error', youtube_error: message }))
-  if (!youtubeConfigured()) return fail('not_configured')
+  if (!youtubeDedicatedOAuth()) return fail('not_configured')
   const err = String(req.query.error || '')
   if (err) return fail(err.slice(0, 80))
   const code = String(req.query.code || '')
@@ -262,6 +283,7 @@ export default async function handler(req, res) {
     const body = req.method === 'GET' ? {} : await readJson(req)
     return handleConnect(req, res, token, body)
   }
+  if (sub === 'import' && req.method === 'POST') return handleImport(req, res, token, await readJson(req))
   if (sub === 'disconnect' && req.method === 'POST') return handleDisconnect(req, res, token)
   if (sub === 'token' && req.method === 'POST') return handleToken(req, res, token)
   if (sub === 'settings' && req.method === 'POST') return handleSettings(req, res, token, await readJson(req))
