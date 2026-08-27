@@ -302,6 +302,8 @@ test('in-app duration chips match advertised 10 / 15 / 30 min caps', () => {
   assert.deepEqual(durationPresets('long', ENTITLEMENTS.plus.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600])
   assert.deepEqual(durationPresets('long', ENTITLEMENTS.pro.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900])
   assert.deepEqual(durationPresets('long', ENTITLEMENTS.studio.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900, 1800])
+  assert.deepEqual(durationPresets('long', null).map((d) => d.seconds), [180, 300, 600, 900, 1800])
+  assert.deepEqual(durationPresets('long', 0).map((d) => d.seconds), [180, 300, 600, 900, 1800])
 })
 
 test('Whop plan ID alone resolves the same length cap as plan name', () => {

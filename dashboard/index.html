@@ -5042,7 +5042,13 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                 <button type="button" class="fv-seg-btn" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30-60s</button>
                 <button type="button" class="fv-seg-btn active" data-format="long" onclick="fvSetFormat('long')">Long-form · up to 30 min</button>
               </div>
-              <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px"></div>
+              <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px">
+                <button type="button" class="fv-chip active" data-dur="long_180" onclick="fvSetDuration('long_180')">3 min</button>
+                <button type="button" class="fv-chip" data-dur="long_300" onclick="fvSetDuration('long_300')">5 min</button>
+                <button type="button" class="fv-chip" data-dur="long_600" onclick="fvSetDuration('long_600')">10 min</button>
+                <button type="button" class="fv-chip" data-dur="long_900" onclick="fvSetDuration('long_900')">15 min</button>
+                <button type="button" class="fv-chip" data-dur="long_1800" onclick="fvSetDuration('long_1800')">30 min</button>
+              </div>
             </div>
 
             <div class="field" id="fv-field-aspect">
@@ -5060,9 +5066,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                   <select id="fv-voice" hidden aria-hidden="true" tabindex="-1" onchange="fvOnVoiceChange()">
                     <option value="">Loading voices…</option>
                   </select>
-                  <div class="fv-voice-dd" id="fv-voice-dd" hidden>
+                  <div class="fv-voice-dd" id="fv-voice-dd">
                     <button type="button" class="fv-voice-dd-btn" id="fv-voice-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="fv-voice-menu" onclick="toggleFvVoiceDd(event)">
-                      <span id="fv-voice-value">Select a voice</span>
+                      <span id="fv-voice-value">Loading voices…</span>
                       <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <ul class="clip-dd-menu" id="fv-voice-menu" role="listbox" aria-label="Narrator voice"></ul>
@@ -8085,8 +8091,9 @@ function fvRenderDurationChips() {
   const row = document.getElementById('fv-duration-chips')
   if (!row) return
   const list = fvDurationList()
-  if (!list.length) return
-  const picked = fvPickedDuration()
+  const chips = list.length ? list : durationPresets(fvState.format)
+  if (!chips.length) return
+  const picked = fvPickedDuration() || chips[0]
   if (picked && picked.id !== fvState.durationId) fvState.durationId = picked.id
   const custom = !!picked?.custom
   const shorts = fvState.format === 'shorts'
@@ -8096,7 +8103,7 @@ function fvRenderDurationChips() {
   const inputVal = custom
     ? (shorts ? picked.seconds : Math.round((picked.seconds / 60) * 10) / 10)
     : ''
-  row.innerHTML = list.map(d =>
+  row.innerHTML = chips.map(d =>
     `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
   ).join('') +
     `<button type="button" class="fv-chip${custom ? ' active' : ''}" data-dur="custom" onclick="fvOpenCustomDuration()">${custom ? picked.label : 'Custom'}</button>` +
@@ -8227,10 +8234,16 @@ function fvPopulateVoices() {
   const dd = document.getElementById('fv-voice-dd')
   const show = (mode) => {
     if (skel) skel.hidden = mode !== 'loading'
-    if (errBox) errBox.hidden = mode !== 'error'
+    if (errBox) errBox.hidden = mode !== 'error' && mode !== 'empty'
     sel.hidden = true
-    if (dd) dd.hidden = mode !== 'ready'
+    if (dd) dd.hidden = mode === 'error' || mode === 'empty'
     if (mode !== 'ready') closeFvVoiceDd()
+    const label = document.getElementById('fv-voice-value')
+    if (label && (mode === 'loading' || mode === 'idle')) label.textContent = 'Loading voices…'
+    if (errBox && mode === 'empty') {
+      const span = errBox.querySelector('span')
+      if (span) span.textContent = 'No voices returned'
+    }
   }
   if (voicesLoadState === 'loading' || voicesLoadState === 'idle') {
     sel.innerHTML = '<option value="">Loading voices…</option>'
@@ -9582,6 +9595,21 @@ window.fvRegenerateSection = async (sectionId) => {
   fvSetStatus('AI already wrote this script. Edit the section by hand.', 'err', 2)
 }
 
+async function fvEnsureVoice() {
+  if (fvState.voiceId) return fvState.voiceId
+  if (voicesLoadState === 'idle' || voicesLoadState === 'loading') {
+    fvSetStatus('Loading voices…', 'loading')
+    try { await loadVoices() } catch (_) {}
+  }
+  if (!fvState.voiceId && voices[0]?.id) {
+    try { window.pickFvVoice(voices[0].id) } catch (_) {
+      fvState.voiceId = voices[0].id
+      fvState.voicePreview = voices[0].preview_url || null
+    }
+  }
+  return fvState.voiceId
+}
+
 window.fvGenerateScript = async () => {
   if (fvState.scriptBusy) return
   if (fvState.scriptAiUsed || fvState.script) {
@@ -9590,18 +9618,20 @@ window.fvGenerateScript = async () => {
   }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
-  if (!fvState.voiceId) return fvSetStatus('Select a narrator voice', 'err')
+  fvState.scriptBusy = true
+  await fvEnsureVoice()
   let picked
   try { picked = fvRequireDuration() } catch (e) {
+    fvState.scriptBusy = false
     return fvSetStatus(e.message, 'err')
   }
   const lengthGate = evaluateLength({ user: currentUser, durationSeconds: picked.seconds })
   if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
+    fvState.scriptBusy = false
     return fvSetStatus(lengthGate.message, 'err')
   }
 
   const btn = document.getElementById('fv-gen-script-btn')
-  fvState.scriptBusy = true
   fvState.allowShortScript = false
   if (btn) btn.disabled = true
   fvSetStatus('', null)
