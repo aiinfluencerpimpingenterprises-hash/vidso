@@ -2668,6 +2668,12 @@ body.tour-active #fv-export-box.show{min-height:160px}
 .paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
 .paywall-note a{color:var(--a1);font-weight:500;text-decoration:none}
 .paywall-note a:hover{text-decoration:underline}
+.paywall-claim{display:flex;flex-direction:column;gap:6px;width:100%;max-width:360px;margin:4px auto 0}
+.paywall-claim label{font-size:.72rem;color:rgba(255,255,255,.45);text-align:center}
+.paywall-claim input{
+  width:100%;min-height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);color:var(--ink);padding:0 12px;font:inherit
+}
 .paywall-status{display:none;align-items:center;justify-content:center;gap:8px;font-size:.8rem;min-height:1.2em}
 .paywall-status.show{display:flex}
 @media (max-width:820px){
@@ -2977,7 +2983,11 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I already paid</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout is locked to this Vidso email. After you pay, we check Whop even if Clipzo is still unpaid.</p>
+      <div class="paywall-claim">
+        <label for="paywall-paid-email">Paid with a different email?</label>
+        <input type="email" id="paywall-paid-email" autocomplete="email" placeholder="Email on the Whop receipt"/>
+      </div>
+      <p class="paywall-note">Checkout starts from this Vidso account. If Apple Hide My Email or another address was used on the receipt, enter it above, then tap I already paid.</p>
       <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
@@ -7486,9 +7496,11 @@ async function watchForPurchase(opts = {}) {
   if (_planPoll) return _planPoll
   const tier = pendingCheckoutTier(opts.tier)
   setPaywallStatus('Checking Whop for your payment…', 'loading')
+  const paidEmail = String(document.getElementById('paywall-paid-email')?.value || '').trim()
   _planPoll = api.billing.waitForProvisioned({
     expectedTier: tier,
     timeoutMs: opts.timeoutMs || 120000,
+    paidEmail,
     onTick(me) {
       if (!me) return
       currentUser = me
@@ -7528,7 +7540,7 @@ async function watchForPurchase(opts = {}) {
   return _planPoll
 }
 
-window.startCheckout = (tier) => {
+window.startCheckout = async (tier) => {
   pendingCheckoutTier(tier)
   const email = String(currentUser?.email || '').trim()
   if (!email || !email.includes('@')) {
@@ -7544,6 +7556,7 @@ window.startCheckout = (tier) => {
     return
   }
   setPaywallStatus('Opening checkout…', 'loading')
+  try { await api.billing.recordCheckoutIntent({ tier, cycle: _paywallCycle }) } catch (_) {}
   window.open(url, '_blank', 'noopener,noreferrer')
   setTimeout(() => {
     setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)

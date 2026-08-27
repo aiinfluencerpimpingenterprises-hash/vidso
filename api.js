@@ -161,6 +161,14 @@ function checkoutUrl(tier, interval, opts = {}) {
 // guessing, so a bad API key never looks like a missing purchase.
 let _lastSync = null
 
+async function recordCheckoutIntent(opts = {}) {
+  const url = sameOriginApi('/api/billing/intent')
+  if (!url) return
+  try {
+    await reqTo(url, 'POST', { tier: opts.tier || '', cycle: opts.cycle || '' })
+  } catch (_) {}
+}
+
 async function billingSync(opts = {}) {
   const url = sameOriginApi('/api/billing/sync')
   if (!url) {
@@ -168,7 +176,7 @@ async function billingSync(opts = {}) {
     return _lastSync
   }
   try {
-    _lastSync = await reqTo(url, 'POST', { force: !!opts.force })
+    _lastSync = await reqTo(url, 'POST', { force: !!opts.force, paidEmail: opts.paidEmail || '' })
     return _lastSync
   } catch (e) {
     if (e.status === 404 || e.status === 501) {
@@ -200,6 +208,12 @@ function syncProblem(sync) {
   if (s.reason === 'missing_identity') {
     return 'This account has no email, so there is nothing to match against Whop. Contact support.'
   }
+  if (s.reason === 'need_checkout') {
+    return 'Start checkout from this signed-in account first, then enter the email on your Whop receipt (Apple Hide My Email is a different address).'
+  }
+  if (s.reason === 'membership_taken') {
+    return 'That payment is already attached to another Vidso account. Sign in there, or contact support.'
+  }
   return ''
 }
 
@@ -209,7 +223,7 @@ function mergeSync(me, sync) {
   return { ...me, plan_status: 'active', active: true }
 }
 
-async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick } = {}) {
+async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs = 2500, onTick, paidEmail } = {}) {
   const started = Date.now()
   let last = null
   let force = true
@@ -217,9 +231,7 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
     try {
       last = withCompedPlan(await req('GET', '/api/user/me'))
       if (!planIsActive(last)) {
-        // The first check skips the server's negative cache, which is otherwise
-        // still holding a miss from before the payment landed.
-        last = mergeSync(last, await billingSync({ force }))
+        last = mergeSync(last, await billingSync({ force, paidEmail }))
         force = false
       }
       if (typeof onTick === 'function') onTick(last)
@@ -439,6 +451,7 @@ export const api = {
     checkoutUrl,
     waitForProvisioned,
     sync: billingSync,
+    recordCheckoutIntent,
     lastSync,
     syncProblem,
     formatQuota,

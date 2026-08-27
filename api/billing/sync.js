@@ -2,6 +2,7 @@ import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { saveGrant, withStoredGrant } from '../../lib/grants.js'
 import { lookupPaidMembership, whopConfig } from '../../lib/whop-lookup.js'
+import { mayAttachOffEmail } from '../../lib/checkout-intents.js'
 
 export const config = { maxDuration: 30 }
 
@@ -103,7 +104,22 @@ export default async function handler(req, res) {
   }
 
   const body = await readJson(req).catch(() => ({}))
-  const hit = await lookupPaidMembership(user, undefined, { force: !!body.force, deep: true })
+  const paidEmail = String(body.paidEmail || '').trim().toLowerCase()
+  const ownEmails = emailsFromUser(user)
+  const offEmail = paidEmail && paidEmail.includes('@') && !ownEmails.includes(paidEmail) ? paidEmail : ''
+  if (offEmail && !mayAttachOffEmail(user, offEmail)) {
+    return send(res, 200, {
+      active: false,
+      configured: true,
+      reason: 'need_checkout',
+      message: 'Start checkout from this signed-in account first, then enter the email on the Whop receipt. That keeps someone else from claiming your payment.',
+    })
+  }
+  const hit = await lookupPaidMembership(user, undefined, {
+    force: !!body.force,
+    deep: true,
+    extraEmails: offEmail ? [offEmail] : [],
+  })
   if (!hit.active) {
     return send(res, 200, {
       active: false,
@@ -113,7 +129,17 @@ export default async function handler(req, res) {
     })
   }
 
-  const grant = saveGrant(user, hit)
+  let grant
+  try {
+    grant = saveGrant(user, hit)
+  } catch (e) {
+    return send(res, 200, {
+      active: false,
+      configured: true,
+      reason: e.code || 'grant_failed',
+      message: e.message || 'Could not attach this payment.',
+    })
+  }
   const overlay = applyPaidGrant(user, grant)
   return send(res, 200, {
     active: true,
@@ -136,5 +162,11 @@ function syncMessage(reason, user) {
   if (reason === 'bad_key') return 'The Whop API key on this deployment was rejected.'
   if (reason === 'missing_permission') return 'The Whop API key is missing the member:email:read permission, so payments cannot be matched to an email.'
   if (reason === 'whop_error') return 'Whop could not be reached to confirm the payment.'
+  if (reason === 'need_checkout') {
+    return 'Start checkout from this Vidso account first, then enter the email on your Whop receipt.'
+  }
+  if (reason === 'membership_taken') {
+    return 'That payment is already attached to another Vidso account. Sign in there, or contact support.'
+  }
   return `No active Whop membership is attached to ${email} yet.`
 }

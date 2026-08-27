@@ -11,6 +11,7 @@ import { applyPaidGrant } from '../lib/paid-grant.js'
 import { grantFor, saveGrant, withStoredGrant, _resetGrantsForTests } from '../lib/grants.js'
 import { planIsActive } from '../lib/comped.js'
 import { _internalsForTests as diagnostics } from '../api/billing/diagnose.js'
+import { saveIntent, mayAttachOffEmail, _resetIntentsForTests } from '../lib/checkout-intents.js'
 
 const PRO_MONTHLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_MONTHLY
 const STUDIO_YEARLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_STUDIO_YEARLY
@@ -185,5 +186,50 @@ test('grant store unlocks the same email on a later request', () => {
   assert.equal(again.plan, 'pro')
   assert.equal(again.active, true)
   assert.equal(grantFor(user).tier, 'pro')
+  _resetGrantsForTests()
+})
+
+test('a receipt email can be claimed only after checkout from this account', () => {
+  _resetIntentsForTests()
+  const gmail = { id: 'u-gmail', email: 'buyer@gmail.com' }
+  assert.equal(mayAttachOffEmail(gmail), false)
+  saveIntent(gmail, { tier: 'pro' })
+  assert.equal(mayAttachOffEmail(gmail), true)
+  assert.equal(mayAttachOffEmail({ email: 'stranger@gmail.com' }), false)
+  assert.equal(mayAttachOffEmail(gmail, 'uuid@inbox.appleid.apple.com'), true)
+  _resetIntentsForTests()
+  assert.equal(mayAttachOffEmail({ email: 'buyer@gmail.com' }, 'uuid@inbox.appleid.apple.com'), true)
+  assert.equal(mayAttachOffEmail({ email: 'buyer@gmail.com' }, 'other@gmail.com'), false)
+  const apple = 'uuid@inbox.appleid.apple.com'
+  const row = {
+    id: 'mem_apple',
+    status: 'active',
+    plan: { id: PRO_MONTHLY },
+    user: { email: apple },
+  }
+  assert.equal(membershipMatchesUser(row, { emails: ['buyer@gmail.com'] }), false)
+  assert.equal(membershipMatchesUser(row, { emails: ['buyer@gmail.com', apple] }), true)
+  _resetIntentsForTests()
+})
+
+test('the same Whop membership cannot be attached to a second account', () => {
+  _resetGrantsForTests()
+  saveGrant({ email: 'first@example.com' }, {
+    tier: 'pro',
+    cycle: 'yearly',
+    planId: PRO_MONTHLY,
+    membershipId: 'mem_once',
+    source: 'whop',
+  })
+  assert.throws(
+    () => saveGrant({ email: 'second@example.com' }, {
+      tier: 'pro',
+      cycle: 'yearly',
+      planId: PRO_MONTHLY,
+      membershipId: 'mem_once',
+      source: 'whop',
+    }),
+    /already attached/,
+  )
   _resetGrantsForTests()
 })
