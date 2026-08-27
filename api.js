@@ -19,20 +19,28 @@ function clearSession() {
   localStorage.removeItem('clipzo_refresh')
 }
 
-async function reqTo(url, method, body, isFormData = false) {
+async function reqTo(url, method, body, isFormData = false, opts = {}) {
   const token = getToken()
   const headers = {}
   if (token) headers['Authorization'] = `Bearer ${token}`
-  if (!isFormData) headers['Content-Type'] = 'application/json'
+  const hasBody = method !== 'GET' && method !== 'HEAD' && body != null
+  if (!isFormData && hasBody) headers['Content-Type'] = 'application/json'
+  const timeoutMs = Number(opts.timeoutMs) > 0 ? Number(opts.timeoutMs) : 0
+  const ctrl = timeoutMs ? new AbortController() : null
+  const timer = timeoutMs ? setTimeout(() => ctrl.abort(), timeoutMs) : null
   let res
   try {
     res = await fetch(url, {
       method,
       headers,
-      body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
+      body: isFormData ? body : (hasBody ? JSON.stringify(body) : undefined),
+      signal: ctrl ? ctrl.signal : undefined,
     })
-  } catch {
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw new Error('That request timed out. Try again.')
     throw new Error('Cannot reach Clipzo API. The backend may be down. Try again in a minute.')
+  } finally {
+    if (timer) clearTimeout(timer)
   }
   const raw = await res.text()
   let data = {}
@@ -287,7 +295,7 @@ export const api = {
     del:  (id)       => req('DELETE', `/api/upload/${id}`),
   },
   tts: {
-    voices:   ()      => req('GET',  '/api/tts/voices'),
+    voices:   ()      => reqTo(BASE + '/api/tts/voices', 'GET', undefined, false, { timeoutMs: 12000 }),
     generate: (body)  => req('POST', '/api/tts/generate', body),
     library:  ()      => req('GET',  '/api/tts/library'),
     deleteVo: (id)    => req('DELETE', `/api/tts/library/${id}`),

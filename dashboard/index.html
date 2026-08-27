@@ -7857,42 +7857,51 @@ async function loadUsage() {
 let voicesLoadState = 'idle' // idle | loading | ready | error
 let voicesLoadError = ''
 let voicesLoadStatus = null
+let voicesLoadPromise = null
 window.loadVoices = async function loadVoices() {
+  if (voicesLoadPromise) return voicesLoadPromise
   voicesLoadState = 'loading'
   voicesLoadError = ''
   voicesLoadStatus = null
   fvPopulateVoices()
-  try {
-    if (!getToken()) {
-      const err = new Error('Missing token')
-      err.status = 401
-      throw err
-    }
-    voices = await api.tts.voices()
-    if (!Array.isArray(voices)) voices = (voices && voices.voices) || []
-    voicesLoadState = 'ready'
-    const grid = document.getElementById('voices-grid')
-    if (grid) {
-      if (!voices.length) {
-        grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">No voices returned from the API.</div>'
-      } else {
-        grid.innerHTML = voices.map(v => `
-          <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
-            <div class="voice-name">${v.name.split(' - ')[0]}</div>
-            <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
-          </div>`).join('')
+  voicesLoadPromise = (async () => {
+    try {
+      if (!getToken()) {
+        const err = new Error('Missing token')
+        err.status = 401
+        throw err
       }
+      voices = await api.tts.voices()
+      if (!Array.isArray(voices)) voices = (voices && voices.voices) || []
+      voicesLoadState = 'ready'
+      const grid = document.getElementById('voices-grid')
+      if (grid) {
+        if (!voices.length) {
+          grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">No voices returned from the API.</div>'
+        } else {
+          grid.innerHTML = voices.map(v => `
+            <div class="voice-card" data-id="${v.id}" data-preview="${v.preview_url||''}" onclick="selectVoice('${v.id}','${v.preview_url||''}','${v.name}')">
+              <div class="voice-name">${v.name.split(' - ')[0]}</div>
+              <div class="voice-cat">${v.name.includes(' - ') ? v.name.split(' - ')[1].split(',')[0] : v.category}</div>
+            </div>`).join('')
+        }
+      }
+      fvPopulateVoices()
+    } catch (e) {
+      voices = []
+      voicesLoadState = 'error'
+      voicesLoadStatus = e && e.status != null ? e.status : null
+      voicesLoadError = (e && e.message) ? String(e.message) : 'Failed to load voices'
+      console.warn('[voices]', voicesLoadStatus || '', voicesLoadError)
+      const grid = document.getElementById('voices-grid')
+      if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Voices unavailable. <button type="button" class="btn btn-ghost btn-sm" onclick="loadVoices()">Retry</button></div>'
+      fvPopulateVoices()
     }
-    fvPopulateVoices()
-  } catch(e) {
-    voices = []
-    voicesLoadState = 'error'
-    voicesLoadStatus = e && e.status != null ? e.status : null
-    voicesLoadError = (e && e.message) ? String(e.message) : 'Failed to load voices'
-    console.warn('[voices]', voicesLoadStatus || '', voicesLoadError)
-    const grid = document.getElementById('voices-grid')
-    if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Voices unavailable. <button type="button" class="btn btn-ghost btn-sm" onclick="loadVoices()">Retry</button></div>'
-    fvPopulateVoices()
+  })()
+  try {
+    await voicesLoadPromise
+  } finally {
+    voicesLoadPromise = null
   }
 }
 
@@ -8240,9 +8249,11 @@ function fvPopulateVoices() {
     if (mode !== 'ready') closeFvVoiceDd()
     const label = document.getElementById('fv-voice-value')
     if (label && (mode === 'loading' || mode === 'idle')) label.textContent = 'Loading voices…'
-    if (errBox && mode === 'empty') {
+    if (errBox && (mode === 'error' || mode === 'empty')) {
       const span = errBox.querySelector('span')
-      if (span) span.textContent = 'No voices returned'
+      if (span) span.textContent = mode === 'empty'
+        ? 'No voices returned'
+        : (voicesLoadError || 'Voices unavailable')
     }
   }
   if (voicesLoadState === 'loading' || voicesLoadState === 'idle') {
@@ -9619,7 +9630,7 @@ window.fvGenerateScript = async () => {
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
   fvState.scriptBusy = true
-  await fvEnsureVoice()
+  fvEnsureVoice().catch(() => {})
   let picked
   try { picked = fvRequireDuration() } catch (e) {
     fvState.scriptBusy = false
