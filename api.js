@@ -29,6 +29,7 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
   const ctrl = timeoutMs ? new AbortController() : null
   const timer = timeoutMs ? setTimeout(() => ctrl.abort(), timeoutMs) : null
   let res
+  let raw = ''
   try {
     res = await fetch(url, {
       method,
@@ -36,13 +37,13 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
       body: isFormData ? body : (hasBody ? JSON.stringify(body) : undefined),
       signal: ctrl ? ctrl.signal : undefined,
     })
+    raw = await res.text()
   } catch (e) {
     if (e && e.name === 'AbortError') throw new Error('That request timed out. Try again.')
     throw new Error('Cannot reach Clipzo API. The backend may be down. Try again in a minute.')
   } finally {
     if (timer) clearTimeout(timer)
   }
-  const raw = await res.text()
   let data = {}
   try { data = raw ? JSON.parse(raw) : {} } catch { data = { raw } }
   if (!res.ok) {

@@ -7788,9 +7788,9 @@ window.switchPanel = (id, btn, opts = {}) => {
     document.body.classList.toggle('editor-open', id === 'editor')
   }
   window.closeMobileNav?.()
-  if (id === 'voiceover') loadVoiceLibrary()
-  if (id === 'videogen') fvInit()
-  if (id === 'imagegen') window.imgWorkspaceShow?.()
+  if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
+  if (id === 'videogen') { try { fvInit() } catch (_) {} }
+  if (id === 'imagegen') { try { window.imgWorkspaceShow?.() } catch (_) {} }
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
     try { edRenderTL?.() } catch (_) {}
@@ -7836,7 +7836,7 @@ function restorePanelFromHash() {
 }
 window.addEventListener('popstate', restorePanelFromPath)
 window.addEventListener('hashchange', restorePanelFromHash)
-restorePanelFromPath({ skipTour: true })
+try { restorePanelFromPath({ skipTour: true }) } catch (_) {}
 
 // ── USAGE ────────────────────────────────────────────────────────────────────
 async function loadUsage() {
@@ -7858,7 +7858,7 @@ let voicesLoadState = 'idle' // idle | loading | ready | error
 let voicesLoadError = ''
 let voicesLoadStatus = null
 let voicesLoadPromise = null
-window.loadVoices = async function loadVoices() {
+async function loadVoices() {
   if (voicesLoadPromise) return voicesLoadPromise
   voicesLoadState = 'loading'
   voicesLoadError = ''
@@ -7904,6 +7904,7 @@ window.loadVoices = async function loadVoices() {
     voicesLoadPromise = null
   }
 }
+window.loadVoices = loadVoices
 
 window.selectVoice = (id, preview, name) => {
   selectedVoiceId = id
@@ -8312,12 +8313,13 @@ window.fvPreviewVoice = () => {
   audio.play().catch(() => {})
 }
 
-window.fvInit = () => {
+function fvInit() {
   fvRenderDurationChips()
   if (voices.length) fvPopulateVoices()
   else loadVoices().then(() => fvPopulateVoices())
   fvState.inited = true
 }
+window.fvInit = fvInit
 
 function fvRebuildFullScriptFromSections() {
   if (!fvState.script) return
