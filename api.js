@@ -105,16 +105,16 @@ function gateUrl(path) {
   return origin + '/api/gate' + String(path || '').replace(/^\/api/, '')
 }
 
-async function gatedReq(method, path, body) {
+async function gatedReq(method, path, body, opts = {}) {
   const url = gateUrl(path)
   if (url) {
     try {
-      return await reqTo(url, method, body)
+      return await reqTo(url, method, body, false, opts)
     } catch (e) {
       if (e.status !== 404) throw e
     }
   }
-  return req(method, path, body)
+  return reqTo(BASE + path, method, body, false, opts)
 }
 
 // Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
@@ -437,7 +437,7 @@ export const api = {
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
     // body: { topic, duration_id, duration (minutes), duration_seconds, target_words, aspect }
-    script: (body) => gatedReq('POST', '/api/faceless/script', body),
+    script: (body) => gatedReq('POST', '/api/faceless/script', body, { timeoutMs: 90000 }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
     // body: { script, voice_id, aspect, duration_id } → { jobId }
