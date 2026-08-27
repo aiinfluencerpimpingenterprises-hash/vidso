@@ -3254,7 +3254,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-    <button type="button" class="topnav-item" id="nav-ytvideogen" data-panel="ytvideogen" onclick="switchPanel('ytvideogen',this)">YouTube Generator</button>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
@@ -3318,7 +3317,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-  <button type="button" class="topnav-item" data-panel="ytvideogen" onclick="switchPanel('ytvideogen',this)">YouTube Generator</button>
   <span class="nav-drawer-label">Short Form Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
@@ -5406,13 +5404,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="qa-body">
               <div class="qa-title">Start a faceless video</div>
               <div class="qa-sub">Script, voice, B-roll, and captions</div>
-            </div>
-          </button>
-          <button type="button" class="qa-card" onclick="switchPanel('ytvideogen',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">YouTube Generator</div>
-              <div class="qa-sub">Beta: real YouTube clips for each script section</div>
             </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
@@ -7795,7 +7786,7 @@ function normalizePath(p) {
 function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
 function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
-  if (id === 'ytvideogen') return 'ytvideogen'
+  if (id === 'ytvideogen') return DEFAULT_PANEL
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }

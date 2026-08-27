@@ -30,10 +30,6 @@
       "destination": "/dashboard/index.html"
     },
     {
-      "source": "/youtube-generation",
-      "destination": "/dashboard/index.html"
-    },
-    {
       "source": "/tools",
       "destination": "/dashboard/index.html"
     },
@@ -109,6 +105,16 @@
     },
     {
       "source": "/upscale",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/youtube-generation",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/youtube-generation/",
       "destination": "/video-generation",
       "permanent": false
     },

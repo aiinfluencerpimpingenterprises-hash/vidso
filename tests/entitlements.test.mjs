@@ -41,7 +41,7 @@ function user(tier, extra = {}) {
 
 test('max video length marketing row matches the matrix and is included on every tier', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Max video length')
-  assert.equal(FEATURE_ROWS.length, 18)
+  assert.equal(FEATURE_ROWS.length, 17)
   assert.equal(row.plus, '10 min')
   assert.equal(row.pro, '15 min')
   assert.equal(row.studio, '30 min')
