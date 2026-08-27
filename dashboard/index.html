@@ -1691,6 +1691,8 @@ body::after{
   text-transform:uppercase;color:var(--ink);margin:0 0 8px;line-height:1.1;overflow:visible;padding-top:.12em;
   font-synthesis:none;-webkit-font-smoothing:antialiased
 }
+#fv-page-title{display:inline-flex;align-items:center;gap:10px}
+#fv-page-title .nav-new{position:relative;top:-.08em}
 .page-header p,.page-sub{font-size:14px;color:var(--text-label);margin:0;line-height:1.45;font-weight:400}
 .section-label{font-size:11px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.40);margin:0 0 12px}
 .ui-card-title,.tool-tile-title,.qa-title,.vr-sec-title{font-size:16px!important;font-weight:600!important;letter-spacing:-.015em}
@@ -5131,7 +5133,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </div>
 
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
-              <button type="button" class="btn btn-primary" id="fv-gen-script-btn" onclick="fvGenerateScript()">
+              <button type="button" class="btn btn-primary" id="fv-gen-script-btn">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Generate Script
               </button>
@@ -5410,7 +5412,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></span>
             <div class="qa-body">
               <div class="qa-title">YouTube Generator</div>
-              <div class="qa-sub">Pro: real YouTube clips for each script section</div>
+              <div class="qa-sub">Beta: real YouTube clips for each script section</div>
             </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
@@ -8031,7 +8033,7 @@ function fvSetScriptAiLock(used) {
 }
 
 /** Wipe the generated script UI and return to the Generate Script form. */
-window.fvClearScript = () => {
+window.fvClearScript = (opts = {}) => {
   try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
   fvState.script = null
@@ -8075,7 +8077,7 @@ window.fvClearScript = () => {
   fvSetScriptAiLock(false)
   fvShowShortScriptAction(false)
   fvShowShortRenderAction(false)
-  document.getElementById('fv-topic')?.focus?.()
+  if (!opts.silent) document.getElementById('fv-topic')?.focus?.()
 }
 
 function fvSetStatus(msg, kind, which) {
@@ -8252,7 +8254,13 @@ window.fvSetAspect = (aspect) => {
 }
 
 function fvApplyFacelessMode(youtube) {
-  fvState.brollSource = youtube ? 'youtube' : 'pexels'
+  const next = youtube ? 'youtube' : 'pexels'
+  const prev = fvState.facelessMode || fvState.brollSource || 'pexels'
+  if (fvState.inited && prev !== next) {
+    try { window.fvClearScript({ silent: true }) } catch (_) {}
+  }
+  fvState.facelessMode = next
+  fvState.brollSource = next
   const field = document.getElementById('fv-field-broll-source')
   if (field) field.hidden = true
   const title = document.getElementById('fv-page-title')
@@ -8261,8 +8269,8 @@ function fvApplyFacelessMode(youtube) {
   const desc = document.getElementById('fv-card-desc')
   const how = document.getElementById('fv-how-media-d')
   if (youtube) {
-    if (title) title.textContent = 'YouTube Generator'
-    if (sub) sub.textContent = 'Write a script, pick a voice, then assemble real YouTube clips for each section. Pro.'
+    if (title) title.innerHTML = 'YouTube Generator <span class="nav-new">Beta</span>'
+    if (sub) sub.textContent = 'Write a script, pick a voice, then assemble real YouTube clips for each section.'
     if (card) card.textContent = 'YouTube video'
     if (desc) desc.textContent = 'Same script and voice flow as Long Form. Footage is pulled from YouTube after the voiceover is ready.'
     if (how) how.textContent = 'YouTube clips for each section after the voiceover is ready.'
@@ -8274,6 +8282,9 @@ function fvApplyFacelessMode(youtube) {
     if (how) how.textContent = 'Stock clips from Pexels, matched to your script.'
   }
   fvSyncBrollSourceUi()
+  if (!(fvState.scriptAiUsed || fvState.script)) {
+    try { fvSetScriptAiLock(false) } catch (_) {}
+  }
 }
 
 function fvSyncBrollSourceUi() {
@@ -8437,7 +8448,19 @@ window.fvPreviewVoice = () => {
   audio.play().catch(() => {})
 }
 
+function fvBindGenerateScript() {
+  const btn = document.getElementById('fv-gen-script-btn')
+  if (!btn || btn.dataset.bound === '1') return
+  btn.dataset.bound = '1'
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    window.fvGenerateScript?.()
+  })
+}
+
 function fvInit() {
+  fvBindGenerateScript()
   fvRenderDurationChips()
   fvSyncBrollSourceUi()
   if (voices.length) fvPopulateVoices()
@@ -9902,33 +9925,33 @@ async function fvEnsureVoice() {
 }
 
 window.fvGenerateScript = async () => {
-  if (fvState.scriptBusy) return
+  if (fvState.scriptBusy) {
+    return fvSetStatus('Still writing your script…', 'loading')
+  }
   if (fvState.scriptAiUsed || fvState.script) {
     fvSetScriptAiLock(true)
     return fvSetStatus('AI already wrote this script. Edit it by hand, or clear to start a new video.', 'err')
   }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
-  fvState.scriptBusy = true
   fvEnsureVoice().catch(() => {})
   let picked
   try { picked = fvRequireDuration() } catch (e) {
-    fvState.scriptBusy = false
     return fvSetStatus(e.message, 'err')
   }
   const lengthGate = evaluateLength({ user: currentUser, durationSeconds: picked.seconds })
   if (currentUser?.plan_status === 'active' && !lengthGate.ok) {
-    fvState.scriptBusy = false
     return fvSetStatus(lengthGate.message, 'err')
   }
 
+  fvState.scriptBusy = true
   const btn = document.getElementById('fv-gen-script-btn')
   fvState.allowShortScript = false
   if (btn) btn.disabled = true
-  fvSetStatus('', null)
   fvSetScriptActionsVisible(false)
   fvShowShortScriptAction(false)
   document.getElementById('fv-script-box')?.classList.add('show')
+  fvSetStatus('Writing your script…', 'loading')
   fvSetStatus('Writing your script…', 'loading', 2)
   try {
     const payload = facelessScriptPayload({
@@ -9965,6 +9988,7 @@ window.fvGenerateScript = async () => {
       title: data.title || '',
     })
     if (fvScriptIsShort(data, picked.seconds)) {
+      fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading')
       fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading', 2)
       const retryPayload = facelessScriptPayload({
         topic: topic + '\n\nWrite a spoken narration of ' + payload.target_words +
@@ -9993,21 +10017,23 @@ window.fvGenerateScript = async () => {
     fvSetScriptAiLock(true)
     if (fvScriptIsShort(data, picked.seconds)) {
       fvShowShortScriptAction(true)
-      fvSetStatus(
+      const shortMsg =
         'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '). You asked for ' +
         formatDurationSeconds(picked.seconds) + ' (~' + payload.target_words +
-        ' words). Edit it longer, or continue with this shorter script.',
-        'err',
-        2,
-      )
+        ' words). Edit it longer, or continue with this shorter script.'
+      fvSetStatus(shortMsg, 'err')
+      fvSetStatus(shortMsg, 'err', 2)
     } else {
       fvShowShortScriptAction(false)
-      fvSetStatus('Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')', 'ok', 2)
+      const okMsg = 'Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')'
+      fvSetStatus(okMsg, 'ok')
+      fvSetStatus(okMsg, 'ok', 2)
     }
     try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
-    fvSetStatus('', null)
-    fvSetStatus(e.message || 'Script generation failed', 'err', 2)
+    const msg = (e && e.message) ? e.message : 'Script generation failed'
+    fvSetStatus(msg, 'err')
+    fvSetStatus(msg, 'err', 2)
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
@@ -10281,6 +10307,7 @@ function bindGettingStarted() {
 
 initBanner()
 initTopNav()
+try { fvBindGenerateScript() } catch (_) {}
 initToolsGallery()
 try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
 
