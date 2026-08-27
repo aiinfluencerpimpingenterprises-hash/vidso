@@ -4,7 +4,9 @@ import {
   createProjectRecord,
   isStudioSidecarName,
   projectFileName,
+  projectVisibleTo,
   publicProject,
+  requireProjectCreateBody,
   userIdOf,
 } from '../lib/faceless-studio-store.js'
 import { isHistorySidecarName, LFG_STEP_SHOTS } from '../lib/image-gen.js'
@@ -61,10 +63,10 @@ test('userIdOf prefers id then email', () => {
   assert.equal(userIdOf({ email: 'x@y.z' }), 'x@y.z')
 })
 
-test('image history filter also hides studio json once wired', () => {
+test('image history hides studio project json but shows export mp4s in My Files', () => {
   assert.equal(isHistorySidecarName('vidso-img-1.meta.json'), true)
   assert.equal(isHistorySidecarName('vidso-fs-proj-abc-123.json'), true)
-  assert.equal(isHistorySidecarName('vidso-fs-file-abcd-export.mp4'), true)
+  assert.equal(isHistorySidecarName('vidso-fs-file-abcd-export.mp4'), false)
 })
 
 test('LFG step shots use the shared R2 host', () => {
@@ -106,4 +108,35 @@ test('section headings put the first words in the accent span', () => {
   const esc = (s) => s
   assert.equal(studioHeadingHtml('LONG FORM', 2, esc), '<span class="accent">LONG FORM</span>')
   assert.equal(studioHeadingHtml('EXPLAINERS', 1, esc), '<span class="accent">EXPLAINERS</span>')
+})
+
+test('projects without an owner or with a different user are not visible', () => {
+  const rec = { id: 'p1', user_id: 'user-1' }
+  assert.equal(projectVisibleTo(rec, { id: 'user-1' }), true)
+  assert.equal(projectVisibleTo(rec, { id: 'user-2' }), false)
+  assert.equal(projectVisibleTo({ id: 'p1' }, { id: 'user-1' }), false)
+  assert.equal(projectVisibleTo(rec, {}), false)
+  assert.equal(projectVisibleTo(rec, null), false)
+})
+
+test('create rejects missing duration, aspect, voice, and topic', () => {
+  assert.throws(() => requireProjectCreateBody({}), /topic/i)
+  assert.throws(() => requireProjectCreateBody({ topic: 'x', aspect: '16:9', length: 'long_300' }), /duration/i)
+  assert.throws(() => requireProjectCreateBody({ topic: 'x', aspect: '1:1', length: 'long_300', duration_seconds: 300, voice_id: 'v' }), /16:9 or 9:16/)
+  assert.throws(() => requireProjectCreateBody({ topic: 'x', aspect: '16:9', length: 'long_300', duration_seconds: 300 }), /voice/i)
+  const ok = requireProjectCreateBody({
+    topic: 'Airport secrets',
+    aspect: '16:9',
+    length: 'long_300',
+    duration_seconds: 300,
+    voice_id: 'voice-1',
+  })
+  assert.equal(ok.duration_seconds, 300)
+  assert.equal(ok.length, 'long_300')
+})
+
+test('create does not substitute a 3 minute duration', () => {
+  const rec = createProjectRecord({ id: 'u' }, { topic: 'x', aspect: '9:16' })
+  assert.equal(rec.duration_seconds, 0)
+  assert.equal(rec.length, '')
 })

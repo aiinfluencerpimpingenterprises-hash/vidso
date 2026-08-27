@@ -5283,13 +5283,14 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               <div class="fv-script-toolbar">
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
+                  <button type="button" class="btn btn-ghost" id="fv-regen-all-btn" onclick="fvRegenerateWholeScript()">Regenerate script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                   <button type="button" class="btn btn-ghost" id="fv-short-continue-btn" hidden onclick="fvContinueToMedia(true)">Continue with shorter script</button>
                 </div>
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
               <div class="fv-sections" id="fv-sections"></div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">AI writes the script once. Edit any section by hand, or clear to start a new video.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">Edit any section, rewrite one section, or regenerate the whole script. Changes save as you type.</p>
             </div>
           </div>
 
@@ -8131,7 +8132,7 @@ function fvSetScriptAiLock(used) {
   btn.disabled = !!used || !!fvState.scriptBusy
   btn.setAttribute('aria-disabled', btn.disabled ? 'true' : 'false')
   btn.title = used
-    ? 'AI already wrote this script. Edit it by hand, or clear to start a new video.'
+    ? 'AI already wrote this script. Use Regenerate script, edit a section, or clear to start over.'
     : ''
 }
 
@@ -8446,10 +8447,12 @@ function fvPopulateVoices() {
     return
   }
   if (!voices.length) {
-    sel.innerHTML = '<option value="">No voices returned</option>'
+    sel.innerHTML = '<option value="">No voices available</option>'
     sel.disabled = true
     if (btn) btn.disabled = true
-    show('empty')
+    show('error')
+    const errSpan = errBox?.querySelector('span')
+    if (errSpan) errSpan.textContent = 'No voices available'
     return
   }
   show('ready')
@@ -8554,6 +8557,8 @@ window.fvSnapshotForStudio = () => {
     script: fvState.script,
     media: fvState.media,
     preview: fvState.preview,
+    mediaJobId: fvState.mediaJobId,
+    renderJobId: fvState.renderJobId,
     caption: typeof fvCapStyle === 'function' ? fvCapStyle() : null,
     allowShortScript: fvState.allowShortScript,
     allowShortRender: fvState.allowShortRender,
@@ -8573,12 +8578,13 @@ window.fvHydrateFromStudio = (project) => {
   const snap = project.pipeline && typeof project.pipeline === 'object' ? project.pipeline : {}
   fvClearScript({ keepDrafts: true })
   const topic = snap.topic || project.topic || ''
-  const aspect = snap.aspect || project.aspect || '16:9'
-  const durationId = snap.durationId || project.length || 'long_180'
+  const aspect = snap.aspect === '9:16' || project.aspect === '9:16' ? '9:16'
+    : (snap.aspect === '16:9' || project.aspect === '16:9' ? '16:9' : '')
+  const durationId = snap.durationId || project.length || ''
   const voiceId = snap.voiceId || project.voice_id || ''
   fvState.format = String(durationId).startsWith('shorts') ? 'shorts' : 'long'
   fvState.durationId = durationId
-  fvState.aspect = aspect === '9:16' ? '9:16' : '16:9'
+  fvState.aspect = aspect || '16:9'
   fvState.voiceId = voiceId || null
   fvState.allowShortScript = !!snap.allowShortScript
   fvState.allowShortRender = !!snap.allowShortRender
@@ -8587,8 +8593,9 @@ window.fvHydrateFromStudio = (project) => {
   document.querySelectorAll('#fv-format-seg [data-format]').forEach((b) => {
     b.classList.toggle('active', b.dataset.format === fvState.format)
   })
-  fvSetAspect(fvState.aspect)
+  if (aspect) fvSetAspect(aspect)
   fvInit()
+  if (!durationId) fvSetStatus('This project is missing a video duration.', 'err')
   if (voiceId) {
     try { window.pickFvVoice(voiceId) } catch (_) {}
   }
@@ -8612,19 +8619,46 @@ window.fvHydrateFromStudio = (project) => {
     setVal('fv-cap-hl', snap.caption.highlight)
     setVal('fv-cap-ls', snap.caption.letterSpacing)
   }
-  const phase = Number(snap.phase) || (snap.media ? 2 : script ? 1 : 1)
+  const runningMedia = !!(snap.mediaJobId && !snap.media?.voiceover_url)
+  const renderJobRow = (project.jobs || []).find((j) => j.remote_id && j.remote_id === snap.renderJobId)
+  const runningRender = !!(snap.renderJobId && snap.media && (!renderJobRow || renderJobRow.status === 'queued' || renderJobRow.status === 'running'))
+  const phase = runningRender ? 4 : runningMedia ? 2 : (Number(snap.phase) || (snap.media ? 3 : script ? 1 : 1))
   document.getElementById('fv-script-box')?.classList.toggle('show', !!script && phase === 1)
   document.getElementById('fv-setup')?.classList.toggle('collapsed', phase > 1)
-  document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2 && !!snap.media)
+  document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2)
   document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!snap.media)
   document.getElementById('fv-export-box')?.classList.toggle('show', phase >= 4 && !!snap.media)
   fvState.phase = phase
   fvSetPills(phase)
-  if (phase >= 3 && snap.media) {
+  if (runningMedia) {
+    fvState.mediaJobId = snap.mediaJobId
+    document.getElementById('fv-media-progress-wrap').style.display = ''
+    document.getElementById('fv-media-result').style.display = 'none'
+    fvSetMediaStatus('Resuming media job from the server…', 'loading')
+    fvPollMediaJob(snap.mediaJobId)
+  } else if (phase >= 3 && snap.media) {
     try { fvInitPreview() } catch (_) {}
   }
-  if (phase >= 4 && snap.media) {
+  if (runningRender) {
+    fvState.renderJobId = snap.renderJobId
     try { window.fvContinueToExport?.() } catch (_) {}
+    fvSetExportStatus('Resuming render from the server…', 'loading')
+    document.getElementById('fv-export-progress-wrap').style.display = ''
+    fvPollRenderJob(snap.renderJobId)
+  } else if (phase >= 4 && snap.media) {
+    try { window.fvContinueToExport?.() } catch (_) {}
+    const lastExport = (project.assets || []).filter((a) => a.type === 'export').slice(-1)[0]
+    if (lastExport?.storage_url) {
+      fvState.renderUrl = lastExport.storage_url
+      const vid = document.getElementById('fv-export-video')
+      const dl = document.getElementById('fv-export-dl')
+      if (vid) vid.src = lastExport.storage_url
+      if (dl) dl.href = lastExport.storage_url
+      document.getElementById('fv-export-result').style.display = ''
+      document.getElementById('fv-export-progress-wrap').style.display = 'none'
+      document.getElementById('fv-export-actions').style.display = ''
+      fvSetExportStatus('Last render is ready to download. Render again to keep the previous file and make a new one.', 'ok')
+    }
   }
   } finally {
     fvHydrating = false
@@ -8701,6 +8735,7 @@ function fvRenderScript(script) {
         <label>${fvEsc(s.heading || s.id)}</label>
         <div class="fv-section-actions">
           <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit manually</button>
+          <button type="button" class="fv-regen-btn" onclick="fvRegenerateSection('${fvEsc(s.id)}')">Rewrite section</button>
         </div>
       </div>
       <div class="fv-section-preview">${fvEsc(s.text || '')}</div>
@@ -8708,7 +8743,7 @@ function fvRenderScript(script) {
     </div>`).join('') || '<p style="color:var(--muted);font-size:.85rem">Generate a script to see sections here.</p>'
 
   const help = document.getElementById('fv-help')
-  if (help) help.textContent = 'AI writes the script once. Edit any section by hand, or clear to start a new video.'
+  if (help) help.textContent = 'Edit any section, rewrite one section, or regenerate the whole script. Changes save as you type.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
   if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
   fvNotifyStudio()
@@ -8797,6 +8832,15 @@ function fvRenderMediaResult(job) {
   audio.src = job.voiceover_url || ''
   audio.onplay = () => fvSyncWordHighlight(audio)
   audio.ontimeupdate = () => fvSyncWordHighlight(audio)
+  audio.onloadedmetadata = () => {
+    const measured = Number(audio.duration)
+    if (!Number.isFinite(measured) || measured <= 0) return
+    if (!fvState.media) return
+    fvState.media.duration = measured
+    fvLengthTrace('voiceover-measured', { seconds: measured })
+    fvNotifyStudio()
+    try { window.fvStudioIngestMedia?.(fvState.media) } catch (_) {}
+  }
 
   const wordsEl = document.getElementById('fv-media-words')
   wordsEl.innerHTML = (job.words || []).map((w, i) =>
@@ -8863,6 +8907,7 @@ window.fvStartMedia = async (force) => {
   fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
 
   const voiceId = fvState.voiceId || fvState.script.voice_id
+  if (!voiceId) return fvSetMediaStatus('Select a narrator voice. Generation is blocked until a voice is available.', 'err')
   let picked
   try { picked = fvRequireDuration() } catch (e) {
     return fvSetMediaStatus(e.message, 'err')
@@ -8893,44 +8938,66 @@ window.fvStartMedia = async (force) => {
       ...extras,
     })
     fvState.mediaJobId = jobId
-    await fvStudioJob({ type: 'media', status: 'running', progress: 5, remote_id: jobId })
-    fvState.mediaPoll = setInterval(async () => {
-      try {
-        const job = await api.faceless.pollMedia(jobId)
-        document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
-        if (job.status === 'processing' || job.status === 'queued') {
-          fvSetMediaStatus(job.step || 'Processing…', 'loading')
-          fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 5 })
-          return
-        }
-        clearInterval(fvState.mediaPoll)
-        fvState.mediaPoll = null
-        if (job.status === 'error') {
-          fvSetMediaStatus(job.error || 'Media failed', 'err')
-          fvStudioJobPatch(jobId, { type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed' })
-          window.fvStudioAutoRun = false
-          return
-        }
-        fvSetMediaStatus('Ready', 'ok')
-        fvRenderMediaResult(job)
-        fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
-        if (fvStudioBoundId && window.fvStudioAutoRun) {
-          setTimeout(() => {
-            try { window.fvContinueToPreview() } catch (_) {}
-            window.fvStudioAutoRun = false
-          }, 400)
-        }
-      } catch (e) {
-        clearInterval(fvState.mediaPoll)
-        fvState.mediaPoll = null
-        fvSetMediaStatus(e.message || 'Poll failed', 'err')
-        window.fvStudioAutoRun = false
-      }
-    }, 1200)
+    await fvStudioJob({
+      type: 'media',
+      status: 'running',
+      progress: 5,
+      remote_id: jobId,
+      provider: 'railway',
+      parameters: { duration_id: extras.duration_id, duration_seconds: extras.duration_seconds, voice_id: voiceId, aspect: fvState.script.aspect || fvState.aspect },
+    })
+    fvNotifyStudio()
+    fvPollMediaJob(jobId)
   } catch (e) {
     fvSetMediaStatus(e.message || 'Could not start media job', 'err')
     window.fvStudioAutoRun = false
   }
+}
+
+function fvPollMediaJob(jobId) {
+  if (!jobId) return
+  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+  fvState.mediaJobId = jobId
+  const tick = async () => {
+    try {
+      const job = await api.faceless.pollMedia(jobId)
+      const bar = document.getElementById('fv-media-bar')
+      if (bar) bar.style.width = Math.max(5, job.progress || 0) + '%'
+      if (job.status === 'processing' || job.status === 'queued') {
+        fvSetMediaStatus(job.step || 'Processing…', 'loading')
+        fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 5 })
+        return
+      }
+      clearInterval(fvState.mediaPoll)
+      fvState.mediaPoll = null
+      if (job.status === 'error') {
+        fvState.mediaJobId = null
+        fvSetMediaStatus(job.error || 'Media failed', 'err')
+        fvStudioJobPatch(jobId, { type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed' })
+        window.fvStudioAutoRun = false
+        fvNotifyStudio()
+        return
+      }
+      fvSetMediaStatus('Ready', 'ok')
+      fvRenderMediaResult(job)
+      fvState.mediaJobId = null
+      fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
+      fvNotifyStudio()
+      if (fvStudioBoundId && window.fvStudioAutoRun) {
+        setTimeout(() => {
+          try { window.fvContinueToPreview() } catch (_) {}
+          window.fvStudioAutoRun = false
+        }, 400)
+      }
+    } catch (e) {
+      clearInterval(fvState.mediaPoll)
+      fvState.mediaPoll = null
+      fvSetMediaStatus(e.message || 'Poll failed', 'err')
+      window.fvStudioAutoRun = false
+    }
+  }
+  tick()
+  fvState.mediaPoll = setInterval(tick, 1200)
 }
 
 window.fvContinueToPreview = () => {
@@ -8991,6 +9058,7 @@ window.fvApplyCapStyle = () => {
     el.style.background = 'transparent'
   })
   fvPersistPreviewSettings()
+  fvNotifyStudio()
 }
 
 function fvPersistPreviewSettings() {
@@ -9084,6 +9152,7 @@ window.fvSelectMusic = (id) => {
   fvRenderMusicList()
   fvRenderPreviewTimeline()
   fvPersistPreviewSettings()
+  fvNotifyStudio()
 }
 
 window.fvSetMusicVol = (v) => {
@@ -9093,6 +9162,7 @@ window.fvSetMusicVol = (v) => {
   const music = fvMusicEl()
   if (music) music.volume = fvState.preview.musicVol
   fvPersistPreviewSettings()
+  fvNotifyStudio()
 }
 
 function fvRenderPreviewTimeline() {
@@ -9361,6 +9431,7 @@ function fvPersistMedia() {
       voice_id: fvState.media.voice_id,
     }))
   } catch {}
+  fvNotifyStudio()
 }
 
 window.fvSideTab = (pane) => {
@@ -9805,58 +9876,94 @@ window.fvStartExport = async (opts = {}) => {
         : null,
     })
     fvState.renderJobId = jobId
-    await fvStudioJob({ type: 'export', status: 'running', progress: 3, remote_id: jobId })
-    fvState.renderPoll = setInterval(async () => {
-      try {
-        const job = await api.faceless.pollRender(jobId)
-        document.getElementById('fv-export-bar').style.width = Math.max(3, job.progress || 0) + '%'
-        if (job.status === 'queued' || job.status === 'processing') {
-          fvSetExportStatus(job.step || 'Rendering…', 'loading')
-          fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 3 })
-          return
-        }
-        clearInterval(fvState.renderPoll)
-        fvState.renderPoll = null
-        if (btn) btn.disabled = false
-        if (job.status === 'error') {
-          fvSetExportStatus(job.error || 'Render failed', 'err')
-          fvStudioJobPatch(jobId, { status: 'failed', progress: 0, error: job.error || 'Render failed' })
-          return
-        }
-        fvSetExportStatus('Render complete', 'ok')
-        document.getElementById('fv-export-bar').style.width = '100%'
-        fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
-        const url = await api.faceless.downloadRender(jobId)
-        if (fvState.renderUrl) URL.revokeObjectURL(fvState.renderUrl)
-        fvState.renderUrl = url
-        const vid = document.getElementById('fv-export-video')
-        vid.src = url
-        vid.onloadedmetadata = () => {
-          fvLengthTrace('render-mp4', {
-            seconds: vid.duration,
-            targetSeconds: picked.seconds,
-            voiceoverSeconds: fvState.media?.duration || null,
-          })
-        }
-        const dl = document.getElementById('fv-export-dl')
-        dl.href = url
-        document.getElementById('fv-export-result').style.display = ''
-        document.getElementById('fv-export-actions').style.display = 'none'
-        fvNotifyStudio()
-        try { window.fvStudioIngestExport?.(jobId) } catch (_) {}
-        fvMaybeAutoUploadYoutube()
-      } catch (e) {
-        clearInterval(fvState.renderPoll)
-        fvState.renderPoll = null
-        if (btn) btn.disabled = false
-        fvSetExportStatus(e.message || 'Poll failed', 'err')
-      }
-    }, 1500)
+    await fvStudioJob({
+      type: 'export',
+      status: 'running',
+      progress: 3,
+      remote_id: jobId,
+      provider: 'railway',
+      parameters: {
+        duration_id: picked.id,
+        duration_seconds: picked.seconds,
+        aspect: fvState.media.aspect || fvState.aspect,
+        musicId: fvState.preview?.musicId || 'none',
+      },
+    })
+    fvNotifyStudio()
+    fvPollRenderJob(jobId)
   } catch (e) {
     if (btn) btn.disabled = false
     if (e.needsPlan) fvSetExportStatus(e.message || 'Active plan required to export', 'err')
     else fvSetExportStatus(e.message || 'Could not start render', 'err')
   }
+}
+
+function fvPollRenderJob(jobId) {
+  if (!jobId) return
+  if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
+  fvState.renderJobId = jobId
+  const btn = document.getElementById('fv-export-btn')
+  const tick = async () => {
+    try {
+      const job = await api.faceless.pollRender(jobId)
+      const bar = document.getElementById('fv-export-bar')
+      if (bar) bar.style.width = Math.max(3, job.progress || 0) + '%'
+      if (job.status === 'queued' || job.status === 'processing') {
+        fvSetExportStatus(job.step || 'Rendering…', 'loading')
+        fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 3 })
+        return
+      }
+      clearInterval(fvState.renderPoll)
+      fvState.renderPoll = null
+      if (btn) btn.disabled = false
+      if (job.status === 'error') {
+        fvSetExportStatus(job.error || 'Render failed', 'err')
+        fvStudioJobPatch(jobId, { status: 'failed', progress: 0, error: job.error || 'Render failed' })
+        fvNotifyStudio()
+        return
+      }
+      fvSetExportStatus('Render complete', 'ok')
+      if (bar) bar.style.width = '100%'
+      fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
+      const url = await api.faceless.downloadRender(jobId)
+      if (fvState.renderUrl && String(fvState.renderUrl).startsWith('blob:')) URL.revokeObjectURL(fvState.renderUrl)
+      fvState.renderUrl = url
+      const vid = document.getElementById('fv-export-video')
+      const picked = (() => { try { return fvPickedDuration() } catch (_) { return null } })()
+      if (vid) {
+        vid.src = url
+        vid.onloadedmetadata = () => {
+          const actual = Number(vid.duration)
+          fvLengthTrace('render-mp4', {
+            seconds: actual,
+            targetSeconds: picked?.seconds || null,
+            voiceoverSeconds: fvState.media?.duration || null,
+          })
+          if (picked?.seconds && Number.isFinite(actual) && isMateriallyShort(actual, picked.seconds)) {
+            fvSetExportStatus(
+              'Rendered MP4 is ' + formatDurationSeconds(actual) +
+              ' but you asked for ' + formatDurationSeconds(picked.seconds) +
+              '. Download it anyway, or go back and extend the script before rendering again.',
+              'err',
+            )
+          }
+        }
+      }
+      const dl = document.getElementById('fv-export-dl')
+      if (dl) dl.href = url
+      document.getElementById('fv-export-result').style.display = ''
+      fvNotifyStudio()
+      try { window.fvStudioIngestExport?.(jobId) } catch (_) {}
+      fvMaybeAutoUploadYoutube()
+    } catch (e) {
+      clearInterval(fvState.renderPoll)
+      fvState.renderPoll = null
+      if (btn) btn.disabled = false
+      fvSetExportStatus(e.message || 'Poll failed', 'err')
+    }
+  }
+  tick()
+  fvState.renderPoll = setInterval(tick, 1500)
 }
 
 function fvSetYoutubeStatus(msg, kind) {
@@ -9944,14 +10051,45 @@ async function fvMaybeAutoUploadYoutube() {
 }
 
 window.fvRegenerateSection = async (sectionId) => {
-  fvSetStatus('AI already wrote this script. Edit the section by hand.', 'err', 2)
+  if (fvState.scriptBusy) return
+  const script = fvState.script
+  const sec = script?.sections?.find((s) => s.id === sectionId)
+  if (!sec) return
+  fvRebuildFullScriptFromSections()
+  fvState.scriptBusy = true
+  fvSetStatus('Rewriting this section…', 'loading', 2)
+  try {
+    const data = await api.faceless.rewriteSection({
+      topic: script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
+      section_id: sectionId,
+      heading: sec.heading,
+      text: sec.text,
+      full_script: script.full_script,
+    })
+    const text = String(data.text || data.section?.text || data.rewritten || data.full_script || '').trim()
+    if (!text) throw new Error('Rewrite returned no text')
+    sec.text = text
+    fvRebuildFullScriptFromSections()
+    fvRenderScript(script)
+    fvSetStatus('Section updated', 'ok', 2)
+  } catch (e) {
+    fvSetStatus(e.message || 'Could not rewrite this section', 'err', 2)
+  } finally {
+    fvState.scriptBusy = false
+  }
 }
 
-window.fvGenerateScript = async () => {
+window.fvRegenerateWholeScript = async () => {
   if (fvState.scriptBusy) return
-  if (fvState.scriptAiUsed || fvState.script) {
+  fvState.scriptAiUsed = false
+  await window.fvGenerateScript({ force: true })
+}
+
+window.fvGenerateScript = async (opts = {}) => {
+  if (fvState.scriptBusy) return
+  if (!opts.force && (fvState.scriptAiUsed || fvState.script)) {
     fvSetScriptAiLock(true)
-    return fvSetStatus('AI already wrote this script. Edit it by hand, or clear to start a new video.', 'err')
+    return fvSetStatus('AI already wrote this script. Edit a section, regenerate, or clear to start over.', 'err')
   }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')

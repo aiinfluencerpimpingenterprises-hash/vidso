@@ -15,11 +15,18 @@ import {
 } from '../lib/faceless-length.js'
 import { durationFromBody } from '../lib/quota.js'
 
-test('5 min chip is 750 words at 150 wpm', () => {
-  assert.equal(WORDS_PER_MINUTE, 150)
-  assert.equal(targetWordsFromSeconds(300), 750)
-  assert.equal(impliedSecondsFromWords(750), 300)
-  assert.equal(formatDurationSeconds(300), '5 min')
+test('length chips map to one WPM target', () => {
+  const rows = [
+    [180, 450],
+    [300, 750],
+    [600, 1500],
+    [900, 2250],
+    [1800, 4500],
+  ]
+  for (const [seconds, words] of rows) {
+    assert.equal(targetWordsFromSeconds(seconds), words)
+    assert.equal(impliedSecondsFromWords(words), seconds)
+  }
 })
 
 test('missing duration throws instead of defaulting to 3 min', () => {

@@ -80,6 +80,41 @@ async function persistRefs(token, projectId, user, refs) {
   return updateProject(token, projectId, user, { references: out })
 }
 
+async function ingestMedia(token, projectId, user, body) {
+  const rec = await findProject(token, projectId, user)
+  if (!rec) return null
+  const voiceUrl = String(body.voiceover_url || body.voiceoverUrl || '')
+  if (voiceUrl) {
+    const exists = (rec.assets || []).some((a) => a.type === 'voiceover' && a.storage_url === voiceUrl)
+    if (!exists) {
+      await addAsset(token, projectId, user, {
+        type: 'voiceover',
+        storage_url: voiceUrl,
+        mime: String(body.voiceover_mime || 'audio/mpeg'),
+        label: 'Voiceover',
+        duration_seconds: body.duration_seconds,
+      })
+    }
+  }
+  const words = Array.isArray(body.words) ? body.words : null
+  const hasCaptions = (rec.assets || []).some((a) => a.type === 'captions')
+  if (words && words.length && !hasCaptions) {
+    const uploaded = await persistBinary(token, {
+      buffer: Buffer.from(JSON.stringify(words)),
+      filename: FS_FILE_PREFIX + String(projectId).slice(0, 8) + '-captions.json',
+      mime: 'application/json',
+    })
+    await addAsset(token, projectId, user, {
+      type: 'captions',
+      storage_url: uploaded.url,
+      file_id: uploaded.id,
+      mime: 'application/json',
+      label: 'Captions',
+    })
+  }
+  return findProject(token, projectId, user)
+}
+
 export default async function handler(req, res) {
   cors(req, res)
   if (req.method === 'OPTIONS') {
@@ -187,6 +222,13 @@ export default async function handler(req, res) {
       if (!jobId) return send(res, 400, { error: 'renderJobId is required' })
       const out = await ingestExport(token, segs[1], user, jobId)
       return send(res, out.status, out.body)
+    }
+
+    if (segs[0] === 'projects' && segs[2] === 'ingest-media' && req.method === 'POST') {
+      const body = await readJson(req)
+      const rec = await ingestMedia(token, segs[1], user, body)
+      if (!rec) return send(res, 404, { error: 'Project not found' })
+      return send(res, 200, { project: publicProject(rec) })
     }
 
     return send(res, 404, { error: 'Not found' })
