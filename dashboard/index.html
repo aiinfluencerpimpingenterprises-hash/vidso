@@ -2514,6 +2514,11 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
   flex:1;min-width:0;background:#0c0c0e;border:1px solid var(--border);border-radius:10px;
   color:var(--ink,#fff);padding:8px 10px;font-size:.78rem;font-family:ui-monospace,Menlo,monospace
 }
+.conn-pair{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+.conn-pair img{width:28px;height:28px;object-fit:contain;background:#fff;border-radius:8px;padding:3px}
+.conn-pair span{font-weight:800;color:rgba(255,255,255,.4)}
+.conn-cursor{margin:12px 0 0}
+.conn-cursor summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.55)}
 .yt-review{
   position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px
 }
@@ -3332,7 +3337,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           </label>
           <details id="settings-yt-mcp-wrap">
             <summary>MCP</summary>
-            <p class="settings-yt-sub" style="margin-top:8px">Issue and revoke tokens from Connections. The box below is a session config and expires when you sign out.</p>
+            <p class="settings-yt-sub" style="margin-top:8px">Claude uses the personal connector URL from Connections. Cursor can use the JSON below once a token is issued.</p>
             <pre id="settings-yt-mcp"></pre>
             <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
           </details>
@@ -6173,7 +6178,12 @@ async function refreshYoutubeSettings() {
   const priv = document.getElementById('settings-yt-privacy')
   if (priv) priv.value = st.privacy || 'unlisted'
   const mcp = document.getElementById('settings-yt-mcp')
-  if (mcp) mcp.textContent = mcpConfigJson(st.mcpUrl, getToken())
+  if (mcp) {
+    const issued = st.mcp
+    mcp.textContent = issued?.token
+      ? mcpConfigJson(issued.mcpUrl || st.mcpUrl, issued.token)
+      : 'Open Connections to get your Claude connector URL.'
+  }
 }
 
 window.connectYoutubeChannel = async () => {

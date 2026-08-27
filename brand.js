@@ -4,6 +4,8 @@
 
   global.VIDSO_R2_BASE = R2_BASE;
   global.VIDSO_LOGO_URL = R2_BASE + '/vidso-logo.png';
+  global.VIDSO_CLAUDE_ICON_URL = R2_BASE + '/claude-ai-icon.webp';
+  global.VIDSO_YOUTUBE_LOGO_URL = R2_BASE + '/youtubelogo.png';
   global.VIDSO_SUPPORT_EMAIL = 'support@vidso.pro';
 
   global.vidsoSupportMailto = function vidsoSupportMailto(subject) {

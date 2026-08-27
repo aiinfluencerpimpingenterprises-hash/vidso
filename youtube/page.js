@@ -10,13 +10,18 @@ import {
   bindPlaceholders,
   demoHtml,
   faqHtml,
-  fanHtml,
   initAccordion,
   initPromo,
   initTabs,
+  pairLockupHtml,
 } from '/lib/connect-pages.js'
+import { YOUTUBE_LOGO_URL } from '/lib/brand-assets.js'
 
-document.getElementById('hero-fan').innerHTML = fanHtml(5)
+document.getElementById('hero-fan').innerHTML = pairLockupHtml({
+  partnerSrc: YOUTUBE_LOGO_URL,
+  partnerAlt: 'YouTube',
+  caption: 'YouTube × Vidso',
+})
 document.getElementById('hero-top').textContent = YT_HERO.headingTop
 document.getElementById('hero-accent').textContent = YT_HERO.headingAccent
 document.getElementById('hero-sub').textContent = YT_HERO.subheading

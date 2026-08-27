@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
     }
     const rec = await loadMcpRecord(token)
-    return send(res, 200, publicMcpStatus(rec, req))
+    return send(res, 200, publicMcpStatus(rec, req, { sessionToken: token }))
   }
 
   if (sub === 'token' && req.method === 'POST') {

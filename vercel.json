@@ -292,6 +292,15 @@
       ]
     },
     {
+      "source": "/api/mcp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/api/mcp/(.*)",
       "headers": [
         {

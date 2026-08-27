@@ -11,17 +11,22 @@ import {
   bindPlaceholders,
   demoHtml,
   faqHtml,
-  fanHtml,
   initAccordion,
   initCopyButtons,
   initPromo,
   initTabs,
   loadMcpTools,
+  pairLockupHtml,
   toolCardHtml,
   workflowCardHtml,
 } from '/lib/connect-pages.js'
+import { CLAUDE_ICON_URL } from '/lib/brand-assets.js'
 
-document.getElementById('hero-fan').innerHTML = fanHtml(5)
+document.getElementById('hero-fan').innerHTML = pairLockupHtml({
+  partnerSrc: CLAUDE_ICON_URL,
+  partnerAlt: 'Claude',
+  caption: 'Claude × Vidso',
+})
 document.getElementById('hero-top').textContent = MCP_HERO.headingTop
 document.getElementById('hero-accent').textContent = MCP_HERO.headingAccent
 document.getElementById('hero-sub').textContent = MCP_HERO.subheading
@@ -39,7 +44,8 @@ function stepHtml(step, url) {
       <button type="button" class="btn btn-ghost" data-copy="#mcp-url">Copy</button>
     </label>`
   } else if (step.href) {
-    extra = `<a class="btn btn-primary" href="${step.href}">${step.label || 'Open'}</a>`
+    const ext = /^https?:/i.test(step.href)
+    extra = `<a class="btn btn-primary" href="${step.href}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}>${step.label || 'Open'}</a>`
   }
   return `<div class="step">
     <div class="n">${step.n}</div>

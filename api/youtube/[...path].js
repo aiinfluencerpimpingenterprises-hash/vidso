@@ -64,7 +64,7 @@ async function extrasFor(req, token, rec) {
     configured: youtubeConfigured(),
     oauthVerified: youtubeOauthVerified(),
     quota: publicQuotaView(uploads),
-    mcp: publicMcpStatus(mcp, req),
+    mcp: publicMcpStatus(mcp, req, { sessionToken: token }),
     uploads,
   }
 }

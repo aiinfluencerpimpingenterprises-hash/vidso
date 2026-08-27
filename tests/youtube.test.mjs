@@ -19,6 +19,7 @@ import {
 import { isHistorySidecarName } from '../lib/image-gen.js'
 import { mcpConfigJson } from '../lib/youtube-client.js'
 import { publicMcpTools, VERIFIED_MCP_CLIENTS } from '../lib/mcp-registry.js'
+import { mcpConnectorUrl, mcpCredentialFromRequest, publicMcpStatus } from '../lib/mcp-auth.js'
 import { YT_DAILY_UPLOAD_CAP, isYoutubeQuotaError, publicQuotaView, youtubeQuotaDay } from '../lib/youtube-uploads.js'
 
 const env = {
@@ -112,13 +113,13 @@ test('MCP tool list covers status connect and upload', () => {
 
 test('MCP config JSON points at the Vidso MCP server', () => {
   const json = JSON.parse(mcpConfigJson('https://vidso.pro/api/mcp', 'tok_123'))
-  assert.equal(json.mcpServers.vidso.url, 'https://vidso.pro/api/mcp')
+  assert.equal(json.mcpServers.vidso.url, 'https://vidso.pro/api/mcp?token=tok_123')
   assert.equal(json.mcpServers.vidso.headers.Authorization, 'Bearer tok_123')
 })
 
-test('live MCP catalog matches youtube tools and lists no unverified clients', () => {
+test('live MCP catalog matches youtube tools and lists Claude as the product client', () => {
   assert.deepEqual(publicMcpTools().map((t) => t.name), mcpTools().map((t) => t.name))
-  assert.deepEqual(VERIFIED_MCP_CLIENTS, [])
+  assert.equal(VERIFIED_MCP_CLIENTS[0]?.id, 'claude')
 })
 
 test('YouTube daily cap is the default Data API upload budget', () => {
@@ -145,4 +146,28 @@ test('new connections do not treat auto-upload as on by default', () => {
 test('OAuth published flag is off unless env says otherwise', () => {
   assert.equal(youtubeOauthVerified({}), false)
   assert.equal(youtubeOauthVerified({ YOUTUBE_OAUTH_VERIFIED: 'true' }), true)
+})
+
+test('Claude connector URL puts the token in the query string', () => {
+  assert.equal(
+    mcpConnectorUrl('https://vidso.pro', 'abc+def'),
+    'https://vidso.pro/api/mcp?token=abc%2Bdef',
+  )
+})
+
+test('MCP credentials accept Bearer or query token', () => {
+  assert.equal(mcpCredentialFromRequest({ headers: { authorization: 'Bearer abc' }, query: {} }), 'abc')
+  assert.equal(mcpCredentialFromRequest({ headers: {}, query: { token: 'from-query' } }), 'from-query')
+  assert.equal(mcpCredentialFromRequest({ headers: {}, query: {}, url: '/api/mcp?token=from-url' }), 'from-url')
+})
+
+test('MCP status remints a connector URL when a session is present', () => {
+  process.env.YOUTUBE_TOKEN_SECRET = 'unit-test-token-secret'
+  const st = publicMcpStatus({ nonce: 'n1', last_used_at: null, created_at: '2026-01-01' }, {
+    headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' },
+  }, { sessionToken: 'sess' })
+  assert.equal(st.issued, true)
+  assert.match(st.connectorUrl, /^https:\/\/vidso\.pro\/api\/mcp\?token=/)
+  assert.ok(st.token)
+  assert.equal(st.sessionToken, undefined)
 })
