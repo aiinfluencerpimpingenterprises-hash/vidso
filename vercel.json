@@ -30,6 +30,10 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/youtube-generation",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/tools",
       "destination": "/dashboard/index.html"
     },
@@ -192,6 +196,15 @@
     },
     {
       "source": "/ui",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/youtube-generation",
       "headers": [
         {
           "key": "Cache-Control",

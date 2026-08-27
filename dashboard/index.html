@@ -3252,6 +3252,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+    <button type="button" class="topnav-item" id="nav-ytvideogen" data-panel="ytvideogen" onclick="switchPanel('ytvideogen',this)">YouTube Generator</button>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
@@ -3315,6 +3316,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+  <button type="button" class="topnav-item" data-panel="ytvideogen" onclick="switchPanel('ytvideogen',this)">YouTube Generator</button>
   <span class="nav-drawer-label">Short Form Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
@@ -5015,8 +5017,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
-        <h2>Long Form Generator</h2>
-        <p>Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
+        <h2 id="fv-page-title">Long Form Generator</h2>
+        <p id="fv-page-sub">Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
@@ -5033,7 +5035,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           </div>
           <div class="fv-how-n">Step 2</div>
           <div class="fv-how-t">Media</div>
-          <p class="fv-how-d">Build voiceover, captions, and B-roll for the cut.</p>
+          <p class="fv-how-d" id="fv-how-media-d">Build voiceover, captions, and B-roll for the cut.</p>
         </div>
         <div class="fv-how-item">
           <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
@@ -5045,8 +5047,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         </div>
       </div>
       <div class="tool-card">
-        <h3 class="ui-card-title">Long Form Generator</h3>
-        <p class="ui-card-desc">Set topic, length, footage source, and voice, then generate a script.</p>
+        <h3 class="ui-card-title" id="fv-card-title">Long Form Generator</h3>
+        <p class="ui-card-desc" id="fv-card-desc">Set topic, length, and voice, then generate a script.</p>
 
         <div class="fv-wizard">
           <div class="fv-stepper" id="fv-stepper" aria-label="Progress">
@@ -5089,7 +5091,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               </div>
             </div>
 
-            <div class="field" id="fv-field-broll-source">
+            <div class="field" id="fv-field-broll-source" hidden>
               <label>Footage</label>
               <div class="fv-chip-row" id="fv-broll-source-chips">
                 <button type="button" class="fv-chip active" data-src="pexels" onclick="fvSetBrollSource('pexels')">Stock footage</button>
@@ -5402,6 +5404,13 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="qa-body">
               <div class="qa-title">Start a faceless video</div>
               <div class="qa-sub">Script, voice, B-roll, and captions</div>
+            </div>
+          </button>
+          <button type="button" class="qa-card" onclick="switchPanel('ytvideogen',null)">
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">YouTube Generator</div>
+              <div class="qa-sub">Pro: real YouTube clips for each script section</div>
             </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
@@ -7766,13 +7775,13 @@ const DEFAULT_PATH = '/video-generation'
 const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
   home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Long Form Generator', tools:'Short Form Tools',
+  videogen:'Long Form Generator', ytvideogen:'YouTube Generator', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
   clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', tools:'/tools',
+  videogen:'/video-generation', ytvideogen:'/youtube-generation', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
@@ -7784,6 +7793,7 @@ function normalizePath(p) {
 function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
 function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
+  if (id === 'ytvideogen') return 'ytvideogen'
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
@@ -7812,33 +7822,44 @@ window.switchPanel = (id, btn, opts = {}) => {
     openPaywall({ force: true })
     return
   }
-  const panelFeature = { editor: 'video_tools' }[id]
+  const panelFeature = { editor: 'video_tools', ytvideogen: 'youtube_sourced_broll' }[id]
   if (panelFeature && currentUser && hasActivePlan()) {
     const gate = evaluateFeature({ user: currentUser, feature: panelFeature })
     if (!gate.ok) {
       openPaywall({ force: true, reason: 'upgrade' })
       setPaywallStatus(gate.message, 'err')
+      if (id === 'ytvideogen' && !opts._ytFallback) {
+        const next = pathForPanel('videogen')
+        if (normalizePath(location.pathname) !== normalizePath(next)) {
+          history.replaceState({ panel: 'videogen' }, '', next)
+        }
+        switchPanel('videogen', null, { ...opts, silent: true, _ytFallback: true })
+      }
       return
     }
   }
-  const panel = document.getElementById('panel-'+id)
+  const panelDomId = id === 'ytvideogen' ? 'videogen' : id
+  const panel = document.getElementById('panel-' + panelDomId)
   if (!panel) id = DEFAULT_PANEL
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
-  document.getElementById('panel-'+id).classList.add('active')
+  document.getElementById('panel-' + (id === 'ytvideogen' ? 'videogen' : id)).classList.add('active')
   markNavActive(id)
   try { sessionStorage.setItem('vidso_last_panel', id) } catch (_) {}
   try { closeNavMenusPublic() } catch (_) {}
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
-  if (id === 'videogen') { try { fvInit() } catch (_) {} }
+  if (id === 'videogen' || id === 'ytvideogen') {
+    try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
+    try { fvInit() } catch (_) {}
+  }
   if (id === 'imagegen') { try { window.imgWorkspaceShow?.() } catch (_) {} }
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
@@ -8228,6 +8249,31 @@ window.fvSetAspect = (aspect) => {
   document.querySelectorAll('#fv-aspect-chips .fv-chip').forEach(b => {
     b.classList.toggle('active', b.dataset.aspect === fvState.aspect)
   })
+}
+
+function fvApplyFacelessMode(youtube) {
+  fvState.brollSource = youtube ? 'youtube' : 'pexels'
+  const field = document.getElementById('fv-field-broll-source')
+  if (field) field.hidden = true
+  const title = document.getElementById('fv-page-title')
+  const sub = document.getElementById('fv-page-sub')
+  const card = document.getElementById('fv-card-title')
+  const desc = document.getElementById('fv-card-desc')
+  const how = document.getElementById('fv-how-media-d')
+  if (youtube) {
+    if (title) title.textContent = 'YouTube Generator'
+    if (sub) sub.textContent = 'Write a script, pick a voice, then assemble real YouTube clips for each section. Pro.'
+    if (card) card.textContent = 'YouTube video'
+    if (desc) desc.textContent = 'Same script and voice flow as Long Form. Footage is pulled from YouTube after the voiceover is ready.'
+    if (how) how.textContent = 'YouTube clips for each section after the voiceover is ready.'
+  } else {
+    if (title) title.textContent = 'Long Form Generator'
+    if (sub) sub.textContent = 'Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.'
+    if (card) card.textContent = 'Long Form Generator'
+    if (desc) desc.textContent = 'Set topic, length, and voice, then generate a script.'
+    if (how) how.textContent = 'Stock clips from Pexels, matched to your script.'
+  }
+  fvSyncBrollSourceUi()
 }
 
 function fvSyncBrollSourceUi() {
