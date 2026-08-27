@@ -1,5 +1,16 @@
 import { evaluatePlan, toHttp } from '../../lib/enforce.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
+import { requireMcpUser } from '../_lib/mcp-user.js'
+import { handleMcpBody } from '../../lib/mcp-rpc.js'
+import { loadMcpRecord, publicMcpStatus } from '../../lib/mcp-auth.js'
+import {
+  findYoutubeUpload,
+  isYoutubeQuotaError,
+  listYoutubeUploads,
+  publicQuotaView,
+  recordYoutubeUpload,
+  youtubeQuotaResetAt,
+} from '../../lib/youtube-uploads.js'
 import {
   bridgeCookieHeader,
   deleteYoutubeRecord,
@@ -7,8 +18,8 @@ import {
   ensureAccessToken,
   exchangeGoogleCode,
   fetchYoutubeChannel,
+  googleAuthUrl,
   loadYoutubeRecord,
-  mcpTools,
   normalizePrivacy,
   parseCookies,
   publicYoutubeStatus,
@@ -17,6 +28,7 @@ import {
   signPayload,
   verifyPayload,
   youtubeConfigured,
+  youtubeOauthVerified,
   youtubeRedirectUri,
   youtubeResumableUpload,
   youtubeSecrets,
@@ -45,12 +57,16 @@ function appReturn(req, path, extra = {}) {
   return u.toString()
 }
 
-function rpc(res, id, result) {
-  return send(res, 200, { jsonrpc: '2.0', id: id ?? null, result })
-}
-
-function rpcErr(res, id, code, message) {
-  return send(res, 200, { jsonrpc: '2.0', id: id ?? null, error: { code, message } })
+async function extrasFor(req, token, rec) {
+  const uploads = await listYoutubeUploads(token).catch(() => [])
+  const mcp = await loadMcpRecord(token).catch(() => null)
+  return {
+    configured: youtubeConfigured(),
+    oauthVerified: youtubeOauthVerified(),
+    quota: publicQuotaView(uploads),
+    mcp: publicMcpStatus(mcp, req),
+    uploads,
+  }
 }
 
 async function loadFresh(token) {
@@ -73,7 +89,7 @@ async function connectUrlFor(req, token, returnTo) {
   const nonce = signPayload({ n: Math.random().toString(36).slice(2), t: Date.now() })
   const bridge = signPayload({
     token,
-    ret: String(returnTo || '/video-generation').slice(0, 120),
+    ret: String(returnTo || '/connections').slice(0, 120),
     n: nonce,
     exp: Date.now() + 15 * 60 * 1000,
   })
@@ -89,11 +105,13 @@ async function handleStatus(req, res, token) {
   if (!youtubeConfigured()) {
     return send(res, 200, publicYoutubeStatus(null, req, {
       configured: false,
+      oauthVerified: youtubeOauthVerified(),
       message: 'YouTube publishing is not configured on this deployment yet.',
     }))
   }
   const rec = await loadYoutubeRecord(token).catch(() => null)
-  return send(res, 200, publicYoutubeStatus(rec, req, { configured: true }))
+  const extra = await extrasFor(req, token, rec)
+  return send(res, 200, publicYoutubeStatus(rec, req, extra))
 }
 
 async function handleConnect(req, res, token, body) {
@@ -106,7 +124,7 @@ async function handleConnect(req, res, token, body) {
 }
 
 async function handleCallback(req, res) {
-  const originPath = '/video-generation'
+  const originPath = '/connections'
   const cookies = parseCookies(req)
   const fail = (message) => redirect(res, appReturn(req, originPath, { youtube: 'error', youtube_error: message }))
   if (!youtubeConfigured()) return fail('not_configured')
@@ -137,7 +155,7 @@ async function handleCallback(req, res) {
     rec.channel_title = channel.title
     rec.channel_thumb = channel.thumb
     rec.connected_at = new Date().toISOString()
-    if (rec.auto_upload == null) rec.auto_upload = true
+    if (rec.auto_upload == null) rec.auto_upload = false
     rec.privacy = normalizePrivacy(rec.privacy)
     await saveYoutubeRecord(bridge.token, rec)
     res.setHeader('Set-Cookie', bridgeCookieHeader('', { clear: true }))
@@ -197,6 +215,20 @@ async function runUpload(token, body) {
     tags: body.tags,
     privacy: body.privacy || next.privacy,
   })
+  await recordYoutubeUpload(token, {
+    id: body.uploadId,
+    project: body.project || body.title || '',
+    channel_id: next.channel_id,
+    channel_title: next.channel_title,
+    title: body.title,
+    status: 'published',
+    url: result.url || '',
+    video_url: body.video_url || body.videoUrl,
+    render_job_id: body.renderJobId,
+    description: body.description,
+    privacy: body.privacy || next.privacy,
+    tags: body.tags,
+  }).catch(() => {})
   return result
 }
 
@@ -205,7 +237,68 @@ async function handleUpload(req, res, token, body) {
     const result = await runUpload(token, body)
     return send(res, 200, result)
   } catch (e) {
-    return send(res, e.status || 400, { error: e.message || 'Upload failed', code: e.code })
+    const queued = isYoutubeQuotaError(e)
+    await recordYoutubeUpload(token, {
+      id: body.uploadId,
+      project: body.project || body.title || '',
+      title: body.title,
+      status: queued ? 'queued' : 'failed',
+      error: e.message || 'Upload failed',
+      video_url: body.video_url || body.videoUrl,
+      render_job_id: body.renderJobId,
+      description: body.description,
+      privacy: body.privacy,
+      tags: body.tags,
+      retry_after: queued ? youtubeQuotaResetAt() : null,
+    }).catch(() => {})
+    return send(res, queued ? 429 : (e.status || 400), {
+      error: queued
+        ? 'YouTube daily quota is full. This upload is queued until the next reset (midnight Pacific Time).'
+        : (e.message || 'Upload failed'),
+      code: queued ? 'quota_exhausted' : e.code,
+      queued,
+      retryAfter: queued ? youtubeQuotaResetAt() : null,
+    })
+  }
+}
+
+async function handleUploads(req, res, token) {
+  const uploads = await listYoutubeUploads(token).catch(() => [])
+  return send(res, 200, { uploads, quota: publicQuotaView(uploads) })
+}
+
+async function handleRetry(req, res, token, body) {
+  const row = await findYoutubeUpload(token, String(body.id || body.uploadId || ''))
+  if (!row) return send(res, 404, { error: 'Upload not found' })
+  if (row.status === 'published' && row.url) {
+    return send(res, 200, { url: row.url, videoId: String(row.url).split('v=')[1] || '', skipped: true })
+  }
+  try {
+    const result = await runUpload(token, {
+      uploadId: row.id,
+      title: body.title || row.title,
+      description: body.description || row.description,
+      privacy: body.privacy || row.privacy,
+      tags: body.tags || row.tags,
+      videoUrl: row.video_url,
+      renderJobId: row.render_job_id,
+      project: row.project,
+    })
+    return send(res, 200, result)
+  } catch (e) {
+    const queued = isYoutubeQuotaError(e)
+    await recordYoutubeUpload(token, {
+      id: row.id,
+      status: queued ? 'queued' : 'failed',
+      error: e.message || 'Retry failed',
+      retry_after: queued ? youtubeQuotaResetAt() : null,
+    }).catch(() => {})
+    return send(res, queued ? 429 : (e.status || 400), {
+      error: e.message || 'Retry failed',
+      code: queued ? 'quota_exhausted' : e.code,
+      queued,
+      retryAfter: queued ? youtubeQuotaResetAt() : null,
+    })
   }
 }
 
@@ -216,64 +309,12 @@ async function handleMcp(req, res, token) {
     return res.end()
   }
   const body = await readJson(req)
-  const id = body.id ?? null
-  const method = String(body.method || '')
-  if (method === 'initialize') {
-    return rpc(res, id, {
-      protocolVersion: '2025-03-26',
-      capabilities: { tools: {} },
-      serverInfo: { name: 'vidso-youtube', version: '1.0.0' },
-    })
-  }
-  if (method === 'notifications/initialized' || method === 'initialized') {
-    res.statusCode = 202
-    return res.end()
-  }
-  if (method === 'ping') return rpc(res, id, {})
-  if (method === 'tools/list') return rpc(res, id, { tools: mcpTools() })
-  if (method !== 'tools/call') return rpcErr(res, id, -32601, 'Unknown method')
-
-  const name = String(body.params?.name || '')
-  const args = body.params?.arguments || {}
-  try {
-    if (name === 'youtube_status') {
-      const rec = await loadYoutubeRecord(token).catch(() => null)
-      return rpc(res, id, {
-        content: [{ type: 'text', text: JSON.stringify(publicYoutubeStatus(rec, req, { configured: youtubeConfigured() }), null, 2) }],
-      })
-    }
-    if (name === 'youtube_connect_url') {
-      const origin = requestOrigin(req)
-      return rpc(res, id, {
-        content: [{
-          type: 'text',
-          text: 'Open Vidso while logged in and connect YouTube from Account settings:\n' + origin + '/video-generation?youtube=connect',
-        }],
-      })
-    }
-    if (name === 'youtube_upload') {
-      const result = await runUpload(token, {
-        videoUrl: args.video_url,
-        title: args.title,
-        description: args.description,
-        privacy: args.privacy,
-        tags: args.tags,
-      })
-      return rpc(res, id, {
-        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-      })
-    }
-    return rpcErr(res, id, -32601, 'Unknown tool')
-  } catch (e) {
-    return rpc(res, id, {
-      content: [{ type: 'text', text: e.message || 'Tool failed' }],
-      isError: true,
-    })
-  }
+  return handleMcpBody(req, res, token, body)
 }
 
 export default async function handler(req, res) {
   cors(req, res)
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, MCP-Protocol-Version')
   if (req.method === 'OPTIONS') {
     res.statusCode = 204
     return res.end()
@@ -284,6 +325,16 @@ export default async function handler(req, res) {
     return handleCallback(req, res)
   }
 
+  if (sub === 'mcp') {
+    let token
+    try {
+      ;({ token } = await requireMcpUser(req))
+    } catch (e) {
+      return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
+    }
+    return handleMcp(req, res, token)
+  }
+
   let user
   let token
   try {
@@ -292,10 +343,8 @@ export default async function handler(req, res) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
 
-  if (sub === 'mcp') return handleMcp(req, res, token)
-
   const plan = evaluatePlan(user)
-  if (!plan.ok && sub !== 'status') {
+  if (!plan.ok && sub !== 'status' && sub !== 'uploads') {
     const http = toHttp(plan)
     return send(res, http.status, http.body)
   }
@@ -309,5 +358,17 @@ export default async function handler(req, res) {
   if (sub === 'token' && req.method === 'POST') return handleToken(req, res, token)
   if (sub === 'settings' && req.method === 'POST') return handleSettings(req, res, token, await readJson(req))
   if (sub === 'upload' && req.method === 'POST') return handleUpload(req, res, token, await readJson(req))
+  if (sub === 'uploads' && req.method === 'GET') return handleUploads(req, res, token)
+  if (sub === 'retry' && req.method === 'POST') return handleRetry(req, res, token, await readJson(req))
+  if (sub === 'record' && req.method === 'POST') {
+    const body = await readJson(req)
+    const rec = await loadYoutubeRecord(token).catch(() => null)
+    const row = await recordYoutubeUpload(token, {
+      ...body,
+      channel_id: rec?.channel_id,
+      channel_title: rec?.channel_title,
+    })
+    return send(res, 200, { upload: row })
+  }
   return send(res, 404, { error: 'Not found' })
 }

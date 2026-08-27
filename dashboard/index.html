@@ -2481,6 +2481,54 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .settings-yt-msg{margin:0;font-size:.75rem;color:rgba(255,255,255,.5)}
 .settings-yt-msg.is-err{color:#ff8a94}
 .settings-yt-msg.is-ok{color:#7dce8a}
+
+.conn-page{max-width:860px;margin:0 auto;padding:8px 0 48px}
+.conn-card{
+  background:var(--card,#141416);border:1px solid var(--border);border-radius:16px;padding:18px 18px 16px;margin:0 0 14px
+}
+.conn-card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.conn-card h3{margin:0;font-size:1rem;font-weight:700}
+.conn-state{font-size:.72rem;font-weight:650;color:rgba(255,255,255,.45)}
+.conn-state.is-on{color:#7dce8a}
+.conn-sub{margin:0 0 12px;font-size:.8rem;line-height:1.45;color:rgba(255,255,255,.5)}
+.conn-steps{margin:0 0 12px 18px;padding:0;color:rgba(255,255,255,.55);font-size:.8rem;line-height:1.5}
+.conn-meta{margin:10px 0;font-size:.78rem;color:rgba(255,255,255,.5)}
+.conn-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.conn-pre{
+  margin:10px 0 0;padding:10px;border-radius:10px;background:#0c0c0e;border:1px solid var(--border);
+  font-size:.72rem;overflow:auto;max-height:180px;white-space:pre-wrap
+}
+.conn-channel{display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+.conn-channel img{width:40px;height:40px;border-radius:99px;object-fit:cover;background:#111}
+.conn-channel-t{font-size:.9rem;font-weight:650}
+.conn-channel-id{font-size:.72rem;color:rgba(255,255,255,.42);margin-top:2px}
+.conn-table-wrap{overflow:auto}
+.conn-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.conn-table th,.conn-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+.conn-table th{color:rgba(255,255,255,.45);font-weight:650}
+.conn-msg{margin:0 0 12px;font-size:.8rem}
+.conn-msg.is-err{color:#ff8a94}
+.conn-msg.is-ok{color:#7dce8a}
+.conn-page .copy-field{display:flex;gap:8px;align-items:center}
+.conn-page .copy-field input{
+  flex:1;min-width:0;background:#0c0c0e;border:1px solid var(--border);border-radius:10px;
+  color:var(--ink,#fff);padding:8px 10px;font-size:.78rem;font-family:ui-monospace,Menlo,monospace
+}
+.yt-review{
+  position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px
+}
+.yt-review[hidden]{display:none!important}
+.yt-review-card{
+  width:min(520px,100%);background:#141416;border:1px solid var(--border);border-radius:16px;padding:20px
+}
+.yt-review-card h2{margin:0 0 8px;font-size:1.1rem}
+.yt-review-card p{margin:0 0 14px;font-size:.82rem;color:rgba(255,255,255,.5)}
+.yt-review-card label{display:block;font-size:.75rem;font-weight:650;margin:0 0 6px}
+.yt-review-card input,.yt-review-card textarea,.yt-review-card select{
+  width:100%;margin:0 0 12px;background:#0c0c0e;border:1px solid var(--border);border-radius:10px;
+  color:#fff;padding:8px 10px;font-family:inherit;font-size:.85rem
+}
+.yt-review-actions{display:flex;gap:8px;justify-content:flex-end}
 #fv-yt-status{display:none;margin-top:10px}
 
 /* ── Onboarding (full-page setup) ─────────────────────────────────────── */
@@ -3257,7 +3305,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
         </div>
-        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically, or from Cursor via the Vidso YouTube MCP.</p>
+        <p class="settings-yt-sub">Connect a channel to upload finished videos from the app. MCP tokens live in Connections.</p>
         <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
         <div id="settings-yt-disconnected">
           <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
@@ -3271,8 +3319,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </div>
           </div>
           <label class="settings-yt-toggle">
-            <span>Upload after export</span>
-            <input type="checkbox" id="settings-yt-auto" checked>
+            <span>After export, open the publish review</span>
+            <input type="checkbox" id="settings-yt-auto">
           </label>
           <label class="settings-yt-privacy">
             <span>Visibility</span>
@@ -3283,8 +3331,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </select>
           </label>
           <details id="settings-yt-mcp-wrap">
-            <summary>MCP for Cursor</summary>
-            <p class="settings-yt-sub" style="margin-top:8px">Paste this into Cursor MCP settings. The token is your current Vidso session and will expire when you sign out.</p>
+            <summary>MCP</summary>
+            <p class="settings-yt-sub" style="margin-top:8px">Issue and revoke tokens from Connections. The box below is a session config and expires when you sign out.</p>
             <pre id="settings-yt-mcp"></pre>
             <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
           </details>
@@ -3301,6 +3349,27 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
     <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
+  </div>
+</div>
+
+<div class="yt-review" id="yt-review" hidden>
+  <div class="yt-review-card" role="dialog" aria-modal="true" aria-labelledby="yt-review-title">
+    <h2 id="yt-review-title">Review YouTube publish</h2>
+    <p>Nothing is uploaded until you confirm. Vidso does not review this for you.</p>
+    <label for="yt-review-title-in">Title</label>
+    <input id="yt-review-title-in" type="text" maxlength="100">
+    <label for="yt-review-desc">Description</label>
+    <textarea id="yt-review-desc" rows="4" maxlength="5000"></textarea>
+    <label for="yt-review-privacy">Visibility</label>
+    <select id="yt-review-privacy">
+      <option value="unlisted">Unlisted</option>
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+    </select>
+    <div class="yt-review-actions">
+      <button type="button" class="btn btn-ghost" id="yt-review-cancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="yt-review-go">Publish</button>
+    </div>
   </div>
 </div>
 
@@ -3422,6 +3491,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" id="user-connections-btn">Connections</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -5493,6 +5563,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
 
+    <div class="panel content-glow" id="panel-connections"></div>
+
     <div class="panel content-glow" id="panel-tools">
       <div class="tools-page">
         <div class="page-header">
@@ -5596,7 +5668,9 @@ import {
   uploadBlobToYoutube,
   uploadViaServer,
   mcpConfigJson,
+  youtubeRecordUpload,
 } from '/lib/youtube-client.js'
+import { initConnectionsPanel } from '/lib/connections-ui.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
@@ -6095,7 +6169,7 @@ async function refreshYoutubeSettings() {
     else { thumb.removeAttribute('src'); thumb.hidden = true }
   }
   const auto = document.getElementById('settings-yt-auto')
-  if (auto) auto.checked = st.autoUpload !== false
+  if (auto) auto.checked = st.autoUpload === true
   const priv = document.getElementById('settings-yt-privacy')
   if (priv) priv.value = st.privacy || 'unlisted'
   const mcp = document.getElementById('settings-yt-mcp')
@@ -7902,13 +7976,15 @@ const titles = {
   home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
-  downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
+  downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary',
+  connections:'Connections'
 }
 const PANEL_PATHS = {
   clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
-  downloader:'/downloader', files:'/files', commentary:'/commentary'
+  downloader:'/downloader', files:'/files', commentary:'/commentary',
+  connections:'/connections'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 function normalizePath(p) {
@@ -7970,7 +8046,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','facelessstudio'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','facelessstudio','connections'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -7981,6 +8057,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   if (id === 'videogen') fvInit()
   if (id === 'imagegen') window.imgWorkspaceShow?.()
   if (id === 'facelessstudio') window.fsStudioShow?.()
+  if (id === 'connections') initConnectionsPanel()
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
     try { edRenderTL?.() } catch (_) {}
@@ -10062,24 +10139,32 @@ window.fvUploadToYoutube = async (opts = {}) => {
   if (!fvState.renderUrl && !fvState.renderJobId) {
     return fvSetYoutubeStatus('Render a video first', 'err')
   }
+  let st = _ytStatus
+  try { st = await youtubeStatus(); _ytStatus = st } catch (_) {}
+  if (!st?.configured) {
+    return fvSetYoutubeStatus('YouTube publishing is not configured on this deployment yet.', 'err')
+  }
+  if (!st?.connected) {
+    fvSetYoutubeStatus('Connect YouTube in Connections first', 'err')
+    initConnectionsPanel()
+    window.switchPanel?.('connections', null, { allowLocked: true })
+    return
+  }
+  if (!opts.reviewed) {
+    return openYoutubeReview({
+      title: (fvState.script?.title || 'Vidso video').slice(0, 100),
+      description: String(fvState.script?.hook || fvState.topic || '').slice(0, 4000),
+      privacy: st.privacy || 'unlisted',
+    })
+  }
   fvState.ytBusy = true
   const btn = document.getElementById('fv-yt-upload')
   if (btn) btn.disabled = true
-  fvSetYoutubeStatus(opts.auto ? 'Uploading to YouTube…' : 'Connecting to YouTube…', 'loading')
+  fvSetYoutubeStatus('Uploading to YouTube…', 'loading')
+  const title = String(opts.title || fvState.script?.title || 'Vidso video').slice(0, 100)
+  const description = String(opts.description || '').slice(0, 4000)
+  const privacy = opts.privacy || st.privacy || 'unlisted'
   try {
-    let st = _ytStatus
-    try { st = await youtubeStatus(); _ytStatus = st } catch (_) {}
-    if (!st?.configured) {
-      throw new Error('YouTube publishing is not configured on this deployment yet.')
-    }
-    if (!st?.connected) {
-      fvSetYoutubeStatus('Connect YouTube in Account settings first', 'err')
-      openAccountSettings()
-      return
-    }
-    const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
-    const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
-    const privacy = st.privacy || 'unlisted'
     let result
     try {
       const tok = await youtubeAccessToken()
@@ -10095,6 +10180,16 @@ window.fvUploadToYoutube = async (opts = {}) => {
         privacy: tok.privacy || privacy,
         onProgress: (pct) => fvSetYoutubeStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
+      try {
+        await youtubeRecordUpload({
+          project: title,
+          title,
+          description,
+          privacy,
+          status: 'published',
+          url: result.url || '',
+        })
+      } catch (_) {}
     } catch (e) {
       if (!fvState.renderJobId) throw e
       fvSetYoutubeStatus('Uploading to YouTube from Vidso…', 'loading')
@@ -10103,6 +10198,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
         title,
         description,
         privacy,
+        project: title,
       })
     }
     fvState.ytVideoId = result.videoId
@@ -10120,6 +10216,33 @@ window.fvUploadToYoutube = async (opts = {}) => {
     if (btn) btn.disabled = false
   }
 }
+
+function openYoutubeReview({ title, description, privacy }) {
+  const modal = document.getElementById('yt-review')
+  if (!modal) return window.fvUploadToYoutube({ reviewed: true, title, description, privacy })
+  document.getElementById('yt-review-title-in').value = title || ''
+  document.getElementById('yt-review-desc').value = description || ''
+  document.getElementById('yt-review-privacy').value = privacy || 'unlisted'
+  modal.hidden = false
+  document.getElementById('yt-review-title-in')?.focus()
+}
+
+function closeYoutubeReview() {
+  const modal = document.getElementById('yt-review')
+  if (modal) modal.hidden = true
+}
+
+document.getElementById('yt-review-cancel')?.addEventListener('click', closeYoutubeReview)
+document.getElementById('yt-review')?.addEventListener('click', (e) => {
+  if (e.target?.id === 'yt-review') closeYoutubeReview()
+})
+document.getElementById('yt-review-go')?.addEventListener('click', () => {
+  const title = document.getElementById('yt-review-title-in')?.value || ''
+  const description = document.getElementById('yt-review-desc')?.value || ''
+  const privacy = document.getElementById('yt-review-privacy')?.value || 'unlisted'
+  closeYoutubeReview()
+  window.fvUploadToYoutube({ reviewed: true, title, description, privacy })
+})
 
 async function fvMaybeAutoUploadYoutube() {
   if (!fvState.renderUrl) return
@@ -10550,6 +10673,11 @@ function bindGettingStarted() {
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
+  document.getElementById('user-connections-btn')?.addEventListener('click', (e) => {
+    e.preventDefault()
+    try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
+    window.switchPanel?.('connections', null, { allowLocked: true })
+  })
 }
 
 initBanner()

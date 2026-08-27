@@ -38,6 +38,18 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/connections",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/mcp",
+      "destination": "/mcp/index.html"
+    },
+    {
+      "source": "/youtube",
+      "destination": "/youtube/index.html"
+    },
+    {
       "source": "/tools",
       "destination": "/dashboard/index.html"
     },
@@ -208,7 +220,7 @@
       ]
     },
     {
-      "source": "/faceless-studio/(.*)",
+      "source": "/connections",
       "headers": [
         {
           "key": "Cache-Control",
@@ -272,6 +284,15 @@
     },
     {
       "source": "/api/youtube/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/mcp/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

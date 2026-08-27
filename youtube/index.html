@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Publish to YouTube · Vidso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/connect-pages.css"/>
+<script src="/brand.js"></script>
+</head>
+<body>
+<p class="sr-only" id="copy-live" aria-live="polite"></p>
+<header>
+  <div class="wrap" style="position:relative">
+    <nav>
+      <a href="/home" class="logo"><img data-vidso-logo width="28" height="28" alt="Vidso"> Vidso</a>
+      <div class="nav-links">
+        <a href="/mcp">MCP</a>
+        <a href="/youtube" class="is-on">YouTube</a>
+        <a href="/home#pricing">Pricing</a>
+      </div>
+      <div class="nav-cta">
+        <a href="/login" class="ghost">Sign in</a>
+        <a class="btn btn-primary" href="/signup">Sign up</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu" onclick="document.querySelector('header').classList.toggle('menu-open')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+    <div class="nav-drawer">
+      <a href="/mcp">MCP</a>
+      <a href="/youtube">YouTube</a>
+      <a href="/home#pricing">Pricing</a>
+      <a href="/login">Sign in</a>
+      <a class="btn btn-primary" href="/signup">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div id="hero-fan"></div>
+      <h1>
+        <span class="line" id="hero-top"></span>
+        <span class="line accent" id="hero-accent"></span>
+      </h1>
+      <p class="sub" id="hero-sub"></p>
+      <div class="promo" id="mcp-promo" hidden>
+        <p data-promo-msg></p>
+        <a data-promo-cta href="/connections">Open Connections</a>
+        <button type="button" class="promo-x" data-promo-dismiss aria-label="Dismiss announcement">×</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel-sec" id="connect">
+    <div class="wrap">
+      <div class="connect">
+        <div class="connect-steps" id="connect-steps"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>HOW IT WORKS</h2>
+        <p>Illustrative examples, not live uploads.</p>
+      </div>
+      <div class="tablist" id="demo-tabs" role="tablist" aria-label="YouTube examples"></div>
+      <div class="demo" id="demo-root"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="features">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>WHAT IS LIVE TODAY</h2>
+      </div>
+      <div class="features-grid" id="features-grid"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>GOT ANY QUESTIONS LEFT?</h2>
+      </div>
+      <div class="faq-list" id="faq-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
+  </div>
+</footer>
+
+<script type="module" src="/youtube/page.js"></script>
+</body>
+</html>

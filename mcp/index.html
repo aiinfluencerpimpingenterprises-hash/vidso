@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vidso MCP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/connect-pages.css"/>
+<script src="/brand.js"></script>
+</head>
+<body>
+<p class="sr-only" id="copy-live" aria-live="polite"></p>
+<header>
+  <div class="wrap" style="position:relative">
+    <nav>
+      <a href="/home" class="logo"><img data-vidso-logo width="28" height="28" alt="Vidso"> Vidso</a>
+      <div class="nav-links">
+        <a href="/mcp" class="is-on">MCP</a>
+        <a href="/youtube">YouTube</a>
+        <a href="/home#pricing">Pricing</a>
+      </div>
+      <div class="nav-cta">
+        <a href="/login" class="ghost">Sign in</a>
+        <a class="btn btn-primary" href="/signup">Sign up</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu" onclick="document.querySelector('header').classList.toggle('menu-open')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+    <div class="nav-drawer">
+      <a href="/mcp">MCP</a>
+      <a href="/youtube">YouTube</a>
+      <a href="/home#pricing">Pricing</a>
+      <a href="/login">Sign in</a>
+      <a class="btn btn-primary" href="/signup">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div id="hero-fan"></div>
+      <h1>
+        <span class="line" id="hero-top"></span>
+        <span class="line accent" id="hero-accent"></span>
+      </h1>
+      <p class="sub" id="hero-sub"></p>
+      <div class="promo" id="mcp-promo" hidden>
+        <p data-promo-msg></p>
+        <a data-promo-cta href="/connections">Open Connections</a>
+        <button type="button" class="promo-x" data-promo-dismiss aria-label="Dismiss announcement">×</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel-sec" id="connect">
+    <div class="wrap">
+      <div class="connect">
+        <p class="s-head" style="margin:0 0 18px;text-align:left">
+          <span style="display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Connect</span>
+        </p>
+        <div class="connect-steps" id="connect-steps"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>HOW DOES MCP WORK?</h2>
+        <p>These panels are labeled examples, not live generations.</p>
+      </div>
+      <div class="tablist" id="demo-tabs" role="tablist" aria-label="MCP examples"></div>
+      <div class="demo" id="demo-root"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="workflows">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>WHAT YOU CAN BUILD WITH MCP</h2>
+        <p>Only workflows the live server can run. Images are empty until you add them.</p>
+      </div>
+      <div class="wf-layout">
+        <div class="wf-rail" id="wf-rail" role="tablist" aria-label="Workflow categories"></div>
+        <div class="wf-grid" id="wf-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="tools">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>EVERY VIDSO MCP TOOL</h2>
+        <p>Loaded from the live server registry. If a tool is removed, it disappears here.</p>
+      </div>
+      <div class="tools-grid" id="tools-grid"><p class="tools-empty">Loading tools…</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>GOT ANY QUESTIONS LEFT?</h2>
+      </div>
+      <div class="faq-list" id="faq-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
+  </div>
+</footer>
+
+<script type="module" src="/mcp/page.js"></script>
+</body>
+</html>
