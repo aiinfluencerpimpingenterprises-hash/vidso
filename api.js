@@ -271,7 +271,6 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
 }
 
 export const api = {
-  getToken,
   auth: {
     signup:  (email, password, name) => req('POST', '/api/auth/signup',  { email, password, name }),
     login:   (email, password)       => req('POST', '/api/auth/login',   { email, password }),
@@ -305,10 +304,10 @@ export const api = {
     del:  (id)       => req('DELETE', `/api/upload/${id}`),
   },
   tts: {
-    voices:   ()      => gatedReq('GET',  '/api/tts/voices', undefined, { timeoutMs: 12000 }),
-    generate: (body)  => gatedReq('POST', '/api/tts/generate', body),
-    library:  ()      => gatedReq('GET',  '/api/tts/library'),
-    deleteVo: (id)    => gatedReq('DELETE', `/api/tts/library/${id}`),
+    voices:   ()      => reqTo(BASE + '/api/tts/voices', 'GET', undefined, false, { timeoutMs: 12000 }),
+    generate: (body)  => req('POST', '/api/tts/generate', body),
+    library:  ()      => req('GET',  '/api/tts/library'),
+    deleteVo: (id)    => req('DELETE', `/api/tts/library/${id}`),
   },
   generate: {
     image: (body) => generateImageFal(body),
@@ -336,46 +335,6 @@ export const api = {
       const url = sameOriginApi('/api/generate/images/' + encodeURIComponent(id))
       if (!url) throw new Error('Image history is only available on the live app.')
       return reqTo(url, 'DELETE')
-    },
-  },
-  studio: {
-    list: (opts = {}) => {
-      const url = sameOriginApi('/api/faceless-studio/projects')
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
-      const q = new URLSearchParams()
-      if (opts.offset) q.set('offset', String(opts.offset))
-      if (opts.limit) q.set('limit', String(opts.limit))
-      if (opts.q) q.set('q', opts.q)
-      if (opts.sort) q.set('sort', opts.sort)
-      if (opts.favorites) q.set('favorites', '1')
-      const qs = q.toString()
-      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
-    },
-    create: (body) => {
-      const url = sameOriginApi('/api/faceless-studio/projects')
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
-      return reqTo(url, 'POST', body)
-    },
-    get: (id) => {
-      const url = sameOriginApi('/api/faceless-studio/projects/' + encodeURIComponent(id))
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
-      return reqTo(url, 'GET')
-    },
-    patch: (id, body) => {
-      const url = sameOriginApi('/api/faceless-studio/projects/' + encodeURIComponent(id))
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
-      return reqTo(url, 'PATCH', body)
-    },
-    jobs: (opts = {}) => {
-      const url = sameOriginApi('/api/faceless-studio/jobs')
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
-      const q = new URLSearchParams()
-      if (opts.offset) q.set('offset', String(opts.offset))
-      if (opts.limit) q.set('limit', String(opts.limit))
-      if (opts.favorites) q.set('favorites', '1')
-      if (opts.project_id) q.set('project_id', opts.project_id)
-      const qs = q.toString()
-      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
     },
   },
   transcribe: {
@@ -491,18 +450,18 @@ export const api = {
       recoverScript: true,
     }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
-    rewriteSection: (body, opts = {}) => gatedReq('POST', '/api/faceless/script/section', body, {
+    rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
       timeoutMs: opts.timeoutMs || 90000,
       recoverScript: true,
     }),
     // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
-    pollMedia: (jobId) => gatedReq('GET', `/api/faceless/media/${jobId}`),
+    pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
     // body: { query, aspect } → { clips }
-    searchBroll: (body) => gatedReq('POST', '/api/faceless/broll/search', body),
+    searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
     startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
-    pollRender: (jobId) => gatedReq('GET', `/api/faceless/render/${jobId}`),
+    pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
     downloadRender: async (jobId) => {
       const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
         headers: { Authorization: `Bearer ${getToken()}` },

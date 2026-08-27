@@ -10,8 +10,6 @@ import { isJsonSyntaxError, recoverScriptData } from '../../lib/json-repair.js'
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
-export const config = { maxDuration: 60 }
-
 function ruleFor(method, subpath) {
   const p = String(subpath || '').replace(/^\/+|\/+$/g, '')
   if (method === 'GET' && (p === 'usage' || p === 'quota')) return { type: 'usage' }
@@ -92,7 +90,7 @@ function send(res, status, body) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
   if (req.method === 'OPTIONS') {
     res.statusCode = 204
     return res.end()

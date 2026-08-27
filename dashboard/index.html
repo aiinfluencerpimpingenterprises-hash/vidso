@@ -2219,171 +2219,6 @@ body.img-detail-open{overflow:hidden}
 .media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
 .media-ph-icon svg{width:32px;height:32px}
 
-.content:has(#panel-facelessstudio.active),
-body.studio-open .content{
-  display:flex;flex-direction:column;overflow:hidden;padding:0!important
-}
-#panel-facelessstudio{display:none;height:100%;min-height:0}
-#panel-facelessstudio.panel.active{
-  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%;
-  position:relative;padding:0;margin:0;max-width:none
-}
-.fs-shell{display:flex;width:100%;height:100%;min-height:0;flex:1;background:var(--bg)}
-.fs-rail{
-  width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
-  border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px
-}
-body.fs-rail-collapsed .fs-rail{width:56px}
-body.fs-rail-collapsed .fs-rail-brand,
-body.fs-rail-collapsed .fs-rail-label,
-body.fs-rail-collapsed .fs-rail-search,
-body.fs-rail-collapsed .fs-rail-projects,
-body.fs-rail-collapsed #fs-rail-new,
-body.fs-rail-collapsed .fs-rail-item{display:none}
-.fs-rail-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 12px}
-.fs-rail-brand{font-family:var(--font-heading);font-weight:700;letter-spacing:-.03em;text-transform:uppercase;font-size:.82rem}
-.fs-rail-toggle{width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
-.fs-rail-toggle:focus-visible{outline:2px solid rgba(var(--glow),.65)}
-.fs-rail-nav{display:flex;flex-direction:column;gap:2px}
-.fs-rail-link{
-  display:flex;align-items:center;gap:8px;min-height:36px;padding:0 8px;border:none;border-radius:8px;
-  background:transparent;color:var(--text-body);font:inherit;font-size:.82rem;cursor:pointer;text-align:left
-}
-.fs-rail-link:hover,.fs-rail-item:hover{background:rgba(255,255,255,.06);color:var(--ink)}
-.fs-rail-link.is-on,.fs-rail-item.is-on{color:var(--a1);background:rgba(var(--glow),.12)}
-.fs-rail-link:focus-visible,.fs-rail-item:focus-visible,.fs-tab:focus-visible,.fs-proj-card:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
-.fs-rail-label{margin:14px 8px 6px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.fs-rail-search{width:100%;height:34px;margin:0 0 8px;padding:0 8px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:.78rem}
-.fs-rail-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
-.fs-rail-item{display:block;width:100%;min-height:32px;padding:6px 8px;border:none;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.78rem;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fs-rail-empty,.fs-muted{color:rgba(255,255,255,.45);font-size:.78rem;padding:8px}
-.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:0;display:flex;flex-direction:column}
-.fs-main:has(.has-composer){padding-bottom:12px;overflow:hidden}
-.fs-home.has-composer{position:relative;flex:1;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
-.fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:auto;padding-bottom:var(--fs-composer-h,168px)}
-.fs-composer-dock{
-  position:absolute;left:0;right:0;bottom:8px;z-index:8;padding:12px 0 0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(16,16,18,0),rgba(16,16,18,.88) 36%,rgba(16,16,18,.96) 70%);
-}
-.fs-home.has-composer .fs-composer{
-  pointer-events:auto;max-width:920px;margin:0 auto;padding:12px 14px;
-  border:1px solid var(--border);border-radius:18px;
-  background:rgba(18,18,20,.94);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
-}
-.fs-gallery{padding:0 0 28px}
-.fs-filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
-.fs-filter{
-  height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);
-  background:transparent;color:var(--text-body);font:inherit;font-size:.82rem;cursor:pointer
-}
-.fs-filter:hover{color:var(--ink);border-color:rgba(255,255,255,.28)}
-.fs-filter.is-on{background:#fff;color:#111;border-color:#fff;font-weight:650}
-.fs-filter:focus-visible,.fs-preset:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
-.fs-g-sec{margin:0 0 36px}
-.fs-g-h{margin:0 0 6px;font-family:var(--font-heading);font-weight:700;letter-spacing:-.04em;text-transform:uppercase;font-size:clamp(1.35rem,3vw,2.1rem);line-height:.95}
-.fs-g-h .accent,.fs-how-h .accent{color:var(--a1)}
-.fs-g-sub{margin:0 0 16px;color:rgba(255,255,255,.48);font-size:.9rem}
-.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.fs-preset{
-  display:flex;flex-direction:column;padding:0;border:none;border-radius:16px;
-  background:transparent;color:inherit;cursor:pointer;text-align:left
-}
-.fs-preset-shot{border-radius:14px;border:1px solid rgba(245,245,244,.18)}
-.fs-preset-row{display:flex;align-items:center;gap:8px;padding:10px 4px 0;min-height:32px}
-.fs-preset-ico{display:inline-flex;color:rgba(255,255,255,.7);flex-shrink:0}
-.fs-preset-name{flex:1;min-width:0;font-size:.86rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fs-preset-tag{flex-shrink:0;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.fs-tabs{display:flex;gap:4px;margin:0 0 20px}
-.fs-tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:none;border-radius:8px;background:transparent;color:var(--text-body);font:inherit;font-size:.84rem;cursor:pointer}
-.fs-tab.is-on{color:var(--ink);background:rgba(255,255,255,.06)}
-.fs-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:0 0 28px}
-.fs-hero-title{margin:0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:.9;letter-spacing:-.045em;text-transform:uppercase}
-.fs-hero-title .lead,.fs-hero-title .accent{display:block}
-.fs-hero-title .accent{color:var(--a1)}
-.fs-hero-sub{margin:0;color:rgba(245,245,244,.48);font-size:.92rem}
-.fs-composer{max-width:880px;margin:0 auto 32px;padding:14px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.03)}
-.fs-composer-row{display:flex;gap:10px;align-items:flex-start}
-.fs-topic{flex:1;min-width:0;min-height:72px;resize:vertical;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.95rem}
-.fs-topic:focus{outline:none}
-.fs-ref-add{width:40px;height:40px;flex-shrink:0;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--ink);font-size:1.2rem;cursor:pointer}
-.fs-gen{flex-shrink:0;align-self:stretch;min-width:120px}
-.fs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.fs-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:.72rem;color:var(--text-body)}
-.fs-chip select{border:none;background:transparent;color:var(--ink);font:inherit;font-size:.72rem;max-width:140px}
-.fs-composer-error,.fs-thumb-err,.fs-banner-err{color:#f3b4b8;font-size:.82rem;margin:0 0 8px}
-.fs-refs{display:flex;gap:8px;margin-top:8px}
-.fs-ref-chip{position:relative;width:48px;height:48px;border-radius:8px;overflow:hidden}
-.fs-ref-chip img{width:100%;height:100%;object-fit:cover}
-.fs-ref-chip button{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:50%;background:#000;color:#fff;cursor:pointer}
-.fs-how-h{font-family:var(--font-heading);text-transform:uppercase;letter-spacing:-.03em;font-size:clamp(1.4rem,3vw,2rem);margin:0 0 6px}
-.fs-how-sub{color:rgba(255,255,255,.45);margin:0 0 18px}
-.fs-how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.fs-how-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03)}
-.fs-how-card h3{margin:12px 14px 4px;font-size:.95rem}
-.fs-how-card p{margin:0 14px 14px;font-size:.8rem;color:rgba(255,255,255,.5)}
-.fs-proj-grid,.fs-proj-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.fs-proj-row{grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);overflow:auto}
-.fs-proj-card{display:block;text-align:left;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:transparent;color:inherit;cursor:pointer;padding:0}
-.fs-proj-title{display:block;padding:10px 12px 0;font-weight:650}
-.fs-proj-meta,.fs-job-meta{display:block;padding:4px 12px 12px;font-size:.72rem;color:rgba(255,255,255,.45)}
-.fs-page-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
-.fs-page-head h1,.fs-workspace h2,.fs-recent h2{font-size:1.2rem;margin:0}
-.fs-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.fs-search{height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit}
-.fs-state{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:24px 0;color:var(--text-body)}
-.fs-state.is-err{color:#f3b4b8}
-.fs-workspace{max-width:880px;margin:0 auto}
-.fs-ws-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.fs-refs-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
-.fs-refs-row img{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
-.fs-title{flex:1;min-width:140px;height:40px;border:none;background:transparent;color:var(--ink);font:inherit;font-size:1.15rem;font-weight:650}
-.fs-title:focus{outline:2px solid rgba(var(--glow),.5);border-radius:8px}
-.fs-ws-status{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--a1)}
-.fs-pipeline-slot{margin-bottom:28px}
-.fs-pipeline-slot .fv-wizard{margin:0}
-.tool-shot-media.media-ph,.tool-shot-media .media-ph{border:none;border-radius:0;height:100%}
-.fs-thumb-row{display:flex;gap:8px;margin:10px 0}
-.fs-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.fs-job{display:flex;gap:12px;width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;background:transparent;color:inherit;padding:8px;cursor:pointer;margin-bottom:8px}
-.fs-job-thumb{width:120px;flex-shrink:0;border-radius:8px}
-.fs-export-list{padding-left:18px;color:var(--text-body)}
-.fs-fav-filter{font-size:.8rem;color:var(--text-body)}
-@media (max-width:1100px){
-  .fs-rail{position:absolute;z-index:5;height:100%;box-shadow:8px 0 24px rgba(0,0,0,.4)}
-  body.fs-rail-collapsed .fs-rail{width:0;padding:0;border:none;overflow:hidden}
-  .fs-main{padding:16px 14px 32px}
-  .fs-g-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:640px){
-  .fs-g-grid{grid-template-columns:1fr}
-  .fs-how-grid{grid-template-columns:1fr}
-}
-@media (max-width:380px){
-  .fs-filters{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-  .fs-filter{flex-shrink:0}
-  .fs-thumb-row,.fs-toolbar{flex-direction:column}
-  .fs-home.has-composer .fs-composer{
-    display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:6px;
-    padding:6px 8px;border-radius:14px
-  }
-  .fs-home.has-composer .fs-composer-error[hidden]{display:none!important}
-  .fs-home.has-composer .fs-composer-row{display:contents}
-  .fs-home.has-composer #fs-ref-input{display:none}
-  .fs-home.has-composer .fs-ref-add{order:1;width:36px;height:36px;font-size:1rem}
-  .fs-home.has-composer .fs-topic{order:2;flex:1;min-width:0;min-height:36px;max-height:36px;padding:6px 0;font-size:.84rem}
-  .fs-home.has-composer .fs-chips{
-    order:3;flex:0 1 36%;min-width:0;max-width:42%;margin:0;padding:0;
-    flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch
-  }
-  .fs-home.has-composer .fs-chip{flex-shrink:0}
-  .fs-home.has-composer .fs-gen{order:4;align-self:center;min-width:76px;height:36px;padding:0 10px}
-  .fs-home.has-composer .fs-refs[hidden]{display:none!important}
-  .fs-home.has-composer .fs-refs:not([hidden]){order:5;flex:1 0 100%;margin-top:0}
-  .fs-gen,.fs-ref-add{width:auto}
-}
-
 /* Upscale V2 */
 .upscale-soon{padding:48px 24px;min-height:calc(100vh - 200px)}
 
@@ -3429,7 +3264,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
-    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
     <div class="topnav-drop" id="nav-tools-wrap">
@@ -3493,7 +3327,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </button>
   </div>
   <span class="nav-drawer-label">Generate</span>
-  <button type="button" class="topnav-item" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
   <span class="nav-drawer-label">Short Form Tools</span>
@@ -3672,10 +3505,10 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         </div>
         <div class="img-empty" id="img-empty" hidden>
           <div class="img-empty-fan" id="img-empty-fan" aria-hidden="true">
-            <div class="img-empty-card" data-media-ph></div>
-            <div class="img-empty-card" data-media-ph></div>
-            <div class="img-empty-card" data-media-ph></div>
-            <div class="img-empty-card" data-media-ph></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
+            <div class="img-empty-card"></div>
           </div>
           <h1 class="img-empty-title">
             <span class="lead">Start creating with</span>
@@ -5208,28 +5041,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
 
-    <div class="panel" id="panel-facelessstudio">
-      <div class="fs-shell">
-        <aside class="fs-rail" id="fs-rail" aria-label="Faceless Studio">
-          <div class="fs-rail-head">
-            <span class="fs-rail-brand">Faceless Studio</span>
-            <button type="button" class="fs-rail-toggle" id="fs-rail-toggle" aria-expanded="true" aria-controls="fs-rail" aria-label="Collapse studio menu">«</button>
-          </div>
-          <nav class="fs-rail-nav">
-            <button type="button" class="fs-rail-link is-on" data-fs-view="home">Home</button>
-            <button type="button" class="fs-rail-link" data-fs-view="projects">My projects</button>
-            <button type="button" class="fs-rail-link" data-fs-view="generations">My generations</button>
-            <button type="button" class="fs-rail-link" data-fs-view="favorites">Favorites</button>
-          </nav>
-          <span class="fs-rail-label">Projects</span>
-          <input type="search" class="fs-rail-search" id="fs-rail-search" placeholder="Search" aria-label="Search projects">
-          <button type="button" class="btn btn-primary btn-sm" id="fs-rail-new" style="margin:0 8px 8px">New project</button>
-          <div class="fs-rail-projects fs-rail-list" id="fs-rail-list"></div>
-        </aside>
-        <div class="fs-main" id="fs-main"></div>
-      </div>
-    </div>
-
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
         <h2 id="fv-page-title">Long Form Generator</h2>
@@ -5265,8 +5076,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         <h3 class="ui-card-title" id="fv-card-title">Long Form Generator</h3>
         <p class="ui-card-desc" id="fv-card-desc">Set topic, length, and voice, then generate a script.</p>
 
-        <div id="fv-wizard-home">
-        <div class="fv-wizard" id="fv-wizard">
+        <div class="fv-wizard">
           <div class="fv-stepper" id="fv-stepper" aria-label="Progress">
             <div class="fv-step-pill active" id="fv-pill-1"><span class="n">1</span> Script</div>
             <div class="fv-step-line"></div>
@@ -5394,7 +5204,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               <div class="fv-script-toolbar">
                 <div class="fv-script-actions" id="fv-script-actions">
                   <button type="button" class="btn btn-ghost" onclick="fvClearScript()" aria-label="Clear generated script">Clear script</button>
-                  <button type="button" class="btn btn-ghost" id="fv-regen-all-btn" onclick="fvRegenerateWholeScript()">Regenerate script</button>
                   <button type="button" class="btn btn-primary" id="fv-to-phase3-btn" onclick="fvContinueToMedia()">Continue to media →</button>
                   <button type="button" class="btn btn-ghost" id="fv-short-continue-btn" hidden onclick="fvContinueToMedia(true)">Continue with shorter script</button>
                 </div>
@@ -5609,7 +5418,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </div>
           </div>
         </div>
-        </div>
       </div>
     </div>
 
@@ -5734,9 +5542,7 @@ import {
   mcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
-import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
-import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
@@ -5784,14 +5590,15 @@ function uiPreviewMode() {
       clearUiPreviewFlag()
       return false
     }
-    // A real session always wins. ?ui=1 is layout-only when logged out.
-    if (getToken()) {
-      clearUiPreviewFlag()
-      return false
-    }
     if (uiPreviewForced()) {
       localStorage.setItem(UI_PREVIEW_KEY, '1')
       return true
+    }
+    // A real session always wins on app routes. Visiting /preview used to
+    // stick this flag and overwrite every later login as Preview.
+    if (getToken()) {
+      clearUiPreviewFlag()
+      return false
     }
     return localStorage.getItem(UI_PREVIEW_KEY) === '1'
   } catch (_) { return false }
@@ -5834,7 +5641,7 @@ function applyAuthRouteTab() {
 }
 
 function afterAuthReady(opts = {}) {
-  clearUiPreviewFlag()
+  if (!uiPreviewForced()) clearUiPreviewFlag()
   persistPlanActive(hasActivePlan())
   // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
   if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
@@ -5850,7 +5657,6 @@ function afterAuthReady(opts = {}) {
     loadUsage()
     loadVoices()
     loadFiles()
-    try { window.fsStudioOnAuth?.() } catch (_) {}
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
     try { finishYoutubeProviderImport() } catch (_) {}
@@ -5860,7 +5666,6 @@ function afterAuthReady(opts = {}) {
   loadUsage()
   loadVoices()
   loadFiles()
-  try { window.fsStudioOnAuth?.() } catch (_) {}
   if (funnelLocked() && !introPending()) {
     maybeShowPaywall()
     if (opts.restoreRoute !== false) restorePanelFromHash()
@@ -6005,13 +5810,6 @@ function showAuthError(message) {
 }
 
 function authRedirectTarget() {
-  try {
-    const pending = sessionStorage.getItem('vidso_after_login')
-    if (pending && pending.startsWith('/')) {
-      sessionStorage.removeItem('vidso_after_login')
-      return location.origin + pending
-    }
-  } catch (_) {}
   const path = normalizePath(location.pathname)
   if (path === '/login' || path === '/signup') return location.origin + '/video-generation'
   return location.origin + location.pathname + location.search
@@ -8080,13 +7878,13 @@ const DEFAULT_PATH = '/video-generation'
 const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
 const titles = {
   home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
+  videogen:'Long Form Generator', ytvideogen:'YouTube Generator', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
 }
 const PANEL_PATHS = {
   clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
-  videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
+  videogen:'/video-generation', ytvideogen:'/youtube-generation', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary'
 }
@@ -8105,7 +7903,6 @@ function resolvePanel(id) {
 function panelFromPath() {
   const path = normalizePath(location.pathname)
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
-  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) return 'facelessstudio'
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
@@ -8120,10 +7917,6 @@ function isAuthPath() {
 }
 window.switchPanel = (id, btn, opts = {}) => {
   id = resolvePanel(id)
-  const leavingStudio = document.getElementById('panel-facelessstudio')?.classList.contains('active') && id !== 'facelessstudio'
-  if (leavingStudio) {
-    try { window.fsStudioLeave?.() } catch (_) {}
-  }
   // Hard gate: after signup onboarding, block every tool until a plan is active.
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
@@ -8159,11 +7952,10 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
-    document.body.classList.toggle('studio-open', id === 'facelessstudio')
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
@@ -8172,18 +7964,12 @@ window.switchPanel = (id, btn, opts = {}) => {
     try { fvInit() } catch (_) {}
   }
   if (id === 'imagegen') { try { window.imgWorkspaceShow?.() } catch (_) {} }
-  if (id === 'facelessstudio') window.fsStudioShow?.()
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
     try { edRenderTL?.() } catch (_) {}
   }
   if (!opts.silent) {
-    let next = pathForPanel(id)
-    if (id === 'facelessstudio') {
-      const cur = normalizePath(location.pathname)
-      if (cur === '/faceless-studio' || cur.startsWith('/faceless-studio/')) next = cur
-      else next = '/faceless-studio'
-    }
+    const next = pathForPanel(id)
     if (normalizePath(location.pathname) !== normalizePath(next)) {
       history.pushState({ panel: id }, '', next)
     }
@@ -8345,7 +8131,7 @@ function fvSetScriptAiLock(used) {
   btn.disabled = false
   btn.removeAttribute('aria-disabled')
   btn.title = used
-    ? 'AI already wrote this script. Use Regenerate script, edit a section, or clear to start over.'
+    ? 'Writes a new script from the topic. This replaces the current one.'
     : ''
 }
 
@@ -8387,21 +8173,14 @@ window.fvClearScript = (opts = {}) => {
   fvSetStatus('', null, 2)
   fvSetPills(1)
 
+  try { sessionStorage.removeItem('vidso_faceless_draft') } catch (_) {}
+  try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
+  try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
+
   fvSetScriptAiLock(false)
   fvShowShortScriptAction(false)
   fvShowShortRenderAction(false)
-  if (!opts.keepDrafts) {
-    try { sessionStorage.removeItem('vidso_faceless_draft') } catch (_) {}
-    try { sessionStorage.removeItem('vidso_faceless_media') } catch (_) {}
-    try { sessionStorage.removeItem('vidso_faceless_preview') } catch (_) {}
-    if (fvStudioBoundId) {
-      try { sessionStorage.removeItem('vidso-fs-draft:' + fvStudioBoundId) } catch (_) {}
-      try { sessionStorage.removeItem('vidso-fs-media:' + fvStudioBoundId) } catch (_) {}
-      try { sessionStorage.removeItem('vidso-fs-preview:' + fvStudioBoundId) } catch (_) {}
-    }
-  }
-  if (!opts.silent && !fvHydrating) document.getElementById('fv-topic')?.focus?.()
-  fvNotifyStudio()
+  if (!opts.silent) document.getElementById('fv-topic')?.focus?.()
 }
 
 function fvSetStatus(msg, kind, which) {
@@ -8539,7 +8318,6 @@ window.fvSetDuration = (id) => {
   fvRenderDurationChips()
   const picked = fvPickedDuration()
   fvLengthTrace('chip', { seconds: picked?.seconds || null, label: picked?.label || null })
-  fvNotifyStudio()
 }
 
 window.fvOpenCustomDuration = () => {
@@ -8576,7 +8354,6 @@ window.fvSetAspect = (aspect) => {
   document.querySelectorAll('#fv-aspect-chips .fv-chip').forEach(b => {
     b.classList.toggle('active', b.dataset.aspect === fvState.aspect)
   })
-  fvNotifyStudio()
 }
 
 function fvApplyFacelessMode(youtube) {
@@ -8733,12 +8510,10 @@ function fvPopulateVoices() {
     return
   }
   if (!voices.length) {
-    sel.innerHTML = '<option value="">No voices available</option>'
+    sel.innerHTML = '<option value="">No voices returned</option>'
     sel.disabled = true
     if (btn) btn.disabled = true
-    show('error')
-    const errSpan = errBox?.querySelector('span')
-    if (errSpan) errSpan.textContent = 'No voices available'
+    show('empty')
     return
   }
   show('ready')
@@ -8858,214 +8633,6 @@ function fvInit() {
 }
 window.fvInit = fvInit
 
-let fvStudioBoundId = null
-let fvHydrating = false
-window.fvStudioAutoRun = false
-
-function fvNotifyStudio() {
-  if (fvHydrating) return
-  fvPersistLocalDraft(fvState.script)
-  try { window.fvStudioOnChange?.() } catch (_) {}
-}
-
-function fvPersistLocalDraft(script) {
-  if (!script) return
-  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(script)) } catch (_) {}
-  if (fvStudioBoundId) {
-    try { sessionStorage.setItem('vidso-fs-draft:' + fvStudioBoundId, JSON.stringify(script)) } catch (_) {}
-  }
-}
-
-function fvReadJsonSession(key) {
-  try {
-    const raw = sessionStorage.getItem(key)
-    return raw ? JSON.parse(raw) : null
-  } catch (_) {
-    return null
-  }
-}
-
-function fvReadStudioDraft(projectId) {
-  if (!projectId) return null
-  return fvReadJsonSession('vidso-fs-draft:' + projectId)
-}
-
-function fvReadStudioMedia(projectId) {
-  if (projectId) {
-    const hit = fvReadJsonSession('vidso-fs-media:' + projectId)
-    if (hit) return hit
-  }
-  return fvReadJsonSession('vidso_faceless_media')
-}
-
-function fvReadStudioPreview(projectId) {
-  if (projectId) {
-    const hit = fvReadJsonSession('vidso-fs-preview:' + projectId)
-    if (hit) return hit
-  }
-  return fvReadJsonSession('vidso_faceless_preview')
-}
-
-function fvStudioJob(job) {
-  try { return window.fvStudioRecordJob?.(job) } catch (_) {}
-}
-
-function fvStudioJobPatch(remoteId, patch) {
-  if (!remoteId) return
-  try { window.fvStudioPatchJob?.(remoteId, patch) } catch (_) {}
-}
-
-window.fvParkWizard = (slot) => {
-  const wiz = document.getElementById('fv-wizard')
-  const home = document.getElementById('fv-wizard-home')
-  if (!wiz) return
-  if (slot) {
-    if (wiz.parentElement !== slot) slot.appendChild(wiz)
-  } else if (home && wiz.parentElement !== home) {
-    home.appendChild(wiz)
-  }
-}
-
-window.fvSnapshotForStudio = () => {
-  try { fvRebuildFullScriptFromSections() } catch (_) {}
-  return {
-    format: fvState.format,
-    durationId: fvState.durationId,
-    aspect: fvState.aspect,
-    voiceId: fvState.voiceId,
-    topic: document.getElementById('fv-topic')?.value || '',
-    phase: fvState.phase,
-    script: fvState.script,
-    media: fvState.media,
-    preview: fvState.preview,
-    mediaJobId: fvState.mediaJobId,
-    renderJobId: fvState.renderJobId,
-    caption: typeof fvCapStyle === 'function' ? fvCapStyle() : null,
-    allowShortScript: fvState.allowShortScript,
-    allowShortRender: fvState.allowShortRender,
-    scriptAiUsed: fvState.scriptAiUsed,
-  }
-}
-
-window.fvHydrateFromStudio = (project) => {
-  if (!project) return
-  if (fvStudioBoundId === project.id && fvState.inited) {
-    fvInit()
-    return
-  }
-  fvHydrating = true
-  let recoveredFromSession = false
-  try {
-  fvStudioBoundId = project.id
-  const snap = project.pipeline && typeof project.pipeline === 'object' ? project.pipeline : {}
-  fvClearScript({ keepDrafts: true })
-  const topic = snap.topic || project.topic || ''
-  const aspect = snap.aspect === '9:16' || project.aspect === '9:16' ? '9:16'
-    : (snap.aspect === '16:9' || project.aspect === '16:9' ? '16:9' : '')
-  const durationId = snap.durationId || project.length || ''
-  const voiceId = snap.voiceId || project.voice_id || ''
-  fvState.format = String(durationId).startsWith('shorts') ? 'shorts' : 'long'
-  fvState.durationId = durationId
-  fvState.aspect = aspect || '16:9'
-  fvState.voiceId = voiceId || null
-  fvState.allowShortScript = !!snap.allowShortScript
-  fvState.allowShortRender = !!snap.allowShortRender
-  const topicEl = document.getElementById('fv-topic')
-  if (topicEl) topicEl.value = topic
-  document.querySelectorAll('#fv-format-seg [data-format]').forEach((b) => {
-    b.classList.toggle('active', b.dataset.format === fvState.format)
-  })
-  if (aspect) fvSetAspect(aspect)
-  fvInit()
-  if (!durationId) fvSetStatus('This project is missing a video duration.', 'err')
-  if (voiceId) {
-    try { window.pickFvVoice(voiceId) } catch (_) {}
-  }
-  const script = snap.script || fvReadStudioDraft(project.id)
-  if (script) {
-    fvState.scriptAiUsed = snap.scriptAiUsed != null ? !!snap.scriptAiUsed : true
-    fvRenderScript(script)
-  }
-  const media = snap.media || fvReadStudioMedia(project.id)
-  if (media) {
-    fvRenderMediaResult(media)
-    if (!snap.media) recoveredFromSession = true
-  }
-  const preview = snap.preview || fvReadStudioPreview(project.id)
-  if (preview) {
-    fvState.preview = preview.musicId != null || preview.caption ? {
-      musicId: preview.musicId || 'none',
-      musicVol: preview.musicVol ?? 0.25,
-    } : preview
-    if (preview.caption) {
-      snap.caption = snap.caption || preview.caption
-    }
-    if (!snap.preview) recoveredFromSession = true
-  }
-  if (snap.caption || preview?.caption) {
-    const cap = snap.caption || preview.caption
-    const setVal = (id, v) => {
-      const el = document.getElementById(id)
-      if (el && v != null) el.value = v
-    }
-    setVal('fv-cap-font', cap.font)
-    setVal('fv-cap-size', cap.size)
-    setVal('fv-cap-color', cap.color)
-    setVal('fv-cap-hl', cap.highlight)
-    setVal('fv-cap-ls', cap.letterSpacing)
-  }
-  const runningMedia = !!(snap.mediaJobId && !media?.voiceover_url)
-  const renderJobRow = (project.jobs || []).find((j) => j.remote_id && j.remote_id === snap.renderJobId)
-  const runningRender = !!(snap.renderJobId && media && (!renderJobRow || renderJobRow.status === 'queued' || renderJobRow.status === 'running'))
-  const phase = runningRender ? 4 : runningMedia ? 2 : (Number(snap.phase) || (media ? 3 : script ? 1 : 1))
-  document.getElementById('fv-script-box')?.classList.toggle('show', !!script && phase === 1)
-  document.getElementById('fv-setup')?.classList.toggle('collapsed', phase > 1)
-  document.getElementById('fv-media-box')?.classList.toggle('show', phase === 2)
-  document.getElementById('fv-preview-box')?.classList.toggle('show', phase === 3 && !!media)
-  document.getElementById('fv-export-box')?.classList.toggle('show', phase >= 4 && !!media)
-  fvState.phase = phase
-  fvSetPills(phase)
-  if (runningMedia) {
-    fvState.mediaJobId = snap.mediaJobId
-    document.getElementById('fv-media-progress-wrap').style.display = ''
-    document.getElementById('fv-media-result').style.display = 'none'
-    fvSetMediaStatus('Resuming media job from the server…', 'loading')
-    fvPollMediaJob(snap.mediaJobId)
-  } else if (phase >= 3 && media) {
-    try { fvInitPreview() } catch (_) {}
-  }
-  if (runningRender) {
-    fvState.renderJobId = snap.renderJobId
-    try { window.fvContinueToExport?.() } catch (_) {}
-    fvSetExportStatus('Resuming render from the server…', 'loading')
-    document.getElementById('fv-export-progress-wrap').style.display = ''
-    fvPollRenderJob(snap.renderJobId)
-  } else if (phase >= 4 && media) {
-    try { window.fvContinueToExport?.() } catch (_) {}
-    const lastExport = (project.assets || []).filter((a) => a.type === 'export').slice(-1)[0]
-    if (lastExport?.storage_url) {
-      fvState.renderUrl = lastExport.storage_url
-      const vid = document.getElementById('fv-export-video')
-      const dl = document.getElementById('fv-export-dl')
-      if (vid) vid.src = lastExport.storage_url
-      if (dl) dl.href = lastExport.storage_url
-      document.getElementById('fv-export-result').style.display = ''
-      document.getElementById('fv-export-progress-wrap').style.display = 'none'
-      document.getElementById('fv-export-actions').style.display = ''
-      fvSetExportStatus('Last render is ready to download. Render again to keep the previous file and make a new one.', 'ok')
-    }
-  }
-  } finally {
-    fvHydrating = false
-  }
-  if (recoveredFromSession) fvNotifyStudio()
-}
-
-window.fvStudioUnbind = () => {
-  fvStudioBoundId = null
-  window.fvStudioAutoRun = false
-}
-
 function fvRebuildFullScriptFromSections() {
   if (!fvState.script) return
   const areas = document.querySelectorAll('#fv-sections textarea[data-sid]')
@@ -9077,8 +8644,7 @@ function fvRebuildFullScriptFromSections() {
   }))
   fvState.script.full_script = fvState.script.sections.map(s => s.text).filter(Boolean).join('\n\n')
   if (fvState.script.sections[0]) fvState.script.hook = fvState.script.sections[0].text
-  fvPersistLocalDraft(fvState.script)
-  fvNotifyStudio()
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 window.fvRebuildFullScriptFromSections = fvRebuildFullScriptFromSections
 
@@ -9131,7 +8697,6 @@ function fvRenderScript(script) {
         <label>${fvEsc(s.heading || s.id)}</label>
         <div class="fv-section-actions">
           <button type="button" class="fv-regen-btn" onclick="fvEditSectionManually('${fvEsc(s.id)}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit manually</button>
-          <button type="button" class="fv-regen-btn" onclick="fvRegenerateSection('${fvEsc(s.id)}')">Rewrite section</button>
         </div>
       </div>
       <div class="fv-section-preview">${fvEsc(s.text || '')}</div>
@@ -9142,7 +8707,6 @@ function fvRenderScript(script) {
   if (help) help.textContent = 'AI writes to your duration. Edit any section by hand, or clear to start a new video.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
   if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
-  fvNotifyStudio()
 }
 
 window.fvEnterEditor = () => {
@@ -9152,7 +8716,7 @@ window.fvEnterEditor = () => {
   fvRenderScript(fvState.script)
   fvSetStatus('', null)
   fvSetStatus('Edit any section, then continue to media', 'ok', 2)
-  fvPersistLocalDraft(fvState.script)
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
 }
 
 window.fvContinueToMedia = (allowShort) => {
@@ -9178,7 +8742,7 @@ window.fvContinueToMedia = (allowShort) => {
   }
   if (allowShort) fvState.allowShortScript = true
   fvShowShortScriptAction(false)
-  fvPersistLocalDraft(fvState.script)
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch {}
   fvState.phase = 2
   document.getElementById('fv-setup')?.classList.add('collapsed')
   document.getElementById('fv-script-box')?.classList.remove('show')
@@ -9210,34 +8774,8 @@ function fvSetMediaStatus(msg, kind) {
     : msg
 }
 
-function fvEnsureMediaTimeline(job) {
-  if (!job || typeof job !== 'object') return job
-  const dur = Number(job.duration) > 0 ? Number(job.duration) : 1
-  const hasTl = Array.isArray(job.timeline) && job.timeline.length
-  const hasClips = Array.isArray(job.clips) && job.clips.length
-  if (hasTl && hasClips) return job
-  const fallback = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard1.mp4'
-  const src = job.clips?.[0] || {
-    id: 'placeholder',
-    url: fallback,
-    preview: '',
-    query: 'placeholder',
-  }
-  if (!hasClips) job.clips = [src]
-  if (!hasTl) {
-    job.timeline = [{
-      ...src,
-      start: 0,
-      end: dur,
-      clip_start: 0,
-    }]
-  }
-  job.warning = job.warning || 'No stock B-roll came back. Using a placeholder clip. Search Pexels or upload your own.'
-  return job
-}
-
 function fvRenderMediaResult(job) {
-  fvState.media = fvEnsureMediaTimeline(job)
+  fvState.media = job
   fvCloseTimelineGaps()
   document.getElementById('fv-media-progress-wrap').style.display = 'none'
   document.getElementById('fv-media-result').style.display = ''
@@ -9254,15 +8792,6 @@ function fvRenderMediaResult(job) {
   audio.src = job.voiceover_url || ''
   audio.onplay = () => fvSyncWordHighlight(audio)
   audio.ontimeupdate = () => fvSyncWordHighlight(audio)
-  audio.onloadedmetadata = () => {
-    const measured = Number(audio.duration)
-    if (!Number.isFinite(measured) || measured <= 0) return
-    if (!fvState.media) return
-    fvState.media.duration = measured
-    fvLengthTrace('voiceover-measured', { seconds: measured })
-    fvNotifyStudio()
-    try { window.fvStudioIngestMedia?.(fvState.media) } catch (_) {}
-  }
 
   const wordsEl = document.getElementById('fv-media-words')
   wordsEl.innerHTML = (job.words || []).map((w, i) =>
@@ -9298,11 +8827,6 @@ function fvRenderMediaResult(job) {
       voice_id: job.voice_id,
     }))
   } catch {}
-  if (fvStudioBoundId) {
-    try {
-      sessionStorage.setItem('vidso-fs-media:' + fvStudioBoundId, sessionStorage.getItem('vidso_faceless_media'))
-    } catch {}
-  }
   const tlEnd = Math.max(0, ...((job.timeline || []).map((s) => Number(s.end) || 0)))
   fvLengthTrace('media-result', {
     voiceoverSeconds: job.duration || null,
@@ -9311,7 +8835,6 @@ function fvRenderMediaResult(job) {
     aspect: job.aspect || fvState.aspect,
     targetSeconds: fvPickedDuration()?.seconds || null,
   })
-  fvNotifyStudio()
 }
 
 function fvSyncWordHighlight(audio) {
@@ -9393,7 +8916,6 @@ window.fvStartMedia = async (force) => {
   fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
 
   const voiceId = fvState.voiceId || fvState.script.voice_id
-  if (!voiceId) return fvSetMediaStatus('Select a narrator voice. Generation is blocked until a voice is available.', 'err')
   let picked
   try { picked = fvRequireDuration() } catch (e) {
     return fvSetMediaStatus(e.message, 'err')
@@ -9430,73 +8952,38 @@ window.fvStartMedia = async (force) => {
       ...voiceOpts,
     })
     fvState.mediaJobId = jobId
-    await fvStudioJob({
-      type: 'media',
-      status: 'running',
-      progress: 5,
-      remote_id: jobId,
-      provider: 'railway',
-      parameters: { duration_id: extras.duration_id, duration_seconds: extras.duration_seconds, voice_id: voiceId, aspect: fvState.script.aspect || fvState.aspect },
-    })
-    fvNotifyStudio()
-    fvPollMediaJob(jobId)
+    fvState.mediaPoll = setInterval(async () => {
+      try {
+        const job = await api.faceless.pollMedia(jobId)
+        document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
+        if (job.status === 'processing' || job.status === 'queued') {
+          fvSetMediaStatus(job.step || 'Processing…', 'loading')
+          return
+        }
+        clearInterval(fvState.mediaPoll)
+        fvState.mediaPoll = null
+        if (job.status === 'error') {
+          fvSetMediaStatus(job.error || 'Media failed', 'err')
+          return
+        }
+        let ready = job
+        if (fvState.brollSource === 'youtube') {
+          try { ready = await fvAttachYoutubeBroll(job) } catch (e) {
+            job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using stock clips'
+            ready = job
+          }
+        }
+        fvSetMediaStatus('Ready', 'ok')
+        fvRenderMediaResult(ready)
+      } catch (e) {
+        clearInterval(fvState.mediaPoll)
+        fvState.mediaPoll = null
+        fvSetMediaStatus(e.message || 'Poll failed', 'err')
+      }
+    }, 1200)
   } catch (e) {
     fvSetMediaStatus(e.message || 'Could not start media job', 'err')
-    window.fvStudioAutoRun = false
   }
-}
-
-function fvPollMediaJob(jobId) {
-  if (!jobId) return
-  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
-  fvState.mediaJobId = jobId
-  const tick = async () => {
-    try {
-      const job = await api.faceless.pollMedia(jobId)
-      const bar = document.getElementById('fv-media-bar')
-      if (bar) bar.style.width = Math.max(5, job.progress || 0) + '%'
-      if (job.status === 'processing' || job.status === 'queued') {
-        fvSetMediaStatus(job.step || 'Processing…', 'loading')
-        fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 5 })
-        return
-      }
-      clearInterval(fvState.mediaPoll)
-      fvState.mediaPoll = null
-      if (job.status === 'error') {
-        fvState.mediaJobId = null
-        fvSetMediaStatus(job.error || 'Media failed', 'err')
-        fvStudioJobPatch(jobId, { type: 'media', status: 'failed', progress: 0, error: job.error || 'Media failed' })
-        window.fvStudioAutoRun = false
-        fvNotifyStudio()
-        return
-      }
-      let ready = job
-      if (fvState.brollSource === 'youtube') {
-        try { ready = await fvAttachYoutubeBroll(job) } catch (e) {
-          job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using stock clips'
-          ready = job
-        }
-      }
-      fvSetMediaStatus('Ready', 'ok')
-      fvRenderMediaResult(ready)
-      fvState.mediaJobId = null
-      fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
-      fvNotifyStudio()
-      if (fvStudioBoundId && window.fvStudioAutoRun) {
-        setTimeout(() => {
-          try { window.fvContinueToPreview() } catch (_) {}
-          window.fvStudioAutoRun = false
-        }, 400)
-      }
-    } catch (e) {
-      clearInterval(fvState.mediaPoll)
-      fvState.mediaPoll = null
-      fvSetMediaStatus(e.message || 'Poll failed', 'err')
-      window.fvStudioAutoRun = false
-    }
-  }
-  tick()
-  fvState.mediaPoll = setInterval(tick, 1200)
 }
 
 window.fvContinueToPreview = () => {
@@ -9507,7 +8994,6 @@ window.fvContinueToPreview = () => {
   document.getElementById('fv-preview-box')?.classList.add('show')
   fvSetPills(3)
   fvInitPreview()
-  fvNotifyStudio()
 }
 
 window.fvBackToMedia = () => {
@@ -9625,19 +9111,16 @@ window.fvApplyCapStyle = () => {
   })
   syncFvFontUi()
   fvPersistPreviewSettings()
-  fvNotifyStudio()
 }
 
 function fvPersistPreviewSettings() {
-  const payload = {
-    caption: fvCapStyle(),
-    musicId: fvState.preview?.musicId || 'none',
-    musicVol: fvState.preview?.musicVol ?? 0.25,
-  }
-  try { sessionStorage.setItem('vidso_faceless_preview', JSON.stringify(payload)) } catch {}
-  if (fvStudioBoundId) {
-    try { sessionStorage.setItem('vidso-fs-preview:' + fvStudioBoundId, JSON.stringify(payload)) } catch {}
-  }
+  try {
+    sessionStorage.setItem('vidso_faceless_preview', JSON.stringify({
+      caption: fvCapStyle(),
+      musicId: fvState.preview?.musicId || 'none',
+      musicVol: fvState.preview?.musicVol ?? 0.25,
+    }))
+  } catch {}
 }
 
 function fvMusicEl() {
@@ -9721,7 +9204,6 @@ window.fvSelectMusic = (id) => {
   fvRenderMusicList()
   fvRenderPreviewTimeline()
   fvPersistPreviewSettings()
-  fvNotifyStudio()
 }
 
 window.fvSetMusicVol = (v) => {
@@ -9731,7 +9213,6 @@ window.fvSetMusicVol = (v) => {
   const music = fvMusicEl()
   if (music) music.volume = fvState.preview.musicVol
   fvPersistPreviewSettings()
-  fvNotifyStudio()
 }
 
 function fvRenderPreviewTimeline() {
@@ -9988,21 +9469,18 @@ window.fvSeekPreview = (v) => {
 
 function fvPersistMedia() {
   if (!fvState.media) return
-  const payload = {
-    jobId: fvState.media.jobId,
-    voiceover_url: fvState.media.voiceover_url,
-    duration: fvState.media.duration,
-    words: fvState.media.words,
-    clips: fvState.media.clips,
-    timeline: fvState.media.timeline,
-    aspect: fvState.media.aspect,
-    voice_id: fvState.media.voice_id,
-  }
-  try { sessionStorage.setItem('vidso_faceless_media', JSON.stringify(payload)) } catch {}
-  if (fvStudioBoundId) {
-    try { sessionStorage.setItem('vidso-fs-media:' + fvStudioBoundId, JSON.stringify(payload)) } catch {}
-  }
-  fvNotifyStudio()
+  try {
+    sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
+      jobId: fvState.media.jobId,
+      voiceover_url: fvState.media.voiceover_url,
+      duration: fvState.media.duration,
+      words: fvState.media.words,
+      clips: fvState.media.clips,
+      timeline: fvState.media.timeline,
+      aspect: fvState.media.aspect,
+      voice_id: fvState.media.voice_id,
+    }))
+  } catch {}
 }
 
 window.fvSideTab = (pane) => {
@@ -10367,7 +9845,6 @@ window.fvContinueToExport = () => {
     fvSetExportStatus('Ready. Click Render video', null)
   }
   fvSetYoutubeStatus('')
-  fvNotifyStudio()
 }
 
 window.fvBackToPreview = () => {
@@ -10466,94 +9943,52 @@ window.fvStartExport = async (opts = {}) => {
         : null,
     })
     fvState.renderJobId = jobId
-    await fvStudioJob({
-      type: 'export',
-      status: 'running',
-      progress: 3,
-      remote_id: jobId,
-      provider: 'railway',
-      parameters: {
-        duration_id: picked.id,
-        duration_seconds: picked.seconds,
-        aspect: fvState.media.aspect || fvState.aspect,
-        musicId: fvState.preview?.musicId || 'none',
-      },
-    })
-    fvNotifyStudio()
-    fvPollRenderJob(jobId)
+    fvState.renderPoll = setInterval(async () => {
+      try {
+        const job = await api.faceless.pollRender(jobId)
+        document.getElementById('fv-export-bar').style.width = Math.max(3, job.progress || 0) + '%'
+        if (job.status === 'queued' || job.status === 'processing') {
+          fvSetExportStatus(job.step || 'Rendering…', 'loading')
+          return
+        }
+        clearInterval(fvState.renderPoll)
+        fvState.renderPoll = null
+        if (btn) btn.disabled = false
+        if (job.status === 'error') {
+          fvSetExportStatus(job.error || 'Render failed', 'err')
+          return
+        }
+        fvSetExportStatus('Render complete', 'ok')
+        document.getElementById('fv-export-bar').style.width = '100%'
+        const url = await api.faceless.downloadRender(jobId)
+        if (fvState.renderUrl) URL.revokeObjectURL(fvState.renderUrl)
+        fvState.renderUrl = url
+        const vid = document.getElementById('fv-export-video')
+        vid.src = url
+        vid.onloadedmetadata = () => {
+          fvLengthTrace('render-mp4', {
+            seconds: vid.duration,
+            targetSeconds: picked.seconds,
+            voiceoverSeconds: fvState.media?.duration || null,
+          })
+        }
+        const dl = document.getElementById('fv-export-dl')
+        dl.href = url
+        document.getElementById('fv-export-result').style.display = ''
+        document.getElementById('fv-export-actions').style.display = 'none'
+        fvMaybeAutoUploadYoutube()
+      } catch (e) {
+        clearInterval(fvState.renderPoll)
+        fvState.renderPoll = null
+        if (btn) btn.disabled = false
+        fvSetExportStatus(e.message || 'Poll failed', 'err')
+      }
+    }, 1500)
   } catch (e) {
     if (btn) btn.disabled = false
     if (e.needsPlan) fvSetExportStatus(e.message || 'Active plan required to export', 'err')
     else fvSetExportStatus(e.message || 'Could not start render', 'err')
   }
-}
-
-function fvPollRenderJob(jobId) {
-  if (!jobId) return
-  if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
-  fvState.renderJobId = jobId
-  const btn = document.getElementById('fv-export-btn')
-  const tick = async () => {
-    try {
-      const job = await api.faceless.pollRender(jobId)
-      const bar = document.getElementById('fv-export-bar')
-      if (bar) bar.style.width = Math.max(3, job.progress || 0) + '%'
-      if (job.status === 'queued' || job.status === 'processing') {
-        fvSetExportStatus(job.step || 'Rendering…', 'loading')
-        fvStudioJobPatch(jobId, { status: 'running', progress: job.progress || 3 })
-        return
-      }
-      clearInterval(fvState.renderPoll)
-      fvState.renderPoll = null
-      if (btn) btn.disabled = false
-      if (job.status === 'error') {
-        fvSetExportStatus(job.error || 'Render failed', 'err')
-        fvStudioJobPatch(jobId, { status: 'failed', progress: 0, error: job.error || 'Render failed' })
-        fvNotifyStudio()
-        return
-      }
-      fvSetExportStatus('Render complete', 'ok')
-      if (bar) bar.style.width = '100%'
-      fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
-      const url = await api.faceless.downloadRender(jobId)
-      if (fvState.renderUrl && String(fvState.renderUrl).startsWith('blob:')) URL.revokeObjectURL(fvState.renderUrl)
-      fvState.renderUrl = url
-      const vid = document.getElementById('fv-export-video')
-      const picked = (() => { try { return fvPickedDuration() } catch (_) { return null } })()
-      if (vid) {
-        vid.src = url
-        vid.onloadedmetadata = () => {
-          const actual = Number(vid.duration)
-          fvLengthTrace('render-mp4', {
-            seconds: actual,
-            targetSeconds: picked?.seconds || null,
-            voiceoverSeconds: fvState.media?.duration || null,
-          })
-          if (picked?.seconds && Number.isFinite(actual) && isMateriallyShort(actual, picked.seconds)) {
-            fvSetExportStatus(
-              'Rendered MP4 is ' + formatDurationSeconds(actual) +
-              ' but you asked for ' + formatDurationSeconds(picked.seconds) +
-              '. Download it anyway, or go back and extend the script before rendering again.',
-              'err',
-            )
-          }
-        }
-      }
-      const dl = document.getElementById('fv-export-dl')
-      if (dl) dl.href = url
-      document.getElementById('fv-export-result').style.display = ''
-      fvNotifyStudio()
-      try { window.fvStudioIngestExport?.(jobId) } catch (_) {}
-      fvMaybeAutoUploadYoutube()
-    } catch (e) {
-      clearInterval(fvState.renderPoll)
-      fvState.renderPoll = null
-      if (btn) btn.disabled = false
-      fvSetExportStatus(e.message || 'Poll failed', 'err')
-    }
-  }
-  tick()
-  fvState.renderPoll = setInterval(tick, 1500)
 }
 
 function fvSetYoutubeStatus(msg, kind) {
@@ -10641,32 +10076,7 @@ async function fvMaybeAutoUploadYoutube() {
 }
 
 window.fvRegenerateSection = async (sectionId) => {
-  if (fvState.scriptBusy) return
-  const script = fvState.script
-  const sec = script?.sections?.find((s) => s.id === sectionId)
-  if (!sec) return
-  fvRebuildFullScriptFromSections()
-  fvState.scriptBusy = true
-  fvSetStatus('Rewriting this section…', 'loading', 2)
-  try {
-    const data = await api.faceless.rewriteSection({
-      topic: script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
-      section_id: sectionId,
-      heading: sec.heading,
-      text: sec.text,
-      full_script: script.full_script,
-    })
-    const text = String(data.text || data.section?.text || data.rewritten || data.full_script || '').trim()
-    if (!text) throw new Error('Rewrite returned no text')
-    sec.text = text
-    fvRebuildFullScriptFromSections()
-    fvRenderScript(script)
-    fvSetStatus('Section updated', 'ok', 2)
-  } catch (e) {
-    fvSetStatus(e.message || 'Could not rewrite this section', 'err', 2)
-  } finally {
-    fvState.scriptBusy = false
-  }
+  fvSetStatus('AI already wrote this script. Edit the section by hand.', 'err', 2)
 }
 
 async function fvEnsureVoice() {
@@ -10966,19 +10376,9 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
   return capScriptToTarget(data, targetWords)
 }
 
-window.fvRegenerateWholeScript = async () => {
-  if (fvState.scriptBusy) return
-  fvState.scriptAiUsed = false
-  await window.fvGenerateScript({ force: true })
-}
-
-window.fvGenerateScript = async (opts = {}) => {
+window.fvGenerateScript = async () => {
   if (fvState.scriptBusy) {
     return fvSetStatus('Still writing your script…', 'loading')
-  }
-  if (!opts.force && (fvState.scriptAiUsed || fvState.script)) {
-    fvSetScriptAiLock(true)
-    return fvSetStatus('AI already wrote this script. Edit a section, regenerate, or clear to start over.', 'err')
   }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
@@ -11044,7 +10444,6 @@ window.fvGenerateScript = async (opts = {}) => {
     fvState.phase = 1
     fvRenderScript(data)
     fvSetScriptAiLock(true)
-    fvStudioJob({ type: 'script', status: 'succeeded', progress: 100 })
     if (fvScriptIsShort(data, picked.seconds)) {
       fvShowShortScriptAction(true)
       const shortMsg =
@@ -11053,25 +10452,17 @@ window.fvGenerateScript = async (opts = {}) => {
         ' words). Edit it longer, or continue with this shorter script.'
       fvSetStatus('', null)
       fvSetStatus(shortMsg, 'err', 2)
-      window.fvStudioAutoRun = false
     } else {
       fvShowShortScriptAction(false)
       const okMsg = 'Script ready · ' + words + ' words (~' + formatDurationSeconds(implied) + ')'
       fvSetStatus(okMsg, 'ok')
       fvSetStatus(okMsg, 'ok', 2)
-      if (fvStudioBoundId && window.fvStudioAutoRun) {
-        setTimeout(() => {
-          try { window.fvContinueToMedia() } catch (_) {}
-        }, 350)
-      }
     }
-    try { fvPersistLocalDraft(data) } catch {}
+    try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(data)) } catch {}
   } catch (e) {
     const msg = fvFriendlyScriptError(e)
-    fvSetStatus('', null)
+    fvSetStatus(msg, 'err')
     fvSetStatus(msg, 'err', 2)
-    fvStudioJob({ type: 'script', status: 'failed', progress: 0, error: msg })
-    window.fvStudioAutoRun = false
     fvSetScriptActionsVisible(!!fvState.script)
     if (!fvState.script) document.getElementById('fv-script-box')?.classList.remove('show')
   } finally {
@@ -11304,8 +10695,6 @@ async function loadFiles() {
   }
 }
 
-window.loadFiles = loadFiles
-
 window.uploadFile = async (input) => {
   const file = input.files[0]; if (!file) return
   const fd = new FormData(); fd.append('file', file)
@@ -11359,49 +10748,6 @@ initImageWorkspace({
   loadUsage,
   loadFiles,
   resolveAccess,
-})
-try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
-initFacelessStudio({
-  api,
-  getUser: () => currentUser,
-  getVoices: () => voices,
-  loadVoices,
-  getDurationCap: () => fvDurationCapSeconds(),
-  getVoicesState: () => voicesLoadState,
-  parkWizard: (slot) => window.fvParkWizard(slot),
-  hydratePipeline: (project) => window.fvHydrateFromStudio(project),
-  snapshotPipeline: () => window.fvSnapshotForStudio(),
-  clearPipeline: () => {
-    window.fvStudioUnbind?.()
-    window.fvParkWizard?.(null)
-  },
-  generateThumb: async ({ prompt, model, aspect, image_urls }) => {
-    const refs = Array.isArray(image_urls) ? image_urls.filter(Boolean) : []
-    const data = await api.generate.image({
-      prompt,
-      model: model || DEFAULT_IMAGE_MODEL,
-      aspect_ratio: aspect || '16:9',
-      quality: '2K',
-      resolution: '2K',
-      num_images: 1,
-      ...(refs.length ? { image_urls: refs } : {}),
-    })
-    const url = data.urls?.[0]
-    if (!url) throw new Error('No image came back.')
-    let saved = null
-    try {
-      const pack = await api.generate.imageSave({
-        url,
-        prompt,
-        model: model || DEFAULT_IMAGE_MODEL,
-        aspect_ratio: aspect || '16:9',
-        quality: '2K',
-        reference_images: refs,
-      })
-      saved = pack.items?.[0] || null
-    } catch (_) {}
-    return saved || { storage_url: url, url }
-  },
 })
 checkAuth()
 bindGettingStarted()
