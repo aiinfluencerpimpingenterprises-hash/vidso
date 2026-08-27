@@ -516,6 +516,7 @@ select option{background:var(--card)}
 .fv-music-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:.8rem;color:var(--muted)}
 .fv-music-item:hover,.fv-music-item.active{border-color:var(--a1);color:var(--ink);background:rgba(var(--glow),.1)}
 .fv-prev-tl{margin-top:14px}
+.fv-prev-head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .fv-prev-tracks{display:flex;flex-direction:column;gap:6px}
 .fv-track{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:.7rem;color:var(--muted)}
 .fv-track-bar{position:relative;height:22px;border-radius:6px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
@@ -5207,7 +5208,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                   <div class="fv-script-title" id="fv-prev-title">Style captions &amp; music</div>
                   <div class="fv-meta" id="fv-prev-meta"></div>
                 </div>
-                <button type="button" class="btn btn-ghost btn-sm" onclick="fvBackToMedia()">← Back to media</button>
+                <div class="fv-prev-head-actions">
+                  <button type="button" class="btn btn-ghost" onclick="fvBackToMedia()">Go back</button>
+                </div>
               </div>
 
               <div class="fv-prev-layout">
