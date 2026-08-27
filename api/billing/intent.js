@@ -1,5 +1,6 @@
 import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { saveIntent } from '../../lib/checkout-intents.js'
+import { createCheckoutSession } from '../../lib/whop-checkout.js'
 
 export const config = { maxDuration: 15 }
 
@@ -55,5 +56,13 @@ export default async function handler(req, res) {
 
   const body = await readJson(req).catch(() => ({}))
   const rec = saveIntent(user, { tier: body.tier, cycle: body.cycle })
-  return send(res, 200, { ok: true, at: rec.at })
+  const origin = String(body.origin || req.headers.origin || 'https://vidso.pro')
+  const session = await createCheckoutSession({
+    tier: body.tier,
+    cycle: body.cycle,
+    email: emailsFromUser(user)[0],
+    userId: user.id || user.user_id,
+    origin,
+  })
+  return send(res, 200, { ok: true, at: rec.at, url: session.url || '', source: session.source })
 }

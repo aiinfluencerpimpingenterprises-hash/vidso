@@ -296,14 +296,14 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
       setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
       return
     }
-    const url = api.billing.checkoutUrl(tier, paywallCycle, {
+    try { sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
+    setPaywallStatus('Opening checkout…', 'loading')
+    const started = await api.billing.recordCheckoutIntent({ tier, cycle: paywallCycle }).catch(() => null)
+    const url = started?.url || api.billing.checkoutUrl(tier, paywallCycle, {
       email,
       userId: currentUser?.id || currentUser?.user_id,
     })
     if (!url) { setPaywallStatus('Checkout link missing for this plan', 'err'); return }
-    try { sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
-    setPaywallStatus('Opening checkout…', 'loading')
-    try { await api.billing.recordCheckoutIntent({ tier, cycle: paywallCycle }) } catch (_) {}
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => {
       setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)

@@ -163,10 +163,16 @@ let _lastSync = null
 
 async function recordCheckoutIntent(opts = {}) {
   const url = sameOriginApi('/api/billing/intent')
-  if (!url) return
+  if (!url) return null
   try {
-    await reqTo(url, 'POST', { tier: opts.tier || '', cycle: opts.cycle || '' })
-  } catch (_) {}
+    return await reqTo(url, 'POST', {
+      tier: opts.tier || '',
+      cycle: opts.cycle || '',
+      origin: opts.origin || appOrigin(),
+    })
+  } catch (_) {
+    return null
+  }
 }
 
 async function billingSync(opts = {}) {

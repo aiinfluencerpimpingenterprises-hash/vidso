@@ -12,6 +12,9 @@ import { grantFor, saveGrant, withStoredGrant, _resetGrantsForTests } from '../l
 import { planIsActive } from '../lib/comped.js'
 import { _internalsForTests as diagnostics } from '../api/billing/diagnose.js'
 import { saveIntent, mayAttachOffEmail, _resetIntentsForTests } from '../lib/checkout-intents.js'
+import { verifyWhopWebhook, vidsoIdentityFromWhop, fulfillWhopEvent } from '../lib/whop-webhook.js'
+import { checkoutMetadata } from '../lib/whop-checkout.js'
+import { createHmac } from 'node:crypto'
 
 const PRO_MONTHLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_MONTHLY
 const STUDIO_YEARLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_STUDIO_YEARLY
@@ -231,5 +234,60 @@ test('the same Whop membership cannot be attached to a second account', () => {
     }),
     /already attached/,
   )
+  _resetGrantsForTests()
+})
+
+test('checkout metadata stamps the Vidso account, not the Whop email', () => {
+  const meta = checkoutMetadata({ userId: 'u-1', email: 'Buyer@Gmail.com', tier: 'pro' })
+  assert.equal(meta.user_id, 'u-1')
+  assert.equal(meta.vidso_user_id, 'u-1')
+  assert.equal(meta.email, 'buyer@gmail.com')
+  assert.equal(meta.tier, 'pro')
+})
+
+test('webhook signature rejects a bad hmac and accepts a valid one', () => {
+  const secret = 'ws_testsecret'
+  const body = '{"type":"payment.succeeded","data":{}}'
+  const id = 'msg_1'
+  const ts = String(Math.floor(Date.now() / 1000))
+  assert.throws(() => verifyWhopWebhook(body, {
+    'webhook-id': id,
+    'webhook-timestamp': ts,
+    'webhook-signature': 'v1,nope',
+  }, secret))
+  const sig = createHmac('sha256', secret).update(`${id}.${ts}.${body}`).digest('base64')
+  const event = verifyWhopWebhook(body, {
+    'webhook-id': id,
+    'webhook-timestamp': ts,
+    'webhook-signature': 'v1,' + sig,
+  }, secret)
+  assert.equal(event.type, 'payment.succeeded')
+})
+
+test('webhook identity prefers checkout metadata over the Apple relay email', () => {
+  const id = vidsoIdentityFromWhop({
+    user: { email: 'uuid@inbox.appleid.apple.com' },
+    metadata: { user_id: 'vidso-1', email: 'buyer@gmail.com' },
+  })
+  assert.equal(id.id, 'vidso-1')
+  assert.equal(id.email, 'buyer@gmail.com')
+})
+
+test('membership.activated with checkout metadata grants the Vidso account', async () => {
+  _resetGrantsForTests()
+  const result = await fulfillWhopEvent({
+    type: 'membership.activated',
+    data: {
+      id: 'mem_auto',
+      status: 'active',
+      plan: { id: PRO_MONTHLY },
+      user: { email: 'uuid@inbox.appleid.apple.com' },
+      metadata: { user_id: 'u-auto', email: 'buyer@gmail.com' },
+    },
+  })
+  assert.equal(result.ok, true)
+  assert.equal(result.tier, 'pro')
+  const user = withStoredGrant({ id: 'u-auto', email: 'buyer@gmail.com', plan_status: 'inactive' })
+  assert.equal(user.plan, 'pro')
   _resetGrantsForTests()
 })
