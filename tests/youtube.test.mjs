@@ -89,7 +89,7 @@ test('google auth URL asks for offline consent and channel manage scope', () => 
   assert.equal(scopes.includes('https://www.googleapis.com/auth/youtube'), true)
 })
 
-test('redirect URI prefers env then request host', () => {
+test('redirect URI prefers env then canonical production host', () => {
   assert.equal(
     youtubeRedirectUri({ headers: {} }, { YOUTUBE_REDIRECT_URI: 'https://vidso.pro/api/youtube/callback' }),
     'https://vidso.pro/api/youtube/callback',
@@ -97,6 +97,14 @@ test('redirect URI prefers env then request host', () => {
   assert.equal(
     youtubeRedirectUri({ headers: { host: 'localhost:3000', 'x-forwarded-proto': 'http' } }, {}),
     'http://localhost:3000/api/youtube/callback',
+  )
+  assert.equal(
+    youtubeRedirectUri({ headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, {}),
+    'https://www.vidso.pro/api/youtube/callback',
+  )
+  assert.equal(
+    youtubeRedirectUri({ headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } }, {}),
+    'https://www.vidso.pro/api/youtube/callback',
   )
 })
 
