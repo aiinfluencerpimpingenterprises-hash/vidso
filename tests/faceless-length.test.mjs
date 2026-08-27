@@ -10,8 +10,15 @@ import {
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
+  listCountFromTopic,
+  rebuildFullScript,
+  scriptLengthBrief,
+  scriptTimeoutMs,
   scriptWordCount,
+  sectionNeedsExpand,
+  targetSectionCount,
   targetWordsFromSeconds,
+  wordsPerSection,
 } from '../lib/faceless-length.js'
 import { durationFromBody } from '../lib/quota.js'
 
@@ -65,8 +72,53 @@ test('a 3 min script is materially short of a 5 min target', () => {
 })
 
 test('gate enrich fills duration minutes when the client omitted the field', () => {
-  const next = enrichScriptBody({ topic: 'x', duration_id: 'long_300' }, 300)
+  const next = enrichScriptBody({ topic: '12 biggest airports', duration_id: 'long_300' }, 300)
   assert.equal(next.duration, 5)
   assert.equal(next.target_words, 750)
+  assert.equal(next.target_sections, 12)
+  assert.equal(next.words_per_section, 63)
+  assert.match(next.brief, /5 min/)
   assert.equal(countSpokenWords('one two  three'), 3)
+})
+
+test('list topics drive section count and the length brief', () => {
+  assert.equal(listCountFromTopic('12 biggest airports'), 12)
+  assert.equal(targetSectionCount('12 biggest airports', 1800), 12)
+  assert.equal(targetSectionCount('airport secrets', 1800), 12)
+  assert.equal(targetSectionCount('airport secrets', 180), 4)
+  assert.equal(wordsPerSection(4500, 12), 375)
+  assert.equal(sectionNeedsExpand('short text here', 375), true)
+  assert.equal(sectionNeedsExpand(Array.from({ length: 400 }, () => 'word').join(' '), 375), false)
+  assert.equal(scriptTimeoutMs(1800), 144000)
+  assert.equal(scriptTimeoutMs(60), 90000)
+  const brief = scriptLengthBrief({
+    topic: '12 biggest airports',
+    durationSeconds: 1800,
+    targetWords: 4500,
+  })
+  assert.match(brief, /4500 words/)
+  assert.match(brief, /exactly 12 separate sections/)
+  const rebuilt = rebuildFullScript({
+    sections: [{ id: 'a', text: 'Hello there.' }, { id: 'b', text: 'More words.' }],
+  })
+  assert.equal(rebuilt.full_script, 'Hello there.\n\nMore words.')
+})
+
+test('script payload includes section budget for long targets', () => {
+  const body = facelessScriptPayload({
+    topic: '12 biggest airports',
+    aspect: '16:9',
+    durationId: 'long_1800',
+    durationSeconds: 1800,
+  })
+  assert.equal(body.target_words, 4500)
+  assert.equal(body.target_sections, 12)
+  assert.equal(body.words_per_section, 375)
+  assert.match(body.brief, /30 min/)
+})
+
+test('duration_seconds wins over duration minutes when id is missing', () => {
+  assert.equal(durationFromBody({ duration: 30, duration_seconds: 1800 }), 1800)
+  assert.equal(durationFromBody({ target_minutes: 30 }), 1800)
+  assert.equal(durationFromBody({ duration: 45 }), 45)
 })

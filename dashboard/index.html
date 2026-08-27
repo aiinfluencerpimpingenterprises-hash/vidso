@@ -5156,7 +5156,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                 <div class="status" id="fv-status-2" style="display:none;margin:0"></div>
               </div>
               <div class="fv-sections" id="fv-sections"></div>
-              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">AI writes the script once. Edit any section by hand, or clear to start a new video.</p>
+              <p style="margin:12px 0 0;font-size:.75rem;color:var(--muted);display:none" id="fv-help">AI writes to your duration. Edit any section by hand, or clear to start a new video.</p>
             </div>
           </div>
 
@@ -5448,14 +5448,18 @@ import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
-  WORDS_PER_MINUTE,
   facelessMediaPayloadExtras,
   facelessScriptPayload,
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
+  rebuildFullScript,
+  scriptTimeoutMs,
   scriptWordCount,
+  sectionNeedsExpand,
   targetWordsFromSeconds,
+  wordsPerSection,
+  countSpokenWords,
 } from '/lib/faceless-length.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
@@ -8532,7 +8536,7 @@ function fvRenderScript(script) {
     </div>`).join('') || '<p style="color:var(--muted);font-size:.85rem">Generate a script to see sections here.</p>'
 
   const help = document.getElementById('fv-help')
-  if (help) help.textContent = 'AI writes the script once. Edit any section by hand, or clear to start a new video.'
+  if (help) help.textContent = 'AI writes to your duration. Edit any section by hand, or clear to start a new video.'
   fvSetScriptActionsVisible(!!((script.sections || []).length || script.full_script))
   if ((script.sections || []).length || script.full_script) fvSetScriptAiLock(true)
 }
@@ -9916,6 +9920,128 @@ async function fvEnsureVoice() {
   return fvState.voiceId
 }
 
+function fvUnwrapScript(data) {
+  if (data && data.script && typeof data.script === 'object') return data.script
+  return data
+}
+
+function fvSectionRewriteText(out) {
+  if (!out) return ''
+  if (typeof out === 'string') return out
+  return String(out.text || out.section?.text || out.rewritten || out.content || '')
+}
+
+async function fvMapPool(items, limit, fn) {
+  const n = Math.max(1, Math.min(limit || 1, items.length || 1))
+  const out = items.slice()
+  let i = 0
+  async function worker() {
+    while (i < items.length) {
+      const idx = i++
+      out[idx] = await fn(items[idx], idx)
+    }
+  }
+  await Promise.all(Array.from({ length: n }, () => worker()))
+  return out
+}
+
+async function fvRequestScript(payload, topic, picked, timeoutMs, extra) {
+  const body = {
+    ...payload,
+    topic: [topic, payload.brief, extra].filter(Boolean).join('\n\n'),
+  }
+  const raw = await api.faceless.script(body, { timeoutMs })
+  const data = fvUnwrapScript(raw)
+  if (!data || typeof data !== 'object') throw new Error('Script generation returned nothing')
+  data.voice_id = fvState.voiceId
+  data.voice_preview = fvState.voicePreview
+  data.duration_id = picked.id
+  data.duration_seconds = picked.seconds
+  data.topic = topic
+  return data
+}
+
+async function fvExpandThinSections(script, topic, perWords) {
+  const sections = Array.isArray(script.sections) ? script.sections : []
+  if (!sections.length) return script
+  const thin = sections
+    .map((sec, index) => ({ sec, index }))
+    .filter((row) => sectionNeedsExpand(row.sec.text, perWords))
+  if (!thin.length) return script
+  let done = 0
+  await fvMapPool(thin, 2, async (row) => {
+    done += 1
+    fvSetStatus(
+      'Expanding “' + (row.sec.heading || 'section') + '” (' + done + '/' + thin.length + ')…',
+      'loading',
+    )
+    fvSetStatus(
+      'Expanding “' + (row.sec.heading || 'section') + '” (' + done + '/' + thin.length + ')…',
+      'loading',
+      2,
+    )
+    try {
+      const out = await api.faceless.rewriteSection({
+        topic: topic + '\n\nExpand this section to about ' + perWords +
+          ' spoken words of narration. Do not summarize. Do not list extra items in this section.',
+        section_id: row.sec.id,
+        heading: row.sec.heading,
+        text: row.sec.text,
+        full_script: script.full_script,
+        target_words: perWords,
+      })
+      const text = fvSectionRewriteText(out)
+      if (countSpokenWords(text) > countSpokenWords(row.sec.text)) {
+        sections[row.index] = { ...row.sec, text }
+      }
+    } catch (_) {}
+  })
+  script.sections = sections
+  return rebuildFullScript(script)
+}
+
+async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs) {
+  let data = script
+  const targetWords = payload.target_words
+  for (let pass = 1; pass <= 3; pass++) {
+    if (!fvScriptIsShort(data, picked.seconds)) return data
+    const have = scriptWordCount(data)
+    const sectionN = Math.max(1, (data.sections || []).length)
+    const per = wordsPerSection(targetWords, sectionN)
+    fvLengthTrace('script-expand-pass', { pass, have, targetWords, sections: sectionN, per })
+    fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading')
+    fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading', 2)
+
+    const wantSections = payload.target_sections || 1
+    const haveSections = (data.sections || []).length
+    const structureOk = haveSections >= Math.max(3, Math.ceil(wantSections * 0.7))
+    if (haveSections && structureOk) {
+      data = await fvExpandThinSections(data, topic, per)
+      if (!fvScriptIsShort(data, picked.seconds)) return data
+    }
+
+    const afterExpand = scriptWordCount(data)
+    fvSetStatus('Writing a longer draft (' + afterExpand + ' / ' + targetWords + ' words)…', 'loading')
+    fvSetStatus('Writing a longer draft (' + afterExpand + ' / ' + targetWords + ' words)…', 'loading', 2)
+    try {
+      const extra = 'The last draft was only ' + afterExpand + ' words across ' +
+        ((data.sections || []).length || 0) + ' sections. Write the complete ' +
+        targetWords + ' word spoken script now, with exactly ' + wantSections +
+        ' separate sections. Do not recap. Do not shorten.'
+      const retry = await fvRequestScript(payload, topic, picked, timeoutMs, extra)
+      if (scriptWordCount(retry) > afterExpand) data = retry
+      fvLengthTrace('script-expand-retry', {
+        pass,
+        words: scriptWordCount(data),
+        sections: (data.sections || []).length,
+      })
+    } catch (retryErr) {
+      fvLengthTrace('script-expand-error', { pass, message: retryErr.message || String(retryErr) })
+    }
+  }
+  return data
+}
+
 window.fvGenerateScript = async () => {
   if (fvState.scriptBusy) {
     return fvSetStatus('Still writing your script…', 'loading')
@@ -9952,26 +10078,18 @@ window.fvGenerateScript = async () => {
       durationId: picked.id,
       durationSeconds: picked.seconds,
     })
+    const timeoutMs = scriptTimeoutMs(picked.seconds)
     fvLengthTrace('script-request', {
       seconds: payload.duration_seconds,
       durationMinutes: payload.duration,
       targetWords: payload.target_words,
+      targetSections: payload.target_sections,
       aspect: payload.aspect,
       voiceId: fvState.voiceId,
       format: fvState.format,
+      timeoutMs,
     })
-    let data = await api.faceless.script(payload)
-    if (data && data.script && typeof data.script === 'object') data = data.script
-    if (!data || typeof data !== 'object') throw new Error('Script generation returned nothing')
-    const stamp = (script) => {
-      script.voice_id = fvState.voiceId
-      script.voice_preview = fvState.voicePreview
-      script.duration_id = picked.id
-      script.duration_seconds = picked.seconds
-      script.topic = topic
-      return script
-    }
-    stamp(data)
+    let data = await fvRequestScript(payload, topic, picked, timeoutMs)
     let words = scriptWordCount(data)
     let implied = impliedSecondsFromWords(words)
     fvLengthTrace('script-response', {
@@ -9980,31 +10098,12 @@ window.fvGenerateScript = async () => {
       implied,
       estimated_duration_sec: data.estimated_duration_sec || null,
       title: data.title || '',
+      sections: (data.sections || []).length,
     })
     if (fvScriptIsShort(data, picked.seconds)) {
-      fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading')
-      fvSetStatus('Script was short of the ' + formatDurationSeconds(picked.seconds) + ' target. Extending…', 'loading', 2)
-      const retryPayload = facelessScriptPayload({
-        topic: topic + '\n\nWrite a spoken narration of ' + payload.target_words +
-          ' words, about ' + formatDurationSeconds(picked.seconds) + ' at ' + WORDS_PER_MINUTE + ' words per minute.',
-        aspect: fvState.aspect,
-        durationId: picked.id,
-        durationSeconds: picked.seconds,
-      })
-      fvLengthTrace('script-retry', { targetWords: retryPayload.target_words, seconds: picked.seconds })
-      try {
-        const retry = stamp(await api.faceless.script(retryPayload))
-        retry.topic = topic
-        const retryWords = scriptWordCount(retry)
-        if (retryWords > words) {
-          data = retry
-          words = retryWords
-          implied = impliedSecondsFromWords(words)
-        }
-        fvLengthTrace('script-retry-response', { words, implied })
-      } catch (retryErr) {
-        fvLengthTrace('script-retry-error', { message: retryErr.message || String(retryErr) })
-      }
+      data = await fvExpandScriptToLength(data, topic, payload, picked, timeoutMs)
+      words = scriptWordCount(data)
+      implied = impliedSecondsFromWords(words)
     }
     fvState.phase = 1
     fvRenderScript(data)

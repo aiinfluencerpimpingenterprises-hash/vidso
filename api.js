@@ -437,9 +437,13 @@ export const api = {
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
     // body: { topic, duration_id, duration (minutes), duration_seconds, target_words, aspect }
-    script: (body) => gatedReq('POST', '/api/faceless/script', body, { timeoutMs: 90000 }),
+    script: (body, opts = {}) => gatedReq('POST', '/api/faceless/script', body, {
+      timeoutMs: opts.timeoutMs || 120000,
+    }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
-    rewriteSection: (body) => req('POST', '/api/faceless/script/section', body),
+    rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
+      timeoutMs: opts.timeoutMs || 60000,
+    }),
     // body: { script, voice_id, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
