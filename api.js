@@ -451,7 +451,8 @@ export const api = {
     }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
     rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
-      timeoutMs: opts.timeoutMs || 60000,
+      timeoutMs: opts.timeoutMs || 90000,
+      recoverScript: true,
     }),
     // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),

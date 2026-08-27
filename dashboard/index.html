@@ -5506,6 +5506,9 @@ import {
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
+  mergeNewSections,
+  needsMoreSections,
+  padListSections,
   rebuildFullScript,
   scriptTimeoutMs,
   scriptWordCount,
@@ -5513,6 +5516,7 @@ import {
   targetWordsFromSeconds,
   wordsPerSection,
   countSpokenWords,
+  WORDS_PER_MINUTE,
 } from '/lib/faceless-length.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
@@ -10060,6 +10064,13 @@ function fvFriendlyScriptError(err) {
 function fvSectionRewriteText(out) {
   if (!out) return ''
   if (typeof out === 'string') return out
+  const recovered = recoverScriptData(out, out.raw)
+  if (recovered?.sections?.length) {
+    const best = recovered.sections.reduce((a, b) => (
+      countSpokenWords(b?.text) > countSpokenWords(a?.text) ? b : a
+    ))
+    if (best?.text) return String(best.text)
+  }
   return String(out.text || out.section?.text || out.rewritten || out.content || '')
 }
 
@@ -10119,7 +10130,124 @@ function fvStampVoiceOnScript(data, topic, picked) {
   return data
 }
 
-async function fvExpandThinSections(script, topic, perWords) {
+function fvCoveredHeadings(sections) {
+  return (sections || [])
+    .map((s) => String(s?.heading || '').trim())
+    .filter((h) => h && !/^item \d+ of \d+$/i.test(h))
+}
+
+function fvSingleSectionPayload(payload, perWords) {
+  const minutes = Math.max(2, Number(perWords) / WORDS_PER_MINUTE)
+  return {
+    ...payload,
+    outline: true,
+    target_sections: 1,
+    target_words: perWords,
+    words_per_section: perWords,
+    duration: minutes,
+    duration_seconds: Math.round(minutes * 60),
+    target_minutes: minutes,
+    brief: 'Return valid JSON with exactly one section and about ' + perWords +
+      ' spoken words of narration. No markdown. No extra sections.',
+  }
+}
+
+async function fvWriteOneSection(topic, heading, index, want, perWords, payload, picked, timeoutMs, covered) {
+  const extra = [
+    'Write JSON with exactly ONE section.',
+    'This is item ' + (index + 1) + ' of ' + want + ' for: ' + topic + '.',
+    heading && !/^item \d+/i.test(heading) ? ('Heading: ' + heading + '.') : 'Name the specific subject for this slot.',
+    covered ? ('Do not repeat: ' + covered + '.') : '',
+    'Write about ' + perWords + ' spoken words in that one section.',
+  ].filter(Boolean).join(' ')
+  const chunk = await fvRequestScript(
+    fvSingleSectionPayload(payload, perWords),
+    topic,
+    picked,
+    Math.min(timeoutMs, 90000),
+    extra,
+  )
+  const sec = (chunk.sections || [])[0]
+  const text = String(sec?.text || chunk.full_script || '').trim()
+  if (!text) return null
+  return {
+    id: 's' + (index + 1),
+    heading: String(sec?.heading || heading || ('Item ' + (index + 1) + ' of ' + want)),
+    text,
+  }
+}
+
+async function fvFillMissingSections(script, topic, payload, picked, timeoutMs) {
+  const want = payload.target_sections || 1
+  let sections = Array.isArray(script.sections) ? script.sections.slice() : []
+  let attempts = 0
+  while (sections.length < want && attempts < 5) {
+    attempts += 1
+    const have = sections.length
+    const batch = Math.min(4, want - have)
+    fvSetStatus('Writing items ' + (have + 1) + '–' + (have + batch) + ' of ' + want + '…', 'loading')
+    fvSetStatus('Writing items ' + (have + 1) + '–' + (have + batch) + ' of ' + want + '…', 'loading', 2)
+    const covered = fvCoveredHeadings(sections).join('; ')
+    const extra = (covered ? ('Existing headings: ' + covered + '. ') : '') +
+      'Return valid JSON with exactly ' + batch + ' NEW sections for items ' +
+      (have + 1) + ' through ' + (have + batch) + ' of ' + want +
+      ' in "' + topic + '". Do not repeat existing headings. Max 70 words each. Valid JSON only.'
+    try {
+      const chunk = await fvRequestScript(payload, topic, picked, timeoutMs, extra)
+      const added = mergeNewSections(sections, chunk.sections || [], batch)
+      if (!added.length) break
+      sections = sections.concat(added)
+      fvLengthTrace('script-fill-batch', { have: sections.length, want, added: added.length })
+    } catch (err) {
+      fvLengthTrace('script-fill-error', { message: err.message || String(err) })
+      break
+    }
+  }
+  script.sections = padListSections(sections, want)
+  return rebuildFullScript(script)
+}
+
+async function fvExpandOneSection(script, topic, row, perWords, payload, picked, timeoutMs, want) {
+  let heading = row.sec.heading
+  let text = row.sec.text || ''
+  const covered = fvCoveredHeadings(script.sections).filter((h) => h !== heading).join(', ')
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (!sectionNeedsExpand(text, perWords)) return { ...row.sec, heading, text }
+    try {
+      const out = await api.faceless.rewriteSection({
+        topic: topic + '\n\nThis is item ' + (row.index + 1) + ' of ' + want +
+          '. Expand this section to about ' + perWords +
+          ' spoken words of narration. Do not summarize. Do not list extra items.' +
+          (covered ? ' Already covered: ' + covered + '.' : ''),
+        section_id: row.sec.id,
+        heading,
+        text,
+        full_script: String(script.full_script || '').slice(0, 2500),
+        target_words: perWords,
+      }, { timeoutMs: 90000 })
+      const next = fvSectionRewriteText(out)
+      const nextHeading = out?.heading || out?.section?.heading
+      if (countSpokenWords(next) > countSpokenWords(text)) text = next
+      if (nextHeading) heading = nextHeading
+    } catch (_) {
+      break
+    }
+  }
+  if (!sectionNeedsExpand(text, perWords)) return { ...row.sec, heading, text }
+  try {
+    const one = await fvWriteOneSection(
+      topic, heading, row.index, want, perWords, payload, picked, timeoutMs, covered,
+    )
+    if (one && countSpokenWords(one.text) > countSpokenWords(text)) {
+      return { ...row.sec, heading: one.heading || heading, text: one.text }
+    }
+  } catch (err) {
+    fvLengthTrace('script-section-fallback-error', { heading, message: err.message || String(err) })
+  }
+  return { ...row.sec, heading, text }
+}
+
+async function fvExpandThinSections(script, topic, perWords, payload, picked, timeoutMs, want) {
   const sections = Array.isArray(script.sections) ? script.sections : []
   if (!sections.length) return script
   const thin = sections
@@ -10138,21 +10266,9 @@ async function fvExpandThinSections(script, topic, perWords) {
       'loading',
       2,
     )
-    try {
-      const out = await api.faceless.rewriteSection({
-        topic: topic + '\n\nExpand this section to about ' + perWords +
-          ' spoken words of narration. Do not summarize. Do not list extra items in this section.',
-        section_id: row.sec.id,
-        heading: row.sec.heading,
-        text: row.sec.text,
-        full_script: String(script.full_script || '').slice(0, 4000),
-        target_words: perWords,
-      }, { timeoutMs: 90000 })
-      const text = fvSectionRewriteText(out)
-      if (countSpokenWords(text) > countSpokenWords(row.sec.text)) {
-        sections[row.index] = { ...row.sec, text }
-      }
-    } catch (_) {}
+    sections[row.index] = await fvExpandOneSection(
+      { ...script, sections }, topic, row, perWords, payload, picked, timeoutMs, want,
+    )
   })
   script.sections = sections
   return rebuildFullScript(script)
@@ -10162,29 +10278,27 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
   let data = script
   const targetWords = payload.final_target_words || payload.target_words
   const wantSections = payload.target_sections || 1
-  const haveSections = (data.sections || []).length
-  if (haveSections < Math.max(3, Math.ceil(wantSections * 0.7))) {
-    fvSetStatus('Adding the missing sections…', 'loading')
-    fvSetStatus('Adding the missing sections…', 'loading', 2)
-    try {
-      const extra = 'The last JSON was incomplete. Return valid JSON with exactly ' +
-        wantSections + ' sections, at most 60 spoken words each. No markdown.'
-      const retry = await fvRequestScript(payload, topic, picked, timeoutMs, extra)
-      if ((retry.sections || []).length > haveSections) data = retry
-    } catch (retryErr) {
-      fvLengthTrace('script-expand-error', { pass: 0, message: retryErr.message || String(retryErr) })
-    }
+  if (needsMoreSections(data, wantSections)) {
+    data = await fvFillMissingSections(data, topic, payload, picked, timeoutMs)
+    try { fvRenderScript(data) } catch (_) {}
+  } else {
+    data.sections = padListSections(data.sections || [], wantSections)
+    data = rebuildFullScript(data)
   }
-  for (let pass = 1; pass <= 2; pass++) {
-    if (!fvScriptIsShort(data, picked.seconds)) return data
+  const per = wordsPerSection(targetWords, wantSections)
+  for (let pass = 1; pass <= 3; pass++) {
+    if (!fvScriptIsShort(data, picked.seconds) && !needsMoreSections(data, wantSections)) return data
     const have = scriptWordCount(data)
-    const sectionN = Math.max(1, (data.sections || []).length)
-    const per = wordsPerSection(targetWords, sectionN)
-    fvLengthTrace('script-expand-pass', { pass, have, targetWords, sections: sectionN, per })
+    fvLengthTrace('script-expand-pass', {
+      pass, have, targetWords, sections: (data.sections || []).length, per, wantSections,
+    })
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading')
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading', 2)
     if (!(data.sections || []).length) break
-    data = await fvExpandThinSections(data, topic, per)
+    const before = have
+    data = await fvExpandThinSections(data, topic, per, payload, picked, timeoutMs, wantSections)
+    try { fvRenderScript(data) } catch (_) {}
+    if (scriptWordCount(data) <= before) break
   }
   return data
 }
@@ -10247,7 +10361,7 @@ window.fvGenerateScript = async () => {
       title: data.title || '',
       sections: (data.sections || []).length,
     })
-    if (fvScriptIsShort(data, picked.seconds)) {
+    if (fvScriptIsShort(data, picked.seconds) || needsMoreSections(data, payload.target_sections)) {
       data = await fvExpandScriptToLength(data, topic, payload, picked, timeoutMs)
       words = scriptWordCount(data)
       implied = impliedSecondsFromWords(words)

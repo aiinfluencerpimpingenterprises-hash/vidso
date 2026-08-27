@@ -11,6 +11,9 @@ import {
   impliedSecondsFromWords,
   isMateriallyShort,
   listCountFromTopic,
+  mergeNewSections,
+  needsMoreSections,
+  padListSections,
   rebuildFullScript,
   scriptLengthBrief,
   scriptTimeoutMs,
@@ -139,6 +142,21 @@ test('gate enrich keeps an outline word budget', () => {
   assert.equal(next.duration, 6)
   assert.equal(next.final_target_words, 4500)
   assert.equal(next.duration_seconds, 360)
+})
+
+test('missing list sections are merged and padded to the topic count', () => {
+  const existing = [{ id: 's1', heading: 'Siberian tiger', text: 'Snow.' }]
+  const added = mergeNewSections(existing, [
+    { heading: 'Siberian tiger', text: 'dup' },
+    { heading: 'Bengal tiger', text: 'India.' },
+  ], 4)
+  assert.equal(added.length, 1)
+  assert.equal(added[0].heading, 'Bengal tiger')
+  const padded = padListSections(existing.concat(added), 15)
+  assert.equal(padded.length, 15)
+  assert.equal(padded[14].heading, 'Item 15 of 15')
+  assert.equal(needsMoreSections({ sections: existing }, 15), true)
+  assert.equal(needsMoreSections({ sections: padded }, 15), false)
 })
 
 test('duration_seconds wins over duration minutes when id is missing', () => {
