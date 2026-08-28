@@ -14,6 +14,7 @@ import {
   registerClient,
   resourceFromMetadataSubpath,
   safeAuthNext,
+  shouldResumeAuthorize,
   tokenResponse,
   unwrapMcpBearer,
   verifyPkce,
@@ -118,6 +119,14 @@ test('login next only returns to the OAuth authorize URL', () => {
   assert.equal(safeAuthNext('https://evil.test'), '')
   assert.equal(safeAuthNext('//evil.test'), '')
   assert.equal(safeAuthNext('/video-generation'), '')
+})
+
+test('Claude login does not bounce to authorize until the user has a session', () => {
+  const next = '/oauth/authorize?client_id=abc'
+  assert.equal(shouldResumeAuthorize(next, ''), false)
+  assert.equal(shouldResumeAuthorize(next, null), false)
+  assert.equal(shouldResumeAuthorize(next, 'access-jwt'), true)
+  assert.equal(shouldResumeAuthorize('/video-generation', 'access-jwt'), false)
 })
 
 test('token form bodies parse urlencoded and JSON', () => {
