@@ -2179,16 +2179,24 @@ body.img-detail-open{overflow:hidden}
 .media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
 .media-ph-icon svg{width:32px;height:32px}
 
-.content:has(#panel-facelessstudio.active),
-body.studio-open .content{
-  display:flex;flex-direction:column;overflow:hidden;padding:0!important
-}
 #panel-facelessstudio{display:none;height:100%;min-height:0}
-#panel-facelessstudio.panel.active{
+#panel-facelessstudio.panel.active,
+body.studio-open #panel-facelessstudio{
   display:flex;flex-direction:column;flex:1 1 auto;min-height:0;height:100%;max-height:100%;
   position:relative;padding:0;margin:0;max-width:none
 }
-.fs-shell{display:flex;width:100%;height:100%;min-height:0;flex:1;background:var(--bg)}
+body.studio-open .main,
+body.studio-open .content,
+.content:has(#panel-facelessstudio.active){
+  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden
+}
+body.studio-open .content,
+.content:has(#panel-facelessstudio.active){padding:0!important}
+body.studio-open #panel-facelessstudio,
+.content:has(#panel-facelessstudio.active) #panel-facelessstudio{
+  min-height:calc(100vh - var(--chrome-nav-h) - var(--chrome-banner-h, 0px))
+}
+.fs-shell{display:flex;width:100%;height:100%;min-height:calc(100vh - 60px);flex:1;background:var(--bg)}
 .fs-rail{
   width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
   border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px
@@ -5653,6 +5661,28 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 
   </div><!-- /content -->
 </main>
+<script>
+(function () {
+  var path = (location.pathname || '').replace(/\/+$/, '') || '/'
+  var map = {
+    '/clipping': 'clipper', '/ranking': 'ranking', '/image-generation': 'imagegen',
+    '/video-generation': 'videogen', '/faceless-studio': 'facelessstudio', '/tools': 'tools',
+    '/captions': 'captions', '/voiceover': 'voiceover', '/editor': 'editor', '/reframe': 'reframe',
+    '/downloader': 'downloader', '/files': 'files', '/commentary': 'commentary',
+    '/connections': 'connections', '/preview': 'videogen', '/ui': 'videogen'
+  }
+  var id = map[path]
+  if (!id && path.indexOf('/faceless-studio') === 0) id = 'facelessstudio'
+  if (!id) id = 'videogen'
+  var panel = document.getElementById('panel-' + id)
+  if (!panel) return
+  var nodes = document.querySelectorAll('.panel')
+  for (var i = 0; i < nodes.length; i++) nodes[i].classList.remove('active')
+  panel.classList.add('active')
+  document.body.classList.toggle('studio-open', id === 'facelessstudio')
+  document.body.classList.toggle('editor-open', id === 'editor')
+})()
+</script>
 
 <script type="module">
 import { api, setSession, clearSession, getToken } from '/api.js'
@@ -5767,9 +5797,8 @@ function enterUiPreview() {
   closePaywall()
   try { closeOnboarding() } catch (_) {}
   try { closeUiTour() } catch (_) {}
-  populateUser()
+  try { populateUser() } catch (_) {}
   restorePanelFromHash()
-  startPreviewTourEntry()
 }
 
 function persistPlanActive(active) {
@@ -7639,6 +7668,7 @@ function maybeStartPageTour(panel) {
 }
 
 function startPreviewTourEntry() {
+  if (/\.vercel\.app$/.test(location.hostname || '') && !tourQueryId()) return
   if (tourQueryId()) {
     maybeStartUiTour()
     return
@@ -7962,29 +7992,33 @@ window.addEventListener('scroll', () => {
 }, true)
 
 function populateUser() {
-  document.getElementById('user-email').textContent = currentUser.email || ''
-  const nameEl = document.getElementById('user-name')
-  const displayName = ((currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || '').trim()
-  if (nameEl) nameEl.textContent = displayName || 'Your account'
-  const av = document.getElementById('user-avatar')
-  if (av) {
-    const initial = (currentUser.name || currentUser.email || '').trim().charAt(0)
-    av.textContent = initial ? initial.toUpperCase() : '?'
-  }
-  const q = quotaView(currentUser, lastUsage)
-  const creditsCount = document.getElementById('credits-count')
-  const creditsLabel = document.querySelector('#credits-pill .credits-pill-label')
-  if (creditsCount) creditsCount.textContent = q.compact
-  else document.getElementById('credits-pill').textContent = q.compact
-  if (creditsLabel) creditsLabel.textContent = q.unlimited || q.legacy ? '' : 'left'
-  const pill = document.getElementById('credits-pill')
-  if (pill) pill.title = q.longText
-  const welcome = document.getElementById('dash-welcome-name')
-  if (welcome) {
-    const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
-    welcome.textContent = display ? `, ${display}` : ''
-  }
-  try { fvRenderDurationChips() } catch (_) {}
+  if (!currentUser) return
+  try {
+    const emailEl = document.getElementById('user-email')
+    if (emailEl) emailEl.textContent = currentUser.email || ''
+    const nameEl = document.getElementById('user-name')
+    const displayName = ((currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || '').trim()
+    if (nameEl) nameEl.textContent = displayName || 'Your account'
+    const av = document.getElementById('user-avatar')
+    if (av) {
+      const initial = (currentUser.name || currentUser.email || '').trim().charAt(0)
+      av.textContent = initial ? initial.toUpperCase() : '?'
+    }
+    const q = quotaView(currentUser, lastUsage)
+    const creditsCount = document.getElementById('credits-count')
+    const creditsLabel = document.querySelector('#credits-pill .credits-pill-label')
+    if (creditsCount) creditsCount.textContent = q.compact
+    else if (document.getElementById('credits-pill')) document.getElementById('credits-pill').textContent = q.compact
+    if (creditsLabel) creditsLabel.textContent = q.unlimited || q.legacy ? '' : 'left'
+    const pill = document.getElementById('credits-pill')
+    if (pill) pill.title = q.longText
+    const welcome = document.getElementById('dash-welcome-name')
+    if (welcome) {
+      const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
+      welcome.textContent = display ? `, ${display}` : ''
+    }
+    try { fvRenderDurationChips() } catch (_) {}
+  } catch (_) {}
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
@@ -8062,18 +8096,18 @@ window.switchPanel = (id, btn, opts = {}) => {
   markNavActive(id)
   try { sessionStorage.setItem('vidso_last_panel', id) } catch (_) {}
   try { closeNavMenusPublic() } catch (_) {}
+  const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','facelessstudio','connections'].includes(id)
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','facelessstudio','connections'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
-    document.body.classList.toggle('has-page-header', hasPageHeader)
-    document.body.classList.toggle('editor-open', id === 'editor')
-    document.body.classList.toggle('studio-open', id === 'facelessstudio')
   }
+  document.body.classList.toggle('has-page-header', hasPageHeader)
+  document.body.classList.toggle('editor-open', id === 'editor')
+  document.body.classList.toggle('studio-open', id === 'facelessstudio')
   window.closeMobileNav?.()
-  if (id === 'voiceover') loadVoiceLibrary()
-  if (id === 'videogen') fvInit()
+  if (id === 'voiceover') window.loadVoices?.()
+  if (id === 'videogen') window.fvInit?.()
   if (id === 'imagegen') window.imgWorkspaceShow?.()
   if (id === 'facelessstudio') window.fsStudioShow?.()
   if (id === 'connections') initConnectionsPanel()
@@ -10712,6 +10746,7 @@ initImageWorkspace({
   resolveAccess,
 })
 try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
+try {
 initFacelessStudio({
   api,
   getUser: () => currentUser,
@@ -10754,6 +10789,8 @@ initFacelessStudio({
     return saved || { storage_url: url, url }
   },
 })
+} catch (e) { console.warn('[faceless-studio]', e) }
+try { restorePanelFromPath({ skipTour: true }) } catch (_) {}
 checkAuth()
 bindGettingStarted()
 
