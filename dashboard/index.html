@@ -16,6 +16,34 @@
   var ui = false
   try {
     token = localStorage.getItem('clipzo_token') || ''
+    if (!token || token === 'undefined' || token === 'null') token = ''
+    if (!token) {
+      var tm = document.cookie.match(/(?:^|; )clipzo_token=([^;]*)/)
+      if (tm) {
+        try { token = decodeURIComponent(tm[1]) } catch (eTok) { token = tm[1] }
+      }
+    }
+    if (!token || token === 'undefined' || token === 'null') token = ''
+    if (token) {
+      try { localStorage.setItem('clipzo_token', token) } catch (eLs) {}
+      try {
+        var ckHost = location.hostname
+        var ckDomain = (ckHost === 'vidso.pro' || ckHost.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
+        var ckSecure = location.protocol === 'https:' ? '; Secure' : ''
+        document.cookie = 'clipzo_token=' + encodeURIComponent(token) + '; Path=/; Max-Age=2592000; SameSite=Lax' + ckDomain + ckSecure
+        var rt = localStorage.getItem('clipzo_refresh') || ''
+        if (!rt || rt === 'undefined' || rt === 'null') {
+          var rm = document.cookie.match(/(?:^|; )clipzo_refresh=([^;]*)/)
+          if (rm) {
+            try { rt = decodeURIComponent(rm[1]) } catch (eRt) { rt = rm[1] }
+          }
+        }
+        if (rt && rt !== 'undefined' && rt !== 'null') {
+          try { localStorage.setItem('clipzo_refresh', rt) } catch (eLs2) {}
+          document.cookie = 'clipzo_refresh=' + encodeURIComponent(rt) + '; Path=/; Max-Age=2592000; SameSite=Lax' + ckDomain + ckSecure
+        }
+      } catch (eCk) {}
+    }
     paid = localStorage.getItem('vidso_plan_active') === '1'
     var q = location.search || ''
     var on = /(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview'
@@ -5570,7 +5598,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 </main>
 
 <script type="module">
-import { api, setSession, clearSession, getToken } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, tokenNeedsRefresh } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
@@ -5654,6 +5682,7 @@ window._api = api
 window._setSession = setSession
 window._clearSession = clearSession
 window._getToken = getToken
+window._getRefreshToken = getRefreshToken
 
 let currentUser = null
 let lastUsage = null
@@ -5845,25 +5874,39 @@ async function checkAuth() {
   }
   if (!getToken()) { showModal(); return }
   revealOnboardingNow()
-  try {
+  const applyMe = async () => {
     currentUser = await api.user.me()
-  } catch {
-    // Access token is likely expired (Supabase JWTs last ~1h). Try the
-    // refresh_token before giving up — without this, every hard-refresh past
-    // the 1h mark dumps the user back at the sign-in modal.
-    const rt = localStorage.getItem('clipzo_refresh')
-    if (!rt) { persistPlanActive(false); clearSession(); showModal(); return }
-    try {
-      const { session } = await api.auth.refresh(rt)
-      if (!session?.access_token) throw new Error('refresh returned no session')
-      setSession(session)
-      currentUser = await api.user.me()
-    } catch {
-      persistPlanActive(false)
-      clearSession()
-      if (obForcePreview()) return
-      showModal()
-      return
+  }
+  const refreshAccess = async () => {
+    const rt = getRefreshToken()
+    if (!rt) return false
+    const { session } = await api.auth.refresh(rt)
+    if (!session?.access_token) return false
+    setSession(session)
+    return true
+  }
+  try {
+    if (tokenNeedsRefresh(getToken()) && await refreshAccess().catch(() => false)) {
+      /* access JWT was stale; continue with /user/me */
+    }
+    await applyMe()
+  } catch (e) {
+    const unauthorized = e && (e.status === 401 || e.status === 403)
+    if (unauthorized) {
+      try {
+        if (!await refreshAccess()) throw e
+        await applyMe()
+      } catch {
+        persistPlanActive(false)
+        clearSession()
+        if (obForcePreview()) return
+        showModal()
+        return
+      }
+    } else {
+      // Network/5xx must not log the user out on refresh.
+      if (!currentUser) currentUser = userStubFromToken()
+      if (!currentUser) { showModal(); return }
     }
   }
   afterAuthReady({ restoreRoute: true })
@@ -6372,7 +6415,7 @@ function obIdentityKeys() {
   push(u.user_id)
   push(u.uid)
   try {
-    const token = localStorage.getItem('clipzo_token') || ''
+    const token = getToken() || ''
     const part = token.split('.')[1]
     if (part) {
       const payload = JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')))

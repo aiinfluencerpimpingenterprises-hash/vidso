@@ -4,21 +4,19 @@ import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
 import { applyPaidGrant } from '/lib/paid-grant.js'
 import { isJsonSyntaxError, recoverScriptData } from '/lib/json-repair.js'
+import {
+  getToken,
+  getRefreshToken,
+  setSession,
+  clearSession,
+  sessionFromAuthPayload,
+  tokenNeedsRefresh,
+} from '/lib/session-store.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Public Supabase project used by the Railway API (iss claim on JWTs).
 // Google OAuth starts here; tokens return to the app via redirect hash/query.
 const SUPABASE_URL = 'https://ymtmgpgcmrazqeklixwf.supabase.co'
-
-function getToken() { return localStorage.getItem('clipzo_token') }
-function setSession(session) {
-  localStorage.setItem('clipzo_token', session.access_token)
-  localStorage.setItem('clipzo_refresh', session.refresh_token)
-}
-function clearSession() {
-  localStorage.removeItem('clipzo_token')
-  localStorage.removeItem('clipzo_refresh')
-}
 
 async function reqTo(url, method, body, isFormData = false, opts = {}) {
   const token = getToken()
@@ -272,10 +270,25 @@ async function waitForProvisioned({ expectedTier, timeoutMs = 120000, intervalMs
 
 export const api = {
   auth: {
-    signup:  (email, password, name) => req('POST', '/api/auth/signup',  { email, password, name }),
-    login:   (email, password)       => req('POST', '/api/auth/login',   { email, password }),
+    signup:  async (email, password, name) => {
+      const data = await req('POST', '/api/auth/signup',  { email, password, name })
+      const session = sessionFromAuthPayload(data)
+      if (!session) throw new Error('Signup returned no session')
+      return { ...data, session }
+    },
+    login:   async (email, password) => {
+      const data = await req('POST', '/api/auth/login',   { email, password })
+      const session = sessionFromAuthPayload(data)
+      if (!session) throw new Error('Login returned no session')
+      return { ...data, session }
+    },
     logout:  ()                      => req('POST', '/api/auth/logout'),
-    refresh: (refresh_token)         => req('POST', '/api/auth/refresh', { refresh_token }),
+    refresh: async (refresh_token) => {
+      const data = await req('POST', '/api/auth/refresh', { refresh_token })
+      const session = sessionFromAuthPayload(data)
+      if (!session) throw new Error('refresh returned no session')
+      return { ...data, session }
+    },
     // Google OAuth via Supabase Auth (implicit redirect with tokens in URL hash).
     googleStartUrl: (redirect_to) =>
       `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}`,
@@ -495,4 +508,4 @@ export const api = {
   },
 }
 
-export { getToken, setSession, clearSession, WHOP_CHECKOUT }
+export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, WHOP_CHECKOUT }

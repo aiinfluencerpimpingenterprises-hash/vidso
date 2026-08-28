@@ -278,7 +278,7 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
 })()
 </script>
 <script type="module">
-import { api, setSession, clearSession } from '/api.js'
+import { api, setSession, clearSession, getToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 
 const APP = '/video-generation'
@@ -462,8 +462,8 @@ if (oauthReturned) {
   try { signupIntent = sessionStorage.getItem('vidso_auth_intent') === 'signup' } catch (_) {}
   afterAuth({ needOnboarding: signupIntent })
 } else {
-  clearSession()
   consumeOAuthErrorParams()
+  if (getToken()) persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')
