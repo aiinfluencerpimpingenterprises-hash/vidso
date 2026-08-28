@@ -328,6 +328,32 @@ select option{background:var(--card)}
 .upload-zone .uz-icon{font-size:2rem;margin-bottom:10px}
 .upload-zone p{font-size:.82rem;color:var(--muted)}
 .upload-zone strong{color:var(--a2)}
+.files-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.files-tile{position:relative;border-radius:14px;overflow:hidden;background:#111;border:1px solid var(--border)}
+.files-tile-hit{position:absolute;inset:0;z-index:1;border:0;background:transparent;cursor:pointer}
+.files-tile-hit:focus-visible{outline:2px solid rgba(var(--glow),.8);outline-offset:-2px}
+.files-tile-media{position:relative;aspect-ratio:16/9;background:#0a0a0c;overflow:hidden}
+.files-tile-media.portrait{aspect-ratio:9/16}
+.files-tile-media img,.files-tile-media video{width:100%;height:100%;object-fit:cover;display:block}
+.files-tile-media .files-audio{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);background:radial-gradient(circle at 30% 20%,rgba(var(--glow),.22),transparent 55%),#141418}
+.files-tile-media .files-audio svg{width:42px;height:42px}
+.files-tile-kind{position:absolute;left:8px;top:8px;z-index:1;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff}
+.files-tile-del{position:absolute;right:8px;top:8px;z-index:2;width:28px;height:28px;border:none;border-radius:8px;background:rgba(0,0,0,.62);color:#fff;cursor:pointer;font-size:.9rem;line-height:1;display:none;align-items:center;justify-content:center}
+.files-tile:hover .files-tile-del,.files-tile:focus-within .files-tile-del{display:flex}
+.files-tile-meta{padding:10px 12px 12px}
+.files-tile-name{font-size:.82rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.files-tile-sub{font-size:.68rem;color:var(--muted);margin-top:3px}
+.files-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:240px;text-align:center;padding:32px 16px;border:1px dashed var(--border);border-radius:14px;background:rgba(255,255,255,.02)}
+.files-empty-title{font-size:1.05rem;font-weight:700}
+.files-empty-sub{font-size:.82rem;color:var(--muted);max-width:360px;line-height:1.45}
+.files-lb{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.78);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:14px}
+.files-lb[hidden]{display:none!important}
+.files-lb-stage{max-width:min(1100px,96vw);max-height:min(72vh,820px);width:100%;display:flex;align-items:center;justify-content:center}
+.files-lb-stage video,.files-lb-stage img,.files-lb-stage audio{max-width:100%;max-height:min(72vh,820px);border-radius:12px;background:#000}
+.files-lb-bar{display:flex;align-items:center;gap:12px;max-width:min(1100px,96vw);width:100%}
+.files-lb-name{flex:1;min-width:0;font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.files-lb-x{position:absolute;top:16px;right:16px}
 #file-input{display:none}
 
 /* RESULT */
@@ -5038,17 +5064,31 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </div>
 
     <!-- FILES -->
-    <div class="panel" id="panel-files">
+    <div class="panel content-glow" id="panel-files">
+      <div class="page-header">
+        <h2>My Files</h2>
+        <p>Every video and thumbnail you generate is kept here.</p>
+      </div>
       <div class="tool-card" id="files-card">
-        <h3>My Files</h3>
-        <p>All files you've uploaded or generated.</p>
-        <div style="display:flex;gap:10px;margin-bottom:16px">
-          <div class="upload-zone" style="flex:1;padding:20px" onclick="document.getElementById('files-input').click()">
-            <p><strong>Upload a file</strong>: video, image or audio</p>
+        <div class="files-toolbar">
+          <div class="fv-chip-row" id="files-filters" role="tablist" aria-label="File type">
+            <button type="button" class="fv-chip active" data-filter="all" onclick="setFilesFilter('all')">All</button>
+            <button type="button" class="fv-chip" data-filter="videos" onclick="setFilesFilter('videos')">Videos</button>
+            <button type="button" class="fv-chip" data-filter="thumbnails" onclick="setFilesFilter('thumbnails')">Thumbnails</button>
+            <button type="button" class="fv-chip" data-filter="audio" onclick="setFilesFilter('audio')">Audio</button>
           </div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('files-input').click()">Upload</button>
           <input type="file" id="files-input" accept="video/*,audio/*,image/*" style="display:none" onchange="uploadFile(this)"/>
         </div>
-        <div id="files-list"><div style="color:var(--muted);font-size:.82rem">Loading files...</div></div>
+        <div class="files-grid" id="files-list"><div class="files-empty"><div class="files-empty-title">Loading library…</div></div></div>
+      </div>
+    </div>
+    <div class="files-lb" id="files-lightbox" hidden>
+      <button type="button" class="btn btn-ghost btn-sm files-lb-x" onclick="closeFilesLightbox()">Close</button>
+      <div class="files-lb-stage" id="files-lb-stage"></div>
+      <div class="files-lb-bar">
+        <div id="files-lb-name"></div>
+        <a id="files-lb-dl" class="btn btn-primary btn-sm" download>Download</a>
       </div>
     </div>
 
@@ -5567,6 +5607,14 @@ import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
 import { isHistorySidecarName } from '/lib/image-gen.js'
+import {
+  fileKind,
+  fileKindLabel,
+  formatFileSize,
+  galleryItems,
+  generationFileName,
+  sortFilesNewest,
+} from '/lib/files-gallery.js'
 import {
   youtubeStatus,
   youtubeConnect,
@@ -6916,10 +6964,13 @@ function tourMountDemo(step) {
       if (empty) {
         _tourDemoOn = true
         list.innerHTML = `
-          <div data-tour-demo="1" style="padding:12px;border:1px solid var(--border);border-radius:10px">
-            <div style="font-size:.82rem;font-weight:500">demo-clip.mp4</div>
-            <div style="font-size:.68rem;color:var(--muted);margin-top:2px">Video · ready to download or open in Commentary</div>
-          </div>`
+          <button type="button" class="files-tile" data-tour-demo="1" data-file-id="demo">
+            <div class="files-tile-media"><div class="files-audio" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5z"/></svg></div></div>
+            <div class="files-tile-meta">
+              <div class="files-tile-name">demo-clip.mp4</div>
+              <div class="files-tile-sub">Video · ready to download</div>
+            </div>
+          </button>`
       }
     }
     return
@@ -7989,13 +8040,14 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','files'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
   }
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
+  if (id === 'files') { try { loadFiles() } catch (_) {} }
   if (id === 'videogen' || id === 'ytvideogen') {
     try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
     try { fvInit() } catch (_) {}
@@ -10179,6 +10231,7 @@ window.fvStartExport = async (opts = {}) => {
         dl.href = url
         document.getElementById('fv-export-result').style.display = ''
         document.getElementById('fv-export-actions').style.display = 'none'
+        fvSaveRenderToLibrary(url, fvState.script?.title)
         fvMaybeAutoUploadYoutube()
       } catch (e) {
         clearInterval(fvState.renderPoll)
@@ -10866,35 +10919,105 @@ function renderDashRecent(files) {
   const recent = files.slice(0, 5)
   el.innerHTML = `<div class="dash-recent">${recent.map(f => `
     <div class="dash-recent-row">
-      <div class="dash-recent-name">${f.original_name || 'Untitled'}</div>
+      <div class="dash-recent-name">${fvEsc(f.original_name || 'Untitled')}</div>
       <div class="dash-recent-meta">${f.created_at ? new Date(f.created_at).toLocaleDateString() : ''}</div>
-      <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">Open</a>
+      <a href="${fvEsc(f.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">Open</a>
     </div>`).join('')}</div>`
+}
+
+let filesCache = []
+let filesFilter = 'all'
+
+function filesTileMedia(f) {
+  const kind = fileKind(f)
+  const url = fvEsc(f.url || '')
+  if (kind === 'image') return `<img src="${url}" alt="" loading="lazy">`
+  if (kind === 'video') return `<video src="${url}" muted playsinline preload="metadata"></video>`
+  return `<div class="files-audio" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`
+}
+
+function renderFilesGallery() {
+  const list = document.getElementById('files-list')
+  if (!list) return
+  document.querySelectorAll('#files-filters .fv-chip').forEach((b) => {
+    b.classList.toggle('active', b.dataset.filter === filesFilter)
+  })
+  const items = galleryItems(filesCache, filesFilter)
+  if (!items.length) {
+    const empty = filesCache.length
+      ? 'Nothing in this filter yet.'
+      : 'Generate a Long Form video or a thumbnail and it will land here.'
+    list.innerHTML = `<div class="files-empty">
+      <div class="files-empty-title">${filesCache.length ? 'No matches' : 'Your gallery is empty'}</div>
+      <div class="files-empty-sub">${empty}</div>
+    </div>`
+    return
+  }
+  list.innerHTML = items.map((f) => {
+    const label = fileKindLabel(f)
+    const size = formatFileSize(f.size)
+    const when = f.created_at ? new Date(f.created_at).toLocaleDateString() : ''
+    const sub = [label, size, when].filter(Boolean).join(' · ')
+    const id = fvEsc(f.id || '')
+    return `<div class="files-tile" data-file-id="${id}">
+      <button type="button" class="files-tile-hit" onclick="openFilesLightbox('${id}')" aria-label="${fvEsc(f.original_name || 'Open file')}"></button>
+      <button type="button" class="files-tile-del" aria-label="Delete" onclick="delFile('${id}',this)">✕</button>
+      <div class="files-tile-media">
+        <span class="files-tile-kind">${fvEsc(label)}</span>
+        ${filesTileMedia(f)}
+      </div>
+      <div class="files-tile-meta">
+        <div class="files-tile-name">${fvEsc(f.original_name || 'Untitled')}</div>
+        <div class="files-tile-sub">${fvEsc(sub)}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+window.setFilesFilter = (filter) => {
+  filesFilter = filter || 'all'
+  renderFilesGallery()
+}
+
+window.openFilesLightbox = (id) => {
+  const f = filesCache.find((x) => String(x.id) === String(id))
+  const box = document.getElementById('files-lightbox')
+  const stage = document.getElementById('files-lb-stage')
+  const name = document.getElementById('files-lb-name')
+  const dl = document.getElementById('files-lb-dl')
+  if (!f?.url || !box || !stage) return
+  const kind = fileKind(f)
+  name.textContent = f.original_name || 'Untitled'
+  dl.href = f.url
+  dl.setAttribute('download', f.original_name || 'download')
+  if (kind === 'video') stage.innerHTML = `<video src="${fvEsc(f.url)}" controls autoplay playsinline></video>`
+  else if (kind === 'audio') stage.innerHTML = `<audio src="${fvEsc(f.url)}" controls autoplay></audio>`
+  else stage.innerHTML = `<img src="${fvEsc(f.url)}" alt="">`
+  box.hidden = false
+}
+
+window.closeFilesLightbox = () => {
+  const box = document.getElementById('files-lightbox')
+  const stage = document.getElementById('files-lb-stage')
+  if (stage) {
+    stage.querySelectorAll('video,audio').forEach((el) => { try { el.pause() } catch (_) {} })
+    stage.innerHTML = ''
+  }
+  if (box) box.hidden = true
 }
 
 async function loadFiles() {
   try {
     const raw = await api.upload.list()
     const all = Array.isArray(raw) ? raw : (raw?.files || [])
-    const files = all.filter((f) => !isHistorySidecarName(f.original_name || f.name))
-    renderDashRecent(files)
-    const list  = document.getElementById('files-list')
-    if (!list) return
-    if (!files.length) { list.innerHTML = '<div style="color:var(--muted);font-size:.82rem">No files yet.</div>'; return }
-    list.innerHTML = files.map(f => `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--card);margin-bottom:8px">
-        <div style="font-size:1.2rem">${f.mime_type?.startsWith('video') ? '🎥' : f.mime_type?.startsWith('audio') ? '🔊' : '🖼️'}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.original_name}</div>
-          <div style="font-size:.7rem;color:var(--muted)">${(f.size/1024/1024).toFixed(1)} MB · ${new Date(f.created_at).toLocaleDateString()}</div>
-        </div>
-        <a href="${f.url}" target="_blank" class="btn btn-ghost btn-sm">Open</a>
-        <button class="btn btn-ghost btn-sm" onclick="delFile('${f.id}',this)">✕</button>
-      </div>`).join('')
-  } catch(e) {
+    filesCache = sortFilesNewest(all.filter((f) => !isHistorySidecarName(f.original_name || f.name)))
+    renderDashRecent(filesCache)
+    renderFilesGallery()
+  } catch (e) {
+    filesCache = []
     renderDashRecent([])
     const list = document.getElementById('files-list')
-    if (list) list.innerHTML = `<div style="color:var(--muted);">${e.message}</div>`
+    if (list) list.innerHTML = `<div class="files-empty"><div class="files-empty-title">Could not load files</div><div class="files-empty-sub">${fvEsc(e.message || '')}</div></div>`
   }
 }
 
@@ -10904,14 +11027,44 @@ window.uploadFile = async (input) => {
   try {
     await api.upload.file(fd)
     loadFiles()
-  } catch(e) { alert(e.message) }
+  } catch (e) { alert(e.message) }
   input.value = ''
 }
 
 window.delFile = async (id, btn) => {
-  btn.disabled = true
-  try { await api.upload.del(id); loadFiles() }
-  catch(e) { alert(e.message); btn.disabled = false }
+  if (btn) btn.disabled = true
+  try {
+    await api.upload.del(id)
+    closeFilesLightbox()
+    loadFiles()
+  } catch (e) {
+    alert(e.message)
+    if (btn) btn.disabled = false
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') try { closeFilesLightbox() } catch (_) {}
+})
+document.getElementById('files-lightbox')?.addEventListener('click', (e) => {
+  if (e.target.id === 'files-lightbox') closeFilesLightbox()
+})
+
+async function fvSaveRenderToLibrary(blobUrl, title) {
+  if (!blobUrl) return
+  try {
+    const blob = await fetch(blobUrl).then((r) => {
+      if (!r.ok) throw new Error('Could not read render')
+      return r.blob()
+    })
+    const name = generationFileName('longform', title)
+    const file = new File([blob], name, { type: blob.type || 'video/mp4' })
+    const fd = new FormData()
+    fd.append('file', file)
+    await api.upload.file(fd)
+    loadFiles()
+    fvSetExportStatus('Render complete · saved to My Files', 'ok')
+  } catch (_) {}
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
