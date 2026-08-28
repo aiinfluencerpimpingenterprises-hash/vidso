@@ -25,7 +25,7 @@
     else if (on) {
       localStorage.setItem('vidso_ui_preview', '1')
       ui = true
-    } else if (previewHost && !token && !oauthReturn) {
+    } else if (previewHost && !oauthReturn) {
       localStorage.setItem('vidso_ui_preview', '1')
       ui = true
     } else if (token || oauthReturn) {
@@ -202,7 +202,8 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 .topnav-item{
   height:32px;padding:0 10px;border:none;border-radius:0;cursor:pointer;flex-shrink:0;
   background:transparent;color:var(--text-body);font-family:inherit;font-size:.88rem;font-weight:500;
-  letter-spacing:-.015em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:6px
+  letter-spacing:-.015em;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
+  text-decoration:none
 }
 .topnav-item:hover{color:var(--ink);background:transparent}
 .topnav-item:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:-2px}
@@ -221,6 +222,13 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
   box-shadow:0 18px 48px rgba(0,0,0,.65)
 }
 .topnav-menu.is-open,.nav-search-pop.is-open{display:flex;flex-direction:column;max-height:min(70vh,480px);overflow-y:auto}
+.topnav-drop:hover > .topnav-menu,
+.topnav-drop:focus-within > .topnav-menu{
+  display:flex;flex-direction:column;position:absolute;top:calc(100% + 6px);left:0;z-index:80;
+  max-height:min(70vh,480px);overflow-y:auto
+}
+#nav-avatar-wrap:hover > .topnav-menu,
+#nav-avatar-wrap:focus-within > .topnav-menu{right:0;left:auto}
 #nav-portal{
   position:fixed;top:0;left:0;width:0;height:0;z-index:400;pointer-events:none;overflow:visible
 }
@@ -228,7 +236,8 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 #nav-portal .topnav-menu,#nav-portal .nav-search-pop{width:280px;background:#1A1A1E}
 .topnav-menu [role="menuitem"],.nav-search-item{
   display:flex;align-items:center;flex-shrink:0;width:100%;min-height:36px;text-align:left;border:none;background:transparent;
-  color:var(--ink);font:inherit;font-size:.82rem;line-height:1.2;padding:8px 10px;border-radius:8px;cursor:pointer
+  color:var(--ink);font:inherit;font-size:.82rem;line-height:1.2;padding:8px 10px;border-radius:8px;cursor:pointer;
+  text-decoration:none;box-sizing:border-box
 }
 .topnav-menu [role="menuitem"]:hover,.nav-search-item:hover,
 .topnav-menu [role="menuitem"]:focus,.nav-search-item:focus{
@@ -2188,7 +2197,7 @@ body.studio-open #panel-facelessstudio{
 body.studio-open .main,
 body.studio-open .content,
 .content:has(#panel-facelessstudio.active){
-  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden
+  display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:auto
 }
 body.studio-open .content,
 .content:has(#panel-facelessstudio.active){padding:0!important}
@@ -2225,11 +2234,11 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .fs-rail-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
 .fs-rail-item{display:block;width:100%;min-height:32px;padding:6px 8px;border:none;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.78rem;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fs-rail-empty,.fs-muted{color:rgba(255,255,255,.45);font-size:.78rem;padding:8px}
-.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:0;display:flex;flex-direction:column}
-.fs-main:has(.has-composer){padding-bottom:12px;overflow:hidden}
-.fs-home.has-composer{position:relative;flex:1;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:calc(100vh - 80px);display:flex;flex-direction:column}
+.fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
+.fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:auto;padding-bottom:var(--fs-composer-h,168px)}
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:40vh;overflow:auto;padding-bottom:var(--fs-composer-h,168px)}
 .fs-composer-dock{
   position:absolute;left:0;right:0;bottom:8px;z-index:8;padding:12px 0 0;pointer-events:none;
   background:linear-gradient(180deg,rgba(16,16,18,0),rgba(16,16,18,.88) 36%,rgba(16,16,18,.96) 70%);
@@ -3461,26 +3470,26 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
-    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
-    <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-    <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+    <a class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" href="/faceless-studio">Faceless Studio <span class="nav-new">New</span></a>
+    <a class="topnav-item" id="nav-imagegen" data-panel="imagegen" href="/image-generation">Thumbnail Generator</a>
+    <a class="topnav-item" id="nav-videogen" data-panel="videogen" href="/video-generation">Long Form Generator</a>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
         <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Short Form Tools">
-        <button type="button" role="menuitem" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-        <button type="button" role="menuitem" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-        <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-        <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-        <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-        <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-        <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-        <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+        <a role="menuitem" id="nav-clipper" data-panel="clipper" href="/clipping">Clipping</a>
+        <a role="menuitem" id="nav-ranking" data-panel="ranking" href="/ranking">Ranking</a>
+        <a role="menuitem" id="nav-captions" data-panel="captions" href="/captions">AI Captions</a>
+        <a role="menuitem" id="nav-voiceover" data-panel="voiceover" href="/voiceover">AI Voiceover</a>
+        <a role="menuitem" id="nav-reframe" data-panel="reframe" href="/reframe">AI Reframe</a>
+        <a role="menuitem" id="nav-editor" data-panel="editor" href="/editor">Video Editor</a>
+        <a role="menuitem" id="nav-downloader" data-panel="downloader" href="/downloader">Video Downloader</a>
+        <a role="menuitem" id="nav-commentary" data-panel="commentary" href="/commentary">Video Commentary</a>
       </div>
     </div>
-    <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <a class="topnav-item" id="nav-files" data-panel="files" href="/files">My Files</a>
     <a class="topnav-item" href="/mcp">MCP</a>
     <a class="topnav-item" href="/youtube">YouTube</a>
   </nav>
@@ -3528,21 +3537,21 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     </button>
   </div>
   <span class="nav-drawer-label">Generate</span>
-  <button type="button" class="topnav-item" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio <span class="nav-new">New</span></button>
-  <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-  <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+  <a class="topnav-item" data-panel="facelessstudio" href="/faceless-studio">Faceless Studio <span class="nav-new">New</span></a>
+  <a class="topnav-item" data-panel="imagegen" href="/image-generation">Thumbnail Generator</a>
+  <a class="topnav-item" data-panel="videogen" href="/video-generation">Long Form Generator</a>
   <span class="nav-drawer-label">Short Form Tools</span>
-  <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-  <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-  <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-  <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-  <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-  <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-  <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-  <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+  <a class="topnav-item" data-panel="clipper" href="/clipping">Clipping</a>
+  <a class="topnav-item" data-panel="ranking" href="/ranking">Ranking</a>
+  <a class="topnav-item" data-panel="captions" href="/captions">AI Captions</a>
+  <a class="topnav-item" data-panel="voiceover" href="/voiceover">AI Voiceover</a>
+  <a class="topnav-item" data-panel="reframe" href="/reframe">AI Reframe</a>
+  <a class="topnav-item" data-panel="editor" href="/editor">Video Editor</a>
+  <a class="topnav-item" data-panel="downloader" href="/downloader">Video Downloader</a>
+  <a class="topnav-item" data-panel="commentary" href="/commentary">Video Commentary</a>
   <span class="nav-drawer-label">Workspace</span>
-  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
-  <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <a class="topnav-item" data-panel="tools" href="/tools">All tools</a>
+  <a class="topnav-item" data-panel="files" href="/files">My Files</a>
   <a class="topnav-item" href="/mcp">MCP</a>
   <a class="topnav-item" href="/youtube">YouTube</a>
 </aside>
@@ -5249,7 +5258,14 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <button type="button" class="btn btn-primary btn-sm" id="fs-rail-new" style="margin:0 8px 8px">New project</button>
           <div class="fs-rail-projects fs-rail-list" id="fs-rail-list"></div>
         </aside>
-        <div class="fs-main" id="fs-main"></div>
+        <div class="fs-main" id="fs-main">
+          <div class="fs-home has-composer">
+            <div class="fs-hero">
+              <h1 class="fs-hero-title"><span class="lead">Bring your stories</span><span class="accent">to life</span></h1>
+              <p class="fs-hero-sub">Topic to script, voice, B-roll, thumbnail, and export in one project.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -5663,26 +5679,114 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 </main>
 <script>
 (function () {
-  var path = (location.pathname || '').replace(/\/+$/, '') || '/'
-  var map = {
+  var PATHS = {
+    clipper: '/clipping', ranking: '/ranking', imagegen: '/image-generation',
+    videogen: '/video-generation', facelessstudio: '/faceless-studio', tools: '/tools',
+    captions: '/captions', voiceover: '/voiceover', editor: '/editor', reframe: '/reframe',
+    downloader: '/downloader', files: '/files', commentary: '/commentary',
+    connections: '/connections'
+  }
+  var MAP = {
     '/clipping': 'clipper', '/ranking': 'ranking', '/image-generation': 'imagegen',
     '/video-generation': 'videogen', '/faceless-studio': 'facelessstudio', '/tools': 'tools',
     '/captions': 'captions', '/voiceover': 'voiceover', '/editor': 'editor', '/reframe': 'reframe',
     '/downloader': 'downloader', '/files': 'files', '/commentary': 'commentary',
     '/connections': 'connections', '/preview': 'videogen', '/ui': 'videogen'
   }
-  var id = map[path]
-  if (!id && path.indexOf('/faceless-studio') === 0) id = 'facelessstudio'
-  if (!id) id = 'videogen'
-  var panel = document.getElementById('panel-' + id)
-  if (!panel) return
-  var nodes = document.querySelectorAll('.panel')
-  for (var i = 0; i < nodes.length; i++) nodes[i].classList.remove('active')
-  panel.classList.add('active')
-  document.body.classList.toggle('studio-open', id === 'facelessstudio')
-  document.body.classList.toggle('editor-open', id === 'editor')
+  function norm(p) {
+    return ('/' + String(p || '').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/') || '/'
+  }
+  function panelFromPath() {
+    var path = norm(location.pathname)
+    if (path.indexOf('/faceless-studio') === 0) return 'facelessstudio'
+    return MAP[path] || 'videogen'
+  }
+  function markNav(id) {
+    var els = document.querySelectorAll('[data-panel]')
+    for (var i = 0; i < els.length; i++) els[i].classList.toggle('active', els[i].getAttribute('data-panel') === id)
+    var toolsOn = id === 'tools' || id === 'clipper' || id === 'ranking' || id === 'captions' || id === 'voiceover' || id === 'reframe' || id === 'editor' || id === 'downloader' || id === 'commentary'
+    var toolsBtn = document.getElementById('nav-tools-btn')
+    if (toolsBtn) toolsBtn.classList.toggle('active', toolsOn)
+  }
+  function showPanel(id, opts) {
+    opts = opts || {}
+    id = id || 'videogen'
+    var panel = document.getElementById('panel-' + id)
+    if (!panel) {
+      id = 'videogen'
+      panel = document.getElementById('panel-videogen')
+    }
+    if (!panel) return
+    var nodes = document.querySelectorAll('.panel')
+    for (var i = 0; i < nodes.length; i++) nodes[i].classList.remove('active')
+    panel.classList.add('active')
+    document.body.classList.toggle('studio-open', id === 'facelessstudio')
+    document.body.classList.toggle('editor-open', id === 'editor')
+    markNav(id)
+    try { sessionStorage.setItem('vidso_last_panel', id) } catch (e) {}
+    if (id === 'facelessstudio') {
+      if (window.fsStudioShow) try { window.fsStudioShow() } catch (e2) {}
+      else if (window.__mountStudioHome) try { window.__mountStudioHome() } catch (e3) {}
+    }
+    if (id === 'videogen' && window.fvInit) try { window.fvInit() } catch (e4) {}
+    if (id === 'imagegen' && window.imgWorkspaceShow) try { window.imgWorkspaceShow() } catch (e5) {}
+    if (!opts.silent) {
+      var next = PATHS[id] || '/video-generation'
+      if (id === 'facelessstudio') {
+        var cur = norm(location.pathname)
+        next = (cur === '/faceless-studio' || cur.indexOf('/faceless-studio/') === 0) ? cur : '/faceless-studio'
+      }
+      if (norm(location.pathname) !== norm(next)) {
+        try { history.pushState({ panel: id }, '', next) } catch (e6) {}
+      }
+    }
+    try { window.closeMobileNav && window.closeMobileNav() } catch (e7) {}
+    try { window.closeNavMenusPublic && window.closeNavMenusPublic() } catch (e8) {}
+  }
+  window.switchPanel = function (id, btn, opts) {
+    if (typeof window.__vidsoSwitchPanel === 'function') {
+      return window.__vidsoSwitchPanel(id, btn, opts)
+    }
+    showPanel(id, opts)
+  }
+  window.toggleMobileNav = window.toggleMobileNav || function () {
+    var open = !document.body.classList.contains('nav-open')
+    document.body.classList.toggle('nav-open', open)
+    var ham = document.getElementById('nav-hamburger')
+    if (ham) ham.setAttribute('aria-expanded', open ? 'true' : 'false')
+    var back = document.getElementById('nav-backdrop')
+    if (back) back.hidden = !open
+  }
+  window.closeMobileNav = window.closeMobileNav || function () {
+    document.body.classList.remove('nav-open')
+    var ham = document.getElementById('nav-hamburger')
+    if (ham) ham.setAttribute('aria-expanded', 'false')
+    var back = document.getElementById('nav-backdrop')
+    if (back) back.hidden = true
+  }
+  showPanel(panelFromPath(), { silent: true })
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[data-panel]')
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
+    var id = a.getAttribute('data-panel')
+    if (!id || !document.getElementById('panel-' + id)) return
+    e.preventDefault()
+    window.switchPanel(id, a)
+  })
+  var rail = document.getElementById('fs-rail')
+  if (rail) {
+    rail.addEventListener('click', function (e) {
+      var neu = e.target.closest && e.target.closest('#fs-rail-new')
+      var viewBtn = e.target.closest && e.target.closest('[data-fs-view]')
+      var view = neu ? 'home' : (viewBtn && viewBtn.getAttribute('data-fs-view'))
+      if (!view) return
+      if (window.fsStudioGo) return
+      if (window.__studioHomeGo) window.__studioHomeGo(view)
+    })
+  }
 })()
 </script>
+<script type="module" src="/lib/studio-home-boot.js"></script>
 
 <script type="module">
 import { api, setSession, clearSession, getToken } from '/api.js'
@@ -5780,7 +5884,7 @@ function uiPreviewMode() {
 }
 
 function paywallDevBypass() {
-  return uiPreviewMode()
+  return uiPreviewMode() || uiPreviewForced()
 }
 
 function enterUiPreview() {
@@ -5798,7 +5902,7 @@ function enterUiPreview() {
   try { closeOnboarding() } catch (_) {}
   try { closeUiTour() } catch (_) {}
   try { populateUser() } catch (_) {}
-  restorePanelFromHash()
+  try { restorePanelFromHash() } catch (_) {}
 }
 
 function persistPlanActive(active) {
@@ -5951,7 +6055,7 @@ async function checkAuth() {
 }
 
 function showModal() {
-  if (uiPreviewMode()) { enterUiPreview(); return }
+  if (uiPreviewMode() || uiPreviewForced()) { enterUiPreview(); return }
   persistPlanActive(false)
   location.replace('/login')
 }
@@ -7659,6 +7763,7 @@ window.openTourMenu = () => {
 }
 
 function maybeStartPageTour(panel) {
+  if (/\.vercel\.app$/.test(location.hostname || '') && !tourQueryId()) return
   if (_tourActive || tourMenuOpen() || tourPlayAllActive()) return
   if (tourQueryId()) return
   const tourId = tourIdForPanel(panel)
@@ -7876,10 +7981,13 @@ window.startCheckout = (tier) => {
   }, 600)
 }
 
-window.__paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
-  variant: 'paywall',
-  onCta: (tier) => window.startCheckout(tier),
-})
+window.__paywallPricing = null
+try {
+  window.__paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
+    variant: 'paywall',
+    onCta: (tier) => window.startCheckout(tier),
+  })
+} catch (e) { try { console.warn('[paywall-pricing]', e) } catch (_) {} }
 
 window.refreshPlanStatus = () => watchForPurchase({ timeoutMs: 45000 })
 
@@ -8130,6 +8238,7 @@ window.switchPanel = (id, btn, opts = {}) => {
     setTimeout(() => maybeStartPageTour(id), 220)
   }
 }
+window.__vidsoSwitchPanel = window.switchPanel
 function restorePanelFromPath(opts = {}) {
   if (isAuthPath()) {
     showModal()
@@ -8161,7 +8270,7 @@ function restorePanelFromHash() {
 }
 window.addEventListener('popstate', restorePanelFromPath)
 window.addEventListener('hashchange', restorePanelFromHash)
-restorePanelFromPath({ skipTour: true })
+try { restorePanelFromPath({ skipTour: true }) } catch (e) { try { console.warn('[restore-panel]', e) } catch (_) {} }
 
 // ── USAGE ────────────────────────────────────────────────────────────────────
 async function loadUsage() {
@@ -10733,10 +10842,11 @@ function bindGettingStarted() {
   })
 }
 
-initBanner()
-initTopNav()
-initToolsGallery()
+try { initBanner() } catch (e) { console.warn('[banner]', e) }
+try { initTopNav() } catch (e) { console.warn('[topnav]', e) }
+try { initToolsGallery() } catch (e) { console.warn('[tools]', e) }
 
+try {
 initImageWorkspace({
   api,
   getUser: () => currentUser,
@@ -10745,6 +10855,7 @@ initImageWorkspace({
   loadFiles,
   resolveAccess,
 })
+} catch (e) { console.warn('[image-workspace]', e) }
 try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}
 try {
 initFacelessStudio({
@@ -10754,7 +10865,7 @@ initFacelessStudio({
   loadVoices,
   getDurationCap: () => fvDurationCapSeconds(),
   getVoicesState: () => voicesLoadState,
-  parkWizard: (slot) => window.fvParkWizard(slot),
+  parkWizard: (slot) => window.fvParkWizard?.(slot),
   hydratePipeline: (project) => window.fvHydrateFromStudio(project),
   snapshotPipeline: () => window.fvSnapshotForStudio(),
   clearPipeline: () => {
@@ -15738,6 +15849,7 @@ if (typeof _origSwitchPanel === 'function') {
     _origSwitchPanel(id, btn, opts)
     if (id === 'commentary') cmLoadHelpers()
   }
+  window.__vidsoSwitchPanel = window.switchPanel
 }
 
 // Any paid-feature 402 should open the hard paywall so users can't poke around unpaid.
