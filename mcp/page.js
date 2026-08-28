@@ -24,6 +24,7 @@ import {
   workflowCardHtml,
 } from '/lib/connect-pages.js'
 import { CLAUDE_ICON_URL } from '/lib/brand-assets.js'
+import { mcpIssueToken, mcpConnectorUrl } from '/lib/youtube-client.js'
 
 document.getElementById('hero-fan').innerHTML = pairLockupHtml({
   partnerSrc: CLAUDE_ICON_URL,
@@ -38,6 +39,8 @@ initPromo(MCP_PROMO)
 const origin = location.origin
 const defaultUrl = origin + '/api/mcp'
 
+document.querySelectorAll('[data-claude-tab]').forEach((img) => { img.src = CLAUDE_ICON_URL })
+
 function stepHtml(step, url) {
   let extra = ''
   if (step.action === 'copy-url') {
@@ -45,7 +48,8 @@ function stepHtml(step, url) {
       <span class="sr-only">Connector URL</span>
       <input id="mcp-url" type="text" readonly value="${url}">
       <button type="button" class="btn btn-ghost" data-copy="#mcp-url">Copy</button>
-    </label>`
+    </label>
+    <p class="mcp-url-hint" id="mcp-url-hint">Sign in to fill your personal connector URL.</p>`
   } else if (step.href) {
     const ext = /^https?:/i.test(step.href)
     extra = `<a class="btn btn-primary" href="${step.href}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}>${step.label || 'Open'}</a>`
@@ -59,6 +63,22 @@ function stepHtml(step, url) {
 }
 
 document.getElementById('connect-steps').innerHTML = MCP_CONNECT_STEPS.map((s) => stepHtml(s, defaultUrl)).join('')
+initCopyButtons()
+
+async function fillPersonalUrl() {
+  const input = document.getElementById('mcp-url')
+  const hint = document.getElementById('mcp-url-hint')
+  if (!input) return
+  try {
+    const data = await mcpIssueToken()
+    const url = data.connectorUrl || mcpConnectorUrl(data.mcpUrl || defaultUrl, data.token)
+    if (url) input.value = url
+    if (hint) hint.textContent = 'This URL is private to your Vidso account.'
+  } catch (_) {
+    if (hint) hint.innerHTML = 'Sign in on <a href="/connections">Connections</a> to get a personal connector URL. The public endpoint is filled for now.'
+  }
+}
+fillPersonalUrl()
 
 const demoTabs = document.getElementById('demo-tabs')
 const demoRoot = document.getElementById('demo-root')

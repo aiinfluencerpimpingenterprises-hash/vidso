@@ -2205,7 +2205,12 @@ body.studio-open #panel-facelessstudio,
 .content:has(#panel-facelessstudio.active) #panel-facelessstudio{
   min-height:calc(100vh - var(--chrome-nav-h) - var(--chrome-banner-h, 0px))
 }
-.fs-shell{display:flex;width:100%;height:100%;min-height:calc(100vh - 60px);flex:1;background:var(--bg)}
+.fs-shell{display:flex;width:100%;height:100%;min-height:calc(100vh - 60px);flex:1;background:var(--bg);position:relative}
+.fs-stage{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.fs-stage-tools{
+  position:absolute;top:14px;right:18px;z-index:12;display:flex;gap:8px;align-items:center;pointer-events:none
+}
+.fs-stage-tools > *{pointer-events:auto}
 .fs-rail{
   width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
   border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px
@@ -2216,7 +2221,10 @@ body.fs-rail-collapsed .fs-rail-label,
 body.fs-rail-collapsed .fs-rail-search,
 body.fs-rail-collapsed .fs-rail-projects,
 body.fs-rail-collapsed #fs-rail-new,
-body.fs-rail-collapsed .fs-rail-item{display:none}
+body.fs-rail-collapsed .fs-rail-newchat,
+body.fs-rail-collapsed .fs-rail-foot,
+body.fs-rail-collapsed .fs-rail-item,
+body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-rail-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 12px}
 .fs-rail-brand{font-family:var(--font-heading);font-weight:700;letter-spacing:-.03em;text-transform:uppercase;font-size:.82rem}
 .fs-rail-toggle{width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
@@ -2234,6 +2242,141 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .fs-rail-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
 .fs-rail-item{display:block;width:100%;min-height:32px;padding:6px 8px;border:none;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:.78rem;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fs-rail-empty,.fs-muted{color:rgba(255,255,255,.45);font-size:.78rem;padding:8px}
+.fs-rail-newchat{
+  display:flex;align-items:center;justify-content:center;min-height:38px;margin:0 4px 10px;padding:0 12px;
+  border:none;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink);
+  font:inherit;font-size:.84rem;font-weight:650;cursor:pointer
+}
+.fs-rail-newchat:hover{background:rgba(255,255,255,.12)}
+.fs-rail-foot{margin-top:auto;padding:10px 4px 0}
+.fs-rail-price{
+  display:flex;align-items:center;justify-content:center;min-height:34px;border-radius:999px;
+  background:var(--a1);color:#fff;font-size:.78rem;font-weight:700;text-decoration:none
+}
+.fs-rail-chats-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
+  color:rgba(255,255,255,.4);padding:28px 10px;font-size:.78rem
+}
+.fs-rail-chats-empty strong{color:rgba(255,255,255,.7);font-weight:650}
+.fs-rail-chats-empty svg{width:42px;height:42px;opacity:.45}
+.fs-temp-btn{
+  height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--border);
+  background:rgba(16,16,18,.88);color:var(--ink);font:inherit;font-size:.78rem;cursor:pointer
+}
+.fs-temp-btn.is-on,.fs-temp-btn[aria-pressed="true"]{border-color:#d8ff3c;color:#d8ff3c}
+#fs-pop{position:relative;z-index:70}
+.fs-lime-btn,.btn.fs-lime-btn{
+  background:#d8ff3c;color:#111;border:none;font-weight:750;border-radius:999px
+}
+.fs-lime-btn:hover,.btn.fs-lime-btn:hover{filter:brightness(1.05);color:#111}
+.fs-hero-center{align-items:center;text-align:center;margin:48px 0 22px}
+.fs-home-tag{text-align:center;margin:18px 0 14px;color:rgba(255,255,255,.45);font-size:.72rem;letter-spacing:.08em;font-weight:700}
+.fs-composer-sc{max-width:760px;margin:0 auto 8px;padding:16px 16px 12px;border-radius:22px}
+.fs-composer-sc .fs-topic{width:100%;min-height:64px;display:block}
+.fs-composer-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.fs-composer-left,.fs-composer-right{display:flex;align-items:center;gap:8px}
+.fs-composer-sc .fs-ref-add{
+  width:34px;height:34px;border-radius:999px;border:1px solid var(--border);display:grid;place-items:center;font-size:1rem
+}
+.fs-auto-btn,.fs-ask-btn{
+  height:34px;padding:0 10px;border:none;border-radius:999px;background:transparent;color:rgba(255,255,255,.8);
+  font:inherit;font-size:.8rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px
+}
+.fs-send{
+  width:38px;height:38px;border:none;border-radius:999px;background:#d8ff3c;color:#111;cursor:pointer;
+  display:grid;place-items:center;flex-shrink:0
+}
+.fs-send:disabled{opacity:.45;cursor:not-allowed}
+.fs-tool-row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;padding-top:4px}
+.fs-tool{
+  display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:rgba(255,255,255,.62);
+  font:inherit;font-size:.78rem;cursor:pointer;padding:4px 0;text-decoration:none
+}
+.fs-tool-mcp{margin-left:auto}
+.fs-conn-logos{display:inline-flex;gap:3px;align-items:center}
+.fs-conn-logos img{width:14px;height:14px;border-radius:3px;object-fit:contain;background:#111}
+.fs-temp-note{margin:10px 0 0;text-align:center;color:rgba(255,255,255,.4);font-size:.75rem}
+.fs-auto-pop{margin-top:8px}
+.fs-menu{
+  min-width:240px;max-width:320px;padding:8px;border-radius:16px;border:1px solid var(--border);
+  background:#161618;box-shadow:0 16px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:2px
+}
+.fs-menu button,.fs-menu a{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:transparent;
+  color:var(--ink);font:inherit;font-size:.84rem;padding:8px 10px;border-radius:10px;cursor:pointer;text-decoration:none
+}
+.fs-menu button:hover,.fs-menu a:hover{background:rgba(255,255,255,.06)}
+.fs-menu small{display:block;color:rgba(255,255,255,.45);font-size:.72rem;font-weight:400}
+.fs-menu-label{margin:4px 10px;font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em}
+.fs-menu-search{display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:4px}
+.fs-menu-search input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.84rem}
+.fs-menu-foot{margin-top:4px;border-top:1px solid var(--border);border-radius:0 0 10px 10px}
+.fs-modal-back{
+  position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px
+}
+.fs-modal,.fs-search-card{
+  width:min(520px,100%);background:#161618;border:1px solid var(--border);border-radius:20px;padding:20px
+}
+.fs-search-card{width:min(640px,100%);min-height:320px}
+.fs-search-field,.fs-board-search{
+  display:flex;align-items:center;gap:8px;border:1px solid #d8ff3c;border-radius:12px;padding:8px 10px;margin-bottom:12px
+}
+.fs-search-field input,.fs-board-search input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit}
+.fs-search-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 12px;color:rgba(255,255,255,.45);text-align:center}
+.fs-search-empty svg{width:48px;height:48px;opacity:.4}
+.fs-search-hit{
+  display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;border:none;background:transparent;
+  color:inherit;padding:10px;border-radius:10px;cursor:pointer
+}
+.fs-search-hit:hover{background:rgba(255,255,255,.05)}
+.fs-search-hit span{font-size:.78rem;color:rgba(255,255,255,.45)}
+.fs-modal-quote{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.75);font-size:.88rem}
+.fs-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.fs-board{padding:8px 8px 40px}
+.fs-board-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.fs-board-head h1{margin:0;font-size:1.6rem;font-weight:750}
+.fs-board-tabs{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);margin-bottom:28px;flex-wrap:wrap}
+.fs-board-tab{
+  height:38px;padding:0 10px;border:none;background:transparent;color:rgba(255,255,255,.55);
+  font:inherit;font-size:.84rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px
+}
+.fs-board-tab.is-on{color:#fff;box-shadow:inset 0 -2px 0 #fff}
+.fs-board-search{margin:0 0 8px auto;border-color:var(--border);min-width:180px}
+.fs-proj-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:64px 16px;color:rgba(255,255,255,.5)}
+.fs-proj-empty h2{margin:8px 0 0;color:#fff;letter-spacing:-.03em;text-transform:uppercase;font-size:1.2rem}
+.fs-proj-empty svg{opacity:.35}
+.fs-board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.fs-board-card{border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.fs-board-open{border:none;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.fs-board-open span{display:block;margin-top:4px;font-size:.75rem;color:rgba(255,255,255,.45)}
+.fs-board-share{align-self:flex-start;border:none;background:transparent;color:#d8ff3c;font:inherit;font-size:.75rem;cursor:pointer}
+.fs-conn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px}
+.fs-conn-card{
+  display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--border);border-radius:16px;
+  color:inherit;text-decoration:none;background:rgba(255,255,255,.03)
+}
+.fs-conn-card img{width:36px;height:36px;object-fit:contain}
+.fs-memory{position:relative;min-height:70vh;display:flex;flex-direction:column}
+.fs-mem-graph{position:relative;flex:1;min-height:420px;overflow:hidden}
+.fs-mem-graph svg{position:absolute;inset:0;width:100%;height:100%}
+.fs-mem-core{
+  position:absolute;left:50%;top:50%;width:86px;height:86px;margin:-43px 0 0 -43px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#fff 0%,#d8ff3c 38%,#7a8a12 100%);
+  box-shadow:0 0 40px rgba(216,255,60,.45)
+}
+.fs-mem-copy{position:absolute;left:50%;top:18%;transform:translateX(-50%);text-align:center;z-index:2}
+.fs-mem-copy strong{display:block;font-size:1.15rem}
+.fs-mem-copy span{color:rgba(255,255,255,.5);font-size:.8rem}
+.fs-mem-pill{
+  position:absolute;transform:translate(-50%,-50%);max-width:140px;padding:6px 10px;border-radius:999px;
+  background:rgba(22,22,24,.9);border:1px solid var(--border);font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1
+}
+.fs-mem-pill.is-empty{width:72px;height:28px;padding:0;background:rgba(255,255,255,.04)}
+.fs-mem-bar{
+  position:sticky;bottom:16px;z-index:3;display:flex;gap:8px;align-items:center;max-width:640px;margin:0 auto;
+  padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(18,18,20,.94)
+}
+.fs-mem-bar input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.9rem}
 .fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:calc(100vh - 80px);display:flex;flex-direction:column}
 .fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
 .fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
@@ -2442,6 +2585,15 @@ body.fs-show-open{overflow:hidden}
   .fs-home.has-composer .fs-refs[hidden]{display:none!important}
   .fs-home.has-composer .fs-refs:not([hidden]){order:5;flex:1 0 100%;margin-top:0}
   .fs-gen,.fs-ref-add{width:auto}
+  .fs-home.has-composer .fs-composer-sc{
+    display:block;padding:12px;border-radius:18px
+  }
+  .fs-home.has-composer .fs-composer-sc .fs-topic{
+    order:unset;flex:unset;min-height:56px;max-height:none;width:100%
+  }
+  .fs-home.has-composer .fs-composer-sc .fs-ref-add{order:unset}
+  .fs-tool-mcp{margin-left:0}
+  .fs-stage-tools{top:8px;right:8px}
 }
 
 /* Upscale V2 */
@@ -5330,18 +5482,32 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <span class="fs-rail-brand">Faceless Studio</span>
             <button type="button" class="fs-rail-toggle" id="fs-rail-toggle" aria-expanded="true" aria-controls="fs-rail" aria-label="Collapse studio menu">«</button>
           </div>
+          <button type="button" class="fs-rail-newchat" id="fs-rail-new">+ New chat</button>
           <nav class="fs-rail-nav">
-            <button type="button" class="fs-rail-link is-on" data-fs-view="home">Home</button>
-            <button type="button" class="fs-rail-link" data-fs-view="projects">My projects</button>
-            <button type="button" class="fs-rail-link" data-fs-view="generations">My generations</button>
-            <button type="button" class="fs-rail-link" data-fs-view="favorites">Favorites</button>
+            <button type="button" class="fs-rail-link" data-fs-view="search"><span class="fs-rail-ico" aria-hidden="true">⌕</span> Search</button>
+            <button type="button" class="fs-rail-link" data-fs-view="projects"><span class="fs-rail-ico" aria-hidden="true">▣</span> Projects</button>
           </nav>
-          <span class="fs-rail-label">Projects</span>
-          <input type="search" class="fs-rail-search" id="fs-rail-search" placeholder="Search" aria-label="Search projects">
-          <button type="button" class="btn btn-primary btn-sm" id="fs-rail-new" style="margin:0 8px 8px">New project</button>
-          <div class="fs-rail-projects fs-rail-list" id="fs-rail-list"></div>
+          <span class="fs-rail-label">Create</span>
+          <nav class="fs-rail-nav">
+            <button type="button" class="fs-rail-link is-on" data-fs-view="home"><span class="fs-rail-ico" aria-hidden="true">▣</span> Faceless Studio</button>
+            <button type="button" class="fs-rail-link" data-fs-view="generations"><span class="fs-rail-ico" aria-hidden="true">▶</span> My generations</button>
+          </nav>
+          <span class="fs-rail-label">Customize</span>
+          <nav class="fs-rail-nav">
+            <button type="button" class="fs-rail-link" data-fs-view="connectors"><span class="fs-rail-ico" aria-hidden="true">⌁</span> Connectors</button>
+            <button type="button" class="fs-rail-link" data-fs-view="memory"><span class="fs-rail-ico" aria-hidden="true">◎</span> Memory</button>
+          </nav>
+          <span class="fs-rail-label">Chats</span>
+          <div class="fs-rail-projects fs-rail-list" id="fs-rail-chats"></div>
+          <div class="fs-rail-foot">
+            <a class="fs-rail-price" href="/home#pricing">Pricing</a>
+          </div>
         </aside>
-        <div class="fs-main" id="fs-main">
+        <div class="fs-stage">
+          <div class="fs-stage-tools">
+            <button type="button" class="fs-temp-btn" id="fs-temp-chat" aria-pressed="false" title="Start a temporary chat">Temporary chat</button>
+          </div>
+          <div class="fs-main" id="fs-main">
           <div class="fs-home has-composer">
             <div class="fs-hero">
               <h1 class="fs-hero-title"><span class="accent">Faceless</span> Studio</h1>
@@ -5349,7 +5515,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             </div>
           </div>
         </div>
+        </div>
       </div>
+      <div id="fs-pop" hidden></div>
     </div>
 
     <div class="panel content-glow" id="panel-videogen">

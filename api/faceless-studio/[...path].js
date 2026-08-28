@@ -151,6 +151,7 @@ export default async function handler(req, res) {
         q: q.get('q') || '',
         sort: q.get('sort') || 'updated',
         favorites: q.get('favorites') === '1',
+        visibility: q.get('visibility') || '',
         offset,
         limit,
       })

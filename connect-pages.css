@@ -129,6 +129,21 @@ nav{
   color:var(--txt);padding:10px 12px;font-size:13px;font-family:ui-monospace,Menlo,monospace
 }
 
+.mcp-setup{
+  background:#121214;border:1px solid var(--line);border-radius:28px;padding:18px 18px 22px
+}
+.mcp-setup-tabs{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.mcp-setup-tabs button{
+  display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:999px;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--txt);font:inherit;font-size:.85rem
+}
+.mcp-setup-tabs button.is-on{background:#fff;color:#111;border-color:#fff}
+.mcp-setup-tabs img{width:18px;height:18px;object-fit:contain}
+.mcp-setup-mode{margin-left:auto;font-size:.78rem;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.mcp-setup-steps{margin-top:0}
+.mcp-setup-note{margin:16px 4px 0;font-size:.8rem;color:var(--muted)}
+.mcp-url-hint{font-size:.75rem;color:var(--faint);margin:8px 0 0}
+
 .sec{padding:72px 0}
 .s-head{text-align:center;margin-bottom:36px}
 .s-head h2{
