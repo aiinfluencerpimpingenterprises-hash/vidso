@@ -2781,12 +2781,24 @@ body.tour-active #fv-export-box.show{min-height:160px}
 .paywall-plan .feat-val{text-align:right;font-weight:650;color:rgba(255,255,255,.88)}
 .paywall-plan .btn{width:100%;margin-top:8px;justify-content:center}
 .paywall-plan.pop .btn{background:var(--grad);color:#fff;border-color:transparent}
+.paywall-paid{
+  display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;max-width:420px;
+  margin:0 auto;padding:14px 16px;border-radius:14px;border:1px solid rgba(var(--glow),.35);
+  background:rgba(var(--glow),.08)
+}
+.paywall-paid-title{margin:0;font-size:.95rem;font-weight:750;letter-spacing:-.02em;text-align:center;color:var(--ink)}
+.paywall-paid-sub{margin:0;font-size:.78rem;line-height:1.4;color:rgba(255,255,255,.58);text-align:center}
+.paywall-paid .btn{width:100%;min-height:46px;font-size:.95rem}
+.paywall-paid .btn-secondary{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff
+}
+.paywall-paid .btn-secondary:hover{background:rgba(255,255,255,.12)}
 .paywall-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding-top:4px}
 .paywall-note{font-size:.72rem;color:rgba(255,255,255,.4);text-align:center;width:100%}
 .paywall-note a{color:var(--a1);font-weight:500;text-decoration:none}
 .paywall-note a:hover{text-decoration:underline}
-.paywall-claim{display:flex;flex-direction:column;gap:6px;width:100%;max-width:360px;margin:4px auto 0}
-.paywall-claim label{font-size:.72rem;color:rgba(255,255,255,.45);text-align:center}
+.paywall-claim{display:flex;flex-direction:column;gap:6px;width:100%;margin:2px 0 0}
+.paywall-claim label{font-size:.72rem;color:rgba(255,255,255,.55);text-align:center}
 .paywall-claim input{
   width:100%;min-height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.12);
   background:rgba(255,255,255,.04);color:var(--ink);padding:0 12px;font:inherit
@@ -3091,21 +3103,24 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
     <p class="paywall-kicker">Unlock Vidso</p>
     <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
     <p class="paywall-sub">Pick a plan to unlock Long Form Generator.</p>
+    <div class="paywall-paid" id="paywall-paid">
+      <p class="paywall-paid-title">Already paid on Whop?</p>
+      <p class="paywall-paid-sub">Unlock this account now. If the receipt used another email, enter it below first.</p>
+      <div class="paywall-claim">
+        <label for="paywall-paid-email">Paid with a different email?</label>
+        <input type="email" id="paywall-paid-email" autocomplete="email" placeholder="Email on the Whop receipt"/>
+      </div>
+      <button type="button" class="btn btn-secondary" id="paywall-refresh" onclick="refreshPlanStatus()">I already paid</button>
+      <div class="paywall-status" id="paywall-status"></div>
+    </div>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
       <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
       <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
-    <div class="paywall-status" id="paywall-status"></div>
     <div class="paywall-foot">
-      <button type="button" class="btn btn-ghost" onclick="refreshPlanStatus()">I already paid</button>
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <div class="paywall-claim">
-        <label for="paywall-paid-email">Paid with a different email?</label>
-        <input type="email" id="paywall-paid-email" autocomplete="email" placeholder="Email on the Whop receipt"/>
-      </div>
-      <p class="paywall-note">Checkout starts from this Vidso account. If Apple Hide My Email or another address was used on the receipt, enter it above, then tap I already paid.</p>
-      <p class="paywall-note">Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
+      <p class="paywall-note">Checkout starts from this Vidso account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
 </div>
