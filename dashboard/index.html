@@ -2416,7 +2416,8 @@ body.img-detail-open{overflow:hidden}
   background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--border);
   border-radius:8px;padding:6px 8px;font:inherit
 }
-.settings-yt details{border-top:1px solid var(--border);padding-top:10px}
+.settings-yt-connector{border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:0}
+.settings-yt-connector strong{font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
 .settings-yt summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
 .settings-yt pre{
   margin:8px 0 0;padding:10px;border-radius:8px;background:#111;font-size:.68rem;
@@ -3211,7 +3212,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
         </div>
-        <p class="settings-yt-sub">Copy MCP below while signed in to Vidso. Connect YouTube only when you want the dashboard or Claude/Cursor to upload and edit the channel.</p>
+        <p class="settings-yt-sub">Paste the Claude connector URL into Settings → Connectors. Cursor still uses the JSON below. Connect YouTube only when you want the channel edited or uploaded to.</p>
         <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
         <div id="settings-yt-disconnected">
           <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
@@ -3238,15 +3239,21 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           </label>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
         </div>
+        <div id="settings-yt-mcp-claude-connector" class="settings-yt-connector">
+          <strong>Claude connector</strong>
+          <p class="settings-yt-sub" style="margin-top:8px">In Claude: Settings → Connectors → Add custom connector. Name it <code>Vidso YouTube</code>, paste this URL, then Connect and sign in to Vidso.</p>
+          <pre id="settings-yt-mcp-url"></pre>
+          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-url-copy" style="margin-top:8px">Copy link</button>
+        </div>
         <details id="settings-yt-mcp-wrap">
           <summary>MCP for Cursor</summary>
-          <p class="settings-yt-sub" style="margin-top:8px">You only need to be signed in to Vidso. Paste this into Cursor Settings → MCP. Claude or Cursor can then connect YouTube for you, or list/update/upload once a channel is linked. The token expires when you sign out.</p>
+          <p class="settings-yt-sub" style="margin-top:8px">Paste this into Cursor Settings → MCP. The token is your Vidso session and expires when you sign out.</p>
           <pre id="settings-yt-mcp"></pre>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
         </details>
         <details id="settings-yt-mcp-claude-wrap" style="margin-top:10px">
-          <summary>MCP for Claude</summary>
-          <p class="settings-yt-sub" style="margin-top:8px">Same as Cursor: Vidso login is enough to add the server. Connect YouTube only when you want Claude to touch the channel. Claude Desktop: paste into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac, or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen.</p>
+          <summary>Claude Desktop / Claude Code JSON</summary>
+          <p class="settings-yt-sub" style="margin-top:8px">Only if you are not using Claude Connectors. Desktop: paste into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac, or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen.</p>
           <pre id="settings-yt-mcp-claude-desktop"></pre>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-claude-desktop-copy" style="margin-top:8px">Copy Desktop config</button>
           <p class="settings-yt-sub" style="margin-top:14px">Claude Code: save as <code>.mcp.json</code> in the project, or run <code>claude mcp add-json</code>.</p>
@@ -6139,8 +6146,10 @@ window.closeAccountSettings = () => {
 }
 
 function fillYoutubeMcpConfigs(st) {
-  const url = st?.mcpUrl || (location.origin + '/api/youtube/mcp')
+  const url = st?.mcpUrl || (location.origin + '/mcp')
   const tok = typeof getToken === 'function' ? getToken() : ''
+  const urlEl = document.getElementById('settings-yt-mcp-url')
+  if (urlEl) urlEl.textContent = url
   const mcp = document.getElementById('settings-yt-mcp')
   if (mcp) mcp.textContent = mcpConfigJson(url, tok)
   const claudeDesk = document.getElementById('settings-yt-mcp-claude-desktop')
@@ -6259,6 +6268,7 @@ document.getElementById('settings-yt-disconnect')?.addEventListener('click', asy
 })
 document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
 document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
+document.getElementById('settings-yt-mcp-url-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-url', 'Claude connector URL copied'))
 document.getElementById('settings-yt-mcp-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp', 'Cursor MCP config copied'))
 document.getElementById('settings-yt-mcp-claude-desktop-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-desktop', 'Claude Desktop config copied'))
 document.getElementById('settings-yt-mcp-claude-code-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-code', 'Claude Code config copied'))

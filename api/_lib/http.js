@@ -11,9 +11,9 @@ export function send(res, status, body) {
 
 export function cors(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, MCP-Protocol-Version, Accept')
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, MCP-Protocol-Version, Accept, mcp-session-id, Last-Event-ID')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
-  res.setHeader('Access-Control-Expose-Headers', 'MCP-Protocol-Version')
+  res.setHeader('Access-Control-Expose-Headers', 'MCP-Protocol-Version, WWW-Authenticate')
 }
 
 export async function readJson(req) {
@@ -28,8 +28,8 @@ export function bearer(req) {
   return String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
 }
 
-export async function requireUser(req) {
-  const token = bearer(req)
+export async function requireUser(req, tokenOverride) {
+  const token = tokenOverride || bearer(req)
   if (!token) {
     const err = new Error('Missing token')
     err.status = 401

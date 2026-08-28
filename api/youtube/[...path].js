@@ -1,5 +1,5 @@
 import { evaluatePlan, toHttp } from '../../lib/enforce.js'
-import { cors, readJson, requireUser, send } from '../_lib/http.js'
+import { cors, readJson, requireUser, send, bearer } from '../_lib/http.js'
 import {
   bridgeCookieHeader,
   deleteYoutubeRecord,
@@ -31,6 +31,12 @@ import {
   youtubeSecrets,
   YT_BRIDGE_COOKIE,
 } from '../../lib/youtube.js'
+import {
+  mcpResourceFromReq,
+  protectedResourceMetadataPath,
+  unwrapMcpBearer,
+  wwwAuthenticate,
+} from '../../lib/mcp-oauth.js'
 
 export const config = { maxDuration: 300 }
 
@@ -251,6 +257,26 @@ async function handleMcpMessage(req, res, token, user, body) {
   }
 }
 
+function sendMcpUnauthorized(req, res, message = 'Authentication required') {
+  const origin = requestOrigin(req)
+  const resource = mcpResourceFromReq(req)
+  const meta = origin + protectedResourceMetadataPath(resource)
+  res.setHeader('WWW-Authenticate', wwwAuthenticate(meta))
+  res.setHeader('MCP-Protocol-Version', MCP_PROTOCOL)
+  return send(res, 401, { error: 'invalid_token', error_description: message })
+}
+
+async function requireMcpUser(req) {
+  const raw = bearer(req)
+  if (!raw) {
+    const err = new Error('Missing token')
+    err.status = 401
+    throw err
+  }
+  const unwrapped = unwrapMcpBearer(raw)
+  return requireUser(req, unwrapped.token)
+}
+
 async function handleMcp(req, res, token, user) {
   res.setHeader('MCP-Protocol-Version', MCP_PROTOCOL)
   if (req.method === 'GET') {
@@ -281,6 +307,17 @@ export default async function handler(req, res) {
     return handleCallback(req, res)
   }
 
+  if (sub === 'mcp') {
+    let user
+    let token
+    try {
+      ;({ user, token } = await requireMcpUser(req))
+    } catch (e) {
+      return sendMcpUnauthorized(req, res, e.message || 'Unauthorized')
+    }
+    return handleMcp(req, res, token, user)
+  }
+
   let user
   let token
   try {
@@ -288,8 +325,6 @@ export default async function handler(req, res) {
   } catch (e) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
-
-  if (sub === 'mcp') return handleMcp(req, res, token, user)
 
   const plan = evaluatePlan(user)
   if (!plan.ok && sub !== 'status') {

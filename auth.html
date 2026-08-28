@@ -437,6 +437,31 @@ function afterAuth(opts = {}) {
     sessionStorage.removeItem('vidso_auth_intent')
     localStorage.removeItem('vidso_ui_preview')
   } catch (_) {}
+  goAfterAuth()
+}
+
+function rememberAuthNext() {
+  try {
+    const next = new URLSearchParams(location.search).get('next') || ''
+    if (next.startsWith('/oauth/') || next.startsWith('/api/oauth/')) {
+      sessionStorage.setItem('vidso_auth_next', next)
+      return next
+    }
+    return sessionStorage.getItem('vidso_auth_next') || ''
+  } catch (_) { return '' }
+}
+
+function goAfterAuth() {
+  let next = ''
+  try {
+    next = sessionStorage.getItem('vidso_auth_next') || ''
+    sessionStorage.removeItem('vidso_auth_next')
+  } catch (_) {}
+  if (next.startsWith('/oauth/') || next.startsWith('/api/oauth/')) {
+    try { getToken() } catch (_) {}
+    location.replace(next)
+    return
+  }
   persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 
@@ -457,13 +482,19 @@ function consumeOAuthErrorParams() {
 }
 
 const oauthReturned = consumeOAuthReturn()
+rememberAuthNext()
 if (oauthReturned) {
   let signupIntent = false
   try { signupIntent = sessionStorage.getItem('vidso_auth_intent') === 'signup' } catch (_) {}
   afterAuth({ needOnboarding: signupIntent })
 } else {
   consumeOAuthErrorParams()
-  if (getToken()) persistPaidBeforeApp().finally(() => location.replace(APP))
+  const next = rememberAuthNext()
+  if (next.startsWith('/oauth/') || next.startsWith('/api/oauth/')) {
+    try { getToken() } catch (_) {}
+    location.replace(next)
+  }
+  else if (getToken()) persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')

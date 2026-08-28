@@ -2,6 +2,34 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/mcp",
+      "destination": "/api/youtube/mcp"
+    },
+    {
+      "source": "/oauth/:path*",
+      "destination": "/api/oauth/:path*"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/api/oauth/protected-resource"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource/:path*",
+      "destination": "/api/oauth/protected-resource/:path*"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/api/oauth/authorization-server"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server/:path*",
+      "destination": "/api/oauth/authorization-server"
+    },
+    {
+      "source": "/.well-known/openid-configuration",
+      "destination": "/api/oauth/openid-configuration"
+    },
+    {
       "source": "/preview",
       "destination": "/dashboard/index.html"
     },
@@ -265,6 +293,33 @@
     },
     {
       "source": "/api/generate/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/mcp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/oauth/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
