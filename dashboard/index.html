@@ -2416,8 +2416,15 @@ body.img-detail-open{overflow:hidden}
   background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--border);
   border-radius:8px;padding:6px 8px;font:inherit
 }
-.settings-yt-connector{border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:0}
-.settings-yt-connector strong{font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
+.mcp-setup{max-width:720px}
+.mcp-setup .fv-chip-row{margin:0 0 18px}
+.mcp-setup-steps{margin:0 0 16px;padding-left:1.2em;color:var(--text-body);font-size:.88rem;line-height:1.5;display:flex;flex-direction:column;gap:8px}
+.mcp-setup pre{
+  margin:0;padding:12px 14px;border-radius:10px;background:#111;font-size:.75rem;
+  overflow:auto;white-space:pre-wrap;color:rgba(255,255,255,.78);max-height:240px
+}
+.mcp-setup .btn{margin-top:10px}
+.mcp-setup #mcp-copy-msg{margin-top:14px}
 .settings-yt summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
 .settings-yt pre{
   margin:8px 0 0;padding:10px;border-radius:8px;background:#111;font-size:.68rem;
@@ -3207,12 +3214,16 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
+      <button type="button" class="settings-row-btn" id="settings-mcp" onclick="closeAccountSettings();switchPanel('mcp')" aria-label="Open MCP setup for Claude and Cursor">
+        <span class="settings-row-label">MCP</span>
+        <span class="settings-row-value">Claude & Cursor →</span>
+      </button>
       <div class="settings-yt" id="settings-yt">
         <div class="settings-yt-head">
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
         </div>
-        <p class="settings-yt-sub">Paste the Claude connector URL into Settings → Connectors. Cursor still uses the JSON below. Connect YouTube only when you want the channel edited or uploaded to.</p>
+        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically. MCP for Claude and Cursor lives in the MCP page.</p>
         <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
         <div id="settings-yt-disconnected">
           <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
@@ -3239,27 +3250,6 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           </label>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
         </div>
-        <div id="settings-yt-mcp-claude-connector" class="settings-yt-connector">
-          <strong>Claude connector</strong>
-          <p class="settings-yt-sub" style="margin-top:8px">In Claude: Settings → Connectors → Add custom connector. Name it <code>Vidso YouTube</code>, paste this URL, then Connect and sign in to Vidso.</p>
-          <pre id="settings-yt-mcp-url"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-url-copy" style="margin-top:8px">Copy link</button>
-        </div>
-        <details id="settings-yt-mcp-wrap">
-          <summary>MCP for Cursor</summary>
-          <p class="settings-yt-sub" style="margin-top:8px">Paste this into Cursor Settings → MCP. The token is your Vidso session and expires when you sign out.</p>
-          <pre id="settings-yt-mcp"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
-        </details>
-        <details id="settings-yt-mcp-claude-wrap" style="margin-top:10px">
-          <summary>Claude Desktop / Claude Code JSON</summary>
-          <p class="settings-yt-sub" style="margin-top:8px">Only if you are not using Claude Connectors. Desktop: paste into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac, or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen.</p>
-          <pre id="settings-yt-mcp-claude-desktop"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-claude-desktop-copy" style="margin-top:8px">Copy Desktop config</button>
-          <p class="settings-yt-sub" style="margin-top:14px">Claude Code: save as <code>.mcp.json</code> in the project, or run <code>claude mcp add-json</code>.</p>
-          <pre id="settings-yt-mcp-claude-code"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-claude-code-copy" style="margin-top:8px">Copy Code config</button>
-        </details>
       </div>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
@@ -3364,6 +3354,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <button type="button" class="topnav-item" id="nav-mcp" data-panel="mcp" onclick="switchPanel('mcp',this)">MCP</button>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
@@ -3391,6 +3382,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" onclick="switchPanel('mcp')">MCP</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -3422,6 +3414,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <button type="button" class="topnav-item" data-panel="mcp" onclick="switchPanel('mcp',this)">MCP</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
@@ -5136,6 +5129,43 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
 
+    <div class="panel content-glow" id="panel-mcp">
+      <div class="page-header">
+        <h2>MCP</h2>
+        <p>Connect Claude or Cursor so they can check the channel, update titles, and upload finished videos for this Vidso account.</p>
+      </div>
+      <div class="tool-card mcp-setup">
+        <div class="fv-chip-row" id="mcp-tabs" role="tablist" aria-label="MCP client">
+          <button type="button" class="fv-chip active" data-mcp-tab="claude" onclick="setMcpTab('claude')">Claude</button>
+          <button type="button" class="fv-chip" data-mcp-tab="cursor" onclick="setMcpTab('cursor')">Cursor</button>
+          <button type="button" class="fv-chip" data-mcp-tab="desktop" onclick="setMcpTab('desktop')">Claude Desktop</button>
+        </div>
+        <div data-mcp-pane="claude">
+          <ol class="mcp-setup-steps">
+            <li>In Claude open <strong>Settings → Connectors → Add custom connector</strong></li>
+            <li>Name it <strong>Vidso YouTube</strong></li>
+            <li>Paste the URL below, then Connect and sign in to Vidso</li>
+          </ol>
+          <pre id="mcp-url"></pre>
+          <button type="button" class="btn btn-primary btn-sm" id="mcp-url-copy">Copy link</button>
+        </div>
+        <div data-mcp-pane="cursor" hidden>
+          <p class="ui-card-desc" style="margin-bottom:12px">Paste this into Cursor Settings → MCP. You only need to be signed in to Vidso. Connect YouTube when you want Cursor to touch the channel.</p>
+          <pre id="mcp-cursor-json"></pre>
+          <button type="button" class="btn btn-ghost btn-sm" id="mcp-cursor-copy">Copy config</button>
+        </div>
+        <div data-mcp-pane="desktop" hidden>
+          <p class="ui-card-desc" style="margin-bottom:12px">Claude Desktop cannot use a connector URL. Paste this into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen.</p>
+          <pre id="mcp-claude-desktop"></pre>
+          <button type="button" class="btn btn-ghost btn-sm" id="mcp-claude-desktop-copy">Copy Desktop config</button>
+          <p class="ui-card-desc" style="margin:16px 0 12px">Claude Code: save as <code>.mcp.json</code> in the project, or run <code>claude mcp add-json</code>.</p>
+          <pre id="mcp-claude-code"></pre>
+          <button type="button" class="btn btn-ghost btn-sm" id="mcp-claude-code-copy">Copy Code config</button>
+        </div>
+        <p class="settings-yt-msg" id="mcp-copy-msg" hidden></p>
+      </div>
+    </div>
+
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
         <h2 id="fv-page-title">Long Form Generator</h2>
@@ -5579,6 +5609,13 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <div class="qa-body">
               <div class="qa-title">Build a ranking</div>
               <div class="qa-sub">Assemble ranked short videos</div>
+            </div>
+          </button>
+          <button type="button" class="qa-card" onclick="switchPanel('mcp',null)">
+            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
+            <div class="qa-body">
+              <div class="qa-title">Connect Claude</div>
+              <div class="qa-sub">Paste the Vidso MCP URL into Connectors</div>
             </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
@@ -6146,16 +6183,22 @@ window.closeAccountSettings = () => {
 }
 
 function fillYoutubeMcpConfigs(st) {
-  const url = st?.mcpUrl || (location.origin + '/mcp')
+  const url = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
   const tok = typeof getToken === 'function' ? getToken() : ''
-  const urlEl = document.getElementById('settings-yt-mcp-url')
-  if (urlEl) urlEl.textContent = url
-  const mcp = document.getElementById('settings-yt-mcp')
-  if (mcp) mcp.textContent = mcpConfigJson(url, tok)
-  const claudeDesk = document.getElementById('settings-yt-mcp-claude-desktop')
-  if (claudeDesk) claudeDesk.textContent = claudeDesktopMcpConfigJson(url, tok)
-  const claudeCode = document.getElementById('settings-yt-mcp-claude-code')
-  if (claudeCode) claudeCode.textContent = claudeCodeMcpConfigJson(url, tok)
+  const setText = (id, text) => {
+    const el = document.getElementById(id)
+    if (el) el.textContent = text
+  }
+  setText('mcp-url', url)
+  setText('mcp-cursor-json', mcpConfigJson(url, tok))
+  setText('mcp-claude-desktop', claudeDesktopMcpConfigJson(url, tok))
+  setText('mcp-claude-code', claudeCodeMcpConfigJson(url, tok))
+}
+
+window.setMcpTab = (tab) => {
+  const id = tab === 'cursor' || tab === 'desktop' ? tab : 'claude'
+  document.querySelectorAll('[data-mcp-tab]').forEach((b) => b.classList.toggle('active', b.getAttribute('data-mcp-tab') === id))
+  document.querySelectorAll('[data-mcp-pane]').forEach((p) => { p.hidden = p.getAttribute('data-mcp-pane') !== id })
 }
 
 function ytSetSettingsMsg(text, kind) {
@@ -6268,17 +6311,28 @@ document.getElementById('settings-yt-disconnect')?.addEventListener('click', asy
 })
 document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
 document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
-document.getElementById('settings-yt-mcp-url-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-url', 'Claude connector URL copied'))
-document.getElementById('settings-yt-mcp-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp', 'Cursor MCP config copied'))
-document.getElementById('settings-yt-mcp-claude-desktop-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-desktop', 'Claude Desktop config copied'))
-document.getElementById('settings-yt-mcp-claude-code-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-code', 'Claude Code config copied'))
+document.getElementById('mcp-url-copy')?.addEventListener('click', () => copyMcpConfig('mcp-url', 'Claude connector URL copied'))
+document.getElementById('mcp-cursor-copy')?.addEventListener('click', () => copyMcpConfig('mcp-cursor-json', 'Cursor MCP config copied'))
+document.getElementById('mcp-claude-desktop-copy')?.addEventListener('click', () => copyMcpConfig('mcp-claude-desktop', 'Claude Desktop config copied'))
+document.getElementById('mcp-claude-code-copy')?.addEventListener('click', () => copyMcpConfig('mcp-claude-code', 'Claude Code config copied'))
+
+function mcpSetCopyMsg(text, kind) {
+  const el = document.getElementById('mcp-copy-msg')
+  if (!el) return
+  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
+  el.hidden = false
+  el.textContent = text
+  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
+}
 
 async function copyMcpConfig(id, ok) {
   const text = document.getElementById(id)?.textContent || ''
   try {
     await navigator.clipboard.writeText(text)
+    mcpSetCopyMsg(ok, 'ok')
     ytSetSettingsMsg(ok, 'ok')
   } catch (_) {
+    mcpSetCopyMsg('Copy the text from the box', 'err')
     ytSetSettingsMsg('Copy the config from the box', 'err')
   }
 }
@@ -8047,13 +8101,13 @@ const titles = {
   home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
-  downloader:'Video Downloader', files:'My Files', commentary:'Video Commentary'
+  downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
   clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
-  downloader:'/downloader', files:'/files', commentary:'/commentary'
+  downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 function normalizePath(p) {
@@ -8064,6 +8118,7 @@ function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
 function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
+  if (id === 'connectors') return 'mcp'
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
@@ -8119,7 +8174,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','files'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','files','mcp'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -8127,6 +8182,10 @@ window.switchPanel = (id, btn, opts = {}) => {
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
   if (id === 'files') { try { loadFiles() } catch (_) {} }
+  if (id === 'mcp') {
+    try { fillYoutubeMcpConfigs(_ytStatus) } catch (_) {}
+    try { if (!_ytStatus) refreshYoutubeSettings() } catch (_) {}
+  }
   if (id === 'videogen' || id === 'ytvideogen') {
     try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
     try { fvInit() } catch (_) {}

@@ -90,6 +90,10 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/connectors",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/commentary",
       "destination": "/dashboard/index.html"
     },
@@ -293,6 +297,15 @@
     },
     {
       "source": "/api/generate/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/connectors",
       "headers": [
         {
           "key": "Cache-Control",
