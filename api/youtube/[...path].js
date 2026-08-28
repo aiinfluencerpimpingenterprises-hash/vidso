@@ -32,9 +32,11 @@ import {
   YT_BRIDGE_COOKIE,
 } from '../../lib/youtube.js'
 import {
+  mcpConnectorPageHtml,
   mcpResourceFromReq,
   protectedResourceMetadataPath,
   unwrapMcpBearer,
+  wantsBrowserPage,
   wwwAuthenticate,
 } from '../../lib/mcp-oauth.js'
 
@@ -308,6 +310,12 @@ export default async function handler(req, res) {
   }
 
   if (sub === 'mcp') {
+    if (wantsBrowserPage(req)) {
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'text/html; charset=utf-8')
+      res.setHeader('Cache-Control', 'no-store')
+      return res.end(mcpConnectorPageHtml(requestOrigin(req)))
+    }
     let user
     let token
     try {

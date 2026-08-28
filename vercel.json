@@ -15,7 +15,7 @@
     },
     {
       "source": "/.well-known/oauth-protected-resource/:path*",
-      "destination": "/api/oauth/protected-resource/:path*"
+      "destination": "/api/oauth/protected-resource"
     },
     {
       "source": "/.well-known/oauth-authorization-server",

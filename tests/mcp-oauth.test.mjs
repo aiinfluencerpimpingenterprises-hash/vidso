@@ -4,6 +4,7 @@ import {
   authorizationServerMetadata,
   canonicalMcpUrl,
   issueAuthCode,
+  mcpConnectorPageHtml,
   oauthApiSubpath,
   parseForm,
   pkceS256,
@@ -16,6 +17,7 @@ import {
   tokenResponse,
   unwrapMcpBearer,
   verifyPkce,
+  wantsBrowserPage,
   wwwAuthenticate,
 } from '../lib/mcp-oauth.js'
 
@@ -23,10 +25,10 @@ const env = { YOUTUBE_TOKEN_SECRET: 'unit-test-mcp-oauth' }
 
 test('Claude connector URL is origin plus /mcp', () => {
   assert.equal(canonicalMcpUrl('https://www.vidso.pro'), 'https://www.vidso.pro/mcp')
-  assert.equal(protectedResourceMetadataPath('https://www.vidso.pro/mcp'), '/.well-known/oauth-protected-resource/mcp')
+  assert.equal(protectedResourceMetadataPath('https://www.vidso.pro/mcp'), '/.well-known/oauth-protected-resource')
   assert.equal(
     protectedResourceMetadataPath('https://www.vidso.pro/api/youtube/mcp'),
-    '/.well-known/oauth-protected-resource/api/youtube/mcp',
+    '/.well-known/oauth-protected-resource',
   )
 })
 
@@ -41,11 +43,20 @@ test('protected resource metadata names Vidso YouTube and the authorization serv
 })
 
 test('WWW-Authenticate points Claude at resource metadata', () => {
-  const header = wwwAuthenticate('https://www.vidso.pro/.well-known/oauth-protected-resource/mcp')
+  const header = wwwAuthenticate('https://www.vidso.pro/.well-known/oauth-protected-resource')
   assert.equal(
-    header.includes('resource_metadata="https://www.vidso.pro/.well-known/oauth-protected-resource/mcp"'),
+    header.includes('resource_metadata="https://www.vidso.pro/.well-known/oauth-protected-resource"'),
     true,
   )
+})
+
+test('browser GET to /mcp is a connector page; JSON MCP clients are not', () => {
+  assert.equal(wantsBrowserPage({ method: 'GET', headers: { accept: 'text/html' } }), true)
+  assert.equal(wantsBrowserPage({ method: 'GET', headers: { accept: 'application/json, text/event-stream' } }), false)
+  assert.equal(wantsBrowserPage({ method: 'POST', headers: { accept: 'text/html' } }), false)
+  const html = mcpConnectorPageHtml('https://www.vidso.pro')
+  assert.equal(html.includes('https://www.vidso.pro/mcp'), true)
+  assert.equal(html.includes('Add custom connector'), true)
 })
 
 test('DCR client ids round-trip redirect URIs', () => {
