@@ -2249,37 +2249,120 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
   background:rgba(18,18,20,.94);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
 }
+#panel-facelessstudio,
+#panel-facelessstudio button,
+#panel-facelessstudio input,
+#panel-facelessstudio textarea,
+#panel-facelessstudio select,
+.fs-show,
+.fs-show button{
+  font-family:Geist,'Inter Tight',Inter,sans-serif
+}
+#panel-facelessstudio .fs-hero-title,
+#panel-facelessstudio .fs-page-head h1,
+#panel-facelessstudio .fs-rail-brand,
+#panel-facelessstudio .fs-g-h,
+.fs-show-titles h2{
+  font-family:Geist,'Clash Grotesk',sans-serif;letter-spacing:-.04em
+}
 .fs-gallery{padding:0 0 28px}
-.fs-filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
-.fs-filter{
-  height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);
-  background:transparent;color:var(--text-body);font:inherit;font-size:.82rem;cursor:pointer
-}
-.fs-filter:hover{color:var(--ink);border-color:rgba(255,255,255,.28)}
-.fs-filter.is-on{background:#fff;color:#111;border-color:#fff;font-weight:650}
-.fs-filter:focus-visible,.fs-preset:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
-.fs-g-sec{margin:0 0 36px}
-.fs-g-h{margin:0 0 6px;font-family:var(--font-heading);font-weight:700;letter-spacing:-.04em;text-transform:uppercase;font-size:clamp(1.35rem,3vw,2.1rem);line-height:.95}
-.fs-g-h .accent,.fs-how-h .accent{color:var(--a1)}
-.fs-g-sub{margin:0 0 16px;color:rgba(255,255,255,.48);font-size:.9rem}
-.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.fs-preset{
-  display:flex;flex-direction:column;padding:0;border:none;border-radius:16px;
-  background:transparent;color:inherit;cursor:pointer;text-align:left
-}
-.fs-preset-shot{border-radius:14px;border:1px solid rgba(245,245,244,.18)}
-.fs-preset-row{display:flex;align-items:center;gap:8px;padding:10px 4px 0;min-height:32px}
-.fs-preset-ico{display:inline-flex;color:rgba(255,255,255,.7);flex-shrink:0}
-.fs-preset-name{flex:1;min-width:0;font-size:.86rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fs-preset-tag{flex-shrink:0;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.fs-tabs{display:flex;gap:4px;margin:0 0 20px}
-.fs-tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:none;border-radius:8px;background:transparent;color:var(--text-body);font:inherit;font-size:.84rem;cursor:pointer}
-.fs-tab.is-on{color:var(--ink);background:rgba(255,255,255,.06)}
-.fs-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:0 0 28px}
-.fs-hero-title{margin:0;font-family:var(--font-heading);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:.9;letter-spacing:-.045em;text-transform:uppercase}
-.fs-hero-title .lead,.fs-hero-title .accent{display:block}
+.fs-shot-grid.fs-g-grid,.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.fs-hero{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;margin:0 0 22px}
+.fs-hero-title{margin:0;font-weight:800;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
 .fs-hero-title .accent{color:var(--a1)}
-.fs-hero-sub{margin:0;color:rgba(245,245,244,.48);font-size:.92rem}
+.fs-hero-sub{margin:0;color:rgba(245,245,244,.5);font-size:.95rem;font-weight:450}
+.fs-shot{
+  position:relative;display:block;padding:0;border:none;border-radius:16px;overflow:hidden;
+  background:#141416;cursor:pointer;aspect-ratio:16/9
+}
+.fs-shot-vid{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.fs-shot-hover{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;
+  padding:16px 16px 14px;opacity:0;transition:opacity .18s ease;
+  background:linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.42) 42%,rgba(0,0,0,.82) 100%)
+}
+.fs-shot:hover .fs-shot-hover,.fs-shot:focus-within .fs-shot-hover{opacity:1}
+.fs-shot-prompt{
+  margin:0;color:#fff;font-size:.84rem;line-height:1.45;font-weight:500;
+  display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden
+}
+.fs-recreate{
+  display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:12px;
+  border:none;border-radius:12px;background:#D8FF3C;color:#111;font:inherit;font-size:.92rem;font-weight:800;
+  letter-spacing:-.02em;cursor:pointer
+}
+.fs-recreate:hover{filter:brightness(1.05)}
+.fs-recreate-lg{min-height:48px;font-size:1rem;border-radius:14px;margin-top:0}
+body.fs-show-open{overflow:hidden}
+.fs-show{
+  position:fixed;inset:0;z-index:12000;display:flex;align-items:stretch;justify-content:center;
+  padding:18px 18px 16px
+}
+.fs-show[hidden]{display:none!important}
+.fs-show-scrim{position:absolute;inset:0;background:rgba(4,4,6,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.fs-show-layout{
+  position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);
+  gap:16px;width:min(1280px,100%);height:100%;align-items:stretch
+}
+.fs-show-stage{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr) auto;gap:12px 10px;min-width:0;align-items:center}
+.fs-show-frame{
+  grid-column:2;grid-row:1;position:relative;width:100%;border-radius:22px;overflow:hidden;
+  background:#0a0a0c;aspect-ratio:16/9;max-height:calc(100vh - 168px)
+}
+.fs-show-frame video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.fs-show-mute{
+  position:absolute;right:12px;bottom:12px;width:34px;height:34px;border:none;border-radius:999px;
+  background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center;cursor:pointer
+}
+.fs-show-nav{
+  width:44px;height:44px;border:none;border-radius:999px;background:rgba(255,255,255,.12);color:#fff;
+  font-size:1.6rem;line-height:1;cursor:pointer;display:grid;place-items:center
+}
+.fs-show-prev{grid-column:1;grid-row:1}
+.fs-show-next{grid-column:3;grid-row:1}
+.fs-show-thumbs{
+  grid-column:1/-1;grid-row:2;display:flex;justify-content:center;gap:8px;overflow:auto;
+  padding:4px 0 2px;scrollbar-width:none
+}
+.fs-show-thumbs::-webkit-scrollbar{display:none}
+.fs-show-thumb{
+  flex:0 0 52px;width:52px;height:78px;padding:0;border:2px solid transparent;border-radius:10px;
+  overflow:hidden;background:#111;cursor:pointer
+}
+.fs-show-thumb.is-on{border-color:#fff}
+.fs-show-thumb video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.fs-show-side{
+  display:flex;flex-direction:column;min-height:0;border-radius:22px;padding:16px 16px 14px;
+  background:rgba(22,22,24,.92);border:1px solid rgba(255,255,255,.08)
+}
+.fs-show-head{display:flex;align-items:flex-start;gap:10px;margin:0 0 14px}
+.fs-show-id{
+  width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;
+  display:grid;place-items:center;font-weight:800;flex-shrink:0
+}
+.fs-show-titles{flex:1;min-width:0}
+.fs-show-titles h2{margin:0;font-size:1.05rem;font-weight:800;color:#fff}
+.fs-show-titles p{margin:3px 0 0;font-size:.78rem;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-show-x{
+  width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:#fff;
+  font-size:1.25rem;cursor:pointer;flex-shrink:0
+}
+.fs-show-body{flex:1;min-height:0;overflow:auto;padding:14px;border-radius:16px;background:rgba(0,0,0,.28)}
+.fs-show-prompt{margin:0 0 12px;color:#fff;font-size:.88rem;line-height:1.5;font-weight:550}
+.fs-show-copy{margin:0 0 12px;color:rgba(255,255,255,.62);font-size:.82rem;line-height:1.5}
+.fs-show-meta{display:flex;flex-wrap:wrap;gap:10px 14px;margin:0 0 12px;color:rgba(255,255,255,.48);font-size:.72rem}
+.fs-show-foot{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.fs-show-tags{display:flex;gap:14px;color:rgba(255,255,255,.5);font-size:.78rem}
+@media (max-width:980px){
+  .fs-shot-grid.fs-g-grid,.fs-g-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fs-show{padding:10px}
+  .fs-show-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .fs-show-side{max-height:42vh}
+  .fs-show-frame{max-height:42vh}
+}
+@media (max-width:640px){
+  .fs-shot-grid.fs-g-grid,.fs-g-grid{grid-template-columns:1fr}
+}
 .fs-composer{max-width:880px;margin:0 auto 32px;padding:14px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.03)}
 .fs-composer-row{display:flex;gap:10px;align-items:flex-start}
 .fs-topic{flex:1;min-width:0;min-height:72px;resize:vertical;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.95rem}
@@ -2306,7 +2389,7 @@ body.fs-rail-collapsed .fs-rail-item{display:none}
 .fs-proj-title{display:block;padding:10px 12px 0;font-weight:650}
 .fs-proj-meta,.fs-job-meta{display:block;padding:4px 12px 12px;font-size:.72rem;color:rgba(255,255,255,.45)}
 .fs-page-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
-.fs-page-head h1,.fs-workspace h2,.fs-recent h2{font-size:1.2rem;margin:0}
+.fs-page-head h1,.fs-workspace h2,.fs-recent h2{font-size:1.35rem;margin:0;font-weight:750;letter-spacing:-.03em}
 .fs-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .fs-search{height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--ink);font:inherit}
 .fs-state{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:24px 0;color:var(--text-body)}
@@ -5261,8 +5344,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
         <div class="fs-main" id="fs-main">
           <div class="fs-home has-composer">
             <div class="fs-hero">
-              <h1 class="fs-hero-title"><span class="lead">Bring your stories</span><span class="accent">to life</span></h1>
-              <p class="fs-hero-sub">Topic to script, voice, B-roll, thumbnail, and export in one project.</p>
+              <h1 class="fs-hero-title"><span class="accent">Faceless</span> Studio</h1>
+              <p class="fs-hero-sub">Turn any topic into a clear, visual explainer video</p>
             </div>
           </div>
         </div>
