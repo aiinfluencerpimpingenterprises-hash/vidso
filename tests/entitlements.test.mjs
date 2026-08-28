@@ -365,6 +365,13 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
   assert.equal(xenon.active, true)
   assert.equal(xenon.tier, 'studio')
   assert.equal(xenon.entitlements.long_form_per_month, UNLIMITED)
+  const rishav = resolveAccess({
+    email: 'rishavvashisht347@gmail.com',
+    plan: 'free',
+    plan_status: 'inactive',
+  }, off)
+  assert.equal(rishav.active, true)
+  assert.equal(rishav.tier, 'studio')
   const paidClipzo = resolveAccess({
     email: 'payer@example.com',
     plan: 'studio',
