@@ -54,12 +54,30 @@ function appReturn(req, path, extra = {}) {
   return u.toString()
 }
 
-function rpc(res, id, result) {
-  return send(res, 200, { jsonrpc: '2.0', id: id ?? null, result })
+function wantsSse(req) {
+  return String(req?.headers?.accept || '').includes('text/event-stream')
 }
 
-function rpcErr(res, id, code, message) {
-  return send(res, 200, { jsonrpc: '2.0', id: id ?? null, error: { code, message } })
+function sendRpc(req, res, status, body) {
+  res.statusCode = status
+  res.setHeader('Cache-Control', 'no-store')
+  res.setHeader('MCP-Protocol-Version', MCP_PROTOCOL)
+  const json = JSON.stringify(body)
+  if (wantsSse(req) && status === 200) {
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Connection', 'keep-alive')
+    return res.end('event: message\ndata: ' + json + '\n\n')
+  }
+  res.setHeader('Content-Type', 'application/json')
+  return res.end(json)
+}
+
+function rpc(req, res, id, result) {
+  return sendRpc(req, res, 200, { jsonrpc: '2.0', id: id ?? null, result })
+}
+
+function rpcErr(req, res, id, code, message) {
+  return sendRpc(req, res, 200, { jsonrpc: '2.0', id: id ?? null, error: { code, message } })
 }
 
 async function connectUrlFor(req, token, returnTo) {
@@ -203,7 +221,7 @@ const MCP_OPEN_TOOLS = new Set(['youtube_status', 'youtube_connect_url'])
 async function handleMcpMessage(req, res, token, user, body) {
   const id = body?.id ?? null
   const method = String(body?.method || '')
-  if (method === 'initialize') return rpc(res, id, mcpInitializeResult())
+  if (method === 'initialize') return rpc(req, res, id, mcpInitializeResult(body?.params?.protocolVersion))
   if (
     method === 'notifications/initialized' ||
     method === 'initialized' ||
@@ -212,24 +230,24 @@ async function handleMcpMessage(req, res, token, user, body) {
     res.statusCode = 202
     return res.end()
   }
-  if (method === 'ping') return rpc(res, id, {})
-  if (method === 'tools/list') return rpc(res, id, { tools: mcpTools() })
-  if (method === 'resources/list') return rpc(res, id, { resources: [] })
-  if (method === 'prompts/list') return rpc(res, id, { prompts: [] })
-  if (method !== 'tools/call') return rpcErr(res, id, -32601, 'Unknown method')
+  if (method === 'ping') return rpc(req, res, id, {})
+  if (method === 'tools/list') return rpc(req, res, id, { tools: mcpTools() })
+  if (method === 'resources/list') return rpc(req, res, id, { resources: [] })
+  if (method === 'prompts/list') return rpc(req, res, id, { prompts: [] })
+  if (method !== 'tools/call') return rpcErr(req, res, id, -32601, 'Unknown method')
 
   const name = String(body.params?.name || '')
   const args = parseMcpToolArgs(body.params)
   if (!MCP_OPEN_TOOLS.has(name)) {
     const plan = evaluatePlan(user)
-    if (!plan.ok) return rpc(res, id, { ...mcpText(plan.message), isError: true })
+    if (!plan.ok) return rpc(req, res, id, { ...mcpText(plan.message), isError: true })
   }
   try {
     const result = await runMcpTool(name, args, { token, req })
-    return rpc(res, id, result)
+    return rpc(req, res, id, result)
   } catch (e) {
-    if (e.code === -32601) return rpcErr(res, id, -32601, e.message || 'Unknown tool')
-    return rpc(res, id, { ...mcpText(e.message || 'Tool failed'), isError: true })
+    if (e.code === -32601) return rpcErr(req, res, id, -32601, e.message || 'Unknown tool')
+    return rpc(req, res, id, { ...mcpText(e.message || 'Tool failed'), isError: true })
   }
 }
 
@@ -245,7 +263,7 @@ async function handleMcp(req, res, token, user) {
   }
   const body = await readJson(req)
   if (Array.isArray(body)) {
-    if (!body.length) return rpcErr(res, null, -32600, 'Empty batch')
+    if (!body.length) return rpcErr(req, res, null, -32600, 'Empty batch')
     return handleMcpMessage(req, res, token, user, body[0])
   }
   return handleMcpMessage(req, res, token, user, body)

@@ -27,7 +27,7 @@ import {
   YT_SCOPES,
 } from '../lib/youtube.js'
 import { isHistorySidecarName } from '../lib/image-gen.js'
-import { mcpConfigJson } from '../lib/youtube-client.js'
+import { mcpConfigJson, claudeDesktopMcpConfigJson, claudeCodeMcpConfigJson } from '../lib/youtube-client.js'
 
 const env = {
   GOOGLE_YOUTUBE_CLIENT_ID: 'cid.apps.googleusercontent.com',
@@ -205,4 +205,27 @@ test('MCP config JSON points at the Vidso YouTube server', () => {
   assert.equal(json.mcpServers['vidso-youtube'].url, 'https://vidso.pro/api/youtube/mcp')
   assert.equal(json.mcpServers['vidso-youtube'].headers.Authorization, 'Bearer tok_123')
   assert.ok(json.mcpServers['vidso-youtube'].headers.Accept.includes('application/json'))
+})
+
+test('Claude Desktop MCP uses mcp-remote so stdio can reach the HTTP server', () => {
+  const json = JSON.parse(claudeDesktopMcpConfigJson('https://vidso.pro/api/youtube/mcp', 'tok_123'))
+  const srv = json.mcpServers['vidso-youtube']
+  assert.equal(srv.command, 'npx')
+  assert.ok(srv.args.includes('mcp-remote'))
+  assert.ok(srv.args.includes('https://vidso.pro/api/youtube/mcp'))
+  assert.equal(srv.env.VIDSO_AUTH, 'Bearer tok_123')
+})
+
+test('Claude Code MCP uses streamable HTTP with a Bearer header', () => {
+  const json = JSON.parse(claudeCodeMcpConfigJson('https://vidso.pro/api/youtube/mcp', 'tok_123'))
+  const srv = json.mcpServers['vidso-youtube']
+  assert.equal(srv.type, 'http')
+  assert.equal(srv.url, 'https://vidso.pro/api/youtube/mcp')
+  assert.equal(srv.headers.Authorization, 'Bearer tok_123')
+})
+
+test('MCP initialize accepts Claude protocol versions', () => {
+  assert.equal(mcpInitializeResult('2025-06-18').protocolVersion, '2025-06-18')
+  assert.equal(mcpInitializeResult('2025-03-26').protocolVersion, '2025-03-26')
+  assert.equal(mcpInitializeResult('nope').protocolVersion, MCP_PROTOCOL)
 })

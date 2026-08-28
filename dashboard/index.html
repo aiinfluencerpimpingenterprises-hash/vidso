@@ -2392,7 +2392,7 @@ body.img-detail-open{overflow:hidden}
 .settings-yt summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
 .settings-yt pre{
   margin:8px 0 0;padding:10px;border-radius:8px;background:#111;font-size:.68rem;
-  overflow:auto;white-space:pre-wrap;color:rgba(255,255,255,.72);max-height:140px
+  overflow:auto;white-space:pre-wrap;color:rgba(255,255,255,.72);max-height:180px
 }
 .settings-yt-msg{margin:0;font-size:.75rem;color:rgba(255,255,255,.5)}
 .settings-yt-msg.is-err{color:#ff8a94}
@@ -3183,7 +3183,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
         </div>
-        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically, or from Cursor via the Vidso YouTube MCP.</p>
+        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically, or from Cursor and Claude via the Vidso YouTube MCP.</p>
         <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
         <div id="settings-yt-disconnected">
           <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
@@ -3213,6 +3213,15 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
             <p class="settings-yt-sub" style="margin-top:8px">Paste this into Cursor Settings → MCP. Cursor can then check the channel, list videos, update titles, and upload finished renders. The token is your current Vidso session and expires when you sign out.</p>
             <pre id="settings-yt-mcp"></pre>
             <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-copy" style="margin-top:8px">Copy config</button>
+          </details>
+          <details id="settings-yt-mcp-claude-wrap" style="margin-top:10px">
+            <summary>MCP for Claude</summary>
+            <p class="settings-yt-sub" style="margin-top:8px">Claude Desktop: paste into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac, or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen. Token is your Vidso session.</p>
+            <pre id="settings-yt-mcp-claude-desktop"></pre>
+            <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-claude-desktop-copy" style="margin-top:8px">Copy Desktop config</button>
+            <p class="settings-yt-sub" style="margin-top:14px">Claude Code: save as <code>.mcp.json</code> in the project, or run <code>claude mcp add-json</code>.</p>
+            <pre id="settings-yt-mcp-claude-code"></pre>
+            <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-mcp-claude-code-copy" style="margin-top:8px">Copy Code config</button>
           </details>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
         </div>
@@ -5625,6 +5634,8 @@ import {
   uploadBlobToYoutube,
   uploadViaServer,
   mcpConfigJson,
+  claudeDesktopMcpConfigJson,
+  claudeCodeMcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
@@ -6139,6 +6150,10 @@ async function refreshYoutubeSettings() {
   if (priv) priv.value = st.privacy || 'unlisted'
   const mcp = document.getElementById('settings-yt-mcp')
   if (mcp) mcp.textContent = mcpConfigJson(st.mcpUrl, getToken())
+  const claudeDesk = document.getElementById('settings-yt-mcp-claude-desktop')
+  if (claudeDesk) claudeDesk.textContent = claudeDesktopMcpConfigJson(st.mcpUrl, getToken())
+  const claudeCode = document.getElementById('settings-yt-mcp-claude-code')
+  if (claudeCode) claudeCode.textContent = claudeCodeMcpConfigJson(st.mcpUrl, getToken())
 }
 
 window.connectYoutubeChannel = async () => {
@@ -6194,15 +6209,19 @@ document.getElementById('settings-yt-disconnect')?.addEventListener('click', asy
 })
 document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
 document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
-document.getElementById('settings-yt-mcp-copy')?.addEventListener('click', async () => {
-  const text = document.getElementById('settings-yt-mcp')?.textContent || ''
+document.getElementById('settings-yt-mcp-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp', 'Cursor MCP config copied'))
+document.getElementById('settings-yt-mcp-claude-desktop-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-desktop', 'Claude Desktop config copied'))
+document.getElementById('settings-yt-mcp-claude-code-copy')?.addEventListener('click', () => copyMcpConfig('settings-yt-mcp-claude-code', 'Claude Code config copied'))
+
+async function copyMcpConfig(id, ok) {
+  const text = document.getElementById(id)?.textContent || ''
   try {
     await navigator.clipboard.writeText(text)
-    ytSetSettingsMsg('MCP config copied', 'ok')
+    ytSetSettingsMsg(ok, 'ok')
   } catch (_) {
     ytSetSettingsMsg('Copy the config from the box', 'err')
   }
-})
+}
 
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
