@@ -5072,7 +5072,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
           </div>
           <div class="fv-how-n">Step 2</div>
           <div class="fv-how-t">Media</div>
-          <p class="fv-how-d" id="fv-how-media-d">Stock clips matched to your script.</p>
+          <p class="fv-how-d" id="fv-how-media-d">Cinematic B-roll, cut to every line of the voiceover.</p>
         </div>
         <div class="fv-how-item">
           <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
@@ -5135,7 +5135,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                 <button type="button" class="fv-chip active" data-src="pexels" onclick="fvSetBrollSource('pexels')">Stock footage</button>
                 <button type="button" class="fv-chip" data-src="youtube" onclick="fvSetBrollSource('youtube')">YouTube clips <span class="fv-pro-tag">Pro</span></button>
               </div>
-              <p class="fv-broll-source-hint" id="fv-broll-source-hint">Stock clips matched to your script. Pro can pull real YouTube footage for each section.</p>
+              <p class="fv-broll-source-hint" id="fv-broll-source-hint">Cinematic footage scored to each beat of the script. Pro can pull real YouTube scenes for every section.</p>
             </div>
 
             <div class="field" id="fv-field-voice">
@@ -5318,7 +5318,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                     </div>
                     <div class="result-label" style="margin:14px 0 6px">Clip library</div>
                     <div class="fv-search-row">
-                      <input type="text" id="fv-broll-query" class="cm-input" placeholder="Search stock clips…" onkeydown="if(event.key==='Enter')fvSearchBroll()">
+                      <input type="text" id="fv-broll-query" class="cm-input" placeholder="Search a scene…" onkeydown="if(event.key==='Enter')fvSearchBroll()">
                       <button type="button" class="btn btn-ghost btn-sm" onclick="fvSearchBroll()">Search</button>
                     </div>
                     <div class="fv-clip-pick" id="fv-clip-pick"></div>
@@ -8392,7 +8392,7 @@ function fvApplyFacelessMode(youtube) {
     if (sub) sub.textContent = 'Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.'
     if (card) card.textContent = 'Long Form Generator'
     if (desc) desc.textContent = 'Set topic, length, and voice, then generate a script.'
-    if (how) how.textContent = 'Stock clips matched to your script.'
+    if (how) how.textContent = 'Cinematic B-roll, cut to every line of the voiceover.'
   }
   fvSyncBrollSourceUi()
   if (!(fvState.scriptAiUsed || fvState.script)) {
@@ -8409,10 +8409,10 @@ function fvSyncBrollSourceUi() {
   if (hint) {
     hint.textContent = src === 'youtube'
       ? 'After voiceover, Vidso searches YouTube for each section (for example each plane) and lays those clips on the timeline.'
-      : 'Stock clips matched to your script. Pro can pull real YouTube footage for each section.'
+      : 'Cinematic footage scored to each beat of the script. Pro can pull real YouTube scenes for every section.'
   }
   const q = document.getElementById('fv-broll-query')
-  if (q) q.placeholder = src === 'youtube' ? 'Search YouTube…' : 'Search stock clips…'
+  if (q) q.placeholder = src === 'youtube' ? 'Search YouTube…' : 'Search a scene…'
 }
 
 window.fvSetBrollSource = (src) => {
@@ -8983,7 +8983,7 @@ window.fvStartMedia = async (force) => {
         let ready = job
         if (fvState.brollSource === 'youtube') {
           try { ready = await fvAttachYoutubeBroll(job) } catch (e) {
-            job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using stock clips'
+            job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using cinematic footage'
             ready = job
           }
         }
@@ -9815,7 +9815,7 @@ window.fvSearchBroll = async () => {
   const q = (document.getElementById('fv-broll-query')?.value || '').trim()
   if (!q) return fvSetBrollStatus('Enter a search term', 'err')
   const youtube = fvState.brollSource === 'youtube' || fvState.media?.broll_source === 'youtube'
-    fvSetBrollStatus(youtube ? 'Searching YouTube…' : 'Searching stock clips…', 'loading')
+    fvSetBrollStatus(youtube ? 'Searching YouTube…' : 'Finding scenes…', 'loading')
   try {
     let clips = []
     if (youtube) {
