@@ -439,10 +439,19 @@ select option{background:var(--card)}
 .fv-font-dd-btn svg.chev{margin-left:auto;flex-shrink:0;opacity:.55;transition:transform .15s}
 .fv-font-dd.is-open .fv-font-dd-btn svg.chev{transform:rotate(180deg);opacity:.9}
 .fv-font-dd .clip-dd-menu{
-  left:0;right:0;transform:none;min-width:0;width:100%;max-height:min(340px,46vh);z-index:12
+  left:0;right:0;transform:none;min-width:0;width:100%;max-height:min(420px,56vh);z-index:12
 }
 .fv-font-dd.is-open{z-index:24}
 .fv-font-dd.is-open .clip-dd-menu{display:block}
+.fv-font-dd .fv-font-filter{padding:6px 6px 8px;position:sticky;top:0;background:#16161a;z-index:1}
+.fv-font-dd .fv-font-filter input{
+  width:100%;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+  background:#101014;color:var(--ink);padding:0 10px;font:inherit;font-size:.8rem
+}
+.fv-font-dd .fv-font-group{
+  padding:10px 10px 4px;font-size:.62rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)
+}
 .fv-font-dd .clip-dd-menu button .fv-font-sample{
   flex:1;min-width:0;font-size:1.08rem;font-weight:700;line-height:1.25;letter-spacing:.01em
 }
@@ -5318,18 +5327,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                   <div class="field">
                     <label>Font</label>
                     <select id="fv-cap-font" hidden aria-hidden="true" tabindex="-1" onchange="fvApplyCapStyle()">
-                      <option value="Anton, Impact, sans-serif">Anton</option>
                       <option value="Bangers, cursive" selected>Bangers</option>
-                      <option value="'Montserrat', sans-serif">Montserrat</option>
-                      <option value="'Baloo 2', cursive">Baloo 2</option>
-                      <option value="'Luckiest Guy', cursive">Luckiest Guy</option>
-                      <option value="'Permanent Marker', cursive">Permanent Marker</option>
-                      <option value="'TikTok Sans 18pt', sans-serif">TikTok Sans</option>
-                      <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
-                      <option value="'Oswald', sans-serif">Oswald</option>
-                      <option value="'Inter', sans-serif">Inter</option>
-                      <option value="'Press Start 2P', monospace">Press Start 2P</option>
-                      <option value="Georgia, serif">Georgia</option>
                     </select>
                     <div class="fv-font-dd" id="fv-font-dd">
                       <button type="button" class="fv-font-dd-btn" id="fv-font-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="fv-font-menu" onclick="toggleFvFontDd(event)">
@@ -5525,6 +5523,7 @@ import {
 } from '/lib/faceless-length.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
+import { fillCaptionFontSelect, ensureCaptionGoogleFonts } from '/lib/caption-fonts.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
@@ -9020,12 +9019,15 @@ function fvFmtTime(s) {
 }
 
 function fvCapStyle() {
+  const opt = document.getElementById('fv-cap-font')?.selectedOptions?.[0]
+  const weight = Number(opt?.dataset?.weight || 0)
   return {
     font: document.getElementById('fv-cap-font')?.value || 'Bangers, cursive',
     size: parseInt(document.getElementById('fv-cap-size')?.value || '14', 10),
     color: document.getElementById('fv-cap-color')?.value || '#ffffff',
     highlight: document.getElementById('fv-cap-hl')?.value || '#ff3b4a',
     letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
+    weight: weight || undefined,
   }
 }
 
@@ -9033,19 +9035,60 @@ function fvCapFontCheckSvg() {
   return '<svg class="clip-dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>'
 }
 
+function fvFontOptionHtml(opt, cur) {
+  const value = opt.value
+  const label = opt.textContent || value
+  const on = value === cur
+  const compact = opt.dataset.compact ? ' data-compact' : (/Press Start|Silkscreen|VT323/i.test(label) ? ' data-compact' : '')
+  return `<li><button type="button" role="option" data-value="${fvEsc(value)}" class="${on ? 'is-on' : ''}"${compact} onclick="pickFvFont(this)">${fvCapFontCheckSvg()}<span class="fv-font-sample" style="font-family:${fvEsc(value)}">${fvEsc(label)}</span></button></li>`
+}
+
 function fvRenderFontMenu() {
   const sel = document.getElementById('fv-cap-font')
   const menu = document.getElementById('fv-font-menu')
   if (!sel || !menu) return
+  if (sel.options.length < 8) fillCaptionFontSelect(sel)
+  ensureCaptionGoogleFonts()
   const cur = sel.value
-  menu.innerHTML = [...sel.options].map((opt) => {
-    const value = opt.value
-    const label = opt.textContent || value
-    const on = value === cur
-    const compact = /Press Start/i.test(label) ? ' data-compact' : ''
-    return `<li><button type="button" role="option" data-value="${fvEsc(value)}" class="${on ? 'is-on' : ''}"${compact} onclick="pickFvFont(this)">${fvCapFontCheckSvg()}<span class="fv-font-sample" style="font-family:${fvEsc(value)}">${fvEsc(label)}</span></button></li>`
+  const items = [...sel.children].map((node) => {
+    if (node.tagName === 'OPTGROUP') {
+      const fonts = [...node.children].map((opt) => fvFontOptionHtml(opt, cur)).join('')
+      return `<li class="fv-font-group" role="presentation">${fvEsc(node.label)}</li>${fonts}`
+    }
+    if (node.tagName === 'OPTION') return fvFontOptionHtml(node, cur)
+    return ''
   }).join('')
+  menu.innerHTML = `<li class="fv-font-filter" role="presentation"><input type="search" id="fv-font-filter" placeholder="Search fonts" autocomplete="off" oninput="fvFilterCaptionFonts(this.value)" onclick="event.stopPropagation()"></li>` + items
   syncFvFontUi()
+  const filter = document.getElementById('fv-font-filter')
+  if (filter) setTimeout(() => filter.focus(), 0)
+}
+
+window.fvFilterCaptionFonts = (q) => {
+  const needle = String(q || '').trim().toLowerCase()
+  let lastGroup = null
+  document.querySelectorAll('#fv-font-menu > li').forEach((li) => {
+    if (li.classList.contains('fv-font-filter')) return
+    if (li.classList.contains('fv-font-group')) {
+      lastGroup = li
+      li.hidden = false
+      return
+    }
+    const label = (li.querySelector('.fv-font-sample')?.textContent || '').toLowerCase()
+    const show = !needle || label.includes(needle)
+    li.hidden = !show
+    if (lastGroup && show) lastGroup.hidden = false
+  })
+  if (!needle) return
+  document.querySelectorAll('#fv-font-menu > li.fv-font-group').forEach((group) => {
+    let el = group.nextElementSibling
+    let any = false
+    while (el && !el.classList.contains('fv-font-group')) {
+      if (!el.hidden && !el.classList.contains('fv-font-filter')) any = true
+      el = el.nextElementSibling
+    }
+    group.hidden = !any
+  })
 }
 
 function syncFvFontUi() {
@@ -9100,7 +9143,9 @@ window.fvApplyCapStyle = () => {
   const cap = document.getElementById('fv-prev-cap')
   if (!cap) return
   const s = fvCapStyle()
+  const opt = document.getElementById('fv-cap-font')?.selectedOptions?.[0]
   cap.style.fontFamily = s.font
+  cap.style.fontWeight = opt?.dataset?.weight || ''
   cap.style.fontSize = s.size + 'px'
   cap.style.color = s.color
   cap.style.letterSpacing = s.letterSpacing + 'px'
@@ -9122,6 +9167,9 @@ function fvPersistPreviewSettings() {
     }))
   } catch {}
 }
+
+fillCaptionFontSelect(document.getElementById('fv-cap-font'))
+syncFvFontUi()
 
 function fvMusicEl() {
   return document.getElementById('fv-prev-music')
@@ -9937,6 +9985,7 @@ window.fvStartExport = async (opts = {}) => {
         color: caption.color,
         highlight: caption.highlight,
         letterSpacing: caption.letterSpacing,
+        weight: caption.weight,
       },
       music: musicTrack?.url
         ? { url: musicTrack.url, volume: fvState.preview?.musicVol ?? 0.25 }
