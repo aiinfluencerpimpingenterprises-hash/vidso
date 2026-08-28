@@ -510,8 +510,10 @@ select option{background:var(--card)}
 .fv-stage{position:relative;width:100%;max-width:420px;aspect-ratio:9/16;background:#0a0a0c;border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .fv-stage.landscape{max-width:min(100%,960px);aspect-ratio:16/9}
 .fv-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent}
-.fv-stage .fv-prev-vid{opacity:0;z-index:0;pointer-events:none}
-.fv-stage .fv-prev-vid.is-on{opacity:1;z-index:1}
+.fv-stage .fv-prev-vid{opacity:1;z-index:0;pointer-events:none}
+.fv-stage .fv-prev-vid.is-on{z-index:1}
+.fv-stage .fv-prev-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;background:#0a0a0c}
+.fv-stage .fv-prev-poster[hidden]{display:none}
 .fv-stage .fv-cap{position:absolute;left:6%;right:6%;bottom:12%;text-align:center;z-index:2;pointer-events:none;line-height:1.15;font-weight:800;text-wrap:balance}
 .fv-stage .fv-cap span{display:inline;margin:0 .12em;transition:color .08s,background .08s}
 .fv-stage .fv-cap span.on{border-radius:.2em;padding:0 .05em}
@@ -5281,8 +5283,9 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
               <div class="fv-prev-layout">
                 <div class="fv-stage-wrap">
                   <div class="fv-stage" id="fv-stage">
-                    <video class="fv-prev-vid is-on" id="fv-prev-video" muted playsinline preload="auto"></video>
-                    <video class="fv-prev-vid" id="fv-prev-video-b" muted playsinline preload="auto"></video>
+                    <video class="fv-prev-vid is-on" id="fv-prev-video" muted playsinline webkit-playsinline preload="auto"></video>
+                    <video class="fv-prev-vid" id="fv-prev-video-b" muted playsinline webkit-playsinline preload="auto"></video>
+                    <img class="fv-prev-poster" id="fv-prev-poster" alt="" hidden>
                     <div class="fv-cap" id="fv-prev-cap"></div>
                   </div>
                   <div class="fv-stage-controls">
@@ -5338,8 +5341,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                     </div>
                   </div>
                   <div class="field">
-                    <label>Size <span id="fv-cap-size-val">14</span>px</label>
-                    <input type="range" id="fv-cap-size" min="12" max="96" value="14" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
+                    <label>Size <span id="fv-cap-size-val">64</span>px at 1080p</label>
+                    <input type="range" id="fv-cap-size" min="24" max="96" value="64" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
                   <div class="cm-grid-2">
                     <div class="field" style="margin:0">
@@ -5524,6 +5527,14 @@ import {
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
 import { fillCaptionFontSelect, ensureCaptionGoogleFonts } from '/lib/caption-fonts.js'
+import {
+  FACELESS_CAPTION_DEFAULT_SIZE,
+  captionPreviewPx,
+  clipPlaybackRange,
+  clipTimelineOffset,
+  previewLoadTarget,
+  youtubeWatchUrl,
+} from '/lib/faceless-preview.js'
 import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } from '/lib/enforce.js'
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
@@ -8889,18 +8900,22 @@ async function fvAttachYoutubeBroll(job) {
   return job
 }
 
+function fvPlaybackPlan(clip) {
+  const watch = youtubeWatchUrl(clip)
+  if (watch && typeof api?.download?.clipUrl === 'function') {
+    const aspect = fvState.media?.aspect || fvState.aspect
+    const frame = aspect === '9:16' ? '9:16' : 'original'
+    const { start, end } = clipPlaybackRange(clip)
+    return { url: api.download.clipUrl(watch, start, end, frame), trimmed: true }
+  }
+  return { url: String(clip?.url || ''), trimmed: false }
+}
+
 function fvTimelineForRender(timeline) {
-  const aspect = fvState.media?.aspect || fvState.aspect
-  const frame = aspect === '9:16' ? '9:16' : 'original'
   return (timeline || []).map((seg) => {
-    const watch = seg.youtube_url || (seg.source === 'youtube' ? seg.pexels_url : '')
-    if (!watch) return seg
-    const start = Number(seg.clip_start) || 0
-    const len = Math.max(4, (Number(seg.end) || 0) - (Number(seg.start) || 0))
-    return {
-      ...seg,
-      url: api.download.clipUrl(watch, start, +(start + len).toFixed(2), frame),
-    }
+    const plan = fvPlaybackPlan(seg)
+    if (!plan.trimmed) return seg
+    return { ...seg, url: plan.url, clip_start: 0 }
   })
 }
 
@@ -9023,7 +9038,7 @@ function fvCapStyle() {
   const weight = Number(opt?.dataset?.weight || 0)
   return {
     font: document.getElementById('fv-cap-font')?.value || 'Bangers, cursive',
-    size: parseInt(document.getElementById('fv-cap-size')?.value || '14', 10),
+    size: parseInt(document.getElementById('fv-cap-size')?.value || String(FACELESS_CAPTION_DEFAULT_SIZE), 10),
     color: document.getElementById('fv-cap-color')?.value || '#ffffff',
     highlight: document.getElementById('fv-cap-hl')?.value || '#ff3b4a',
     letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
@@ -9144,9 +9159,10 @@ window.fvApplyCapStyle = () => {
   if (!cap) return
   const s = fvCapStyle()
   const opt = document.getElementById('fv-cap-font')?.selectedOptions?.[0]
+  const stage = document.getElementById('fv-stage')
   cap.style.fontFamily = s.font
   cap.style.fontWeight = opt?.dataset?.weight || ''
-  cap.style.fontSize = s.size + 'px'
+  cap.style.fontSize = captionPreviewPx(s.size, stage?.clientHeight) + 'px'
   cap.style.color = s.color
   cap.style.letterSpacing = s.letterSpacing + 'px'
   cap.style.textShadow = '0 2px 8px rgba(0,0,0,.85), 0 0 2px #000'
@@ -9168,8 +9184,10 @@ function fvPersistPreviewSettings() {
   } catch {}
 }
 
-fillCaptionFontSelect(document.getElementById('fv-cap-font'))
-syncFvFontUi()
+try {
+  fillCaptionFontSelect(document.getElementById('fv-cap-font'))
+  syncFvFontUi()
+} catch (_) {}
 
 function fvMusicEl() {
   return document.getElementById('fv-prev-music')
@@ -9305,10 +9323,6 @@ function fvActiveClipAt(t) {
   return last
 }
 
-function fvClipOffset(clip, t) {
-  return Math.max(0, Number(clip.clip_start || 0) + (t - Number(clip.start || 0)))
-}
-
 function fvNextClipAfter(clip) {
   const tl = fvState.media?.timeline || []
   const i = tl.indexOf(clip)
@@ -9339,25 +9353,60 @@ function fvShowVid(el) {
   })
 }
 
+function fvSetPrevStatus(msg, kind) {
+  const el = document.getElementById('fv-prev-status')
+  if (!el) return
+  if (!msg) { el.style.display = 'none'; el.textContent = ''; return }
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.textContent = msg
+}
+
+function fvShowPreviewPoster(clip) {
+  const img = document.getElementById('fv-prev-poster')
+  if (!img) return
+  const src = clip?.preview || ''
+  if (src) {
+    if (img.getAttribute('src') !== src) img.src = src
+    img.hidden = false
+  }
+}
+
+function fvHidePreviewPoster() {
+  const img = document.getElementById('fv-prev-poster')
+  if (img) img.hidden = true
+}
+
+function fvOnPreviewMediaError(err) {
+  const msg = (err && (err.message || err.code)) ? String(err.message || err.code) : 'This clip could not play in preview'
+  fvSetPrevStatus(msg, 'err')
+}
+
 function fvLoadClipOn(video, clip, t, play) {
-  if (!video || !clip?.url) return false
-  const offset = fvClipOffset(clip, t)
-  const same = video.dataset.clipUrl === clip.url
+  if (!video || !clip) return false
+  const plan = fvPlaybackPlan(clip)
+  if (!plan.url) return false
+  const offset = clipTimelineOffset(clip, t, { trimmed: plan.trimmed })
+  const same = video.dataset.clipUrl === plan.url
   const seekPlay = () => {
     try {
       if (Math.abs((video.currentTime || 0) - offset) > 0.08) video.currentTime = offset
     } catch (_) {}
-    if (play && fvState.preview?.playing) video.play().catch(() => {})
+    if (play && fvState.preview?.playing) {
+      video.play().catch((e) => fvOnPreviewMediaError(e))
+    }
   }
   if (same) {
     seekPlay()
     return video.readyState >= 2
   }
-  video.dataset.clipUrl = clip.url
-  video.src = clip.url
+  video.dataset.clipUrl = plan.url
+  video.onerror = () => fvOnPreviewMediaError(video.error)
+  video.src = plan.url
   video.onloadeddata = () => {
     seekPlay()
     video.onloadeddata = null
+    fvHidePreviewPoster()
   }
   try { video.load() } catch (_) {}
   return false
@@ -9366,49 +9415,51 @@ function fvLoadClipOn(video, clip, t, play) {
 function fvEnsureClip(t) {
   const { on, off } = fvVidPair()
   const clip = fvActiveClipAt(t)
-  if (!clip?.url || !on) return
+  const plan = clip ? fvPlaybackPlan(clip) : null
+  if (!plan?.url || !on) {
+    if (clip) fvShowPreviewPoster(clip)
+    return
+  }
   const playing = !!fvState.preview?.playing
+  const onHasUrl = on.dataset.clipUrl === plan.url
+  const offHasReadyUrl = !!(off && off.dataset.clipUrl === plan.url && off.readyState >= 2)
+  const target = previewLoadTarget({ onHasUrl, offHasReadyUrl })
 
-  if (on.dataset.clipUrl === clip.url) {
-    const want = fvClipOffset(clip, t)
+  if (!onHasUrl && !offHasReadyUrl) fvShowPreviewPoster(clip)
+
+  if (target === 'on' && onHasUrl) {
+    const want = clipTimelineOffset(clip, t, { trimmed: plan.trimmed })
     if (Math.abs((on.currentTime || 0) - want) > 0.45) {
       try { on.currentTime = want } catch (_) {}
     }
-    if (playing && on.paused) on.play().catch(() => {})
-  } else if (off && off.dataset.clipUrl === clip.url && off.readyState >= 2) {
+    if (playing && on.paused) on.play().catch((e) => fvOnPreviewMediaError(e))
+    if (on.readyState >= 2) fvHidePreviewPoster()
+  } else if (target === 'swap') {
     fvLoadClipOn(off, clip, t, playing)
     fvShowVid(off)
-  } else if (off) {
-    try {
-      if (on.ended && on.duration) on.currentTime = Math.max(0, on.duration - 0.05)
-    } catch (_) {}
-    const ready = fvLoadClipOn(off, clip, t, false)
-    const swap = () => {
-      const now = document.getElementById('fv-prev-voice')?.currentTime ?? t
-      if (fvActiveClipAt(now)?.url !== clip.url) return
-      fvShowVid(off)
-      if (fvState.preview?.playing) off.play().catch(() => {})
-    }
-    if (ready) swap()
-    else off.oncanplay = () => { off.oncanplay = null; swap() }
+    fvHidePreviewPoster()
   } else {
     fvLoadClipOn(on, clip, t, playing)
+    fvShowVid(on)
   }
 
   const pair = fvVidPair()
   const hidden = pair.off
   const next = fvNextClipAfter(clip)
+  const nextPlan = next ? fvPlaybackPlan(next) : null
   if (
     hidden &&
-    next?.url &&
-    pair.on?.dataset.clipUrl === clip.url &&
-    hidden.dataset.clipUrl !== next.url &&
+    nextPlan?.url &&
+    pair.on?.dataset.clipUrl === plan.url &&
+    hidden.dataset.clipUrl !== nextPlan.url &&
     (clip.end - t) < 2.8
   ) {
-    hidden.dataset.clipUrl = next.url
-    hidden.src = next.url
+    hidden.dataset.clipUrl = nextPlan.url
+    hidden.src = nextPlan.url
     hidden.onloadeddata = () => {
-      try { hidden.currentTime = Number(next.clip_start || 0) } catch (_) {}
+      try {
+        hidden.currentTime = clipTimelineOffset(next, next.start, { trimmed: nextPlan.trimmed })
+      } catch (_) {}
       hidden.onloadeddata = null
     }
   }
@@ -9464,14 +9515,23 @@ window.fvTogglePreview = () => {
 window.fvPlayPreview = () => {
   const voice = document.getElementById('fv-prev-voice')
   const music = fvMusicEl()
-  if (!voice?.src) return
+  if (!voice?.src) {
+    fvSetPrevStatus('Preview has no voiceover yet', 'err')
+    return
+  }
+  fvSetPrevStatus('')
   if (!fvState.preview) fvState.preview = {}
   clearTimeout(fvState.preview._auditionTimer)
   fvState.preview.playing = true
   document.getElementById('fv-prev-play').textContent = '⏸ Pause'
   fvEnsureClip(voice.currentTime || 0)
-  voice.play().catch(() => {})
-  fvVidPair().on?.play().catch(() => {})
+  voice.play().catch((e) => {
+    fvState.preview.playing = false
+    const btn = document.getElementById('fv-prev-play')
+    if (btn) btn.textContent = '▶ Play'
+    fvSetPrevStatus(e?.message || 'Could not play preview. Click Play again.', 'err')
+  })
+  fvVidPair().on?.play().catch((e) => fvOnPreviewMediaError(e))
   if (fvMusicTrackSrc() && music) {
     music.volume = fvState.preview.musicVol ?? 0.25
     music.loop = true
@@ -9844,6 +9904,16 @@ function fvInitPreview() {
   const voice = document.getElementById('fv-prev-voice')
   voice.src = media.voiceover_url
   voice.onended = () => fvPausePreview()
+  voice.onerror = () => fvSetPrevStatus('Voiceover could not load', 'err')
+  document.querySelectorAll('.fv-prev-vid').forEach((v) => {
+    try {
+      v.pause()
+      v.removeAttribute('src')
+      delete v.dataset.clipUrl
+      v.load()
+    } catch (_) {}
+  })
+  fvShowPreviewPoster(media.timeline?.[0] || media.clips?.[0])
 
   document.getElementById('fv-music-vol').value = String(Math.round((fvState.preview.musicVol ?? 0.25) * 100))
   document.getElementById('fv-music-vol-val').textContent = document.getElementById('fv-music-vol').value
@@ -9856,9 +9926,21 @@ function fvInitPreview() {
   fvSelectMusic(musicId)
   fvSideTab('broll')
   fvRenderBrollEditor()
-  fvRenderFontMenu()
+  try { fillCaptionFontSelect(document.getElementById('fv-cap-font')) } catch (_) {}
+  syncFvFontUi()
   fvApplyCapStyle()
+  fvBindStageResize()
   fvSeekPreview(0)
+}
+
+function fvBindStageResize() {
+  const stage = document.getElementById('fv-stage')
+  if (!stage || typeof ResizeObserver === 'undefined') return
+  if (fvState.preview?._stageObs) return
+  const obs = new ResizeObserver(() => fvApplyCapStyle())
+  obs.observe(stage)
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview._stageObs = obs
 }
 
 window.fvContinueToExport = () => {
