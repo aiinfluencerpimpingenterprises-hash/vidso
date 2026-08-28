@@ -7,15 +7,18 @@
   --glow:233,75,88;--r:20px;
   color-scheme:dark;
 }
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Semibold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Clash Grotesk';src:url('/fonts/ClashGrotesk-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--txt);
-  font-family:'Inter','SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  font-family:'Clash Grotesk','Inter','SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:500
 }
 a{color:inherit;text-decoration:none}
-h1,h2,h3,.logo{font-family:'Bricolage Grotesque','Inter',sans-serif;color:var(--txt)}
+h1,h2,h3,.logo{font-family:'Clash Grotesk','Inter',sans-serif;color:var(--txt);font-weight:700}
 .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
 section{position:relative;z-index:1}
 ::selection{background:rgba(233,75,88,.35);color:var(--txt)}
@@ -76,7 +79,7 @@ nav{
 .pair-vidso{background:transparent}
 .pair-x{
   display:flex;align-items:center;height:52px;
-  font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;font-weight:800;color:var(--faint);line-height:1
+  font-family:'Clash Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--faint);line-height:1
 }
 .pair-caption{
   margin:0;font-size:13px;font-weight:700;letter-spacing:.08em;
@@ -99,7 +102,7 @@ nav{
 .hero-fan-card.is-mark{
   background:var(--grad);display:grid;place-items:center;border-color:rgba(255,255,255,.2)
 }
-.hero-fan-mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:2.4rem;color:#fff}
+.hero-fan-mark{font-family:'Clash Grotesk',sans-serif;font-weight:700;font-size:2.4rem;color:#fff}
 .hero-fan-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero h1{
   font-size:clamp(2rem,6vw,4.2rem);font-weight:800;letter-spacing:-.04em;line-height:.95;

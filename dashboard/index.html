@@ -190,7 +190,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 }
 .topnav-logo:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
 .topnav-logo img{width:26px;height:26px;object-fit:contain;flex-shrink:0;display:block}
-.brand{font-family:'Bricolage Grotesque',sans-serif;font-size:1.22rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1;display:block}
+.brand{font-family:'Clash Grotesk',sans-serif;font-size:1.22rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1;display:block}
 .topnav-primary{
   display:flex;align-items:center;justify-content:center;gap:var(--nav-gap);min-width:0;flex:0 1 auto;height:100%;
   overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
@@ -2263,14 +2263,16 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
   height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--border);
   background:rgba(16,16,18,.88);color:var(--ink);font:inherit;font-size:.78rem;cursor:pointer
 }
-.fs-temp-btn.is-on,.fs-temp-btn[aria-pressed="true"]{border-color:#d8ff3c;color:#d8ff3c}
+.fs-temp-btn.is-on,.fs-temp-btn[aria-pressed="true"],body.fs-temp-on .fs-temp-btn{
+  border-color:var(--a1);color:#fff;background:var(--a1)
+}
 #fs-pop{position:relative;z-index:70}
 .fs-lime-btn,.btn.fs-lime-btn{
-  background:#d8ff3c;color:#111;border:none;font-weight:750;border-radius:999px
+  background:var(--a1);color:#fff;border:none;font-weight:750;border-radius:999px
 }
-.fs-lime-btn:hover,.btn.fs-lime-btn:hover{filter:brightness(1.05);color:#111}
-.fs-hero-center{align-items:center;text-align:center;margin:48px 0 22px}
-.fs-home-tag{text-align:center;margin:18px 0 14px;color:rgba(255,255,255,.45);font-size:.72rem;letter-spacing:.08em;font-weight:700}
+.fs-lime-btn:hover,.btn.fs-lime-btn:hover{filter:brightness(1.05);color:#fff}
+.fs-hero-center{align-items:center;text-align:center;margin:32px auto 18px;width:100%}
+.fs-home-tag{text-align:center;margin:18px 0 14px;color:rgba(255,255,255,.45);font-size:.72rem;letter-spacing:.08em;font-weight:700;font-family:var(--font-heading)}
 .fs-composer-sc{max-width:760px;margin:0 auto 8px;padding:16px 16px 12px;border-radius:22px}
 .fs-composer-sc .fs-topic{width:100%;min-height:64px;display:block}
 .fs-composer-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
@@ -2283,7 +2285,7 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
   font:inherit;font-size:.8rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px
 }
 .fs-send{
-  width:38px;height:38px;border:none;border-radius:999px;background:#d8ff3c;color:#111;cursor:pointer;
+  width:38px;height:38px;border:none;border-radius:999px;background:var(--a1);color:#fff;cursor:pointer;
   display:grid;place-items:center;flex-shrink:0
 }
 .fs-send:disabled{opacity:.45;cursor:not-allowed}
@@ -2319,7 +2321,7 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 }
 .fs-search-card{width:min(640px,100%);min-height:320px}
 .fs-search-field,.fs-board-search{
-  display:flex;align-items:center;gap:8px;border:1px solid #d8ff3c;border-radius:12px;padding:8px 10px;margin-bottom:12px
+  display:flex;align-items:center;gap:8px;border:1px solid var(--a1);border-radius:12px;padding:8px 10px;margin-bottom:12px
 }
 .fs-search-field input,.fs-board-search input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit}
 .fs-search-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 12px;color:rgba(255,255,255,.45);text-align:center}
@@ -2349,7 +2351,7 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-board-card{border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .fs-board-open{border:none;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
 .fs-board-open span{display:block;margin-top:4px;font-size:.75rem;color:rgba(255,255,255,.45)}
-.fs-board-share{align-self:flex-start;border:none;background:transparent;color:#d8ff3c;font:inherit;font-size:.75rem;cursor:pointer}
+.fs-board-share{align-self:flex-start;border:none;background:transparent;color:var(--a1);font:inherit;font-size:.75rem;cursor:pointer}
 .fs-conn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px}
 .fs-conn-card{
   display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--border);border-radius:16px;
@@ -2377,17 +2379,29 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
   padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(18,18,20,.94)
 }
 .fs-mem-bar input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.9rem}
-.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:calc(100vh - 80px);display:flex;flex-direction:column}
+.fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:calc(100vh - 80px);display:flex;flex-direction:column;background:#101012}
 .fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
 .fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:40vh;overflow:auto;padding-bottom:var(--fs-composer-h,168px)}
-.fs-composer-dock{
-  position:absolute;left:0;right:0;bottom:8px;z-index:8;padding:12px 0 0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(16,16,18,0),rgba(16,16,18,.88) 36%,rgba(16,16,18,.96) 70%);
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:24px}
+.fs-compose-stick{
+  position:sticky;top:0;z-index:9;width:100%;
+  padding:12px 0 16px;margin:0 0 8px;
+  background:linear-gradient(180deg,#101012 72%,rgba(16,16,18,.92) 88%,rgba(16,16,18,0))
 }
+.fs-home.is-temp{min-height:calc(100vh - 140px);justify-content:center;padding-bottom:8vh}
+.fs-home.is-temp .fs-compose-stick{position:relative;background:transparent;padding-top:8vh}
+.fs-temp-mark{
+  display:inline-flex;align-items:center;height:28px;padding:0 12px;margin:0 0 12px;
+  border-radius:999px;border:1px solid rgba(233,75,88,.45);background:rgba(233,75,88,.12);
+  color:#f3b4b8;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase
+}
+.fs-hero.fs-hero-center{
+  align-items:center;text-align:center;width:100%;margin:8px auto 18px
+}
+.fs-hero.fs-hero-center .fs-hero-title{width:100%;text-align:center;margin-left:auto;margin-right:auto}
 .fs-home.has-composer .fs-composer{
-  pointer-events:auto;max-width:920px;margin:0 auto;padding:12px 14px;
+  pointer-events:auto;max-width:760px;margin:0 auto;padding:12px 14px;
   border:1px solid var(--border);border-radius:18px;
   background:rgba(18,18,20,.94);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
@@ -2399,19 +2413,22 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 #panel-facelessstudio select,
 .fs-show,
 .fs-show button{
-  font-family:Geist,'Inter Tight',Inter,sans-serif
+  font-family:'Clash Grotesk','SF Pro Display',Inter,sans-serif
 }
 #panel-facelessstudio .fs-hero-title,
 #panel-facelessstudio .fs-page-head h1,
+#panel-facelessstudio .fs-board-head h1,
 #panel-facelessstudio .fs-rail-brand,
 #panel-facelessstudio .fs-g-h,
+#panel-facelessstudio .fs-proj-empty h2,
 .fs-show-titles h2{
-  font-family:Geist,'Clash Grotesk',sans-serif;letter-spacing:-.04em
+  font-family:'Clash Grotesk',sans-serif;letter-spacing:-.04em;font-weight:700
 }
 .fs-gallery{padding:0 0 28px}
 .fs-shot-grid.fs-g-grid,.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .fs-hero{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;margin:0 0 22px}
-.fs-hero-title{margin:0;font-weight:800;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
+.fs-hero.fs-hero-center{align-items:center;text-align:center}
+.fs-hero-title{margin:0;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
 .fs-hero-title .accent{color:var(--a1)}
 .fs-hero-sub{margin:0;color:rgba(245,245,244,.5);font-size:.95rem;font-weight:450}
 .fs-shot{
