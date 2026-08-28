@@ -383,7 +383,7 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
 
 test('paid Pro email is granted when Whop has not provisioned yet', () => {
   const off = { PAYWALL_BYPASS: '0' }
-  for (const email of ['ntuamassoma@gmail.com', 'faisalym3@gmail.com', 'margik2803@gmail.com']) {
+  for (const email of ['ntuamassoma@gmail.com', 'faisalym3@gmail.com', 'margik2803@gmail.com', 'subramaniamvishwak@gmail.com']) {
     const paid = {
       email,
       plan: 'free',
