@@ -3,7 +3,11 @@ import assert from 'node:assert/strict'
 import {
   FACELESS_CAPTION_DEFAULT_SIZE,
   FACELESS_CAPTION_EXPORT_HEIGHT,
+  FACELESS_CAPTION_SHADOW_CSS,
+  captionLayerShadow,
   captionPreviewPx,
+  captionPreviewStrokePx,
+  captionStrokeShadow,
   clipPlaybackRange,
   clipTimelineOffset,
   previewLoadTarget,
@@ -47,4 +51,20 @@ test('first preview clip loads on the visible player', () => {
   assert.equal(previewLoadTarget({ onHasUrl: false, offHasReadyUrl: false }), 'on')
   assert.equal(previewLoadTarget({ onHasUrl: true, offHasReadyUrl: false }), 'on')
   assert.equal(previewLoadTarget({ onHasUrl: false, offHasReadyUrl: true }), 'swap')
+})
+
+test('caption stroke and shadow compose a CSS text-shadow', () => {
+  assert.equal(captionLayerShadow({}), 'none')
+  assert.equal(captionLayerShadow({ shadow: true }), FACELESS_CAPTION_SHADOW_CSS)
+  assert.equal(captionPreviewStrokePx(3, 540), 1.5)
+  assert.match(captionStrokeShadow('#000000', 2), /-2px -2px 0 #000000/)
+  const both = captionLayerShadow({
+    shadow: true,
+    stroke: true,
+    strokeColor: '#000000',
+    strokeWidth: 3,
+    previewWidth: 1.5,
+  })
+  assert.match(both, /#000000/)
+  assert.ok(both.includes(FACELESS_CAPTION_SHADOW_CSS))
 })

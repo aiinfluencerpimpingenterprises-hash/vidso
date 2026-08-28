@@ -5358,9 +5358,27 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
                     <label>Letter spacing <span id="fv-cap-ls-val">0</span>px</label>
                     <input type="range" id="fv-cap-ls" min="-2" max="8" step="0.5" value="0" oninput="document.getElementById('fv-cap-ls-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
-                  <div class="field" style="margin-top:12px">
-                    <label>Shadow</label>
-                    <button type="button" class="fv-chip" id="fv-cap-shadow" aria-pressed="false" onclick="fvToggleCapShadow()">Off</button>
+                  <div class="cm-grid-2" style="margin-top:12px">
+                    <div class="field" style="margin:0">
+                      <label>Shadow</label>
+                      <button type="button" class="fv-chip" id="fv-cap-shadow" aria-pressed="false" onclick="fvToggleCapShadow()">Off</button>
+                    </div>
+                    <div class="field" style="margin:0">
+                      <label>Stroke</label>
+                      <button type="button" class="fv-chip" id="fv-cap-stroke" aria-pressed="false" onclick="fvToggleCapStroke()">Off</button>
+                    </div>
+                  </div>
+                  <div id="fv-cap-stroke-opts" hidden style="margin-top:12px">
+                    <div class="cm-grid-2">
+                      <div class="field" style="margin:0">
+                        <label>Stroke color</label>
+                        <input type="color" id="fv-cap-stroke-color" value="#000000" oninput="fvApplyCapStyle()" style="width:100%;height:36px;border:none;background:transparent;cursor:pointer">
+                      </div>
+                      <div class="field" style="margin:0">
+                        <label>Width <span id="fv-cap-stroke-w-val">3</span>px</label>
+                        <input type="range" id="fv-cap-stroke-w" min="1" max="8" value="3" oninput="document.getElementById('fv-cap-stroke-w-val').textContent=this.value;fvApplyCapStyle()">
+                      </div>
+                    </div>
                   </div>
                   </div>
 
@@ -5533,7 +5551,12 @@ import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } 
 import { fillCaptionFontSelect, ensureCaptionGoogleFonts } from '/lib/caption-fonts.js'
 import {
   FACELESS_CAPTION_DEFAULT_SIZE,
+  FACELESS_CAPTION_SHADOW_CSS,
+  FACELESS_CAPTION_STROKE_DEFAULT_COLOR,
+  FACELESS_CAPTION_STROKE_DEFAULT_WIDTH,
+  captionLayerShadow,
   captionPreviewPx,
+  captionPreviewStrokePx,
   clipPlaybackRange,
   clipTimelineOffset,
   previewLoadTarget,
@@ -9047,17 +9070,35 @@ function fvCapStyle() {
     highlight: document.getElementById('fv-cap-hl')?.value || '#ffffff',
     letterSpacing: parseFloat(document.getElementById('fv-cap-ls')?.value || '0'),
     shadow: document.getElementById('fv-cap-shadow')?.getAttribute('aria-pressed') === 'true',
+    stroke: document.getElementById('fv-cap-stroke')?.getAttribute('aria-pressed') === 'true',
+    strokeColor: document.getElementById('fv-cap-stroke-color')?.value || FACELESS_CAPTION_STROKE_DEFAULT_COLOR,
+    strokeWidth: parseInt(document.getElementById('fv-cap-stroke-w')?.value || String(FACELESS_CAPTION_STROKE_DEFAULT_WIDTH), 10),
     weight: weight || undefined,
   }
+}
+
+function fvSetCapChip(id, on, labelOn = 'On', labelOff = 'Off') {
+  const btn = document.getElementById(id)
+  if (!btn) return
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  btn.classList.toggle('active', on)
+  btn.textContent = on ? labelOn : labelOff
 }
 
 window.fvToggleCapShadow = () => {
   const btn = document.getElementById('fv-cap-shadow')
   if (!btn) return
+  fvSetCapChip('fv-cap-shadow', btn.getAttribute('aria-pressed') !== 'true')
+  fvApplyCapStyle()
+}
+
+window.fvToggleCapStroke = () => {
+  const btn = document.getElementById('fv-cap-stroke')
+  if (!btn) return
   const on = btn.getAttribute('aria-pressed') !== 'true'
-  btn.setAttribute('aria-pressed', on ? 'true' : 'false')
-  btn.classList.toggle('active', on)
-  btn.textContent = on ? 'On' : 'Off'
+  fvSetCapChip('fv-cap-stroke', on)
+  const opts = document.getElementById('fv-cap-stroke-opts')
+  if (opts) opts.hidden = !on
   fvApplyCapStyle()
 }
 
@@ -9180,7 +9221,16 @@ window.fvApplyCapStyle = () => {
   cap.style.fontSize = captionPreviewPx(s.size, stage?.clientHeight) + 'px'
   cap.style.color = s.color
   cap.style.letterSpacing = s.letterSpacing + 'px'
-  cap.style.textShadow = s.shadow ? '0 2px 8px rgba(0,0,0,.85), 0 0 2px #000' : 'none'
+  const previewStroke = s.stroke
+    ? captionPreviewStrokePx(s.strokeWidth, stage?.clientHeight)
+    : 0
+  cap.style.textShadow = captionLayerShadow({
+    shadow: s.shadow,
+    stroke: s.stroke,
+    strokeColor: s.strokeColor,
+    strokeWidth: s.strokeWidth,
+    previewWidth: previewStroke,
+  })
   cap.querySelectorAll('span.on').forEach(el => {
     el.style.color = s.highlight
     el.style.background = 'transparent'
@@ -10084,7 +10134,12 @@ window.fvStartExport = async (opts = {}) => {
         letterSpacing: caption.letterSpacing,
         weight: caption.weight,
         shadow: !!caption.shadow,
-        textShadow: caption.shadow ? '0 2px 8px rgba(0,0,0,.85), 0 0 2px #000' : 'none',
+        textShadow: caption.shadow ? FACELESS_CAPTION_SHADOW_CSS : 'none',
+        stroke: !!caption.stroke,
+        strokeColor: caption.strokeColor,
+        strokeWidth: caption.stroke ? caption.strokeWidth : 0,
+        outline: caption.stroke ? caption.strokeColor : 'none',
+        outlineWidth: caption.stroke ? caption.strokeWidth : 0,
       },
       music: musicTrack?.url
         ? { url: musicTrack.url, volume: fvState.preview?.musicVol ?? 0.25 }
