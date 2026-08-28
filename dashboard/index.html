@@ -20,8 +20,12 @@
     var q = location.search || ''
     var on = /(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview'
     var off = /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
+    var previewHost = /\.vercel\.app$/.test(host)
     if (off) localStorage.removeItem('vidso_ui_preview')
     else if (on) {
+      localStorage.setItem('vidso_ui_preview', '1')
+      ui = true
+    } else if (previewHost && !token && !oauthReturn) {
       localStorage.setItem('vidso_ui_preview', '1')
       ui = true
     } else if (token || oauthReturn) {
@@ -3469,6 +3473,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
       </div>
     </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <a class="topnav-item" href="/mcp">MCP</a>
+    <a class="topnav-item" href="/youtube">YouTube</a>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
@@ -3529,6 +3535,8 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <a class="topnav-item" href="/mcp">MCP</a>
+  <a class="topnav-item" href="/youtube">YouTube</a>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
@@ -5716,7 +5724,8 @@ function uiPreviewForced() {
   try {
     const q = new URLSearchParams(location.search || '')
     const path = (location.pathname || '').replace(/\/+$/, '') || '/'
-    return q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui' || path === '/preview'
+    const previewHost = /\.vercel\.app$/.test(location.hostname || '')
+    return q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui' || path === '/preview' || previewHost
   } catch (_) { return false }
 }
 

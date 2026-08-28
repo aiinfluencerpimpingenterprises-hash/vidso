@@ -92,7 +92,7 @@
   .logo img{width:28px;height:28px;object-fit:contain}
   .logo .mark{width:28px;height:28px;border-radius:8px;background:#fff;display:grid;place-items:center}
   .logo .mark svg{width:14px;height:14px}
-  .nav-links{display:flex;gap:32px;font-size:14px;font-weight:500;color:var(--muted);justify-self:center}
+  .nav-links{display:flex;gap:24px;font-size:14px;font-weight:500;color:var(--muted);justify-self:center}
   .nav-links a{transition:color .2s}
   .nav-links a:hover{color:var(--txt)}
   .nav-cta{display:flex;align-items:center;gap:12px;justify-self:end}
@@ -899,6 +899,8 @@
       <div class="nav-links">
         <a href="#why-vidso">Features</a>
         <a href="#how">How it works</a>
+        <a href="/mcp">MCP</a>
+        <a href="/youtube">YouTube</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -913,6 +915,8 @@
     <div class="nav-drawer" id="navDrawer">
       <a href="#why-vidso" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
       <a href="#how" onclick="document.querySelector('header').classList.remove('menu-open')">How it works</a>
+      <a href="/mcp" onclick="document.querySelector('header').classList.remove('menu-open')">MCP</a>
+      <a href="/youtube" onclick="document.querySelector('header').classList.remove('menu-open')">YouTube</a>
       <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing</a>
       <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
       <a href="/login" onclick="document.querySelector('header').classList.remove('menu-open')">Sign in</a>
@@ -1637,7 +1641,7 @@
         </div>
         <div>
           <h3>Claude × Vidso</h3>
-          <p>Paste your personal connector URL into Claude. Live tools can check YouTube and upload a finished video. Scripts and renders still run in Vidso.</p>
+          <p>Paste your personal connector link into Claude. Then ask Claude to check YouTube or upload a finished video.</p>
           <span class="lp-teaser-go">Open MCP</span>
         </div>
       </a>
@@ -1649,7 +1653,7 @@
         </div>
         <div>
           <h3>YouTube × Vidso</h3>
-          <p>Render, title, and publish without leaving Vidso. You review metadata before anything goes out.</p>
+          <p>Uploads can be fully automated. Connect once, then Vidso or Claude can publish finished videos for you.</p>
           <span class="lp-teaser-go">Open YouTube</span>
         </div>
       </a>

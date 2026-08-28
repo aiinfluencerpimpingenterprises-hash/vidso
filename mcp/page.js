@@ -1,10 +1,12 @@
 import {
+  MCP_APP_TOOLS,
   MCP_CONNECT_STEPS,
   MCP_DEMOS,
   MCP_FAQ,
   MCP_FEATURE_CARDS,
   MCP_HERO,
   MCP_PROMO,
+  MCP_TOOL_COPY,
   MCP_WORKFLOW_CATEGORIES,
   MCP_WORKFLOWS,
 } from '/lib/mcp-page.js'
@@ -120,16 +122,36 @@ initAccordion()
 initCopyButtons()
 bindPlaceholders()
 
+function paintTools(list) {
+  const root = document.getElementById('tools-grid')
+  if (!root) return
+  const hrefFor = {
+    youtube_status: '/connections',
+    youtube_connect_url: '/connections',
+    youtube_upload: '/connections',
+  }
+  const fallback = Object.entries(MCP_TOOL_COPY).map(([name, copy]) => ({ name, ...copy }))
+  const tools = Array.isArray(list) && list.length ? list : fallback
+  root.innerHTML = tools.map((t) => {
+    const copy = MCP_TOOL_COPY[t.name] || {}
+    return toolCardHtml({
+      name: t.name,
+      title: copy.title || t.title || t.name,
+      description: copy.description || t.description || '',
+      href: hrefFor[t.name] || '/connections',
+    })
+  }).join('')
+}
+
+paintTools()
+const appTools = document.getElementById('app-tools-grid')
+if (appTools) {
+  appTools.innerHTML = MCP_APP_TOOLS.map((t) => toolCardHtml(t)).join('')
+}
+
 loadMcpTools().then((data) => {
   const url = data?.server?.url || defaultUrl
   const input = document.getElementById('mcp-url')
   if (input) input.value = url
-  const tools = Array.isArray(data.tools) ? data.tools : []
-  const root = document.getElementById('tools-grid')
-  root.innerHTML = tools.length
-    ? tools.map((t) => toolCardHtml({ name: t.name, description: t.description, image: '' })).join('')
-    : '<p class="tools-empty">The live registry returned no tools.</p>'
-  bindPlaceholders(root)
-}).catch(() => {
-  document.getElementById('tools-grid').innerHTML = '<p class="tools-empty">Could not load the live tool registry.</p>'
-})
+  if (Array.isArray(data.tools) && data.tools.length) paintTools(data.tools)
+}).catch(() => {})

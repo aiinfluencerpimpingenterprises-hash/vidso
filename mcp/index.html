@@ -11,6 +11,7 @@
 <script src="/brand.js"></script>
 </head>
 <body>
+<div id="topo-bg" aria-hidden="true"></div>
 <p class="sr-only" id="copy-live" aria-live="polite"></p>
 <header>
   <div class="wrap" style="position:relative">
@@ -19,6 +20,7 @@
       <div class="nav-links">
         <a href="/mcp" class="is-on">MCP</a>
         <a href="/youtube">YouTube</a>
+        <a href="/faceless-studio">Faceless Studio</a>
         <a href="/home#pricing">Pricing</a>
       </div>
       <div class="nav-cta">
@@ -32,6 +34,7 @@
     <div class="nav-drawer">
       <a href="/mcp">MCP</a>
       <a href="/youtube">YouTube</a>
+      <a href="/faceless-studio">Faceless Studio</a>
       <a href="/home#pricing">Pricing</a>
       <a href="/login">Sign in</a>
       <a class="btn btn-primary" href="/signup">Sign up</a>
@@ -73,8 +76,8 @@
   <section class="sec" id="how">
     <div class="wrap">
       <div class="s-head">
-        <h2>HOW DOES MCP WORK?</h2>
-        <p>Ask Claude. Vidso runs the YouTube tools.</p>
+        <h2>HOW DOES IT WORK?</h2>
+        <p>Ask Claude in plain English. Vidso talks to YouTube for you.</p>
       </div>
       <div class="tablist" id="demo-tabs" role="tablist" aria-label="MCP examples"></div>
       <div class="demo" id="demo-root"></div>
@@ -84,8 +87,8 @@
   <section class="sec" id="workflows">
     <div class="wrap">
       <div class="s-head">
-        <h2>WHAT YOU CAN BUILD WITH MCP</h2>
-        <p>Only workflows the live server can run. Images are empty until you add them.</p>
+        <h2>WHAT YOU CAN DO</h2>
+        <p>Check YouTube, connect a channel, or send a finished video. Click a card to open it.</p>
       </div>
       <div class="wf-layout">
         <div class="wf-rail" id="wf-rail" role="tablist" aria-label="Workflow categories"></div>
@@ -97,10 +100,20 @@
   <section class="sec" id="tools">
     <div class="wrap">
       <div class="s-head">
-        <h2>EVERY VIDSO MCP TOOL</h2>
-        <p>Loaded from the live server registry. If a tool is removed, it disappears here.</p>
+        <h2>WHAT CLAUDE CAN DO</h2>
+        <p>These are the live YouTube actions. Click a card to open Connections or Faceless Studio.</p>
       </div>
       <div class="tools-grid" id="tools-grid"><p class="tools-empty">Loading tools…</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="app-tools">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>OPEN THE APP TOOLS</h2>
+        <p>Make the video in Vidso, then let Claude or auto-upload send it to YouTube.</p>
+      </div>
+      <div class="tools-grid" id="app-tools-grid"></div>
     </div>
   </section>
 
@@ -121,5 +134,6 @@
 </footer>
 
 <script type="module" src="/mcp/page.js"></script>
+<script src="/topo-bg.js"></script>
 </body>
 </html>
