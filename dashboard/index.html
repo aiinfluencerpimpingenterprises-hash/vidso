@@ -2363,8 +2363,8 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-mem-graph svg{position:absolute;inset:0;width:100%;height:100%}
 .fs-mem-core{
   position:absolute;left:50%;top:50%;width:86px;height:86px;margin:-43px 0 0 -43px;border-radius:50%;
-  background:radial-gradient(circle at 40% 35%,#fff 0%,#d8ff3c 38%,#7a8a12 100%);
-  box-shadow:0 0 40px rgba(216,255,60,.45)
+  background:radial-gradient(circle at 40% 35%,#fff 0%,#E94B58 42%,#7a1822 100%);
+  box-shadow:0 0 40px rgba(233,75,88,.5)
 }
 .fs-mem-copy{position:absolute;left:50%;top:18%;transform:translateX(-50%);text-align:center;z-index:2}
 .fs-mem-copy strong{display:block;font-size:1.15rem}
@@ -2383,14 +2383,15 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
 .fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:24px}
-.fs-compose-stick{
-  position:sticky;top:0;z-index:9;width:100%;
-  padding:12px 0 16px;margin:0 0 8px;
-  background:linear-gradient(180deg,#101012 72%,rgba(16,16,18,.92) 88%,rgba(16,16,18,0))
-}
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:var(--fs-composer-h,168px)}
+.fs-composer-slot{width:100%}
 .fs-home.is-temp{min-height:calc(100vh - 140px);justify-content:center;padding-bottom:8vh}
-.fs-home.is-temp .fs-compose-stick{position:relative;background:transparent;padding-top:8vh}
+.fs-home.is-temp .fs-tab-body{padding-bottom:24px;display:flex;flex-direction:column;justify-content:center}
+.fs-home.is-docked .fs-composer{
+  box-shadow:0 16px 40px rgba(0,0,0,.45)
+}
+.fs-home.is-docked .fs-topic{min-height:40px;max-height:72px}
+.fs-home.is-docked .fs-tool-row,.fs-home.is-docked .fs-temp-note{display:none}
 .fs-temp-mark{
   display:inline-flex;align-items:center;height:28px;padding:0 12px;margin:0 0 12px;
   border-radius:999px;border:1px solid rgba(233,75,88,.45);background:rgba(233,75,88,.12);
@@ -2448,10 +2449,11 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 }
 .fs-recreate{
   display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:12px;
-  border:none;border-radius:12px;background:#D8FF3C;color:#111;font:inherit;font-size:.92rem;font-weight:800;
+  border:none;border-radius:12px;background:var(--a1);color:#fff;font:inherit;font-size:.92rem;font-weight:700;
   letter-spacing:-.02em;cursor:pointer
 }
-.fs-recreate:hover{filter:brightness(1.05)}
+.fs-recreate:hover,.fs-recreate:focus-visible{filter:brightness(1.08);background:var(--a2,#d93a48);color:#fff}
+.fs-recreate:active{filter:brightness(.92)}
 .fs-recreate-lg{min-height:48px;font-size:1rem;border-radius:14px;margin-top:0}
 body.fs-show-open{overflow:hidden}
 .fs-show{
