@@ -1,4 +1,5 @@
 import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
+import { isStudioGatePath, studioGateSegs } from '../../lib/studio-gate.js'
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
@@ -136,9 +137,9 @@ export default async function handler(req, res) {
   }
 
   const studioPath = String(subpath || '').replace(/^\/+|\/+$/g, '')
-  if (studioPath === 'faceless-studio' || studioPath.startsWith('faceless-studio/')) {
-    const segs = studioPath.split('/').filter(Boolean).slice(1)
+  if (isStudioGatePath(studioPath)) {
     const query = new URL(req.url, 'http://localhost').searchParams
+    const segs = studioGateSegs(studioPath, query)
     const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
     try {
       const out = await handleFacelessStudio({ token, user, method: req.method, segs, query, body })

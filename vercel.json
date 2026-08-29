@@ -67,7 +67,11 @@
     },
     {
       "source": "/api/faceless-studio/:path*",
-      "destination": "/api/gate/faceless-studio/:path*"
+      "destination": "/api/gate/faceless-studio?p=:path*"
+    },
+    {
+      "source": "/api/gate/faceless-studio/:path*",
+      "destination": "/api/gate/faceless-studio?p=:path*"
     },
     {
       "source": "/tools",

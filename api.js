@@ -3,6 +3,7 @@ import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
 import { applyPaidGrant } from '/lib/paid-grant.js'
+import { studioGateHref } from '/lib/studio-gate.js'
 import { isJsonSyntaxError, recoverScriptData } from '/lib/json-repair.js'
 import {
   getToken,
@@ -358,42 +359,42 @@ export const api = {
   },
   studio: {
     list: (opts = {}) => {
-      const url = sameOriginApi('/api/gate/faceless-studio/projects')
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
       const q = new URLSearchParams()
       if (opts.offset) q.set('offset', String(opts.offset))
       if (opts.limit) q.set('limit', String(opts.limit))
       if (opts.q) q.set('q', opts.q)
       if (opts.sort) q.set('sort', opts.sort)
       if (opts.favorites) q.set('favorites', '1')
-      const qs = q.toString()
-      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
+      const rel = '/projects' + (q.toString() ? '?' + q.toString() : '')
+      const url = sameOriginApi(studioGateHref(rel))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'GET')
     },
     create: (body) => {
-      const url = sameOriginApi('/api/gate/faceless-studio/projects')
+      const url = sameOriginApi(studioGateHref('/projects'))
       if (!url) throw new Error('Faceless Studio is only available on the live app.')
       return reqTo(url, 'POST', body)
     },
     get: (id) => {
-      const url = sameOriginApi('/api/gate/faceless-studio/projects/' + encodeURIComponent(id))
+      const url = sameOriginApi(studioGateHref('/projects/' + encodeURIComponent(id)))
       if (!url) throw new Error('Faceless Studio is only available on the live app.')
       return reqTo(url, 'GET')
     },
     patch: (id, body) => {
-      const url = sameOriginApi('/api/gate/faceless-studio/projects/' + encodeURIComponent(id))
+      const url = sameOriginApi(studioGateHref('/projects/' + encodeURIComponent(id)))
       if (!url) throw new Error('Faceless Studio is only available on the live app.')
       return reqTo(url, 'PATCH', body)
     },
     jobs: (opts = {}) => {
-      const url = sameOriginApi('/api/gate/faceless-studio/jobs')
-      if (!url) throw new Error('Faceless Studio is only available on the live app.')
       const q = new URLSearchParams()
       if (opts.offset) q.set('offset', String(opts.offset))
       if (opts.limit) q.set('limit', String(opts.limit))
       if (opts.favorites) q.set('favorites', '1')
       if (opts.project_id) q.set('project_id', opts.project_id)
-      const qs = q.toString()
-      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
+      const rel = '/jobs' + (q.toString() ? '?' + q.toString() : '')
+      const url = sameOriginApi(studioGateHref(rel))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'GET')
     },
   },
   transcribe: {
