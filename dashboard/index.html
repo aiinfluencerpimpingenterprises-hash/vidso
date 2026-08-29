@@ -3246,16 +3246,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <button type="button" class="settings-row-btn" id="settings-mcp" onclick="closeAccountSettings();switchPanel('mcp')" aria-label="Open MCP setup for Claude and Cursor">
-        <span class="settings-row-label">MCP</span>
-        <span class="settings-row-value">Claude & Cursor →</span>
-      </button>
       <div class="settings-yt" id="settings-yt">
         <div class="settings-yt-head">
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
         </div>
-        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically. MCP for Claude and Cursor lives in the MCP page.</p>
+        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically.</p>
         <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
         <div id="settings-yt-disconnected">
           <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
@@ -3386,7 +3382,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
     </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-    <button type="button" class="topnav-item" id="nav-mcp" data-panel="mcp" onclick="switchPanel('mcp',this)">MCP</button>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
@@ -3414,7 +3409,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" onclick="switchPanel('mcp')">MCP</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -3446,7 +3440,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-  <button type="button" class="topnav-item" data-panel="mcp" onclick="switchPanel('mcp',this)">MCP</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
@@ -5641,13 +5634,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <div class="qa-body">
               <div class="qa-title">Build a ranking</div>
               <div class="qa-sub">Assemble ranked short videos</div>
-            </div>
-          </button>
-          <button type="button" class="qa-card" onclick="switchPanel('mcp',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">Connect Claude</div>
-              <div class="qa-sub">Paste the Vidso MCP URL into Connectors</div>
             </div>
           </button>
           <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
@@ -8152,7 +8138,7 @@ function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
 function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
-  if (id === 'connectors') return 'mcp'
+  if (id === 'mcp' || id === 'connectors') return DEFAULT_PANEL
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
