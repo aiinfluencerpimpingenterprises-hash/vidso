@@ -5154,43 +5154,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
     </div>
 
-    <div class="panel content-glow" id="panel-mcp">
-      <div class="page-header">
-        <h2>MCP</h2>
-        <p>Connect Claude or Cursor so they can check the channel, update titles, and upload finished videos for this Vidso account.</p>
-      </div>
-      <div class="tool-card mcp-setup">
-        <div class="fv-chip-row" id="mcp-tabs" role="tablist" aria-label="MCP client">
-          <button type="button" class="fv-chip active" data-mcp-tab="claude" onclick="setMcpTab('claude')">Claude</button>
-          <button type="button" class="fv-chip" data-mcp-tab="cursor" onclick="setMcpTab('cursor')">Cursor</button>
-          <button type="button" class="fv-chip" data-mcp-tab="desktop" onclick="setMcpTab('desktop')">Claude Desktop</button>
-        </div>
-        <div data-mcp-pane="claude">
-          <ol class="mcp-setup-steps">
-            <li>In Claude open <strong>Settings → Connectors → Add custom connector</strong></li>
-            <li>Name it <strong>Vidso YouTube</strong></li>
-            <li>Paste the URL below, then Connect and sign in to Vidso</li>
-          </ol>
-          <pre id="mcp-url"></pre>
-          <button type="button" class="btn btn-primary btn-sm" id="mcp-url-copy">Copy link</button>
-        </div>
-        <div data-mcp-pane="cursor" hidden>
-          <p class="ui-card-desc" style="margin-bottom:12px">Paste this into Cursor Settings → MCP. You only need to be signed in to Vidso. Connect YouTube when you want Cursor to touch the channel.</p>
-          <pre id="mcp-cursor-json"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="mcp-cursor-copy">Copy config</button>
-        </div>
-        <div data-mcp-pane="desktop" hidden>
-          <p class="ui-card-desc" style="margin-bottom:12px">Claude Desktop cannot use a connector URL. Paste this into <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on Mac or <code>%APPDATA%\Claude\claude_desktop_config.json</code> on Windows. Needs Node.js. Fully quit Claude, then reopen.</p>
-          <pre id="mcp-claude-desktop"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="mcp-claude-desktop-copy">Copy Desktop config</button>
-          <p class="ui-card-desc" style="margin:16px 0 12px">Claude Code: save as <code>.mcp.json</code> in the project, or run <code>claude mcp add-json</code>.</p>
-          <pre id="mcp-claude-code"></pre>
-          <button type="button" class="btn btn-ghost btn-sm" id="mcp-claude-code-copy">Copy Code config</button>
-        </div>
-        <p class="settings-yt-msg" id="mcp-copy-msg" hidden></p>
-      </div>
-    </div>
-
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
         <h2 id="fv-page-title">Long Form Generator</h2>
