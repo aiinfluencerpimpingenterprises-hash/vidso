@@ -2267,6 +2267,12 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
   border-color:var(--a1);color:#fff;background:var(--a1)
 }
 #fs-pop{position:relative;z-index:70}
+body > #fs-pop{
+  position:fixed;inset:0;z-index:240;pointer-events:none;background:transparent
+}
+body > #fs-pop .fs-menu,
+body > #fs-pop .fs-modal-back{pointer-events:auto}
+#fs-pop[hidden]{display:none!important}
 .fs-lime-btn,.btn.fs-lime-btn{
   background:var(--a1);color:#fff;border:none;font-weight:750;border-radius:999px
 }
