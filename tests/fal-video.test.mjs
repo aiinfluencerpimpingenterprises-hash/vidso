@@ -6,6 +6,8 @@ import {
   clampVideoCount,
   clipDurationFor,
   falVideoInput,
+  resolutionFor,
+  videoModelLabel,
   isFalVideoModel,
   urlsFromFalVideoResult,
   videoModelById,
@@ -80,4 +82,8 @@ test('generation count clamps to 1 through 4', () => {
   assert.equal(clampVideoCount(9), 4)
   assert.equal(clampVideoCount(2), 2)
   assert.equal(clipDurationFor('veo-3.1', 10), 8)
+  assert.equal(resolutionFor('veo-3.1', '4k'), '4k')
+  assert.equal(resolutionFor('kling-3-pro', '1080p'), '')
+  assert.equal(videoModelLabel('kling-3-pro'), 'Kling 3.0 Pro')
+  assert.equal(videoModelLabel('stock'), 'Stock footage')
 })

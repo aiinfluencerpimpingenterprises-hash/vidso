@@ -2279,15 +2279,20 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-composer-left,.fs-composer-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .fs-bar-chip,.fs-bar-btn{
   display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:10px;
-  border:1px solid var(--border);background:rgba(255,255,255,.04);color:rgba(255,255,255,.82);
-  font:inherit;font-size:.72rem
+  border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;
+  font:inherit;font-size:.78rem;font-weight:600
 }
-.fs-bar-chip svg,.fs-bar-btn svg{flex-shrink:0;opacity:.75}
-.fs-bar-chip select{border:none;background:transparent;color:var(--ink);font:inherit;font-size:.72rem;max-width:148px}
+.fs-bar-chip svg,.fs-bar-btn svg{flex-shrink:0;opacity:.8}
+.fs-bar-label{color:#fff;white-space:nowrap;max-width:132px;overflow:hidden;text-overflow:ellipsis;line-height:1}
 .fs-bar-btn{cursor:pointer}
 .fs-bar-btn[aria-pressed="true"]{border-color:rgba(233,75,88,.55);background:rgba(233,75,88,.12)}
 .fs-bar-chip.is-off,.fs-bar-btn.is-off,.fs-count.is-off{opacity:.42}
 .fs-bar-btn:disabled{cursor:not-allowed}
+.fs-bar-btn[hidden]{display:none!important}
+.fs-model-menu{min-width:300px;max-width:360px;max-height:min(70vh,520px);overflow:auto}
+.fs-dur-menu,.fs-aspect-menu,.fs-res-menu{min-width:200px}
+.fs-menu [aria-checked="true"]{background:rgba(255,255,255,.06)}
+.fs-menu [aria-checked="true"] svg:last-child{margin-left:auto}
 .fs-count{display:inline-flex;align-items:center;height:34px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
 .fs-count button{width:28px;height:32px;border:none;background:transparent;color:inherit;cursor:pointer;font:inherit}
 .fs-count button:disabled{cursor:not-allowed}
@@ -8653,6 +8658,7 @@ window.fvState = {
   allowShortRender: false,
   videoModel: STOCK_VIDEO_MODEL,
   clipDuration: 5,
+  resolution: '',
   sound: false,
   generations: 1,
   refUrls: [],
@@ -8667,6 +8673,7 @@ window.fvSetStudioVideoSettings = (opts = {}) => {
   if (opts.videoModel != null) fvState.videoModel = String(opts.videoModel || STOCK_VIDEO_MODEL)
   if (opts.aspect === '9:16' || opts.aspect === '16:9') fvState.aspect = opts.aspect
   if (Number(opts.clipDuration) > 0) fvState.clipDuration = Number(opts.clipDuration)
+  if (opts.resolution != null) fvState.resolution = String(opts.resolution || '')
   if (opts.sound != null) fvState.sound = !!opts.sound
   if (opts.generations != null) fvState.generations = clampVideoCount(opts.generations)
   if (Array.isArray(opts.refUrls)) fvState.refUrls = opts.refUrls.filter((u) => /^(https?:|data:)/i.test(String(u)))
@@ -9140,6 +9147,7 @@ window.fvSnapshotForStudio = () => {
     scriptAiUsed: fvState.scriptAiUsed,
     videoModel: fvState.videoModel || '',
     clipDuration: fvState.clipDuration || 5,
+    resolution: fvState.resolution || '',
     sound: !!fvState.sound,
     generations: clampVideoCount(fvState.generations),
     refUrls: Array.isArray(fvState.refUrls) ? fvState.refUrls : [],
@@ -9165,6 +9173,7 @@ window.fvHydrateFromStudio = (project) => {
   const voiceId = snap.voiceId || project.voice_id || ''
   fvState.videoModel = snap.videoModel || project.video_model || STOCK_VIDEO_MODEL
   fvState.clipDuration = Number(snap.clipDuration || project.clip_duration) || 5
+  fvState.resolution = snap.resolution || project.video_resolution || ''
   fvState.sound = snap.sound != null ? !!snap.sound : !!project.video_sound
   fvState.generations = clampVideoCount(snap.generations || project.video_count || 1)
   fvState.refUrls = [
@@ -9634,6 +9643,7 @@ async function fvApplyFalBroll(job) {
         aspect: fvState.aspect || '16:9',
         duration: shots[i].duration,
         generate_audio: !!fvState.sound,
+        ...(fvState.resolution ? { resolution: fvState.resolution } : {}),
         ...(refs.length ? { image_urls: refs } : {}),
       })
       const url = data.urls?.[0]
