@@ -2502,17 +2502,17 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
 }
 .fs-mem-bar input{flex:1;border:none;background:transparent;color:var(--ink);font:inherit;font-size:.9rem}
 .fs-main{flex:1;min-width:0;overflow:auto;padding:24px 28px 48px;min-height:calc(100vh - 80px);display:flex;flex-direction:column;background:#101012}
-.fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
-.fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
+.fs-main:has(.has-composer){padding-bottom:8px;overflow:hidden}
+.fs-home.has-composer{position:relative;flex:1;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:var(--fs-composer-h,220px)}
-.fs-composer-slot{width:100%}
-.fs-home.is-temp{min-height:calc(100vh - 140px);justify-content:center;padding-bottom:8vh}
-.fs-home.is-temp .fs-tab-body{padding-bottom:24px;display:flex;flex-direction:column;justify-content:center}
-.fs-home.is-docked .fs-composer{
-  box-shadow:0 16px 40px rgba(0,0,0,.45)
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:auto;padding-bottom:8px}
+.fs-home.has-composer .fs-composer-slot{
+  flex-shrink:0;width:100%;z-index:20;padding:10px 0 8px;
+  background:linear-gradient(180deg,rgba(16,16,18,0) 0%,#101012 32%)
 }
-.fs-home.is-docked .fs-topic{min-height:40px;max-height:72px}
+.fs-home.is-temp{min-height:0;justify-content:stretch;padding-bottom:0}
+.fs-home.is-temp .fs-tab-body{padding-bottom:8px;display:flex;flex-direction:column;justify-content:flex-start}
+.fs-home.is-docked .fs-composer{box-shadow:0 16px 40px rgba(0,0,0,.45)}
 .fs-home.is-docked .fs-tool-row,.fs-home.is-docked .fs-temp-note{display:none}
 .fs-temp-mark{
   display:inline-flex;align-items:center;height:28px;padding:0 12px;margin:0 0 12px;
