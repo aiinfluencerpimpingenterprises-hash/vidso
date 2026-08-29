@@ -2534,6 +2534,7 @@ body.fs-show-open{overflow:hidden}
 .fs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .fs-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:.72rem;color:var(--text-body)}
 .fs-chip select{border:none;background:transparent;color:var(--ink);font:inherit;font-size:.72rem;max-width:140px}
+.fs-chip #fs-video-model{max-width:180px}
 .fs-composer-error,.fs-thumb-err,.fs-banner-err{color:#f3b4b8;font-size:.82rem;margin:0 0 8px}
 .fs-refs{display:flex;gap:8px;margin-top:8px}
 .fs-ref-chip{position:relative;width:48px;height:48px;border-radius:8px;overflow:hidden}
@@ -6092,6 +6093,7 @@ import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
+import { isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
@@ -8634,6 +8636,12 @@ window.fvState = {
   lengthLog: [],
   allowShortScript: false,
   allowShortRender: false,
+  videoModel: STOCK_VIDEO_MODEL,
+  mediaFinalizing: false,
+}
+
+window.fvSetStudioVideoModel = (id) => {
+  fvState.videoModel = String(id || STOCK_VIDEO_MODEL)
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -9102,6 +9110,7 @@ window.fvSnapshotForStudio = () => {
     allowShortScript: fvState.allowShortScript,
     allowShortRender: fvState.allowShortRender,
     scriptAiUsed: fvState.scriptAiUsed,
+    videoModel: fvState.videoModel || '',
   }
 }
 
@@ -9122,6 +9131,7 @@ window.fvHydrateFromStudio = (project) => {
     : (snap.aspect === '16:9' || project.aspect === '16:9' ? '16:9' : '')
   const durationId = snap.durationId || project.length || ''
   const voiceId = snap.voiceId || project.voice_id || ''
+  fvState.videoModel = snap.videoModel || project.video_model || STOCK_VIDEO_MODEL
   fvState.format = String(durationId).startsWith('shorts') ? 'shorts' : 'long'
   fvState.durationId = durationId
   fvState.aspect = aspect || '16:9'
@@ -9539,10 +9549,82 @@ window.fvStartMedia = async (force) => {
   }
 }
 
+function fvFalBrollPrompts(job) {
+  const sections = Array.isArray(fvState.script?.sections) ? fvState.script.sections : []
+  const topic = fvState.script?.topic || document.getElementById('fv-topic')?.value || ''
+  const style = String(topic || '').trim()
+  const rows = sections.map((sec, i) => {
+    const heading = String(sec.heading || sec.title || 'Scene ' + (i + 1)).trim()
+    const text = String(sec.text || sec.body || '').replace(/\s+/g, ' ').trim()
+    const prompt = [heading, text].filter(Boolean).join('. ').slice(0, 800)
+      || (style + ' cinematic B-roll, scene ' + (i + 1))
+    const start = Number(sec.start)
+    const end = Number(sec.end)
+    const dur = Number.isFinite(start) && Number.isFinite(end) && end > start ? end - start : 5
+    return { prompt, duration: dur, query: heading }
+  }).filter((row) => row.prompt)
+  if (!rows.length) {
+    const dur = Number(job?.duration) > 0 ? Math.min(8, Number(job.duration)) : 5
+    rows.push({ prompt: (style || 'cinematic faceless B-roll') + ', no text, no subtitles', duration: dur, query: 'scene' })
+  }
+  return rows.slice(0, 8)
+}
+
+async function fvApplyFalBroll(job) {
+  const modelId = fvState.videoModel || ''
+  if (!isFalVideoModel(modelId) || !job) return job
+  const model = videoModelById(modelId)
+  const shots = fvFalBrollPrompts(job)
+  const clips = []
+  fvSetMediaStatus('Generating ' + (model?.name || 'Fal') + ' B-roll…', 'loading')
+  for (let i = 0; i < shots.length; i++) {
+    const bar = document.getElementById('fv-media-bar')
+    if (bar) bar.style.width = String(20 + Math.round(((i + 1) / shots.length) * 75)) + '%'
+    fvSetMediaStatus('Generating ' + (model?.name || 'clip') + ' ' + (i + 1) + ' of ' + shots.length + '…', 'loading')
+    try {
+      const data = await api.generate.video({
+        model: modelId,
+        prompt: shots[i].prompt,
+        aspect: fvState.aspect || '16:9',
+        duration: shots[i].duration,
+        generate_audio: false,
+      })
+      const url = data.urls?.[0]
+      if (!url) throw new Error('No video came back')
+      clips.push({
+        id: 'fal-' + (i + 1),
+        url,
+        preview: url,
+        query: shots[i].query,
+        provider: 'fal',
+        model: modelId,
+      })
+    } catch (e) {
+      job.warning = (job.warning ? job.warning + ' ' : '') + 'Fal clip ' + (i + 1) + ' failed: ' + (e.message || 'unknown error')
+    }
+  }
+  if (!clips.length) {
+    job.warning = (job.warning ? job.warning + ' ' : '') + 'Fal B-roll did not return clips. Keeping stock footage.'
+    return job
+  }
+  job.clips = clips
+  const dur = Number(job.duration) > 0 ? Number(job.duration) : clips.length * 5
+  const slice = dur / clips.length
+  job.timeline = clips.map((c, i) => ({
+    ...c,
+    start: i * slice,
+    end: i === clips.length - 1 ? dur : (i + 1) * slice,
+    clip_start: 0,
+  }))
+  job.broll_source = 'fal'
+  return job
+}
+
 function fvPollMediaJob(jobId) {
   if (!jobId) return
   if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
   fvState.mediaJobId = jobId
+  fvState.mediaFinalizing = false
   const tick = async () => {
     try {
       const job = await api.faceless.pollMedia(jobId)
@@ -9555,6 +9637,8 @@ function fvPollMediaJob(jobId) {
       }
       clearInterval(fvState.mediaPoll)
       fvState.mediaPoll = null
+      if (fvState.mediaFinalizing) return
+      fvState.mediaFinalizing = true
       if (job.status === 'error') {
         fvState.mediaJobId = null
         fvSetMediaStatus(job.error || 'Media failed', 'err')
@@ -9564,7 +9648,8 @@ function fvPollMediaJob(jobId) {
         return
       }
       fvSetMediaStatus('Ready', 'ok')
-      fvRenderMediaResult(job)
+      const withFal = await fvApplyFalBroll(job)
+      fvRenderMediaResult(withFal)
       fvState.mediaJobId = null
       fvStudioJobPatch(jobId, { status: 'succeeded', progress: 100 })
       fvNotifyStudio()

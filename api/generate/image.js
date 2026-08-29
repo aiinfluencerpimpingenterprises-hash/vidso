@@ -1,4 +1,5 @@
 import { falImageInput } from '../../lib/fal-image.js'
+import { falVideoInput } from '../../lib/fal-video.js'
 import { evaluateFeature, evaluatePlan } from '../../lib/enforce.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
 
@@ -33,25 +34,34 @@ export default async function handler(req, res) {
   const prompt = String(body.prompt || '').trim()
   if (!prompt) return send(res, 400, { error: 'Enter a prompt' })
 
+  const wantVideo = body.kind === 'video' || body.mode === 'video'
   const quality = String(body.resolution || body.quality || '').toUpperCase()
-  if (quality === '4K') {
+  if (!wantVideo && quality === '4K') {
     const gate = evaluateFeature({ user, feature: 'image_4k' })
     if (!gate.ok) return send(res, 403, { error: gate.message, code: gate.code, requiredTier: gate.requiredTier })
   }
 
   let built
   try {
-    built = falImageInput(body.model, prompt, {
-      aspect: body.aspect_ratio || body.aspect,
-      num_images: body.num_images,
-      resolution: quality || body.resolution,
-      image_urls: body.image_urls,
-    })
+    built = wantVideo
+      ? falVideoInput(body.model, prompt, {
+        aspect: body.aspect_ratio || body.aspect,
+        duration: body.duration || body.duration_seconds,
+        resolution: String(body.resolution || body.quality || '').toLowerCase(),
+        generate_audio: body.generate_audio === true,
+      })
+      : falImageInput(body.model, prompt, {
+        aspect: body.aspect_ratio || body.aspect,
+        num_images: body.num_images,
+        resolution: quality || body.resolution,
+        image_urls: body.image_urls,
+      })
   } catch (e) {
-    return send(res, e.code === 'no_image_input' ? 400 : 400, { error: e.message, code: e.code })
+    return send(res, 400, { error: e.message, code: e.code })
   }
 
   const { endpoint, input, model, size } = built
+  const label = wantVideo ? 'Video' : 'Image'
 
   try {
     const falRes = await fetch('https://queue.fal.run/' + endpoint, {
@@ -65,13 +75,14 @@ export default async function handler(req, res) {
     if (!falRes.ok) {
       const errText = Array.isArray(data.detail)
         ? data.detail.map((d) => d.msg || d.message || JSON.stringify(d)).join('; ')
-        : (data.detail || data.error || data.raw || ('Image service ' + falRes.status))
+        : (data.detail || data.error || data.raw || (label + ' service ' + falRes.status))
       return send(res, 502, { error: String(errText).slice(0, 400) })
     }
     if (!data.request_id || !data.status_url || !data.response_url) {
-      return send(res, 502, { error: 'The image service did not return a request handle' })
+      return send(res, 502, { error: 'The ' + label.toLowerCase() + ' service did not return a request handle' })
     }
     return send(res, 200, {
+      kind: wantVideo ? 'video' : 'image',
       model: model.id,
       endpoint,
       requestId: data.request_id,
@@ -81,6 +92,6 @@ export default async function handler(req, res) {
       height: size?.height || null,
     })
   } catch (e) {
-    return send(res, 500, { error: e.message || 'Image request failed' })
+    return send(res, 500, { error: e.message || (label + ' request failed') })
   }
 }

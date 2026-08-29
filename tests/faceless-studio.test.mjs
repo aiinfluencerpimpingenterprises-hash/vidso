@@ -52,6 +52,15 @@ test('create honors 9:16 and keeps a pipeline seed', () => {
   assert.equal(rec.references[0].file_id, 'f1')
 })
 
+test('create persists a Fal video model for Studio B-roll', () => {
+  const rec = createProjectRecord(
+    { id: 'u' },
+    { topic: 'x', video_model: 'kling-3-pro', pipeline: { videoModel: 'kling-3-pro' } },
+  )
+  assert.equal(rec.video_model, 'kling-3-pro')
+  assert.equal(rec.pipeline.videoModel, 'kling-3-pro')
+})
+
 test('publicProject strips internal file handles', () => {
   const pub = publicProject({ id: '1', user_id: 'u', _meta_file: { id: 'x' }, title: 'T' })
   assert.equal(pub._meta_file, undefined)

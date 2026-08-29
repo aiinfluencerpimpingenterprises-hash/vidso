@@ -64,16 +64,16 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function generateImageFal(body) {
+async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
   const startUrl = sameOriginApi('/api/generate/image')
-  if (!startUrl) throw new Error('Image generation is only available on the live app.')
+  if (!startUrl) throw new Error((waitLabel || 'Generation') + ' is only available on the live app.')
   const start = await reqTo(startUrl, 'POST', body)
   if (Array.isArray(start.urls) && start.urls.length) return start
-  if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the image job.')
+  if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the job.')
   const pollUrl = sameOriginApi('/api/generate/image-status')
-  const deadline = Date.now() + 180000
+  const deadline = Date.now() + (Number(timeoutMs) > 0 ? Number(timeoutMs) : 180000)
   while (Date.now() < deadline) {
-    await sleep(1800)
+    await sleep(body.kind === 'video' ? 4000 : 1800)
     const st = await reqTo(pollUrl, 'POST', {
       statusUrl: start.statusUrl,
       responseUrl: start.responseUrl,
@@ -84,10 +84,15 @@ async function generateImageFal(body) {
         width: st.width || start.width,
         height: st.height || start.height,
         model: start.model || body.model,
+        kind: st.kind || start.kind || body.kind || 'image',
       }
     }
   }
-  throw new Error('Timed out waiting for the image. Try again.')
+  throw new Error('Timed out waiting for the ' + (waitLabel || 'result') + '. Try again.')
+}
+
+function generateImageFal(body) {
+  return generateFalMedia(body, { timeoutMs: 180000, waitLabel: 'image' })
 }
 
 function gateUrl(path) {
@@ -277,6 +282,7 @@ export const api = {
   },
   generate: {
     image: (body) => generateImageFal(body),
+    video: (body) => generateFalMedia({ ...body, kind: 'video' }, { timeoutMs: 480000, waitLabel: 'video' }),
     imageSave: (body) => {
       const url = sameOriginApi('/api/generate/image-save')
       if (!url) throw new Error('Image history is only available on the live app.')

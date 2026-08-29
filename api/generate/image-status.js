@@ -1,4 +1,5 @@
 import { dimsFromFalResult, urlsFromFalResult } from '../../lib/fal-image.js'
+import { urlsFromFalVideoResult } from '../../lib/fal-video.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
 
 export const config = { maxDuration: 30 }
@@ -66,10 +67,18 @@ export default async function handler(req, res) {
         : (result.detail || result.error || ('Image result ' + r.status))
       return send(res, 502, { error: String(errText).slice(0, 400) })
     }
-    const urls = urlsFromFalResult(result)
-    if (!urls.length) return send(res, 502, { error: 'No image came back' })
+    const imageUrls = urlsFromFalResult(result)
+    const videoUrls = urlsFromFalVideoResult(result)
+    const urls = [...new Set(videoUrls.concat(imageUrls))]
+    if (!urls.length) return send(res, 502, { error: 'No media came back' })
     const dims = dimsFromFalResult(result)
-    return send(res, 200, { done: true, urls, width: dims?.width || null, height: dims?.height || null })
+    return send(res, 200, {
+      done: true,
+      kind: videoUrls.length ? 'video' : 'image',
+      urls,
+      width: dims?.width || null,
+      height: dims?.height || null,
+    })
   } catch (e) {
     return send(res, 500, { error: e.message || 'Status check failed' })
   }
