@@ -195,6 +195,8 @@
     .hero-copy .sub{font-size:13.5px;margin-top:12px}
     .hero-cta .btn{width:100%;max-width:320px;justify-content:center}
     .hero-reel{border-radius:16px}
+    .hero-btn{width:34px;height:34px}
+    .hero-ctrl{gap:6px;padding:22px 8px 10px}
     .final-box{padding:48px 16px;border-radius:22px}
     .final-box .microcopy{gap:10px 14px}
     .rs-card{flex:0 0 220px;width:220px}
@@ -228,7 +230,7 @@
   .hero-visual{margin:70px auto 0;max-width:1100px;width:100%;position:relative;z-index:2}
   .hero-reel{
     width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;
-    border-radius:20px;background:#000;
+    border-radius:20px;background:#000;cursor:pointer;
     border:3px solid var(--a1);
     box-shadow:0 0 0 1px rgba(var(--glow),.55),0 0 48px rgba(var(--glow),.32),0 36px 90px rgba(0,0,0,.72)
   }
@@ -239,6 +241,60 @@
   .hero-reel .clip > video{
     position:absolute;inset:0;width:100%;height:100%;
     object-fit:contain;object-position:center;display:block;border:0;background:#000;pointer-events:none
+  }
+  .hero-play-center{
+    position:absolute;inset:0;z-index:3;display:none;place-items:center;pointer-events:none
+  }
+  .hero-reel.is-paused .hero-play-center{display:grid}
+  .hero-play-center span{
+    width:72px;height:72px;border-radius:50%;
+    display:grid;place-items:center;
+    background:rgba(233,75,88,.92);color:#fff;
+    box-shadow:0 12px 32px rgba(var(--glow),.4)
+  }
+  .hero-play-center svg{width:30px;height:30px;margin-left:3px}
+  .hero-ctrl{
+    position:absolute;left:0;right:0;bottom:0;z-index:5;
+    display:flex;align-items:center;gap:8px;
+    padding:28px 12px 12px;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.78));
+    cursor:default
+  }
+  .hero-btn{
+    width:38px;height:38px;border-radius:10px;padding:0;margin:0;cursor:pointer;flex-shrink:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.62);color:#fff;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  }
+  .hero-btn:hover{background:rgba(233,75,88,.92);border-color:rgba(255,255,255,.35)}
+  .hero-btn svg{width:18px;height:18px;display:block}
+  .hero-btn .ico-play,.hero-btn .ico-exit{display:none}
+  .hero-btn.is-paused .ico-pause,.hero-btn.is-fs .ico-enter{display:none}
+  .hero-btn.is-paused .ico-play,.hero-btn.is-fs .ico-exit{display:block}
+  .hero-seek{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+  .hero-time{
+    font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
+    color:rgba(255,255,255,.88);min-width:2.6em;line-height:1
+  }
+  .hero-range{
+    -webkit-appearance:none;appearance:none;flex:1;min-width:0;height:4px;margin:0;
+    border-radius:999px;background:rgba(255,255,255,.22);cursor:pointer
+  }
+  .hero-range::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:transparent}
+  .hero-range::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5px;
+    border-radius:50%;background:var(--a1);border:2px solid #fff;box-shadow:0 0 0 3px rgba(var(--glow),.28)
+  }
+  .hero-range::-moz-range-track{height:4px;border-radius:999px;background:rgba(255,255,255,.22)}
+  .hero-range::-moz-range-progress{height:4px;border-radius:999px;background:var(--a1)}
+  .hero-range::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;background:var(--a1);border:2px solid #fff
+  }
+  .hero-reel:fullscreen,.hero-reel:-webkit-full-screen{
+    width:100%;height:100%;aspect-ratio:auto;border-radius:0;border-width:0;max-width:none
+  }
+  .hero-reel:fullscreen .clip > video,.hero-reel:-webkit-full-screen .clip > video{
+    object-fit:contain
   }
   .clip-badge{
     position:absolute;left:14px;top:14px;z-index:3;
@@ -977,10 +1033,32 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
     <!-- hero visual -->
     <div class="hero-visual">
-      <div class="hero-reel" id="mockup-clips">
+      <div class="hero-reel" id="mockup-clips" tabindex="0">
         <div class="clip is-feature">
           <video muted autoplay loop playsinline preload="auto" poster="/home/vidso-hero-poster.jpg" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4" aria-label="Full Vidso pipeline from script to finished video"></video>
           <span class="clip-badge"><span class="dot"></span>Full pipeline</span>
+          <div class="hero-play-center" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
+          <div class="hero-ctrl">
+            <button type="button" class="hero-btn" id="hero-back" aria-label="Rewind 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 6L5 12l6 6"/><path d="M19 6L13 12l6 6"/></svg>
+            </button>
+            <button type="button" class="hero-btn" id="hero-pause" aria-label="Pause video">
+              <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
+              <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button type="button" class="hero-btn" id="hero-fwd" aria-label="Forward 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
+            </button>
+            <div class="hero-seek">
+              <span class="hero-time" id="hero-cur">0:00</span>
+              <input class="hero-range" id="hero-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
+              <span class="hero-time" id="hero-dur">0:00</span>
+            </div>
+            <button type="button" class="hero-btn" id="hero-fs" aria-label="Full screen">
+              <svg class="ico-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+              <svg class="ico-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1695,144 +1773,174 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </footer>
 
 <script>
-/* Hero mockup hover/tap audio cards.
-   Uses VidsoMediaAudio priming so desktop hover-unmute works after any page
-   gesture (not only a click on the card). Touch: tap toggles unmute + icon. */
+/* Hero reel: click to pause/play, seek, skip, and fullscreen. */
 (function(){
-  var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
-  var FILES = [
-    'VidsoHeroVideo.mp4'
-  ];
-  var AUDIO_BTN_HTML = '<button type="button" class="rs-audio-btn" aria-label="Unmute video" aria-pressed="false">'
-    + '<svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>'
-    + '<svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>'
-    + '</button>';
-  var root = document.getElementById('mockup-clips');
-  if (!root) return;
-  var clips = root.querySelectorAll('.clip');
-  var videos = [];
-  var buttons = [];
-  var canHover = false;
-  try {
-    canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  } catch (e) { canHover = false; }
-  var active = null;
-  var pendingUnmute = null;
-  var hoveredClip = null;
+  var reel = document.getElementById('mockup-clips');
+  if (!reel) return;
+  var video = reel.querySelector('video');
+  var pauseBtn = document.getElementById('hero-pause');
+  var backBtn = document.getElementById('hero-back');
+  var fwdBtn = document.getElementById('hero-fwd');
+  var fsBtn = document.getElementById('hero-fs');
+  var range = document.getElementById('hero-range');
+  var curEl = document.getElementById('hero-cur');
+  var durEl = document.getElementById('hero-dur');
+  if (!video) return;
+  var userPaused = false;
+  var seeking = false;
+  var SKIP = 10;
 
-  function safeMute(v, muted) {
-    try { v.muted = !!muted; } catch (err) {}
-  }
-  function safePlay(v) {
+  function safePlay(){
+    if (userPaused) return;
     try {
-      var p = v.play();
+      var p = video.play();
       if (p && typeof p.catch === 'function') p.catch(function(){});
     } catch (err) {}
   }
-  function warm(v) {
-    try {
-      v.preload = 'auto';
-      safePlay(v);
-    } catch (err) {}
+  function fsEl(){
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
   }
-  function syncButtons(){
-    for (var i = 0; i < videos.length; i++) {
-      var v = videos[i];
-      var btn = buttons[i];
-      if (!btn) continue;
-      var on = (v === active) && v && !v.muted;
-      btn.classList.toggle('is-on', on);
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      btn.setAttribute('aria-label', on ? 'Mute video' : 'Unmute video');
+  function isFs(){
+    return fsEl() === reel || !!(video.webkitDisplayingFullscreen);
+  }
+  function fmt(s){
+    if (!isFinite(s) || s < 0) s = 0;
+    s = Math.floor(s);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function duration(){
+    var d = video.duration;
+    return (d && isFinite(d)) ? d : 0;
+  }
+  function paintRange(pct){
+    if (!range) return;
+    range.style.background = 'linear-gradient(90deg,var(--a1) ' + pct + '%,rgba(255,255,255,.22) ' + pct + '%)';
+  }
+  function syncSeek(){
+    var d = duration();
+    var t = video.currentTime || 0;
+    if (curEl) curEl.textContent = fmt(t);
+    if (durEl) durEl.textContent = fmt(d);
+    if (range && d && !seeking) {
+      var pct = (t / d) * 100;
+      range.value = String(pct);
+      paintRange(pct);
     }
   }
-  function muteAll(){
-    for (var i = 0; i < videos.length; i++) safeMute(videos[i], true);
-    active = null;
-    pendingUnmute = null;
-    syncButtons();
-  }
-  function unmuteVideo(v){
-    if (!v) return;
-    for (var i = 0; i < videos.length; i++) {
-      if (videos[i] !== v) safeMute(videos[i], true);
+  function syncUi(){
+    var paused = !!video.paused;
+    reel.classList.toggle('is-paused', paused);
+    if (pauseBtn) {
+      pauseBtn.classList.toggle('is-paused', paused);
+      pauseBtn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
     }
-    safeMute(v, false);
-    if (v.paused) safePlay(v);
-    active = v;
-    syncButtons();
-  }
-  function requestUnmute(v){
-    if (!v) return;
-    pendingUnmute = v;
-    var unlock = window.VidsoMediaAudio;
-    if (unlock && !unlock.isPrimed()) {
-      unlock.whenPrimed(function(){
-        if (pendingUnmute === v || (canHover && hoveredClip && hoveredClip.querySelector('video') === v)) {
-          unmuteVideo(v);
-        }
-      });
+    if (fsBtn) {
+      var fs = isFs();
+      fsBtn.classList.toggle('is-fs', fs);
+      fsBtn.setAttribute('aria-label', fs ? 'Exit full screen' : 'Full screen');
     }
-    unmuteVideo(v);
+    syncSeek();
   }
-  function toggleVideo(v){
-    if (!v) return;
-    if (active === v && !v.muted) {
-      safeMute(v, true);
-      active = null;
-      syncButtons();
-      return;
-    }
-    requestUnmute(v);
-  }
-
-  for (var i = 0; i < clips.length; i++) {
-    var clip = clips[i];
-    var video = clip.querySelector('video');
-    if (!video || !FILES[i]) continue;
-    video.preload = 'auto';
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.loop = true;
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-    var want = R2_BASE + '/' + FILES[i];
-    if (!video.getAttribute('src')) video.src = want;
-    warm(video);
-    video.addEventListener('canplay', function(){ warm(this); }, { once: true });
-    video.addEventListener('canplaythrough', function(){ warm(this); }, { once: true });
-    videos.push(video);
-
-    if (!clip.querySelector('.rs-audio-btn')) {
-      clip.insertAdjacentHTML('beforeend', AUDIO_BTN_HTML);
-    }
-    buttons.push(clip.querySelector('.rs-audio-btn'));
-
-    if (canHover) {
-      (function(v, el){
-        el.addEventListener('mouseenter', function(){
-          hoveredClip = el;
-          requestUnmute(v);
-        });
-        el.addEventListener('mouseleave', function(){
-          if (hoveredClip === el) hoveredClip = null;
-          safeMute(v, true);
-          if (active === v) active = null;
-          if (pendingUnmute === v) pendingUnmute = null;
-          syncButtons();
-        });
-      })(video, clip);
+  function togglePause(){
+    if (video.paused) {
+      userPaused = false;
+      safePlay();
     } else {
-      (function(v, el){
-        el.addEventListener('click', function(e){
-          e.preventDefault();
-          toggleVideo(v);
-        });
-      })(video, clip);
+      userPaused = true;
+      try { video.pause(); } catch (err) {}
+    }
+    syncUi();
+  }
+  function skip(dir){
+    var d = duration();
+    var next = (video.currentTime || 0) + dir * SKIP;
+    if (next < 0) next = 0;
+    if (d && next > d) next = d;
+    try { video.currentTime = next; } catch (err) {}
+    syncSeek();
+  }
+  function seekFromRange(){
+    var d = duration();
+    if (!range || !d) return;
+    var pct = parseFloat(range.value);
+    if (!isFinite(pct)) return;
+    try { video.currentTime = (pct / 100) * d; } catch (err) {}
+    paintRange(pct);
+    if (curEl) curEl.textContent = fmt((pct / 100) * d);
+  }
+  function exitFs(){
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (video.webkitExitFullscreen) video.webkitExitFullscreen();
+  }
+  function enterFs(){
+    if (reel.requestFullscreen) return reel.requestFullscreen();
+    if (reel.webkitRequestFullscreen) return reel.webkitRequestFullscreen();
+    if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+  }
+  function toggleFs(){
+    if (isFs()) exitFs();
+    else {
+      try { enterFs(); } catch (err) {}
     }
   }
-  syncButtons();
+
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.loop = true;
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
+  video.addEventListener('play', syncUi);
+  video.addEventListener('pause', syncUi);
+  video.addEventListener('timeupdate', syncSeek);
+  video.addEventListener('loadedmetadata', syncSeek);
+  video.addEventListener('durationchange', syncSeek);
+  video.addEventListener('canplay', function(){ if (!userPaused) safePlay(); });
+  document.addEventListener('fullscreenchange', syncUi);
+  document.addEventListener('webkitfullscreenchange', syncUi);
+  video.addEventListener('webkitbeginfullscreen', syncUi);
+  video.addEventListener('webkitendfullscreen', syncUi);
+
+  reel.addEventListener('click', function(e){
+    if (e.target.closest('.hero-ctrl')) return;
+    togglePause();
+  });
+  if (pauseBtn) pauseBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    togglePause();
+  });
+  if (backBtn) backBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    skip(-1);
+  });
+  if (fwdBtn) fwdBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    skip(1);
+  });
+  if (fsBtn) fsBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    toggleFs();
+  });
+  if (range) {
+    range.addEventListener('pointerdown', function(){ seeking = true; });
+    range.addEventListener('input', seekFromRange);
+    range.addEventListener('change', function(){
+      seekFromRange();
+      seeking = false;
+    });
+    window.addEventListener('pointerup', function(){ seeking = false; });
+  }
+  reel.addEventListener('keydown', function(e){
+    if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePause(); }
+    if (e.key === 'f') { e.preventDefault(); toggleFs(); }
+    if (e.key === 'ArrowLeft' || e.key === 'j') { e.preventDefault(); skip(-1); }
+    if (e.key === 'ArrowRight' || e.key === 'l') { e.preventDefault(); skip(1); }
+  });
+  safePlay();
+  syncUi();
 })();
 </script>
 <script src="/vendor/gsap/gsap.min.js"></script>
