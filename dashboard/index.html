@@ -3697,6 +3697,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Getting started</span>
         <span class="settings-row-value">Tours →</span>
       </button>
+      <button type="button" class="settings-row-btn" id="settings-studio" aria-label="Open Faceless Studio">
+        <span class="settings-row-label">Faceless Studio</span>
+        <span class="settings-row-value">Test →</span>
+      </button>
       <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
@@ -3864,6 +3868,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" id="user-studio-btn">Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -6124,6 +6129,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div><!-- /content -->
 </main>
 
+<script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
 import { api, setSession, clearSession, getToken, getRefreshToken, tokenNeedsRefresh } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
@@ -6195,6 +6201,8 @@ import {
   claudeCodeMcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
+import { initFacelessStudio } from '/lib/faceless-studio.js'
+import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
@@ -8606,19 +8614,18 @@ function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
   if (id === 'mcp' || id === 'connectors') return DEFAULT_PANEL
-  if (id === 'facelessstudio') return DEFAULT_PANEL
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
 function panelFromPath() {
   const path = normalizePath(location.pathname)
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
-  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) return DEFAULT_PANEL
+  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) return 'facelessstudio'
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
     const last = sessionStorage.getItem('vidso_last_panel')
-    if (last && titles[last] && last !== 'dashboard' && last !== 'facelessstudio' && last !== 'mcp') return last
+    if (last && titles[last] && last !== 'dashboard' && last !== 'mcp') return last
   } catch (_) {}
   return DEFAULT_PANEL
 }
@@ -11975,6 +11982,14 @@ function bindGettingStarted() {
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
+  const openStudio = (e) => {
+    e.preventDefault()
+    try { closeAccountSettings() } catch (_) {}
+    try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
+    window.switchPanel?.('facelessstudio')
+  }
+  document.getElementById('user-studio-btn')?.addEventListener('click', openStudio)
+  document.getElementById('settings-studio')?.addEventListener('click', openStudio)
 }
 
 initBanner()
@@ -11991,6 +12006,55 @@ initImageWorkspace({
   loadFiles,
   resolveAccess,
 })
+
+try {
+initFacelessStudio({
+  api,
+  getUser: () => currentUser,
+  getVoices: () => (typeof voices !== 'undefined' ? voices : []),
+  loadVoices: () => (typeof loadVoices === 'function' ? loadVoices() : (typeof loadVoiceLibrary === 'function' ? loadVoiceLibrary() : Promise.resolve())),
+  getDurationCap: () => (typeof fvDurationCapSeconds === 'function' ? fvDurationCapSeconds() : 0),
+  getVoicesState: () => voicesLoadState,
+  parkWizard: (slot) => window.fvParkWizard?.(slot),
+  hydratePipeline: (project) => window.fvHydrateFromStudio(project),
+  snapshotPipeline: () => window.fvSnapshotForStudio(),
+  clearPipeline: () => {
+    window.fvStudioUnbind?.()
+    window.fvParkWizard?.(null)
+  },
+  generateThumb: async ({ prompt, model, aspect, image_urls }) => {
+    const refs = Array.isArray(image_urls) ? image_urls.filter(Boolean) : []
+    const data = await api.generate.image({
+      prompt,
+      model: model || DEFAULT_IMAGE_MODEL,
+      aspect_ratio: aspect || '16:9',
+      quality: '2K',
+      resolution: '2K',
+      num_images: 1,
+      ...(refs.length ? { image_urls: refs } : {}),
+    })
+    const url = data.urls?.[0]
+    if (!url) throw new Error('No image came back.')
+    let saved = null
+    try {
+      const pack = await api.generate.imageSave({
+        url,
+        prompt,
+        model: model || DEFAULT_IMAGE_MODEL,
+        aspect_ratio: aspect || '16:9',
+        quality: '2K',
+        reference_images: refs,
+      })
+      saved = pack.items?.[0] || null
+    } catch (_) {}
+    return saved || { storage_url: url, url }
+  },
+})
+if (document.getElementById('panel-facelessstudio')?.classList.contains('active')) {
+  try { window.fsStudioShow?.() } catch (_) {}
+}
+} catch (e) { console.warn('[faceless-studio]', e) }
+
 checkAuth()
 bindGettingStarted()
 
