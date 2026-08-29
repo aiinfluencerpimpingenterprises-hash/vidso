@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {
   createProjectRecord,
   isStudioSidecarName,
+  pickDefaultVoiceId,
   projectFileName,
   projectVisibleTo,
   publicProject,
@@ -80,6 +81,14 @@ test('publicProject strips internal file handles', () => {
 test('userIdOf prefers id then email', () => {
   assert.equal(userIdOf({ id: 'abc' }), 'abc')
   assert.equal(userIdOf({ email: 'x@y.z' }), 'x@y.z')
+})
+
+test('pickDefaultVoiceId keeps a valid pick and falls back to the first voice', () => {
+  const voices = [{ id: 'a', name: 'Ada' }, { id: 'b', name: 'Ben' }]
+  assert.equal(pickDefaultVoiceId(voices, 'b'), 'b')
+  assert.equal(pickDefaultVoiceId(voices, 'missing'), 'a')
+  assert.equal(pickDefaultVoiceId(voices, ''), 'a')
+  assert.equal(pickDefaultVoiceId([], 'b'), '')
 })
 
 test('image history hides studio project json but shows export mp4s in My Files', () => {
