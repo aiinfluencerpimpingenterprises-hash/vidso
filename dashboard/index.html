@@ -3586,8 +3586,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="paywall-status" id="paywall-status"></div>
     </div>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
-      <button type="button" class="paywall-tg active" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
-      <button type="button" class="paywall-tg" data-cycle="yearly" onclick="setPaywallCycle('yearly')">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
+      <button type="button" class="paywall-tg" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
+      <button type="button" class="paywall-tg active" data-cycle="annual" onclick="setPaywallCycle('annual')">Annual <span style="opacity:.85;font-weight:700">Save</span></button>
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
     <div class="paywall-foot">
@@ -8299,7 +8299,7 @@ window.maybeStartUiTour = () => {
 // ── PAYWALL (hard gate — no feature access without an active plan) ───────
 // Flip PAYWALL_ENABLED to false only for temporary testing; keep true in production.
 const PAYWALL_ENABLED = true
-let _paywallCycle = 'monthly'
+let _paywallCycle = 'annual'
 let _paywallOpening = false
 
 function hasActivePlan() {
@@ -8337,7 +8337,7 @@ function setPaywallStatus(msg, kind) {
 }
 
 window.setPaywallCycle = (cycle) => {
-  _paywallCycle = cycle === 'yearly' ? 'yearly' : 'monthly'
+  _paywallCycle = (cycle === 'yearly' || cycle === 'annual') ? 'annual' : 'monthly'
   document.querySelectorAll('.paywall-tg').forEach(b => b.classList.toggle('active', b.dataset.cycle === _paywallCycle))
   window.__paywallPricing?.setCycle(_paywallCycle)
 }
@@ -8440,6 +8440,7 @@ window.startCheckout = async (tier) => {
 
 window.__paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
   variant: 'paywall',
+  cycle: 'annual',
   onCta: (tier) => window.startCheckout(tier),
 })
 
