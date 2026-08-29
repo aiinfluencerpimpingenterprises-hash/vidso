@@ -22,7 +22,7 @@ import {
 
 test('studio sidecars are named and hidden from My Files', () => {
   const name = projectFileName('abc-123')
-  assert.equal(name, 'vidso-fs-proj-abc-123.json')
+  assert.equal(name, 'vidso-fs-proj-abc-123.txt')
   assert.equal(isStudioSidecarName(name), true)
   assert.equal(isStudioSidecarName('vidso-fs-file-abcd-export.mp4'), true)
   assert.equal(isStudioSidecarName('Thumbnail-demo-abcd.jpg'), false)
@@ -93,6 +93,7 @@ test('pickDefaultVoiceId keeps a valid pick and falls back to the first voice', 
 
 test('image history hides studio project json but shows export mp4s in My Files', () => {
   assert.equal(isHistorySidecarName('vidso-img-1.meta.json'), true)
+  assert.equal(isHistorySidecarName('vidso-fs-proj-abc-123.txt'), true)
   assert.equal(isHistorySidecarName('vidso-fs-proj-abc-123.json'), true)
   assert.equal(isHistorySidecarName('vidso-fs-file-abcd-export.mp4'), false)
 })
