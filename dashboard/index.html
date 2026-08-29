@@ -2549,6 +2549,19 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
 }
 .fs-gallery{padding:0 0 28px}
 .fs-shot-grid.fs-g-grid,.fs-g-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.fs-feed-grid.is-portrait{grid-template-columns:repeat(4,minmax(0,1fr))}
+.fs-feed-tile.is-pending,.fs-feed-tile.is-error{cursor:default}
+.fs-feed-wait{position:absolute;left:14px;right:14px;bottom:14px;color:rgba(255,255,255,.6);font-size:.78rem}
+.fs-feed-fail{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:16px;background:rgba(0,0,0,.55)}
+.fs-feed-fail p{margin:0;color:#f3b4b8;font-size:.82rem}
+.fs-feed-view{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;padding:24px}
+.fs-feed-view[hidden]{display:none!important}
+.fs-feed-view-scrim{position:absolute;inset:0;background:rgba(4,4,6,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.fs-feed-view-frame{position:relative;z-index:1;width:min(1100px,100%);border-radius:18px;overflow:hidden;background:#000}
+.fs-feed-view-frame video{display:block;width:100%;max-height:calc(100vh - 48px);background:#000}
+.fs-feed-view-x{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;border:none;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer}
+body.fs-feed-view-open{overflow:hidden}
+.fs-home.has-feed .fs-tab-body{padding-top:8px}
 .fs-hero{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;margin:0 0 22px}
 .fs-hero.fs-hero-center{align-items:center;text-align:center}
 .fs-hero-title{margin:0;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
@@ -2638,7 +2651,7 @@ body.fs-show-open{overflow:hidden}
 .fs-show-foot{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 .fs-show-tags{display:flex;gap:14px;color:rgba(255,255,255,.5);font-size:.78rem}
 @media (max-width:980px){
-  .fs-shot-grid.fs-g-grid,.fs-g-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fs-shot-grid.fs-g-grid,.fs-g-grid,.fs-feed-grid.is-portrait{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fs-show{padding:10px}
   .fs-show-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
   .fs-show-side{max-height:42vh}
