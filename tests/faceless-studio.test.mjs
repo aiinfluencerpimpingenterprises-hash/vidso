@@ -61,6 +61,16 @@ test('create persists a Fal video model for Studio B-roll', () => {
   assert.equal(rec.pipeline.videoModel, 'kling-3-pro')
 })
 
+test('create persists clip duration, sound, and generation count', () => {
+  const rec = createProjectRecord(
+    { id: 'u' },
+    { topic: 'x', clip_duration: 8, video_sound: true, video_count: 3 },
+  )
+  assert.equal(rec.clip_duration, 8)
+  assert.equal(rec.video_sound, true)
+  assert.equal(rec.video_count, 3)
+})
+
 test('publicProject strips internal file handles', () => {
   const pub = publicProject({ id: '1', user_id: 'u', _meta_file: { id: 'x' }, title: 'T' })
   assert.equal(pub._meta_file, undefined)

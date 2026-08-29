@@ -49,6 +49,9 @@ export default async function handler(req, res) {
         duration: body.duration || body.duration_seconds,
         resolution: String(body.resolution || body.quality || '').toLowerCase(),
         generate_audio: body.generate_audio === true,
+        image_urls: Array.isArray(body.image_urls)
+          ? body.image_urls
+          : (body.image_url ? [body.image_url] : []),
       })
       : falImageInput(body.model, prompt, {
         aspect: body.aspect_ratio || body.aspect,

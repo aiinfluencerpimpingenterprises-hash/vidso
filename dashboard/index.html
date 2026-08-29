@@ -2273,10 +2273,25 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-lime-btn:hover,.btn.fs-lime-btn:hover{filter:brightness(1.05);color:#fff}
 .fs-hero-center{align-items:center;text-align:center;margin:32px auto 18px;width:100%}
 .fs-home-tag{text-align:center;margin:18px 0 14px;color:rgba(255,255,255,.45);font-size:.72rem;letter-spacing:.08em;font-weight:700;font-family:var(--font-heading)}
-.fs-composer-sc{max-width:760px;margin:0 auto 8px;padding:16px 16px 12px;border-radius:22px}
+.fs-composer-sc{max-width:880px;margin:0 auto 8px;padding:16px 16px 12px;border-radius:22px}
 .fs-composer-sc .fs-topic{width:100%;min-height:64px;display:block}
-.fs-composer-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
-.fs-composer-left,.fs-composer-right{display:flex;align-items:center;gap:8px}
+.fs-composer-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:8px}
+.fs-composer-left,.fs-composer-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fs-bar-chip,.fs-bar-btn{
+  display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:10px;
+  border:1px solid var(--border);background:rgba(255,255,255,.04);color:rgba(255,255,255,.82);
+  font:inherit;font-size:.72rem
+}
+.fs-bar-chip svg,.fs-bar-btn svg{flex-shrink:0;opacity:.75}
+.fs-bar-chip select{border:none;background:transparent;color:var(--ink);font:inherit;font-size:.72rem;max-width:148px}
+.fs-bar-btn{cursor:pointer}
+.fs-bar-btn[aria-pressed="true"]{border-color:rgba(233,75,88,.55);background:rgba(233,75,88,.12)}
+.fs-bar-chip.is-off,.fs-bar-btn.is-off,.fs-count.is-off{opacity:.42}
+.fs-bar-btn:disabled{cursor:not-allowed}
+.fs-count{display:inline-flex;align-items:center;height:34px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
+.fs-count button{width:28px;height:32px;border:none;background:transparent;color:inherit;cursor:pointer;font:inherit}
+.fs-count button:disabled{cursor:not-allowed}
+.fs-count span{min-width:34px;text-align:center;font-size:.72rem;color:rgba(255,255,255,.82)}
 .fs-composer-sc .fs-ref-add{
   width:34px;height:34px;border-radius:999px;border:1px solid var(--border);display:grid;place-items:center;font-size:1rem
 }
@@ -2383,7 +2398,7 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 .fs-main:has(.has-composer){padding-bottom:12px;overflow:auto}
 .fs-home.has-composer{position:relative;flex:1;min-height:60vh;height:auto;display:flex;flex-direction:column;overflow:visible}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
-.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:var(--fs-composer-h,168px)}
+.fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:visible;padding-bottom:var(--fs-composer-h,220px)}
 .fs-composer-slot{width:100%}
 .fs-home.is-temp{min-height:calc(100vh - 140px);justify-content:center;padding-bottom:8vh}
 .fs-home.is-temp .fs-tab-body{padding-bottom:24px;display:flex;flex-direction:column;justify-content:center}
@@ -2402,7 +2417,7 @@ body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
 }
 .fs-hero.fs-hero-center .fs-hero-title{width:100%;text-align:center;margin-left:auto;margin-right:auto}
 .fs-home.has-composer .fs-composer{
-  pointer-events:auto;max-width:760px;margin:0 auto;padding:12px 14px;
+  pointer-events:auto;max-width:920px;margin:0 auto;padding:12px 14px;
   border:1px solid var(--border);border-radius:18px;
   background:rgba(18,18,20,.94);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
@@ -6093,7 +6108,7 @@ import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
-import { isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
+import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
@@ -8637,11 +8652,24 @@ window.fvState = {
   allowShortScript: false,
   allowShortRender: false,
   videoModel: STOCK_VIDEO_MODEL,
+  clipDuration: 5,
+  sound: false,
+  generations: 1,
+  refUrls: [],
   mediaFinalizing: false,
 }
 
 window.fvSetStudioVideoModel = (id) => {
   fvState.videoModel = String(id || STOCK_VIDEO_MODEL)
+}
+
+window.fvSetStudioVideoSettings = (opts = {}) => {
+  if (opts.videoModel != null) fvState.videoModel = String(opts.videoModel || STOCK_VIDEO_MODEL)
+  if (opts.aspect === '9:16' || opts.aspect === '16:9') fvState.aspect = opts.aspect
+  if (Number(opts.clipDuration) > 0) fvState.clipDuration = Number(opts.clipDuration)
+  if (opts.sound != null) fvState.sound = !!opts.sound
+  if (opts.generations != null) fvState.generations = clampVideoCount(opts.generations)
+  if (Array.isArray(opts.refUrls)) fvState.refUrls = opts.refUrls.filter((u) => /^(https?:|data:)/i.test(String(u)))
 }
 
 function fvSetScriptActionsVisible(show) {
@@ -9111,6 +9139,10 @@ window.fvSnapshotForStudio = () => {
     allowShortRender: fvState.allowShortRender,
     scriptAiUsed: fvState.scriptAiUsed,
     videoModel: fvState.videoModel || '',
+    clipDuration: fvState.clipDuration || 5,
+    sound: !!fvState.sound,
+    generations: clampVideoCount(fvState.generations),
+    refUrls: Array.isArray(fvState.refUrls) ? fvState.refUrls : [],
   }
 }
 
@@ -9132,6 +9164,13 @@ window.fvHydrateFromStudio = (project) => {
   const durationId = snap.durationId || project.length || ''
   const voiceId = snap.voiceId || project.voice_id || ''
   fvState.videoModel = snap.videoModel || project.video_model || STOCK_VIDEO_MODEL
+  fvState.clipDuration = Number(snap.clipDuration || project.clip_duration) || 5
+  fvState.sound = snap.sound != null ? !!snap.sound : !!project.video_sound
+  fvState.generations = clampVideoCount(snap.generations || project.video_count || 1)
+  fvState.refUrls = [
+    ...(Array.isArray(snap.refUrls) ? snap.refUrls : []),
+    ...((project.references || []).map((r) => r.url || r.storage_url || r).filter((u) => /^(https?:|data:)/i.test(String(u)))),
+  ].filter((u, i, all) => all.indexOf(u) === i)
   fvState.format = String(durationId).startsWith('shorts') ? 'shorts' : 'long'
   fvState.durationId = durationId
   fvState.aspect = aspect || '16:9'
@@ -9553,21 +9592,27 @@ function fvFalBrollPrompts(job) {
   const sections = Array.isArray(fvState.script?.sections) ? fvState.script.sections : []
   const topic = fvState.script?.topic || document.getElementById('fv-topic')?.value || ''
   const style = String(topic || '').trim()
+  const clipDur = Number(fvState.clipDuration) > 0 ? Number(fvState.clipDuration) : 5
+  const count = clampVideoCount(fvState.generations)
   const rows = sections.map((sec, i) => {
     const heading = String(sec.heading || sec.title || 'Scene ' + (i + 1)).trim()
     const text = String(sec.text || sec.body || '').replace(/\s+/g, ' ').trim()
     const prompt = [heading, text].filter(Boolean).join('. ').slice(0, 800)
       || (style + ' cinematic B-roll, scene ' + (i + 1))
-    const start = Number(sec.start)
-    const end = Number(sec.end)
-    const dur = Number.isFinite(start) && Number.isFinite(end) && end > start ? end - start : 5
-    return { prompt, duration: dur, query: heading }
+    return { prompt, duration: clipDur, query: heading }
   }).filter((row) => row.prompt)
   if (!rows.length) {
-    const dur = Number(job?.duration) > 0 ? Math.min(8, Number(job.duration)) : 5
-    rows.push({ prompt: (style || 'cinematic faceless B-roll') + ', no text, no subtitles', duration: dur, query: 'scene' })
+    rows.push({ prompt: (style || 'cinematic faceless B-roll') + ', no text, no subtitles', duration: clipDur, query: 'scene' })
   }
-  return rows.slice(0, 8)
+  const picked = rows.slice(0, count)
+  while (picked.length < count) {
+    picked.push({
+      prompt: (style || picked[0].prompt) + ', variation ' + (picked.length + 1),
+      duration: clipDur,
+      query: 'take ' + (picked.length + 1),
+    })
+  }
+  return picked
 }
 
 async function fvApplyFalBroll(job) {
@@ -9576,6 +9621,7 @@ async function fvApplyFalBroll(job) {
   const model = videoModelById(modelId)
   const shots = fvFalBrollPrompts(job)
   const clips = []
+  const refs = Array.isArray(fvState.refUrls) ? fvState.refUrls : []
   fvSetMediaStatus('Generating ' + (model?.name || 'Fal') + ' B-roll…', 'loading')
   for (let i = 0; i < shots.length; i++) {
     const bar = document.getElementById('fv-media-bar')
@@ -9587,7 +9633,8 @@ async function fvApplyFalBroll(job) {
         prompt: shots[i].prompt,
         aspect: fvState.aspect || '16:9',
         duration: shots[i].duration,
-        generate_audio: false,
+        generate_audio: !!fvState.sound,
+        ...(refs.length ? { image_urls: refs } : {}),
       })
       const url = data.urls?.[0]
       if (!url) throw new Error('No video came back')

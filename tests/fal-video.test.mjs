@@ -3,6 +3,8 @@ import assert from 'node:assert/strict'
 import {
   DEFAULT_VIDEO_MODEL,
   STOCK_VIDEO_MODEL,
+  clampVideoCount,
+  clipDurationFor,
   falVideoInput,
   isFalVideoModel,
   urlsFromFalVideoResult,
@@ -58,4 +60,24 @@ test('video result parser reads video.url', () => {
     urlsFromFalVideoResult({ video: { url: 'https://v.mp4' }, videos: [{ url: 'https://v.mp4' }] }),
     ['https://v.mp4']
   )
+})
+
+test('reference image switches Kling to image-to-video', () => {
+  const { endpoint, input, imageToVideo } = falVideoInput('kling-3-pro', 'the bowl turns', {
+    image_urls: ['https://cdn.example/ref.jpg'],
+    generate_audio: true,
+    duration: 12,
+  })
+  assert.equal(imageToVideo, true)
+  assert.equal(endpoint, 'fal-ai/kling-video/v3/pro/image-to-video')
+  assert.equal(input.start_image_url, 'https://cdn.example/ref.jpg')
+  assert.equal(input.generate_audio, true)
+  assert.equal(input.duration, '12')
+})
+
+test('generation count clamps to 1 through 4', () => {
+  assert.equal(clampVideoCount(0), 1)
+  assert.equal(clampVideoCount(9), 4)
+  assert.equal(clampVideoCount(2), 2)
+  assert.equal(clipDurationFor('veo-3.1', 10), 8)
 })
