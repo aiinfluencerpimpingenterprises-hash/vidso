@@ -470,6 +470,11 @@ export const api = {
     // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
+    concatVoiceovers: (urls) => {
+      const url = sameOriginApi('/api/media/concat')
+      if (!url) throw new Error('Voiceover merge is only available on the live app.')
+      return reqTo(url, 'POST', { urls })
+    },
     // body: { query, aspect } → { clips }
     searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }

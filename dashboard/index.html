@@ -5680,6 +5680,8 @@ import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
   facelessMediaPayloadExtras,
   facelessScriptPayload,
+  mergeMediaJobs,
+  splitScriptForMedia,
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
@@ -9168,10 +9170,66 @@ function fvTimelineForRender(timeline) {
   })
 }
 
+function fvStopMediaPoll() {
+  if (fvState.mediaPoll) {
+    clearInterval(fvState.mediaPoll)
+    fvState.mediaPoll = null
+  }
+}
+
+function fvWaitForMediaJob(jobId, label) {
+  return new Promise((resolve, reject) => {
+    fvState.mediaJobId = jobId
+    fvStopMediaPoll()
+    fvState.mediaPoll = setInterval(async () => {
+      try {
+        const job = await api.faceless.pollMedia(jobId)
+        document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
+        if (job.status === 'processing' || job.status === 'queued') {
+          fvSetMediaStatus(job.step || label || 'Processing…', 'loading')
+          return
+        }
+        fvStopMediaPoll()
+        if (job.status === 'error') {
+          reject(new Error(job.error || 'Media failed'))
+          return
+        }
+        resolve(job)
+      } catch (e) {
+        fvStopMediaPoll()
+        reject(e)
+      }
+    }, 1200)
+  })
+}
+
+async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
+  const { jobId } = await api.faceless.startMedia({
+    script: {
+      title: chunk.title || fvState.script.title,
+      topic: chunk.topic || fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
+      full_script: chunk.full_script,
+      keywords: chunk.keywords || fvState.script.keywords || [],
+      sections: chunk.sections || [],
+      aspect: chunk.aspect || fvState.script.aspect || fvState.aspect,
+      voice_id: voiceId,
+      voice_settings: voiceOpts.voice_settings,
+      duration_id: extras.duration_id,
+      duration_seconds: extras.duration_seconds,
+      target_words: extras.target_words,
+    },
+    voice_id: voiceId,
+    aspect: chunk.aspect || fvState.script.aspect || fvState.aspect,
+    ...extras,
+    ...voiceOpts,
+  })
+  return fvWaitForMediaJob(jobId, label)
+}
+
 window.fvStartMedia = async (force) => {
   if (!fvState.script) return
   fvRebuildFullScriptFromSections()
-  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+  fvStopMediaPoll()
 
   document.getElementById('fv-media-progress-wrap').style.display = ''
   document.getElementById('fv-media-result').style.display = 'none'
@@ -9187,64 +9245,48 @@ window.fvStartMedia = async (force) => {
   const voiceOpts = voiceSettingsPayload(
     fvState.voiceSettings || fvState.script.voice_settings || readVoiceControls('fv'),
   )
+  const chunks = splitScriptForMedia({
+    ...fvState.script,
+    topic: fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
+    aspect: fvState.script.aspect || fvState.aspect,
+    voice_id: voiceId,
+  })
   fvLengthTrace('media-request', {
     seconds: extras.duration_seconds,
     voiceId,
     aspect: fvState.script.aspect || fvState.aspect,
     scriptWords: scriptWordCount(fvState.script),
+    scriptChars: String(fvState.script.full_script || '').length,
+    mediaChunks: chunks.length,
     voiceSettings: voiceOpts.voice_settings,
   })
   try {
-    const { jobId } = await api.faceless.startMedia({
-      script: {
-        title: fvState.script.title,
-        topic: fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
-        full_script: fvState.script.full_script,
-        keywords: fvState.script.keywords || [],
-        sections: fvState.script.sections || [],
-        aspect: fvState.script.aspect || fvState.aspect,
-        voice_id: voiceId,
-        voice_settings: voiceOpts.voice_settings,
-        duration_id: extras.duration_id,
-        duration_seconds: extras.duration_seconds,
-        target_words: extras.target_words,
-      },
-      voice_id: voiceId,
-      aspect: fvState.script.aspect || fvState.aspect,
-      ...extras,
-      ...voiceOpts,
-    })
-    fvState.mediaJobId = jobId
-    fvState.mediaPoll = setInterval(async () => {
-      try {
-        const job = await api.faceless.pollMedia(jobId)
-        document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
-        if (job.status === 'processing' || job.status === 'queued') {
-          fvSetMediaStatus(job.step || 'Processing…', 'loading')
-          return
-        }
-        clearInterval(fvState.mediaPoll)
-        fvState.mediaPoll = null
-        if (job.status === 'error') {
-          fvSetMediaStatus(job.error || 'Media failed', 'err')
-          return
-        }
-        let ready = job
-        if (fvState.brollSource === 'youtube') {
-          try { ready = await fvAttachYoutubeBroll(job) } catch (e) {
-            job.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using cinematic footage'
-            ready = job
-          }
-        }
-        fvSetMediaStatus('Ready', 'ok')
-        fvRenderMediaResult(ready)
-      } catch (e) {
-        clearInterval(fvState.mediaPoll)
-        fvState.mediaPoll = null
-        fvSetMediaStatus(e.message || 'Poll failed', 'err')
+    const jobs = []
+    for (let i = 0; i < chunks.length; i++) {
+      const label = chunks.length > 1
+        ? 'Building voiceover + B-roll (' + (i + 1) + ' of ' + chunks.length + ')…'
+        : 'Queuing voiceover + B-roll…'
+      fvSetMediaStatus(label, 'loading')
+      document.getElementById('fv-media-bar').style.width = Math.max(5, Math.round((i / chunks.length) * 90)) + '%'
+      jobs.push(await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label))
+    }
+    let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
+    if ((ready.voiceover_urls || []).length > 1) {
+      fvSetMediaStatus('Joining voiceover parts…', 'loading')
+      const merged = await api.faceless.concatVoiceovers(ready.voiceover_urls)
+      const url = merged.url || merged.file?.url || merged.public_url
+      if (!url) throw new Error('Could not join the voiceover')
+      ready = { ...ready, voiceover_url: url }
+    }
+    if (fvState.brollSource === 'youtube') {
+      try { ready = await fvAttachYoutubeBroll(ready) } catch (e) {
+        ready.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using cinematic footage'
       }
-    }, 1200)
+    }
+    fvSetMediaStatus('Ready', 'ok')
+    fvRenderMediaResult(ready)
   } catch (e) {
+    fvStopMediaPoll()
     fvSetMediaStatus(e.message || 'Could not start media job', 'err')
   }
 }

@@ -11,8 +11,11 @@ import {
   impliedSecondsFromWords,
   isMateriallyShort,
   listCountFromTopic,
+  mergeMediaJobs,
   mergeNewSections,
   needsMoreSections,
+  RAILWAY_MEDIA_SCRIPT_SAFE,
+  splitScriptForMedia,
   padListSections,
   rebuildFullScript,
   scriptLengthBrief,
@@ -210,4 +213,53 @@ test('capScriptToTarget trims a 30 min overshoot back to 4500 words', () => {
   assert.ok(scriptWordCount(script) <= 4500)
   assert.ok(scriptWordCount(script) >= 3600)
   assert.match(trimSpokenText('One two three. Four five six seven.', 4), /One two three\./)
+})
+
+test('long scripts split under the Railway media character cap', () => {
+  const block = Array.from({ length: 200 }, () => 'airport secret spoken here.').join(' ')
+  const script = {
+    title: 'Airport secrets',
+    topic: 'Airport secrets',
+    sections: Array.from({ length: 8 }, (_, i) => ({
+      id: 's' + (i + 1),
+      heading: 'Secret ' + (i + 1),
+      text: block,
+    })),
+  }
+  rebuildFullScript(script)
+  assert.ok(script.full_script.length > RAILWAY_MEDIA_SCRIPT_SAFE)
+  const chunks = splitScriptForMedia(script)
+  assert.ok(chunks.length > 1)
+  for (const chunk of chunks) {
+    assert.ok(String(chunk.full_script).length <= RAILWAY_MEDIA_SCRIPT_SAFE)
+  }
+  assert.ok(chunks.every((c) => c.full_script.trim()))
+})
+
+test('media jobs stitch word times and keep every voiceover URL', () => {
+  const merged = mergeMediaJobs([
+    {
+      duration: 10,
+      voiceover_url: 'https://cdn.example/a.mp3',
+      words: [{ text: 'Hi', start: 0, end: 1 }],
+      timeline: [{ start: 0, end: 10, query: 'a' }],
+      clips: [{ url: 'a' }],
+    },
+    {
+      duration: 8,
+      voiceover_url: 'https://cdn.example/b.mp3',
+      words: [{ text: 'There', start: 0, end: 2 }],
+      timeline: [{ start: 0, end: 8, query: 'b' }],
+      clips: [{ url: 'b' }],
+    },
+  ])
+  assert.equal(merged.duration, 18)
+  assert.equal(merged.words[1].start, 10)
+  assert.equal(merged.words[1].end, 12)
+  assert.equal(merged.timeline[1].start, 10)
+  assert.equal(merged.timeline[1].end, 18)
+  assert.deepEqual(merged.voiceover_urls, [
+    'https://cdn.example/a.mp3',
+    'https://cdn.example/b.mp3',
+  ])
 })
