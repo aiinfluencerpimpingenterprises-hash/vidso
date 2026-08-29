@@ -250,9 +250,48 @@
   .prow.pending{color:var(--faint)}
   .prow.pending .check{background:rgba(255,255,255,.04);color:var(--faint)}
   .bb-right{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;align-items:stretch;justify-items:stretch;background:#050505}
-  .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s;align-self:start}
+  .bb-right .clip{width:100%;min-width:0;aspect-ratio:16/9;border-radius:12px;background:#0c0c0c;border:1px solid var(--line);position:relative;overflow:hidden;padding:0;margin:0;transition:border-color .25s,opacity .25s,filter .25s,box-shadow .25s;align-self:start}
   .bb-right .clip:hover{border-color:var(--line-2)}
   .bb-right .clip > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border:0;background:#0c0c0c;pointer-events:none}
+  .bb-right .clip.is-feature{
+    z-index:2;
+    border-color:rgba(var(--glow),.95);
+    box-shadow:0 0 0 1px rgba(var(--glow),.55),0 10px 28px rgba(var(--glow),.38),inset 0 0 0 1px rgba(255,255,255,.12)
+  }
+  .bb-right .clip.is-feature:hover{border-color:var(--a1)}
+  .bb-right .clip:not(.is-feature){opacity:.58;filter:saturate(.7)}
+  .bb-right .clip:not(.is-feature):hover{opacity:1;filter:none;border-color:var(--line-2)}
+  .bb-right .clip.is-feature::after{
+    content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,0,0,.08) 0%,transparent 32%,transparent 62%,rgba(0,0,0,.42) 100%)
+  }
+  .bb-right .clip.is-feature::before{
+    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.16) 50%,transparent 62%);
+    transform:translateX(-130%);
+    animation:clipShine 5s ease-in-out 1.4s infinite
+  }
+  @keyframes clipShine{
+    0%,68%{transform:translateX(-130%)}
+    86%,100%{transform:translateX(130%)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bb-right .clip.is-feature::before{animation:none;transform:none;background:none}
+  }
+  .clip-badge{
+    position:absolute;left:8px;top:8px;z-index:3;
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 8px;border-radius:7px;
+    background:var(--a1);color:#fff;
+    font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;line-height:1;
+    box-shadow:0 6px 16px rgba(var(--glow),.42)
+  }
+  .clip-badge .dot{width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.22);flex-shrink:0}
+  .clip-caption{
+    position:absolute;left:8px;right:44px;bottom:8px;z-index:3;
+    font-size:10px;font-weight:600;letter-spacing:.04em;color:#fff;line-height:1.2;
+    text-shadow:0 1px 8px rgba(0,0,0,.65)
+  }
   .clip .media-ph{position:absolute;inset:0;z-index:0}
   /* Touch-only mute/unmute affordance for mockup + carousel videos */
   .rs-audio-btn{
@@ -999,8 +1038,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             </div>
           </div>
           <div class="bb-right" id="mockup-clips">
-            <div class="clip">
-              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard1.mp4" aria-label="Preview video 1"></video>
+            <div class="clip is-feature">
+              <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4" aria-label="Full Vidso pipeline from script to finished video"></video>
+              <span class="clip-badge"><span class="dot"></span>Full pipeline</span>
+              <span class="clip-caption">Script, voice, B-roll, captions</span>
             </div>
             <div class="clip">
               <video muted autoplay loop playsinline preload="auto" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/placeholdercard2.mp4" aria-label="Preview video 2"></video>
@@ -1732,7 +1773,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 (function(){
   var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
   var FILES = [
-    'placeholdercard1.mp4',
+    'VidsoHeroVideo.mp4',
     'placeholdercard2.mp4',
     'placeholdercard3.mp4',
     'placeholdercard4.mp4'
