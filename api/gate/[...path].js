@@ -1,5 +1,5 @@
 import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
-import { isStudioGatePath, studioGateSegs } from '../../lib/studio-gate.js'
+import { isStudioGatePath, studioRouteFromReq } from '../../lib/studio-gate.js'
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
@@ -117,15 +117,14 @@ function send(res, status, body) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-vidso-studio')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
   if (req.method === 'OPTIONS') {
     res.statusCode = 204
     return res.end()
   }
 
-  const parts = [].concat(req.query.path || [])
-  const subpath = parts.join('/')
+  const { subpath, segs, query } = studioRouteFromReq(req)
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
   if (!token) return send(res, 401, { error: 'Missing token' })
 
@@ -136,10 +135,7 @@ export default async function handler(req, res) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
 
-  const studioPath = String(subpath || '').replace(/^\/+|\/+$/g, '')
-  if (isStudioGatePath(studioPath)) {
-    const query = new URL(req.url, 'http://localhost').searchParams
-    const segs = studioGateSegs(studioPath, query)
+  if (isStudioGatePath(subpath)) {
     const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
     try {
       const out = await handleFacelessStudio({ token, user, method: req.method, segs, query, body })

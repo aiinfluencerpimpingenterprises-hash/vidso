@@ -1,6 +1,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { isStudioGatePath, studioGateHref, studioGateSegs } from '../lib/studio-gate.js'
+import {
+  gateApiSubpath,
+  isStudioGatePath,
+  studioGateHref,
+  studioGateRest,
+  studioGateSegs,
+  studioRouteFromReq,
+} from '../lib/studio-gate.js'
 
 test('studio gate href stays on one /api/gate segment', () => {
   const list = new URL('https://x' + studioGateHref('/projects?limit=40&sort=updated'))
@@ -26,4 +33,23 @@ test('studio gate segs come from nested path or p query', () => {
     studioGateSegs('faceless-studio', new URLSearchParams('p=projects/abc/refs&limit=24')),
     ['projects', 'abc', 'refs'],
   )
+})
+
+test('gate subpath is read from the URL when Vercel omits query.path', () => {
+  assert.equal(gateApiSubpath({ query: { path: 'faceless-studio' } }), 'faceless-studio')
+  assert.equal(gateApiSubpath({ url: '/api/gate/faceless-studio?p=projects' }), 'faceless-studio')
+  assert.equal(gateApiSubpath({ url: '/api/gate/usage' }), 'usage')
+  assert.equal(studioGateRest('/projects/abc/jobs?x=1'), 'projects/abc/jobs')
+  const routed = studioRouteFromReq({
+    url: '/api/gate/faceless-studio?limit=40',
+    headers: { 'x-vidso-studio': 'projects' },
+  })
+  assert.equal(routed.subpath, 'faceless-studio')
+  assert.deepEqual(routed.segs, ['projects'])
+  const fromP = studioRouteFromReq({
+    url: '/api/gate/faceless-studio?p=projects%2Fabc%2Fjobs',
+    query: {},
+    headers: {},
+  })
+  assert.deepEqual(fromP.segs, ['projects', 'abc', 'jobs'])
 })
