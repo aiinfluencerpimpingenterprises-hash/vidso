@@ -7,6 +7,9 @@ import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { saveGrant, withStoredGrant } from '../../lib/grants.js'
 import { lookupPaidMembership } from '../../lib/whop-lookup.js'
 import { isJsonSyntaxError, recoverScriptData } from '../../lib/json-repair.js'
+import { railwayUpload } from '../../lib/railway-files.js'
+
+export const config = { maxDuration: 60 }
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
@@ -80,6 +83,29 @@ async function forward(req, subpath, body) {
   return { status: res.status, data, text }
 }
 
+async function concatVoiceoverParts(res, token, body) {
+  const urls = Array.isArray(body?.urls) ? body.urls.map((u) => String(u || '').trim()).filter(Boolean) : []
+  if (urls.length < 2) return send(res, 400, { error: 'Need at least two voiceover parts' })
+  if (urls.length > 12) return send(res, 400, { error: 'Too many voiceover parts' })
+  const parts = []
+  for (const url of urls) {
+    if (!/^https?:\/\//i.test(url)) return send(res, 400, { error: 'Invalid voiceover URL' })
+    const got = await fetch(url)
+    if (!got.ok) return send(res, 502, { error: 'Could not read a voiceover part' })
+    parts.push(Buffer.from(await got.arrayBuffer()))
+  }
+  try {
+    const rec = await railwayUpload(token, {
+      buffer: Buffer.concat(parts),
+      filename: 'vidso-voiceover.mp3',
+      mime: 'audio/mpeg',
+    })
+    return send(res, 200, rec)
+  } catch (e) {
+    return send(res, e.status || 502, { error: e.message || 'Could not save the merged voiceover' })
+  }
+}
+
 function send(res, status, body) {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json')
@@ -122,6 +148,9 @@ export default async function handler(req, res) {
   }
 
   let body = req.method === 'GET' ? {} : await readJson(req)
+  if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'media/concat') {
+    return concatVoiceoverParts(res, token, body)
+  }
   const seconds = durationFromBody(body)
   const kind = generationKindFromSeconds(seconds)
   if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'faceless/script') {
