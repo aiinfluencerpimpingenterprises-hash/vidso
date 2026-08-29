@@ -58,14 +58,6 @@
       "destination": "/dashboard/index.html"
     },
     {
-      "source": "/faceless-studio",
-      "destination": "/dashboard/index.html"
-    },
-    {
-      "source": "/faceless-studio/:path*",
-      "destination": "/dashboard/index.html"
-    },
-    {
       "source": "/api/faceless-studio/:path*",
       "destination": "/api/gate/faceless-studio/:path*"
     },
@@ -169,6 +161,21 @@
       "permanent": false
     },
     {
+      "source": "/faceless-studio",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/faceless-studio/",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/faceless-studio/:path*",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
       "source": "/upscale/",
       "destination": "/video-generation",
       "permanent": false
@@ -261,15 +268,6 @@
     },
     {
       "source": "/video-generation",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/faceless-studio",
       "headers": [
         {
           "key": "Cache-Control",
