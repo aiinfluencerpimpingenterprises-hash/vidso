@@ -244,8 +244,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="paywall-status" id="paywall-status"></div>
     </div>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
-      <button type="button" class="paywall-tg active" data-cycle="monthly" id="tg-monthly">Monthly</button>
-      <button type="button" class="paywall-tg" data-cycle="yearly" id="tg-yearly">Yearly <span style="opacity:.85;font-weight:700">Save</span></button>
+      <button type="button" class="paywall-tg" data-cycle="monthly" id="tg-monthly">Monthly</button>
+      <button type="button" class="paywall-tg active" data-cycle="annual" id="tg-annual">Annual <span style="opacity:.85;font-weight:700">Save</span></button>
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
     <div class="paywall-foot">
@@ -329,11 +329,12 @@ import { api, setSession, clearSession, getToken, getRefreshToken } from '/api.j
 import { mountPricing } from '/lib/pricing-ui.js'
 
 const APP = '/video-generation'
-let paywallCycle = 'monthly'
+let paywallCycle = 'annual'
 let currentUser = null
 let _planPoll = null
 const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
   variant: 'paywall',
+  cycle: 'annual',
   onCta: async (tier) => {
     if (!currentUser) {
       try { currentUser = await api.user.me() } catch (_) {}
@@ -422,7 +423,7 @@ function setPaywallStatus(msg, kind) {
 }
 
 function setPaywallCycle(cycle) {
-  paywallCycle = cycle === 'yearly' ? 'yearly' : 'monthly'
+  paywallCycle = (cycle === 'yearly' || cycle === 'annual') ? 'annual' : 'monthly'
   document.querySelectorAll('.paywall-tg').forEach(b => b.classList.toggle('active', b.dataset.cycle === paywallCycle))
   paywallPricing?.setCycle(paywallCycle)
 }
@@ -596,7 +597,7 @@ if (oauthReturned) {
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')
 document.getElementById('tab-btn-signup').onclick = () => switchTab('signup')
 document.getElementById('tg-monthly').onclick = () => setPaywallCycle('monthly')
-document.getElementById('tg-yearly').onclick = () => setPaywallCycle('yearly')
+document.getElementById('tg-annual').onclick = () => setPaywallCycle('annual')
 
 document.getElementById('google-cta').onclick = () => {
   const btn = document.getElementById('google-cta')
