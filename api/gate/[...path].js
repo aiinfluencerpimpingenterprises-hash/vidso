@@ -1,3 +1,4 @@
+import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
 import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
@@ -116,7 +117,7 @@ function send(res, status, body) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
   if (req.method === 'OPTIONS') {
     res.statusCode = 204
     return res.end()
@@ -132,6 +133,19 @@ export default async function handler(req, res) {
     user = await railwayMe(token)
   } catch (e) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
+  }
+
+  const studioPath = String(subpath || '').replace(/^\/+|\/+$/g, '')
+  if (studioPath === 'faceless-studio' || studioPath.startsWith('faceless-studio/')) {
+    const segs = studioPath.split('/').filter(Boolean).slice(1)
+    const query = new URL(req.url, 'http://localhost').searchParams
+    const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
+    try {
+      const out = await handleFacelessStudio({ token, user, method: req.method, segs, query, body })
+      return send(res, out.status, out.body)
+    } catch (e) {
+      return send(res, e.status || 500, { error: e.message || 'Studio request failed' })
+    }
   }
 
   const rule = ruleFor(req.method, subpath)

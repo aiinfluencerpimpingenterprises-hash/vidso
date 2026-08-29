@@ -79,16 +79,16 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function generateImageFal(body) {
+async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
   const startUrl = sameOriginApi('/api/generate/image')
-  if (!startUrl) throw new Error('Image generation is only available on the live app.')
+  if (!startUrl) throw new Error((waitLabel || 'Generation') + ' is only available on the live app.')
   const start = await reqTo(startUrl, 'POST', body)
   if (Array.isArray(start.urls) && start.urls.length) return start
-  if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the image job.')
+  if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the job.')
   const pollUrl = sameOriginApi('/api/generate/image-status')
-  const deadline = Date.now() + 180000
+  const deadline = Date.now() + (Number(timeoutMs) > 0 ? Number(timeoutMs) : 180000)
   while (Date.now() < deadline) {
-    await sleep(1800)
+    await sleep(body.kind === 'video' ? 4000 : 1800)
     const st = await reqTo(pollUrl, 'POST', {
       statusUrl: start.statusUrl,
       responseUrl: start.responseUrl,
@@ -99,10 +99,15 @@ async function generateImageFal(body) {
         width: st.width || start.width,
         height: st.height || start.height,
         model: start.model || body.model,
+        kind: st.kind || start.kind || body.kind || 'image',
       }
     }
   }
-  throw new Error('Timed out waiting for the image. Try again.')
+  throw new Error('Timed out waiting for the ' + (waitLabel || 'result') + '. Try again.')
+}
+
+function generateImageFal(body) {
+  return generateFalMedia(body, { timeoutMs: 180000, waitLabel: 'image' })
 }
 
 function gateUrl(path) {
@@ -324,6 +329,7 @@ export const api = {
   },
   generate: {
     image: (body) => generateImageFal(body),
+    video: (body) => generateFalMedia({ ...body, kind: 'video' }, { timeoutMs: 480000, waitLabel: 'video' }),
     imageSave: (body) => {
       const url = sameOriginApi('/api/generate/image-save')
       if (!url) throw new Error('Image history is only available on the live app.')
@@ -348,6 +354,46 @@ export const api = {
       const url = sameOriginApi('/api/generate/images/' + encodeURIComponent(id))
       if (!url) throw new Error('Image history is only available on the live app.')
       return reqTo(url, 'DELETE')
+    },
+  },
+  studio: {
+    list: (opts = {}) => {
+      const url = sameOriginApi('/api/gate/faceless-studio/projects')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      const q = new URLSearchParams()
+      if (opts.offset) q.set('offset', String(opts.offset))
+      if (opts.limit) q.set('limit', String(opts.limit))
+      if (opts.q) q.set('q', opts.q)
+      if (opts.sort) q.set('sort', opts.sort)
+      if (opts.favorites) q.set('favorites', '1')
+      const qs = q.toString()
+      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
+    },
+    create: (body) => {
+      const url = sameOriginApi('/api/gate/faceless-studio/projects')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'POST', body)
+    },
+    get: (id) => {
+      const url = sameOriginApi('/api/gate/faceless-studio/projects/' + encodeURIComponent(id))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'GET')
+    },
+    patch: (id, body) => {
+      const url = sameOriginApi('/api/gate/faceless-studio/projects/' + encodeURIComponent(id))
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      return reqTo(url, 'PATCH', body)
+    },
+    jobs: (opts = {}) => {
+      const url = sameOriginApi('/api/gate/faceless-studio/jobs')
+      if (!url) throw new Error('Faceless Studio is only available on the live app.')
+      const q = new URLSearchParams()
+      if (opts.offset) q.set('offset', String(opts.offset))
+      if (opts.limit) q.set('limit', String(opts.limit))
+      if (opts.favorites) q.set('favorites', '1')
+      if (opts.project_id) q.set('project_id', opts.project_id)
+      const qs = q.toString()
+      return reqTo(url + (qs ? '?' + qs : ''), 'GET')
     },
   },
   transcribe: {
