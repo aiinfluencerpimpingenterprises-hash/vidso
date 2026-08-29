@@ -252,22 +252,42 @@
   }
   .hero-play-center svg{width:30px;height:30px;margin-left:3px}
   .hero-ctrl{
-    position:absolute;right:12px;bottom:12px;z-index:5;
-    display:flex;align-items:center;gap:8px
+    position:absolute;left:0;right:0;bottom:0;z-index:5;
+    display:flex;align-items:center;gap:8px;
+    padding:28px 12px 12px;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.78));
+    cursor:default
   }
   .hero-btn{
-    width:40px;height:40px;border-radius:10px;padding:0;margin:0;cursor:pointer;
+    width:38px;height:38px;border-radius:10px;padding:0;margin:0;cursor:pointer;flex-shrink:0;
     display:inline-flex;align-items:center;justify-content:center;
     border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.62);color:#fff;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
   }
   .hero-btn:hover{background:rgba(233,75,88,.92);border-color:rgba(255,255,255,.35)}
   .hero-btn svg{width:18px;height:18px;display:block}
-  .hero-btn .ico-on,.hero-btn .ico-play,.hero-btn .ico-exit{display:none}
+  .hero-btn .ico-play,.hero-btn .ico-exit{display:none}
   .hero-btn.is-paused .ico-pause,.hero-btn.is-fs .ico-enter{display:none}
   .hero-btn.is-paused .ico-play,.hero-btn.is-fs .ico-exit{display:block}
-  .hero-btn.is-on .ico-off{display:none}
-  .hero-btn.is-on .ico-on{display:block}
+  .hero-seek{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+  .hero-time{
+    font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
+    color:rgba(255,255,255,.88);min-width:2.6em;line-height:1
+  }
+  .hero-range{
+    -webkit-appearance:none;appearance:none;flex:1;min-width:0;height:4px;margin:0;
+    border-radius:999px;background:rgba(255,255,255,.22);cursor:pointer
+  }
+  .hero-range::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:transparent}
+  .hero-range::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5px;
+    border-radius:50%;background:var(--a1);border:2px solid #fff;box-shadow:0 0 0 3px rgba(var(--glow),.28)
+  }
+  .hero-range::-moz-range-track{height:4px;border-radius:999px;background:rgba(255,255,255,.22)}
+  .hero-range::-moz-range-progress{height:4px;border-radius:999px;background:var(--a1)}
+  .hero-range::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;background:var(--a1);border:2px solid #fff
+  }
   .hero-reel:fullscreen,.hero-reel:-webkit-full-screen{
     width:100%;height:100%;aspect-ratio:auto;border-radius:0;border-width:0;max-width:none
   }
@@ -1017,14 +1037,21 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <span class="clip-badge"><span class="dot"></span>Full pipeline</span>
           <div class="hero-play-center" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
           <div class="hero-ctrl">
+            <button type="button" class="hero-btn" id="hero-back" aria-label="Rewind 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 6L5 12l6 6"/><path d="M19 6L13 12l6 6"/></svg>
+            </button>
             <button type="button" class="hero-btn" id="hero-pause" aria-label="Pause video">
               <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
               <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
             </button>
-            <button type="button" class="hero-btn" id="hero-mute" aria-label="Unmute video" aria-pressed="false">
-              <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
-              <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>
+            <button type="button" class="hero-btn" id="hero-fwd" aria-label="Forward 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
             </button>
+            <div class="hero-seek">
+              <span class="hero-time" id="hero-cur">0:00</span>
+              <input class="hero-range" id="hero-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
+              <span class="hero-time" id="hero-dur">0:00</span>
+            </div>
             <button type="button" class="hero-btn" id="hero-fs" aria-label="Full screen">
               <svg class="ico-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
               <svg class="ico-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/></svg>
@@ -1744,16 +1771,22 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </footer>
 
 <script>
-/* Hero reel: click to pause/play, mute, and fullscreen. */
+/* Hero reel: click to pause/play, seek, skip, and fullscreen. */
 (function(){
   var reel = document.getElementById('mockup-clips');
   if (!reel) return;
   var video = reel.querySelector('video');
   var pauseBtn = document.getElementById('hero-pause');
-  var muteBtn = document.getElementById('hero-mute');
+  var backBtn = document.getElementById('hero-back');
+  var fwdBtn = document.getElementById('hero-fwd');
   var fsBtn = document.getElementById('hero-fs');
+  var range = document.getElementById('hero-range');
+  var curEl = document.getElementById('hero-cur');
+  var durEl = document.getElementById('hero-dur');
   if (!video) return;
   var userPaused = false;
+  var seeking = false;
+  var SKIP = 10;
 
   function safePlay(){
     if (userPaused) return;
@@ -1768,6 +1801,32 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   function isFs(){
     return fsEl() === reel || !!(video.webkitDisplayingFullscreen);
   }
+  function fmt(s){
+    if (!isFinite(s) || s < 0) s = 0;
+    s = Math.floor(s);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function duration(){
+    var d = video.duration;
+    return (d && isFinite(d)) ? d : 0;
+  }
+  function paintRange(pct){
+    if (!range) return;
+    range.style.background = 'linear-gradient(90deg,var(--a1) ' + pct + '%,rgba(255,255,255,.22) ' + pct + '%)';
+  }
+  function syncSeek(){
+    var d = duration();
+    var t = video.currentTime || 0;
+    if (curEl) curEl.textContent = fmt(t);
+    if (durEl) durEl.textContent = fmt(d);
+    if (range && d && !seeking) {
+      var pct = (t / d) * 100;
+      range.value = String(pct);
+      paintRange(pct);
+    }
+  }
   function syncUi(){
     var paused = !!video.paused;
     reel.classList.toggle('is-paused', paused);
@@ -1775,17 +1834,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       pauseBtn.classList.toggle('is-paused', paused);
       pauseBtn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
     }
-    if (muteBtn) {
-      var on = !video.muted;
-      muteBtn.classList.toggle('is-on', on);
-      muteBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      muteBtn.setAttribute('aria-label', on ? 'Mute video' : 'Unmute video');
-    }
     if (fsBtn) {
       var fs = isFs();
       fsBtn.classList.toggle('is-fs', fs);
       fsBtn.setAttribute('aria-label', fs ? 'Exit full screen' : 'Full screen');
     }
+    syncSeek();
   }
   function togglePause(){
     if (video.paused) {
@@ -1797,10 +1851,22 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     }
     syncUi();
   }
-  function toggleMute(){
-    try { video.muted = !video.muted; } catch (err) {}
-    if (!video.muted && video.paused && !userPaused) safePlay();
-    syncUi();
+  function skip(dir){
+    var d = duration();
+    var next = (video.currentTime || 0) + dir * SKIP;
+    if (next < 0) next = 0;
+    if (d && next > d) next = d;
+    try { video.currentTime = next; } catch (err) {}
+    syncSeek();
+  }
+  function seekFromRange(){
+    var d = duration();
+    if (!range || !d) return;
+    var pct = parseFloat(range.value);
+    if (!isFinite(pct)) return;
+    try { video.currentTime = (pct / 100) * d; } catch (err) {}
+    paintRange(pct);
+    if (curEl) curEl.textContent = fmt((pct / 100) * d);
   }
   function exitFs(){
     if (document.exitFullscreen) document.exitFullscreen();
@@ -1827,7 +1893,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   video.setAttribute('webkit-playsinline', '');
   video.addEventListener('play', syncUi);
   video.addEventListener('pause', syncUi);
-  video.addEventListener('volumechange', syncUi);
+  video.addEventListener('timeupdate', syncSeek);
+  video.addEventListener('loadedmetadata', syncSeek);
+  video.addEventListener('durationchange', syncSeek);
   video.addEventListener('canplay', function(){ if (!userPaused) safePlay(); });
   document.addEventListener('fullscreenchange', syncUi);
   document.addEventListener('webkitfullscreenchange', syncUi);
@@ -1842,18 +1910,32 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     e.stopPropagation();
     togglePause();
   });
-  if (muteBtn) muteBtn.addEventListener('click', function(e){
+  if (backBtn) backBtn.addEventListener('click', function(e){
     e.stopPropagation();
-    toggleMute();
+    skip(-1);
+  });
+  if (fwdBtn) fwdBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    skip(1);
   });
   if (fsBtn) fsBtn.addEventListener('click', function(e){
     e.stopPropagation();
     toggleFs();
   });
+  if (range) {
+    range.addEventListener('pointerdown', function(){ seeking = true; });
+    range.addEventListener('input', seekFromRange);
+    range.addEventListener('change', function(){
+      seekFromRange();
+      seeking = false;
+    });
+    window.addEventListener('pointerup', function(){ seeking = false; });
+  }
   reel.addEventListener('keydown', function(e){
     if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePause(); }
     if (e.key === 'f') { e.preventDefault(); toggleFs(); }
-    if (e.key === 'm') { e.preventDefault(); toggleMute(); }
+    if (e.key === 'ArrowLeft' || e.key === 'j') { e.preventDefault(); skip(-1); }
+    if (e.key === 'ArrowRight' || e.key === 'l') { e.preventDefault(); skip(1); }
   });
   safePlay();
   syncUi();
