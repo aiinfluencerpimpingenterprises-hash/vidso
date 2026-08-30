@@ -45,6 +45,29 @@ function emailFromJwt(token) {
   }
 }
 
+// Generating one video fires a burst of studio calls, and each one used to
+// re-fetch /user/me plus a Whop entitlement lookup before doing any work.
+const ME_TTL_MS = 15000
+const ME_MAX = 32
+const meCache = new Map()
+
+function cachedMe(token) {
+  const hit = meCache.get(token)
+  if (!hit) return null
+  if (Date.now() - hit.at > ME_TTL_MS) {
+    meCache.delete(token)
+    return null
+  }
+  return hit.user
+}
+
+function rememberMe(token, user) {
+  if (meCache.size >= ME_MAX && !meCache.has(token)) {
+    meCache.delete(meCache.keys().next().value)
+  }
+  meCache.set(token, { at: Date.now(), user })
+}
+
 async function railwayMe(token) {
   const res = await fetch(UPSTREAM + '/api/user/me', {
     headers: { Authorization: 'Bearer ' + token },
@@ -128,14 +151,20 @@ export default async function handler(req, res) {
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
   if (!token) return send(res, 401, { error: 'Missing token' })
 
-  let user
-  try {
-    user = await railwayMe(token)
-  } catch (e) {
-    return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
+  // Only studio reads reuse a cached identity. Quota and usage paths always
+  // re-resolve so a fresh purchase or a spent generation is never stale.
+  const studioPath = isStudioGatePath(subpath)
+  let user = studioPath ? cachedMe(token) : null
+  if (!user) {
+    try {
+      user = await railwayMe(token)
+      if (studioPath) rememberMe(token, user)
+    } catch (e) {
+      return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
+    }
   }
 
-  if (isStudioGatePath(subpath)) {
+  if (studioPath) {
     const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
     try {
       const out = await handleFacelessStudio({ token, user, method: req.method, segs, query, body })

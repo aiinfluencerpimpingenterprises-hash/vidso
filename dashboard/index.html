@@ -2603,12 +2603,15 @@ body.fs-feed-view-open{overflow:hidden}
   content:'';position:absolute;inset:-28% -18% -36%;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 58% 46% at 50% 50%,rgba(var(--glow),.16),transparent 72%)
 }
-.fs-hero-card{position:absolute;width:38%;aspect-ratio:16 / 9;pointer-events:none;user-select:none}
+.fs-hero-card{
+  position:absolute;width:38%;aspect-ratio:16 / 9;pointer-events:none;user-select:none;
+  will-change:transform
+}
 .fs-hero-card-inner{
   width:100%;height:100%;border-radius:14px;overflow:hidden;
   border:1px solid rgba(245,245,244,.22);
   box-shadow:0 16px 36px rgba(0,0,0,.48),0 2px 8px rgba(0,0,0,.28);
-  background:#141416
+  background:#141416;contain:paint
 }
 .fs-hero-card video{width:100%;height:100%;object-fit:cover;display:block}
 .fs-hero-card:nth-child(1){left:0;top:22%;z-index:1;animation:fs-fan-float 5.8s ease-in-out infinite}
