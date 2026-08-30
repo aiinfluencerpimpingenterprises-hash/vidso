@@ -3,7 +3,7 @@ import { normalizeTier } from '/lib/entitlements.js'
 import { quotaView, unlockCopy } from '/lib/quota.js'
 import { planIsActive, withCompedPlan } from '/lib/comped.js'
 import { applyPaidGrant } from '/lib/paid-grant.js'
-import { studioGateHref } from '/lib/studio-gate.js'
+import { gateHref, studioGateHref } from '/lib/studio-gate.js'
 import { isJsonSyntaxError, recoverScriptData } from '/lib/json-repair.js'
 import {
   getToken,
@@ -111,10 +111,16 @@ function generateImageFal(body) {
   return generateFalMedia(body, { timeoutMs: 180000, waitLabel: 'image' })
 }
 
+/**
+ * The gate function only matches one segment after /api/gate, so a nested path
+ * like /api/faceless/script has to travel as /api/gate/faceless?p=script. Sent
+ * nested it 404s, and the caller silently falls through to the unmetered
+ * upstream — which is how /api/media/concat surfaced as "Cannot POST".
+ */
 function gateUrl(path) {
   const origin = (typeof location !== 'undefined' && /^https?:/.test(location.origin)) ? location.origin : ''
   if (!origin) return ''
-  return origin + '/api/gate' + String(path || '').replace(/^\/api/, '')
+  return origin + gateHref(path)
 }
 
 async function gatedReq(method, path, body, opts = {}) {
@@ -124,6 +130,8 @@ async function gatedReq(method, path, body, opts = {}) {
       return await reqTo(url, method, body, false, opts)
     } catch (e) {
       if (e.status !== 404) throw e
+      // Falling back skips quota and plan checks, so make it visible.
+      try { console.warn('[gate] no route for', path, '— using upstream directly') } catch (_) {}
     }
   }
   return reqTo(BASE + path, method, body, false, opts)
