@@ -30,6 +30,15 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 .auth-brand{display:flex;justify-content:center;margin:0 0 16px}
 .auth-panel h2{font-size:1.45rem;font-weight:800;letter-spacing:-.03em;margin:0 0 8px;text-align:center}
 .auth-lead{font-size:.85rem;color:var(--muted);margin:0 0 22px;text-align:center;line-height:1.45}
+.auth-switch{
+  display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:12px 14px;
+  border-radius:12px;border:1px solid rgba(var(--glow),.35);background:rgba(var(--glow),.08)
+}
+.auth-switch[hidden]{display:none!important}
+.auth-switch p{margin:0;font-size:.8rem;line-height:1.4;color:rgba(255,255,255,.7);text-align:center}
+.auth-switch strong{color:var(--ink);font-weight:700}
+.auth-switch .btn{width:100%}
+.auth-switch-note{font-size:.72rem;color:rgba(255,255,255,.45)}
 .modal-tabs{display:flex;gap:0;margin-bottom:22px;background:var(--card);border-radius:10px;padding:4px;border:1px solid var(--line)}
 .tab-btn{flex:1;padding:9px 10px;border-radius:8px;border:none;background:none;color:var(--muted);font-size:.84rem;font-weight:500;cursor:pointer;font-family:inherit}
 .tab-btn.active{background:var(--grad);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(196,16,40,.28)}
@@ -194,6 +203,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
     <h2 id="auth-title">Welcome to Vidso</h2>
     <p class="auth-lead">Sign in to access your AI content tools.</p>
+    <div class="auth-switch" id="auth-switch" hidden>
+      <p>This browser is already signed in as <strong id="auth-switch-email">another account</strong>.</p>
+      <a class="btn btn-secondary" id="auth-switch-continue" href="/video-generation">Open the app</a>
+      <p class="auth-switch-note">Sign in below to switch accounts. That replaces the session in this browser.</p>
+    </div>
     <div class="modal-tabs">
       <button type="button" class="tab-btn" id="tab-btn-login">Sign In</button>
       <button type="button" class="tab-btn" id="tab-btn-signup">Sign Up</button>
@@ -591,7 +605,31 @@ if (oauthReturned) {
   if (next) {
     if (getToken()) resumeConnectorIfSession()
     else prepareConnectorLogin()
-  } else if (getToken()) persistPaidBeforeApp().finally(() => location.replace(APP))
+  } else if (getToken()) {
+    showSignedInSwitch()
+  }
+}
+
+function emailFromAccessToken() {
+  try {
+    const part = String(getToken() || '').split('.')[1]
+    if (!part) return ''
+    const json = JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')))
+    return String(json.email || json.user_email || '').trim()
+  } catch (_) {
+    return ''
+  }
+}
+
+function showSignedInSwitch() {
+  const box = document.getElementById('auth-switch')
+  const emailEl = document.getElementById('auth-switch-email')
+  if (!box) return
+  box.hidden = false
+  if (emailEl) emailEl.textContent = emailFromAccessToken() || 'another account'
+  api.user.me().then((me) => {
+    if (emailEl && me?.email) emailEl.textContent = me.email
+  }).catch(() => {})
 }
 
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')

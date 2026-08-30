@@ -297,7 +297,7 @@ export const api = {
     },
     // Google OAuth via Supabase Auth (implicit redirect with tokens in URL hash).
     googleStartUrl: (redirect_to) =>
-      `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}`,
+      `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirect_to)}&prompt=select_account`,
   },
   user: {
     me: async () => {
