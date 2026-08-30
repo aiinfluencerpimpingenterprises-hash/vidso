@@ -117,3 +117,22 @@ test('payments paging stops at the end of the list', async () => {
   assert.equal(got.error, null)
   assert.match(seen[1], /after=c1/)
 })
+
+// --- Checkout 3D Secure level: the remedy for risk-engine declines.
+
+import { threeDsLevel } from '../lib/whop-checkout.js'
+
+test('checkout leaves 3DS to the Whop account default until asked otherwise', () => {
+  assert.equal(threeDsLevel({}), null)
+  // An authenticated charge is what gets past a high_risk / suspected_fraud block.
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'mandate_challenge' }), 'mandate_challenge')
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'frictionless' }), 'frictionless')
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'MANDATE_CHALLENGE' }), 'mandate_challenge')
+})
+
+test('an unusable 3DS setting is dropped rather than sent to Whop', () => {
+  // Whop would 400 the whole checkout configuration, taking payments down.
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'off' }), null)
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'always' }), null)
+  assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'true' }), null)
+})
