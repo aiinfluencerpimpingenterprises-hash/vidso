@@ -201,8 +201,8 @@ export default async function handler(req, res) {
         verdict: missingPerm
           ? 'The API key cannot update plans. Grant plan:update and plan:basic:read in Whop under Developer, Company API Keys.'
           : failed.length
-            ? 'Some plans did not take the orchestration patch. See plans[].message.'
-            : 'Adaptive pricing and Whop platform payment methods are on for every Vidso plan.',
+            ? 'Some plans did not take the checkout patch. See plans[].message.'
+            : '3D Secure, adaptive pricing, and Whop platform payment methods are on for every Vidso plan. Hosted checkout already collects billing address; declined cards are retried by Whop for five days.',
       },
     })
   }
