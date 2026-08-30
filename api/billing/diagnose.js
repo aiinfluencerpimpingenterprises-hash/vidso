@@ -5,6 +5,7 @@ import { withCompedPlan, emailsFromUser, COMPED_STUDIO_EMAILS } from '../../lib/
 import { PAID_MEMBERSHIP_STATUSES } from '../../lib/paid-grant.js'
 import { resolveWhopPlan } from '../../lib/whop-map.js'
 import { kvConfigured } from '../../lib/kv.js'
+import { fetchRecentPayments, summarizePayments } from '../../lib/whop-payments.js'
 import {
   lookupPaidMembership,
   whopConfig,
@@ -180,6 +181,33 @@ export default async function handler(req, res) {
   }
 
   const { apiKey, companyId } = whopConfig()
+
+  // ?payments=1 answers "why are charges failing?" rather than "why is this one
+  // buyer locked out?". It reads the decline code Whop records per payment.
+  if (req.query?.payments) {
+    if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
+    const pages = Math.min(Math.max(Number(req.query.pages) || 3, 1), 8)
+    const { rows, error } = await fetchRecentPayments(
+      (path) => whopProbe(path),
+      companyId,
+      _internals.buildQuery,
+      pages,
+    )
+    if (error) {
+      return send(res, 200, {
+        key: { configured: true, companyId },
+        payments: { ok: false, ...error },
+        verdict: error.reason === 'missing_permission'
+          ? 'The API key cannot read payments. Grant payment:basic:read in Whop under Developer, Company API Keys.'
+          : 'Whop would not return payments: ' + error.message,
+      })
+    }
+    return send(res, 200, {
+      key: { configured: true, companyId },
+      payments: summarizePayments(rows),
+    })
+  }
+
   const email = String(req.query?.email || emailsFromUser(owner)[0] || '').trim().toLowerCase()
   if (!email) return send(res, 400, { error: 'Pass ?email= to diagnose an account.' })
   if (!apiKey) {
