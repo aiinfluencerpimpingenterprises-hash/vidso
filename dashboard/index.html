@@ -2309,18 +2309,33 @@ body.studio-open #panel-facelessstudio,
 .fs-stage-tools > *{pointer-events:auto}
 .fs-rail{
   width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
-  border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px
+  border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px;
+  overflow:hidden
 }
-body.fs-rail-collapsed .fs-rail{width:56px}
+.fs-rail-ico{flex-shrink:0;width:18px;text-align:center;line-height:1}
+.fs-rail-txt{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.fs-rail-new-ico{display:none}
+body.fs-rail-collapsed .fs-rail{
+  width:56px;padding:10px 6px 12px;align-items:center
+}
 body.fs-rail-collapsed .fs-rail-brand,
 body.fs-rail-collapsed .fs-rail-label,
 body.fs-rail-collapsed .fs-rail-search,
 body.fs-rail-collapsed .fs-rail-projects,
-body.fs-rail-collapsed #fs-rail-new,
-body.fs-rail-collapsed .fs-rail-newchat,
+body.fs-rail-collapsed .fs-rail-txt,
 body.fs-rail-collapsed .fs-rail-foot,
 body.fs-rail-collapsed .fs-rail-item,
 body.fs-rail-collapsed .fs-rail-chats-empty{display:none}
+body.fs-rail-collapsed .fs-rail-head{justify-content:center;padding:2px 0 10px}
+body.fs-rail-collapsed .fs-rail-nav{width:100%;align-items:center}
+body.fs-rail-collapsed .fs-rail-link{
+  width:40px;min-height:40px;padding:0;justify-content:center;gap:0
+}
+body.fs-rail-collapsed .fs-rail-newchat{
+  width:40px;min-height:40px;margin:0 0 10px;padding:0;border-radius:12px
+}
+body.fs-rail-collapsed .fs-rail-new-ico{display:block}
+body.fs-rail-collapsed .fs-rail-toggle{transform:rotate(180deg)}
 .fs-rail-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 12px}
 .fs-rail-brand{font-family:var(--font-heading);font-weight:700;letter-spacing:-.03em;text-transform:uppercase;font-size:.82rem}
 .fs-rail-toggle{width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
@@ -2717,8 +2732,10 @@ body.fs-show-open{overflow:hidden}
 .fs-export-list{padding-left:18px;color:var(--text-body)}
 .fs-fav-filter{font-size:.8rem;color:var(--text-body)}
 @media (max-width:1100px){
-  .fs-rail{position:absolute;z-index:5;height:100%;box-shadow:8px 0 24px rgba(0,0,0,.4)}
-  body.fs-rail-collapsed .fs-rail{width:0;padding:0;border:none;overflow:hidden}
+  .fs-rail{position:absolute;z-index:8;height:100%;box-shadow:8px 0 24px rgba(0,0,0,.4)}
+  body.fs-rail-collapsed .fs-rail{
+    position:relative;z-index:2;width:56px;padding:10px 6px 12px;overflow:hidden;box-shadow:none
+  }
   .fs-main{padding:16px 14px 32px}
   .fs-g-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -5642,20 +5659,20 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <span class="fs-rail-brand">Faceless Studio</span>
             <button type="button" class="fs-rail-toggle" id="fs-rail-toggle" aria-expanded="true" aria-controls="fs-rail" aria-label="Collapse studio menu">«</button>
           </div>
-          <button type="button" class="fs-rail-newchat" id="fs-rail-new">+ New chat</button>
+          <button type="button" class="fs-rail-newchat" id="fs-rail-new" title="New chat"><span class="fs-rail-txt">+ New chat</span><span class="fs-rail-ico fs-rail-new-ico" aria-hidden="true">+</span></button>
           <nav class="fs-rail-nav">
-            <button type="button" class="fs-rail-link" data-fs-view="search"><span class="fs-rail-ico" aria-hidden="true">⌕</span> Search</button>
-            <button type="button" class="fs-rail-link" data-fs-view="projects"><span class="fs-rail-ico" aria-hidden="true">▣</span> Projects</button>
+            <button type="button" class="fs-rail-link" data-fs-view="search" title="Search"><span class="fs-rail-ico" aria-hidden="true">⌕</span><span class="fs-rail-txt">Search</span></button>
+            <button type="button" class="fs-rail-link" data-fs-view="projects" title="Projects"><span class="fs-rail-ico" aria-hidden="true">▣</span><span class="fs-rail-txt">Projects</span></button>
           </nav>
           <span class="fs-rail-label">Create</span>
           <nav class="fs-rail-nav">
-            <button type="button" class="fs-rail-link is-on" data-fs-view="home"><span class="fs-rail-ico" aria-hidden="true">▣</span> Faceless Studio</button>
-            <button type="button" class="fs-rail-link" data-fs-view="generations"><span class="fs-rail-ico" aria-hidden="true">▶</span> My generations</button>
+            <button type="button" class="fs-rail-link is-on" data-fs-view="home" title="Faceless Studio"><span class="fs-rail-ico" aria-hidden="true">▣</span><span class="fs-rail-txt">Faceless Studio</span></button>
+            <button type="button" class="fs-rail-link" data-fs-view="generations" title="My generations"><span class="fs-rail-ico" aria-hidden="true">▶</span><span class="fs-rail-txt">My generations</span></button>
           </nav>
           <span class="fs-rail-label">Customize</span>
           <nav class="fs-rail-nav">
-            <button type="button" class="fs-rail-link" data-fs-view="connectors"><span class="fs-rail-ico" aria-hidden="true">⌁</span> Connectors</button>
-            <button type="button" class="fs-rail-link" data-fs-view="memory"><span class="fs-rail-ico" aria-hidden="true">◎</span> Memory</button>
+            <button type="button" class="fs-rail-link" data-fs-view="connectors" title="Connectors"><span class="fs-rail-ico" aria-hidden="true">⌁</span><span class="fs-rail-txt">Connectors</span></button>
+            <button type="button" class="fs-rail-link" data-fs-view="memory" title="Memory"><span class="fs-rail-ico" aria-hidden="true">◎</span><span class="fs-rail-txt">Memory</span></button>
           </nav>
           <span class="fs-rail-label">Chats</span>
           <div class="fs-rail-projects fs-rail-list" id="fs-rail-chats"></div>
