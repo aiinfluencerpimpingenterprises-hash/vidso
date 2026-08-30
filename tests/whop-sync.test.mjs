@@ -3,9 +3,11 @@ import assert from 'node:assert/strict'
 import { WHOP_PLAN_ENV_DEFAULTS } from '../lib/whop-map.js'
 import {
   grantFromMembership,
+  lookupPaidMembership,
   membershipMatchesUser,
   pickBestGrant,
   _internals,
+  _resetWhopCacheForTests,
 } from '../lib/whop-lookup.js'
 import { applyPaidGrant } from '../lib/paid-grant.js'
 import { grantFor, saveGrant, withStoredGrant, _resetGrantsForTests } from '../lib/grants.js'
@@ -290,4 +292,133 @@ test('membership.activated with checkout metadata grants the Vidso account', asy
   const user = withStoredGrant({ id: 'u-auto', email: 'buyer@gmail.com', plan_status: 'inactive' })
   assert.equal(user.plan, 'pro')
   _resetGrantsForTests()
+})
+
+// --- Whop paging: a page budget must never be read as "this buyer never paid".
+
+const WHOP_ENV = { WHOP_API_KEY: 'test-key', WHOP_COMPANY_ID: 'biz_test' }
+
+function whopFetchStub(handler) {
+  const calls = []
+  globalThis.fetch = async (url) => {
+    const path = String(url).replace('https://api.whop.com/api/v1', '')
+    calls.push(path)
+    const out = handler(path, calls) || {}
+    const status = out.status || 200
+    return { ok: status < 400, status, json: async () => out.body ?? {} }
+  }
+  return calls
+}
+
+function membershipPage(rows, cursor) {
+  return { body: { data: rows, page_info: { has_next_page: !!cursor, end_cursor: cursor || null } } }
+}
+
+function withStubbedFetch(fn) {
+  const real = globalThis.fetch
+  _resetWhopCacheForTests()
+  return Promise.resolve(fn()).finally(() => {
+    globalThis.fetch = real
+    _resetWhopCacheForTests()
+  })
+}
+
+test('a truncated company scan reports inconclusive instead of not_found', async () => {
+  await withStubbedFetch(async () => {
+    // No member hit, so the lookup falls back to scanning the whole company,
+    // and every page claims another page follows.
+    const filler = Array.from({ length: 100 }, (_, i) => ({
+      id: 'mem_other_' + i,
+      status: 'active',
+      user: { email: 'someone' + i + '@example.com' },
+      plan: { id: PRO_MONTHLY },
+    }))
+    whopFetchStub((path) => {
+      if (path.startsWith('/members?')) return { body: { data: [] } }
+      return membershipPage(filler, 'cursor_next')
+    })
+    const hit = await lookupPaidMembership({ email: 'payer@example.com' }, WHOP_ENV)
+    assert.equal(hit.active, false)
+    assert.equal(hit.reason, 'inconclusive')
+  })
+})
+
+test('an inconclusive lookup is not cached as a miss', async () => {
+  await withStubbedFetch(async () => {
+    const calls = whopFetchStub((path) => {
+      if (path.startsWith('/members?')) return { body: { data: [] } }
+      return membershipPage([], 'cursor_next')
+    })
+    await lookupPaidMembership({ email: 'payer@example.com' }, WHOP_ENV)
+    const before = calls.length
+    await lookupPaidMembership({ email: 'payer@example.com' }, WHOP_ENV)
+    assert.ok(calls.length > before, 'second lookup must re-query rather than trust a truncated miss')
+  })
+})
+
+test('a fully paged scan still reports not_found', async () => {
+  await withStubbedFetch(async () => {
+    whopFetchStub((path) => {
+      if (path.startsWith('/members?')) return { body: { data: [] } }
+      return membershipPage([], '')
+    })
+    const hit = await lookupPaidMembership({ email: 'nobody@example.com' }, WHOP_ENV)
+    assert.equal(hit.reason, 'not_found')
+  })
+})
+
+test('a buyer deep in the company list is found once their Whop user id resolves', async () => {
+  await withStubbedFetch(async () => {
+    whopFetchStub((path) => {
+      if (path.startsWith('/members?')) {
+        return { body: { data: [{ user: { id: 'user_deep', email: 'payer@example.com' } }] } }
+      }
+      // The precise user_ids[] query returns just this buyer.
+      assert.match(path, /user_ids\[\]=user_deep/)
+      return membershipPage([{
+        id: 'mem_deep',
+        status: 'active',
+        user: { id: 'user_deep', email: 'payer@example.com' },
+        plan: { id: STUDIO_YEARLY },
+      }], '')
+    })
+    const hit = await lookupPaidMembership({ email: 'payer@example.com' }, WHOP_ENV)
+    assert.equal(hit.active, true)
+    assert.equal(hit.tier, 'studio')
+  })
+})
+
+test('member search resolves a buyer whose Whop email is the dotted Gmail form', async () => {
+  await withStubbedFetch(async () => {
+    // Two rows, so the "single hit" shortcut cannot be what matches.
+    globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          { user: { id: 'user_dotted', email: 'Subramaniam.Vishwak@gmail.com' } },
+          { user: { id: 'user_unrelated', email: 'someone.else@gmail.com' } },
+        ],
+      }),
+    })
+    const ids = await _internals.findWhopUserIds('key', 'biz_test', ['subramaniamvishwak@gmail.com'])
+    assert.deepEqual(ids, ['user_dotted'])
+  })
+})
+
+test('a rejected coarse filter keeps the user_ids query that makes the lookup precise', async () => {
+  await withStubbedFetch(async () => {
+    const calls = whopFetchStub((path) => {
+      // Whop rejects our statuses[]/plan_ids[] filters.
+      if (path.includes('statuses%5B%5D=') || path.includes('statuses[]=')) {
+        return { status: 400, body: { error: 'bad filter' } }
+      }
+      return membershipPage([], '')
+    })
+    const got = await _internals.listMembershipsPaged('key', 'biz_test', { user_ids: ['user_1'] }, undefined, 2)
+    assert.equal(got.exhausted, true)
+    const retry = calls[calls.length - 1]
+    assert.match(retry, /user_ids\[\]=user_1/)
+    assert.doesNotMatch(retry, /plan_ids\[\]=/)
+  })
 })

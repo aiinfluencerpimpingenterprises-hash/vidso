@@ -128,6 +128,9 @@ function verdict({ configured, member, memberships, lookup }) {
   if (member.ok && member.rows > 0 && member.emailReadable === false && !member.whopUserIds.length) {
     return 'The API key is missing member:email:read, and the search returned too many members to match one without emails. Grant it in Whop under Developer, Company API Keys.'
   }
+  if (lookup.reason === 'inconclusive') {
+    return 'Whop has more memberships than this lookup can page through, so this buyer was never actually checked. Grant member:email:read so the buyer can be found by email directly instead of by scanning the company.'
+  }
   if (member.ok && member.rows === 0) {
     return 'Whop has no member matching this email. The buyer paid with a different email, or the purchase is on another business.'
   }
