@@ -6,6 +6,7 @@ import { PAID_MEMBERSHIP_STATUSES } from '../../lib/paid-grant.js'
 import { resolveWhopPlan } from '../../lib/whop-map.js'
 import { kvConfigured } from '../../lib/kv.js'
 import { fetchRecentPayments, summarizePayments } from '../../lib/whop-payments.js'
+import { enableVidsoOrchestration } from '../../lib/whop-checkout.js'
 import {
   lookupPaidMembership,
   whopConfig,
@@ -181,6 +182,30 @@ export default async function handler(req, res) {
   }
 
   const { apiKey, companyId } = whopConfig()
+
+  // ?orchestration=1 writes adaptive pricing + platform payment methods onto
+  // every mapped Vidso plan. Checkout also does this lazily; this is the
+  // explicit "turn it on now" path.
+  if (req.query?.orchestration) {
+    if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
+    const plans = await enableVidsoOrchestration()
+    const failed = plans.filter((row) => !row.ok)
+    const missingPerm = failed.some((row) => row.reason === 'missing_permission')
+    return send(res, 200, {
+      key: { configured: true, companyId },
+      orchestration: {
+        ok: failed.length === 0,
+        enabled: plans.filter((row) => row.ok).length,
+        total: plans.length,
+        plans,
+        verdict: missingPerm
+          ? 'The API key cannot update plans. Grant plan:update and plan:basic:read in Whop under Developer, Company API Keys.'
+          : failed.length
+            ? 'Some plans did not take the orchestration patch. See plans[].message.'
+            : 'Adaptive pricing and Whop platform payment methods are on for every Vidso plan.',
+      },
+    })
+  }
 
   // ?payments=1 answers "why are charges failing?" rather than "why is this one
   // buyer locked out?". It reads the decline code Whop records per payment.

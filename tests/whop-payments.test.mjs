@@ -120,7 +120,13 @@ test('payments paging stops at the end of the list', async () => {
 
 // --- Checkout 3D Secure level: the remedy for risk-engine declines.
 
-import { threeDsLevel } from '../lib/whop-checkout.js'
+import {
+  _resetOrchestrationCacheForTests,
+  enableVidsoOrchestration,
+  orchestrationPatch,
+  planHasOrchestration,
+  threeDsLevel,
+} from '../lib/whop-checkout.js'
 
 test('checkout leaves 3DS to the Whop account default until asked otherwise', () => {
   assert.equal(threeDsLevel({}), null)
@@ -135,4 +141,53 @@ test('an unusable 3DS setting is dropped rather than sent to Whop', () => {
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'off' }), null)
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'always' }), null)
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'true' }), null)
+})
+
+test('orchestration turns on adaptive pricing without rewriting the price', () => {
+  const patch = orchestrationPatch()
+  assert.equal(patch.adaptive_pricing_enabled, true)
+  assert.equal(patch.payment_method_configuration.include_platform_defaults, true)
+  assert.equal(patch.initial_price, undefined)
+  assert.equal(patch.renewal_price, undefined)
+  assert.equal(patch.billing_period, undefined)
+})
+
+test('a plan already on platform defaults only needs adaptive pricing', () => {
+  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: true, payment_method_configuration: null }), true)
+  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: true, payment_method_configuration: { include_platform_defaults: true } }), true)
+  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: false, payment_method_configuration: null }), false)
+  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: true, payment_method_configuration: { include_platform_defaults: false, enabled: ['card'] } }), false)
+})
+
+test('enabling orchestration patches every mapped Vidso plan once', async () => {
+  _resetOrchestrationCacheForTests()
+  const real = globalThis.fetch
+  const patched = []
+  process.env.WHOP_API_KEY = 'test-key'
+  globalThis.fetch = async (url, init) => {
+    const path = String(url).replace('https://api.whop.com/api/v1', '')
+    if (init?.method === 'PATCH') {
+      patched.push(path)
+      return { ok: true, status: 200, json: async () => ({ adaptive_pricing_enabled: true }) }
+    }
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ adaptive_pricing_enabled: false, payment_method_configuration: { include_platform_defaults: false } }),
+    }
+  }
+  try {
+    const rows = await enableVidsoOrchestration({ WHOP_API_KEY: 'test-key' })
+    assert.equal(rows.length, 6)
+    assert.equal(rows.every((row) => row.ok), true)
+    assert.equal(patched.length, 6)
+    assert.ok(patched.every((path) => path.startsWith('/plans/plan_')))
+    // A second pass must not rewrite plans that the cache already marked done.
+    await enableVidsoOrchestration({ WHOP_API_KEY: 'test-key' })
+    assert.equal(patched.length, 6)
+  } finally {
+    globalThis.fetch = real
+    delete process.env.WHOP_API_KEY
+    _resetOrchestrationCacheForTests()
+  }
 })
