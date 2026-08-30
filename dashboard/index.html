@@ -6272,13 +6272,11 @@ import {
 import {
   TTS_CHUNK_CHARS,
   chunkNarrationText,
-  concatAudioUrls,
-  concatMpegUrls,
   estimateWordsFromText,
   evenTimelineFromClips,
-  isMediaConcatError,
-  isUploadFailedError,
-  narrationNeedsChunking,
+  isVoiceoverJoinError,
+  playlistOffsetAt,
+  voiceoverPlaylist,
 } from '/lib/faceless-media-fallback.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
@@ -9857,7 +9855,7 @@ function fvRenderMediaResult(job) {
     (job.warning ? `<span style="color:#f0c674">${fvEsc(job.warning)}</span>` : '')
 
   const audio = document.getElementById('fv-media-audio')
-  audio.src = job.voiceover_url || ''
+  fvBindVoiceoverAudio(audio, job)
   audio.onplay = () => fvSyncWordHighlight(audio)
   audio.ontimeupdate = () => fvSyncWordHighlight(audio)
 
@@ -9887,6 +9885,7 @@ function fvRenderMediaResult(job) {
     sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
       jobId: job.jobId,
       voiceover_url: job.voiceover_url,
+      voiceover_urls: job.voiceover_urls || voiceoverPlaylist(job),
       duration: job.duration,
       words: job.words,
       clips: job.clips,
@@ -9905,8 +9904,89 @@ function fvRenderMediaResult(job) {
   })
 }
 
+function fvVoiceTime(audio) {
+  if (!audio) return 0
+  if (audio._vo && typeof audio._vo.getTime === 'function') return audio._vo.getTime()
+  return audio.currentTime || 0
+}
+
+function fvVoiceSeek(audio, t) {
+  if (!audio) return
+  if (audio._vo && typeof audio._vo.setTime === 'function') {
+    audio._vo.setTime(t)
+    return
+  }
+  try { audio.currentTime = t } catch (_) {}
+}
+
+function fvVoiceHasMore(audio) {
+  return !!(audio?._vo && audio._vo.hasMore && audio._vo.hasMore())
+}
+
+/** Play CDN voiceover parts in order. Audio elements can load https URLs; fetch() cannot (CORS). */
+function fvBindVoiceoverAudio(audio, media, { onComplete } = {}) {
+  if (!audio) return
+  const urls = voiceoverPlaylist(media)
+  const known = Number(media?.duration) || 0
+  if (!urls.length) {
+    audio.removeAttribute('src')
+    audio._vo = null
+    audio.onended = onComplete || null
+    return
+  }
+  if (urls.length === 1) {
+    audio._vo = null
+    audio.src = urls[0]
+    audio.onended = onComplete || null
+    return
+  }
+  const durations = urls.map(() => 0)
+  const state = { idx: 0 }
+  const offsets = () => {
+    const off = [0]
+    for (let i = 0; i < durations.length - 1; i++) off.push(off[i] + (durations[i] || 0))
+    return off
+  }
+  const loadPart = (i, local, play) => {
+    state.idx = Math.max(0, Math.min(urls.length - 1, i))
+    const want = urls[state.idx]
+    const afterMeta = () => {
+      if (Number.isFinite(audio.duration) && audio.duration > 0) durations[state.idx] = audio.duration
+      try { audio.currentTime = Math.max(0, local || 0) } catch (_) {}
+      if (play) audio.play().catch(() => {})
+    }
+    if (audio.getAttribute('src') === want && audio.readyState >= 1) {
+      afterMeta()
+      return
+    }
+    audio.src = want
+    audio.onloadedmetadata = () => {
+      audio.onloadedmetadata = null
+      afterMeta()
+    }
+  }
+  audio._vo = {
+    getTime() {
+      return (offsets()[state.idx] || 0) + (audio.currentTime || 0)
+    },
+    setTime(t) {
+      const playing = !audio.paused
+      const hit = playlistOffsetAt(durations.map((d) => d || (known ? known / urls.length : 0)), t)
+      loadPart(hit.index, hit.local, playing)
+    },
+    hasMore() {
+      return state.idx < urls.length - 1
+    },
+  }
+  audio.onended = () => {
+    if (state.idx < urls.length - 1) loadPart(state.idx + 1, 0, true)
+    else if (typeof onComplete === 'function') onComplete()
+  }
+  loadPart(0, 0, false)
+}
+
 function fvSyncWordHighlight(audio) {
-  const t = audio.currentTime || 0
+  const t = fvVoiceTime(audio)
   document.querySelectorAll('#fv-media-words .fv-word').forEach(el => {
     const s = parseFloat(el.dataset.start)
     const e = parseFloat(el.dataset.end)
@@ -10034,87 +10114,25 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
   return fvWaitForMediaJob(jobId, label)
 }
 
-function fvRevokeLocalVoiceover() {
-  const prev = fvState._localVoiceoverUrl
-  if (prev && String(prev).startsWith('blob:')) {
-    try { URL.revokeObjectURL(prev) } catch (_) {}
-  }
-  fvState._localVoiceoverUrl = ''
-  fvState._localVoiceoverBlob = null
-}
-
-/** Join CDN voiceover parts in-browser. Prefer a public upload; else a blob URL for preview. */
-async function fvJoinVoiceoverUrls(urls, { allowLocal = true } = {}) {
-  const list = (urls || []).map(String).filter(Boolean)
-  if (!list.length) throw new Error('No voiceover parts to join')
-  if (list.length === 1) return { url: list[0], local: false }
-  try { await ensureFreshToken() } catch (_) {}
-  const token = typeof getToken === 'function' ? getToken() : ''
-  const headers = token ? { Authorization: 'Bearer ' + token } : {}
-  // Proxy through Vidso so Safari can read CDN parts without CORS.
-  const proxied = list.map((u) => {
-    try { return api.faceless.voiceoverFetchUrl(u) } catch (_) { return u }
-  })
-  const joined = await concatMpegUrls(proxied, { headers })
-  try {
-    const fd = new FormData()
-    fd.append('file', new File([joined.blob], joined.filename || 'faceless-voiceover.mp3', {
-      type: joined.mime || 'audio/mpeg',
-    }))
-    const up = await api.upload.file(fd)
-    const url = up.url || up.file_url || up.publicUrl
-    if (url) {
-      fvRevokeLocalVoiceover()
-      return { url, local: false }
-    }
-  } catch (e) {
-    if (!allowLocal) throw e
-    fvLengthTrace('voiceover-upload-local', { reason: String(e?.message || e).slice(0, 120) })
-  }
-  if (!allowLocal) throw new Error('Could not upload the joined voiceover')
-  fvRevokeLocalVoiceover()
-  const localUrl = URL.createObjectURL(joined.blob)
-  fvState._localVoiceoverUrl = localUrl
-  fvState._localVoiceoverBlob = joined.blob
-  return { url: localUrl, local: true }
-}
-
-/** Ensure export has a publicly fetchable voiceover URL (not a blob:). */
+/** Server-side join for export only. Media itself never downloads audio. */
 async function fvEnsurePublicVoiceoverUrl() {
   const media = fvState.media
   if (!media) throw new Error('Missing voiceover')
-  const current = String(media.voiceover_url || '')
-  if (current && !current.startsWith('blob:')) return current
-
-  const parts = (media.voiceover_urls || []).map(String).filter(Boolean)
-  if (parts.length > 1) {
-    try {
-      const merged = await api.faceless.concatVoiceovers(parts)
-      const url = merged.url || merged.file?.url || merged.public_url || ''
-      if (url) {
-        media.voiceover_url = url
-        fvRevokeLocalVoiceover()
-        return url
-      }
-    } catch (_) {}
-    const joined = await fvJoinVoiceoverUrls(parts, { allowLocal: false })
-    media.voiceover_url = joined.url
-    return joined.url
+  const parts = voiceoverPlaylist(media)
+  if (!parts.length) throw new Error('Missing voiceover')
+  if (parts.length === 1) return parts[0]
+  try { await ensureFreshToken() } catch (_) {}
+  try {
+    const merged = await api.faceless.concatVoiceovers(parts)
+    const url = merged.url || merged.file?.url || merged.public_url || ''
+    if (url) {
+      media.voiceover_url = url
+      return url
+    }
+  } catch (e) {
+    fvLengthTrace('export-concat', { reason: String(e?.message || e).slice(0, 120) })
   }
-
-  const blob = fvState._localVoiceoverBlob
-  if (blob) {
-    const fd = new FormData()
-    fd.append('file', new File([blob], 'faceless-voiceover.mp3', { type: blob.type || 'audio/mpeg' }))
-    const up = await api.upload.file(fd)
-    const url = up.url || up.file_url || up.publicUrl
-    if (!url) throw new Error('Could not upload the joined voiceover')
-    media.voiceover_url = url
-    fvRevokeLocalVoiceover()
-    return url
-  }
-
-  throw new Error('Voiceover is only on this device — rebuild Media, then export again')
+  return parts[0]
 }
 
 async function fvSearchFallbackClips(script, aspect) {
@@ -10172,87 +10190,21 @@ async function fvBuildMediaViaTtsFallback() {
     urls.push(url)
   }
 
-  fvSetMediaStatus('Joining voiceover parts…', 'loading')
-  document.getElementById('fv-media-bar').style.width = '78%'
-  const token = typeof getToken === 'function' ? getToken() : ''
-  const headers = token ? { Authorization: 'Bearer ' + token } : {}
-  let voiceoverUrl = ''
+  fvSetMediaStatus('Timing voiceover parts…', 'loading')
+  document.getElementById('fv-media-bar').style.width = '82%'
   let duration = 0
-  let localJoin = false
-  try {
-    const mpeg = await concatMpegUrls(
-      urls.map((u) => {
-        try { return api.faceless.voiceoverFetchUrl(u) } catch (_) { return u }
-      }),
-      { headers },
-    )
-    try {
-      const fd = new FormData()
-      fd.append('file', new File([mpeg.blob], mpeg.filename || 'faceless-voiceover.mp3', {
-        type: mpeg.mime || 'audio/mpeg',
-      }))
-      const up = await api.upload.file(fd)
-      voiceoverUrl = up.url || up.file_url || up.publicUrl || ''
-    } catch (_) {
-      voiceoverUrl = ''
-    }
-    if (!voiceoverUrl) {
-      fvRevokeLocalVoiceover()
-      voiceoverUrl = URL.createObjectURL(mpeg.blob)
-      fvState._localVoiceoverUrl = voiceoverUrl
-      fvState._localVoiceoverBlob = mpeg.blob
-      localJoin = true
-    }
-    duration = await new Promise((resolve) => {
+  for (const url of urls) {
+    duration += await new Promise((resolve) => {
       const a = new Audio()
       a.preload = 'metadata'
       a.onloadedmetadata = () => resolve(Number(a.duration) || 0)
       a.onerror = () => resolve(0)
-      a.src = voiceoverUrl
+      a.src = url
     })
-  } catch (_) {
-    const joined = await concatAudioUrls(urls, { headers })
-    duration = joined.duration
-    try {
-      const fd = new FormData()
-      fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
-      const up = await api.upload.file(fd)
-      voiceoverUrl = up.url || up.file_url || up.publicUrl || ''
-    } catch (_) {
-      voiceoverUrl = ''
-    }
-    if (!voiceoverUrl) {
-      fvRevokeLocalVoiceover()
-      voiceoverUrl = URL.createObjectURL(joined.blob)
-      fvState._localVoiceoverUrl = voiceoverUrl
-      fvState._localVoiceoverBlob = joined.blob
-      localJoin = true
-    }
   }
-  if (!voiceoverUrl) throw new Error('Could not join the voiceover')
   if (!duration) duration = estimateWordsFromText(text, 0).length * 0.35
 
-  let words = []
-  fvSetMediaStatus('Timing words…', 'loading')
-  document.getElementById('fv-media-bar').style.width = '88%'
-  if (!localJoin) {
-    try {
-      const t = await api.transcribe.start(voiceoverUrl)
-      const jobId = t.job_id || t.jobId
-      if (jobId) {
-        for (let i = 0; i < 60; i++) {
-          await new Promise((r) => setTimeout(r, 2000))
-          const p = await api.transcribe.poll(jobId)
-          if (p.status === 'completed' || p.status === 'done') {
-            words = p.words || p.result?.words || []
-            break
-          }
-          if (p.status === 'error' || p.status === 'failed') break
-        }
-      }
-    } catch (_) {}
-  }
-  if (!words.length) words = estimateWordsFromText(text, duration)
+  const words = estimateWordsFromText(text, duration)
 
   fvSetMediaStatus('Finding B-roll…', 'loading')
   document.getElementById('fv-media-bar').style.width = '94%'
@@ -10263,7 +10215,7 @@ async function fvBuildMediaViaTtsFallback() {
     jobId: 'local-' + Date.now(),
     status: 'completed',
     progress: 100,
-    voiceover_url: voiceoverUrl,
+    voiceover_url: urls[0],
     voiceover_urls: urls,
     duration,
     words,
@@ -10271,11 +10223,9 @@ async function fvBuildMediaViaTtsFallback() {
     timeline,
     aspect,
     voice_id: voiceId,
-    warning: localJoin
-      ? 'Built in parts on this device — export will upload the joined voiceover.'
-      : (chunks.length > 1
-        ? 'Built in parts on Vidso (Railway media/concat is unavailable for long scripts).'
-        : 'Built on Vidso after the media server failed.'),
+    warning: urls.length > 1
+      ? 'Voiceover is ' + urls.length + ' parts. Preview plays them in order.'
+      : 'Built on Vidso after the media server failed.',
   }
 }
 
@@ -10348,30 +10298,12 @@ window.fvStartMedia = async (force) => {
       jobs.push(await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label))
     }
     let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
-    if ((ready.voiceover_urls || []).length > 1) {
-      fvSetMediaStatus('Joining voiceover parts…', 'loading')
-      let url = ''
-      let local = false
-      try {
-        const merged = await api.faceless.concatVoiceovers(ready.voiceover_urls)
-        url = merged.url || merged.file?.url || merged.public_url || ''
-      } catch (e) {
-        fvLengthTrace('media-concat-fallback', { reason: String(e?.message || e).slice(0, 120) })
-      }
-      if (!url) {
-        // Gate upload often fails on long VOs ("Upload failed"). Join as MP3 in
-        // the browser and keep a blob URL so Media can finish; Export re-uploads.
-        const joined = await fvJoinVoiceoverUrls(ready.voiceover_urls, { allowLocal: true })
-        url = joined.url
-        local = joined.local
-      }
+    const parts = voiceoverPlaylist(ready)
+    if (parts.length > 1) {
       ready = {
         ...ready,
-        voiceover_url: url,
-        warning: local
-          ? ((ready.warning ? ready.warning + ' ' : '')
-            + 'Voiceover joined on this device — export will upload it.')
-          : ready.warning,
+        voiceover_url: parts[0],
+        voiceover_urls: parts,
       }
     }
     if (isFalVideoModel(fvState.videoModel)) {
@@ -10388,7 +10320,8 @@ window.fvStartMedia = async (force) => {
     try { fvNotifyStudio() } catch (_) {}
   } catch (e) {
     fvStopMediaPoll()
-    if ((isMediaConcatError(e) || isUploadFailedError(e)) && !force) {
+    if (isVoiceoverJoinError(e) && !force) {
+      // Join/download must never fail Media — parts are already on the CDN.
       try {
         await finishLocal(e.message)
         return
@@ -10402,7 +10335,7 @@ window.fvStartMedia = async (force) => {
 }
 
 window.fvContinueToPreview = () => {
-  if (!fvState.media?.voiceover_url) return fvSetMediaStatus('Wait for media to finish', 'err')
+  if (!voiceoverPlaylist(fvState.media).length) return fvSetMediaStatus('Wait for media to finish', 'err')
   fvPausePreview()
   fvState.phase = 3
   document.getElementById('fv-media-box')?.classList.remove('show')
@@ -10640,7 +10573,7 @@ function fvSyncMusicToVoice() {
   const voice = document.getElementById('fv-prev-voice')
   const music = fvMusicEl()
   if (!fvMusicTrackSrc() || !voice || !music) return
-  const t = voice.currentTime || 0
+  const t = fvVoiceTime(voice)
   const md = music.duration
   if (Number.isFinite(md) && md > 0) music.currentTime = t % md
   else music.currentTime = 0
@@ -10932,7 +10865,7 @@ function fvUpdateCaptions(t) {
 function fvTickPreview() {
   const voice = document.getElementById('fv-prev-voice')
   if (!voice) return
-  const t = voice.currentTime || 0
+  const t = fvVoiceTime(voice)
   const dur = fvState.media?.duration || voice.duration || 1
   document.getElementById('fv-prev-seek').value = String(Math.round((t / dur) * 1000))
   document.getElementById('fv-prev-time').textContent = `${fvFmtTime(t)} / ${fvFmtTime(dur)}`
@@ -10943,7 +10876,7 @@ function fvTickPreview() {
   })
   fvEnsureClip(t)
   fvUpdateCaptions(t)
-  if (voice.ended) fvPausePreview()
+  if (voice.ended && !fvVoiceHasMore(voice)) fvPausePreview()
 }
 
 window.fvTogglePreview = () => {
@@ -10954,7 +10887,7 @@ window.fvTogglePreview = () => {
 window.fvPlayPreview = () => {
   const voice = document.getElementById('fv-prev-voice')
   const music = fvMusicEl()
-  if (!voice?.src) {
+  if (!voice?.src && !voiceoverPlaylist(fvState.media).length) {
     fvSetPrevStatus('Preview has no voiceover yet', 'err')
     return
   }
@@ -10963,7 +10896,7 @@ window.fvPlayPreview = () => {
   clearTimeout(fvState.preview._auditionTimer)
   fvState.preview.playing = true
   document.getElementById('fv-prev-play').textContent = '⏸ Pause'
-  fvEnsureClip(voice.currentTime || 0)
+  fvEnsureClip(fvVoiceTime(voice))
   voice.play().catch((e) => {
     fvState.preview.playing = false
     const btn = document.getElementById('fv-prev-play')
@@ -11006,7 +10939,7 @@ window.fvSeekPreview = (v) => {
   const voice = document.getElementById('fv-prev-voice')
   const dur = fvState.media?.duration || voice?.duration || 1
   const t = (Number(v) / 1000) * dur
-  if (voice) voice.currentTime = t
+  fvVoiceSeek(voice, t)
   if (fvMusicTrackSrc()) fvSyncMusicToVoice()
   fvState.preview && (fvState.preview.clipUrl = null)
   fvEnsureClip(t)
@@ -11020,6 +10953,7 @@ function fvPersistMedia() {
     sessionStorage.setItem('vidso_faceless_media', JSON.stringify({
       jobId: fvState.media.jobId,
       voiceover_url: fvState.media.voiceover_url,
+      voiceover_urls: fvState.media.voiceover_urls || voiceoverPlaylist(fvState.media),
       duration: fvState.media.duration,
       words: fvState.media.words,
       clips: fvState.media.clips,
@@ -11123,7 +11057,7 @@ window.fvSelectSeg = (i) => {
   if (seg) {
     const voice = document.getElementById('fv-prev-voice')
     if (voice) {
-      voice.currentTime = seg.start
+      fvVoiceSeek(voice, seg.start)
       fvState.preview.clipUrl = null
       fvEnsureClip(seg.start)
       fvUpdateCaptions(seg.start)
@@ -11146,7 +11080,7 @@ window.fvReplaceSeg = (i) => {
   if (seg) {
     const voice = document.getElementById('fv-prev-voice')
     if (voice) {
-      voice.currentTime = seg.start
+      fvVoiceSeek(voice, seg.start)
       fvState.preview.clipUrl = null
       fvEnsureClip(seg.start)
       fvUpdateCaptions(seg.start)
@@ -11341,8 +11275,7 @@ function fvInitPreview() {
     `<span><b>${(media.timeline || []).length}</b> clips</span>`
 
   const voice = document.getElementById('fv-prev-voice')
-  voice.src = media.voiceover_url
-  voice.onended = () => fvPausePreview()
+  fvBindVoiceoverAudio(voice, media, { onComplete: () => fvPausePreview() })
   voice.onerror = () => fvSetPrevStatus('Voiceover could not load', 'err')
   document.querySelectorAll('.fv-prev-vid').forEach((v) => {
     try {
@@ -11383,7 +11316,7 @@ function fvBindStageResize() {
 }
 
 window.fvContinueToExport = () => {
-  if (!fvState.media?.voiceover_url) return
+  if (!voiceoverPlaylist(fvState.media).length) return
   fvPausePreview()
   fvPersistPreviewSettings()
   fvState.phase = 4
@@ -11436,7 +11369,7 @@ function fvSetExportStatus(msg, kind) {
 
 window.fvStartExport = async (opts = {}) => {
   if (opts === true) opts = { again: true }
-  if (!fvState.media?.voiceover_url) return fvSetExportStatus('Missing voiceover', 'err')
+  if (!voiceoverPlaylist(fvState.media).length) return fvSetExportStatus('Missing voiceover', 'err')
   if (fvState.renderPoll) { clearInterval(fvState.renderPoll); fvState.renderPoll = null }
 
   let picked
@@ -11495,8 +11428,10 @@ window.fvStartExport = async (opts = {}) => {
     fvSetExportStatus('Preparing voiceover…', 'loading')
     try { await ensureFreshToken() } catch (_) {}
     const voiceoverUrl = await fvEnsurePublicVoiceoverUrl()
+    const voParts = voiceoverPlaylist(fvState.media)
     const { jobId } = await api.faceless.startRender({
       voiceover_url: voiceoverUrl,
+      voiceover_urls: voParts.length > 1 ? voParts : undefined,
       duration: fvState.media.duration,
       duration_id: picked.id,
       duration_seconds: picked.seconds,

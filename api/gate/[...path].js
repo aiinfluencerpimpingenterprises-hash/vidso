@@ -11,7 +11,7 @@ import { lookupPaidMembership } from '../../lib/whop-lookup.js'
 import { isJsonSyntaxError, recoverScriptData } from '../../lib/json-repair.js'
 import { railwayUpload } from '../../lib/railway-files.js'
 
-export const config = { maxDuration: 60 }
+export const config = { maxDuration: 300 }
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 

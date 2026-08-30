@@ -8,7 +8,10 @@ import {
   evenTimelineFromClips,
   isMediaConcatError,
   isUploadFailedError,
+  isVoiceoverJoinError,
   narrationNeedsChunking,
+  playlistOffsetAt,
+  voiceoverPlaylist,
 } from '../lib/faceless-media-fallback.js'
 
 test('detects the Railway media/concat 404', () => {
@@ -21,6 +24,29 @@ test('detects upload failures from the join step', () => {
   assert.equal(isUploadFailedError('Upload failed'), true)
   assert.equal(isUploadFailedError({ message: 'Could not save the merged voiceover' }), true)
   assert.equal(isUploadFailedError('B-roll timed out'), false)
+})
+
+test('join errors include the browser download failure', () => {
+  assert.equal(isVoiceoverJoinError('Could not download a voiceover chunk'), true)
+  assert.equal(isVoiceoverJoinError('Cannot POST /api/media/concat'), true)
+  assert.equal(isVoiceoverJoinError('B-roll timed out'), false)
+})
+
+test('playlist prefers the part list over a single joined URL', () => {
+  assert.deepEqual(
+    voiceoverPlaylist({
+      voiceover_url: 'https://cdn.example/a.mp3',
+      voiceover_urls: ['https://cdn.example/a.mp3', 'https://cdn.example/b.mp3'],
+    }),
+    ['https://cdn.example/a.mp3', 'https://cdn.example/b.mp3'],
+  )
+  assert.deepEqual(voiceoverPlaylist({ voiceover_url: 'https://cdn.example/a.mp3' }), ['https://cdn.example/a.mp3'])
+})
+
+test('playlist offset maps global time onto the right part', () => {
+  assert.deepEqual(playlistOffsetAt([10, 8], 0), { index: 0, local: 0 })
+  assert.deepEqual(playlistOffsetAt([10, 8], 10), { index: 1, local: 0 })
+  assert.deepEqual(playlistOffsetAt([10, 8], 12), { index: 1, local: 2 })
 })
 
 test('long narration is chunked under the TTS character cap', () => {
