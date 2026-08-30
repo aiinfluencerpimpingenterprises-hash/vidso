@@ -10223,14 +10223,22 @@ window.fvStartMedia = async (force) => {
     let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
     if ((ready.voiceover_urls || []).length > 1) {
       fvSetMediaStatus('Joining voiceover parts…', 'loading')
+      let url = ''
       try {
-        const url = await fvJoinVoiceoverUrls(ready.voiceover_urls)
-        ready = { ...ready, voiceover_url: url }
-      } catch (joinErr) {
-        // Last resort: broken Railway concat endpoint (still used by older clients).
-        if (isMediaConcatError(joinErr)) throw joinErr
-        throw new Error(joinErr.message || 'Could not join the voiceover')
+        const merged = await api.faceless.concatVoiceovers(ready.voiceover_urls)
+        url = merged.url || merged.file?.url || merged.public_url || ''
+      } catch (e) {
+        fvLengthTrace('media-concat-fallback', { reason: String(e?.message || e).slice(0, 120) })
       }
+      if (!url) {
+        url = await fvJoinVoiceoverUrls(ready.voiceover_urls)
+        ready = {
+          ...ready,
+          warning: (ready.warning ? ready.warning + ' ' : '')
+            + 'Joined voiceover in the browser (server media/concat unavailable).',
+        }
+      }
+      ready = { ...ready, voiceover_url: url }
     }
     if (isFalVideoModel(fvState.videoModel)) {
       try { ready = await fvApplyFalBroll(ready) } catch (e) {
