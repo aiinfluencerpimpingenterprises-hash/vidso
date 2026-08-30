@@ -6269,6 +6269,15 @@ import {
   countSpokenWords,
   WORDS_PER_MINUTE,
 } from '/lib/faceless-length.js'
+import {
+  TTS_CHUNK_CHARS,
+  chunkNarrationText,
+  concatAudioUrls,
+  estimateWordsFromText,
+  evenTimelineFromClips,
+  isMediaConcatError,
+  narrationNeedsChunking,
+} from '/lib/faceless-media-fallback.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
 import { normalizeVoiceSettings, voiceSettingsPayload, VOICE_SETTING_DEFAULTS } from '/lib/voice-settings.js'
 import { fillCaptionFontSelect, ensureCaptionGoogleFonts } from '/lib/caption-fonts.js'
@@ -10022,6 +10031,131 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
   return fvWaitForMediaJob(jobId, label)
 }
 
+async function fvJoinVoiceoverUrls(urls) {
+  const list = (urls || []).map(String).filter(Boolean)
+  if (!list.length) throw new Error('No voiceover parts to join')
+  if (list.length === 1) return list[0]
+  const token = typeof getToken === 'function' ? getToken() : ''
+  const joined = await concatAudioUrls(list, {
+    headers: token ? { Authorization: 'Bearer ' + token } : {},
+  })
+  const fd = new FormData()
+  fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
+  const up = await api.upload.file(fd)
+  const url = up.url || up.file_url || up.publicUrl
+  if (!url) throw new Error('Could not upload the joined voiceover')
+  return url
+}
+
+async function fvSearchFallbackClips(script, aspect) {
+  const queries = []
+  for (const sec of script?.sections || []) {
+    const q = String(sec?.heading || '').trim()
+    if (q && !queries.includes(q)) queries.push(q)
+    if (queries.length >= 6) break
+  }
+  for (const kw of script?.keywords || []) {
+    const q = String(kw || '').trim()
+    if (q && !queries.includes(q)) queries.push(q)
+    if (queries.length >= 8) break
+  }
+  if (!queries.length) {
+    const topic = String(script?.topic || script?.title || 'cinematic broll').trim()
+    if (topic) queries.push(topic)
+  }
+  const clips = []
+  for (const query of queries.slice(0, 6)) {
+    try {
+      const data = await api.faceless.searchBroll({ query, aspect, per_page: 2 })
+      for (const c of data.clips || []) {
+        clips.push({ ...c, query })
+        if (clips.length >= 10) return clips
+      }
+    } catch (_) {}
+  }
+  return clips
+}
+
+async function fvBuildMediaViaTtsFallback() {
+  const script = fvState.script
+  if (!script) throw new Error('Generate a script first')
+  const text = String(script.full_script || '').trim()
+  if (!text) throw new Error('Script is empty')
+  const voiceId = fvState.voiceId || script.voice_id
+  if (!voiceId) throw new Error('Pick a narrator voice')
+  const aspect = script.aspect || fvState.aspect
+  const voiceOpts = voiceSettingsPayload(
+    fvState.voiceSettings || script.voice_settings || readVoiceControls('fv'),
+  )
+  const chunks = chunkNarrationText(text, TTS_CHUNK_CHARS)
+  const urls = []
+  for (let i = 0; i < chunks.length; i++) {
+    fvSetMediaStatus(`Voiceover part ${i + 1} of ${chunks.length}…`, 'loading')
+    document.getElementById('fv-media-bar').style.width = Math.max(5, Math.round(((i + 0.4) / chunks.length) * 70)) + '%'
+    const data = await api.tts.generate({
+      text: chunks[i],
+      voice_id: voiceId,
+      ...voiceOpts,
+    })
+    const url = data.url || data.file_url || data.publicUrl
+    if (!url) throw new Error('Voiceover chunk returned no URL')
+    urls.push(url)
+  }
+
+  fvSetMediaStatus('Joining voiceover parts…', 'loading')
+  document.getElementById('fv-media-bar').style.width = '78%'
+  const token = typeof getToken === 'function' ? getToken() : ''
+  const joined = await concatAudioUrls(urls, {
+    headers: token ? { Authorization: 'Bearer ' + token } : {},
+  })
+  const fd = new FormData()
+  fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
+  const up = await api.upload.file(fd)
+  const voiceoverUrl = up.url || up.file_url || up.publicUrl
+  if (!voiceoverUrl) throw new Error('Could not upload the joined voiceover')
+
+  let words = []
+  fvSetMediaStatus('Timing words…', 'loading')
+  document.getElementById('fv-media-bar').style.width = '88%'
+  try {
+    const t = await api.transcribe.start(voiceoverUrl)
+    const jobId = t.job_id || t.jobId
+    if (jobId) {
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 2000))
+        const p = await api.transcribe.poll(jobId)
+        if (p.status === 'completed' || p.status === 'done') {
+          words = p.words || p.result?.words || []
+          break
+        }
+        if (p.status === 'error' || p.status === 'failed') break
+      }
+    }
+  } catch (_) {}
+  if (!words.length) words = estimateWordsFromText(text, joined.duration)
+
+  fvSetMediaStatus('Finding B-roll…', 'loading')
+  document.getElementById('fv-media-bar').style.width = '94%'
+  const clips = await fvSearchFallbackClips(script, aspect)
+  const timeline = evenTimelineFromClips(clips, joined.duration)
+
+  return {
+    jobId: 'local-' + Date.now(),
+    status: 'completed',
+    progress: 100,
+    voiceover_url: voiceoverUrl,
+    duration: joined.duration,
+    words,
+    clips,
+    timeline,
+    aspect,
+    voice_id: voiceId,
+    warning: chunks.length > 1
+      ? 'Built in parts on Vidso (Railway media/concat is unavailable for long scripts).'
+      : 'Built on Vidso after the media server failed.',
+  }
+}
+
 window.fvStartMedia = async (force) => {
   if (!fvState.script) return
   fvRebuildFullScriptFromSections()
@@ -10041,12 +10175,13 @@ window.fvStartMedia = async (force) => {
   const voiceOpts = voiceSettingsPayload(
     fvState.voiceSettings || fvState.script.voice_settings || readVoiceControls('fv'),
   )
+  // Keep each Railway media job under the TTS char cap so the worker never needs /api/media/concat.
   const chunks = splitScriptForMedia({
     ...fvState.script,
     topic: fvState.script.topic || (document.getElementById('fv-topic')?.value || '').trim(),
     aspect: fvState.script.aspect || fvState.aspect,
     voice_id: voiceId,
-  })
+  }, TTS_CHUNK_CHARS)
   fvLengthTrace('media-request', {
     seconds: extras.duration_seconds,
     voiceId,
@@ -10056,6 +10191,25 @@ window.fvStartMedia = async (force) => {
     mediaChunks: chunks.length,
     voiceSettings: voiceOpts.voice_settings,
   })
+
+  const finishLocal = async (reason) => {
+    fvLengthTrace('media-fallback', { reason: String(reason || '').slice(0, 120) })
+    fvSetMediaStatus('Long script — building voiceover in parts…', 'loading')
+    let ready = await fvBuildMediaViaTtsFallback()
+    if (isFalVideoModel(fvState.videoModel)) {
+      try { ready = await fvApplyFalBroll(ready) } catch (e) {
+        ready.warning = (ready.warning ? ready.warning + ' ' : '') + (e.message || 'Fal B-roll failed')
+      }
+    } else if (fvState.brollSource === 'youtube') {
+      try { ready = await fvAttachYoutubeBroll(ready) } catch (e) {
+        ready.warning = (ready.warning ? ready.warning + ' ' : '') + ((e && e.message) || 'YouTube B-roll failed')
+      }
+    }
+    fvSetMediaStatus('Ready', 'ok')
+    fvRenderMediaResult(ready)
+    try { fvNotifyStudio() } catch (_) {}
+  }
+
   try {
     const jobs = []
     for (let i = 0; i < chunks.length; i++) {
@@ -10069,10 +10223,14 @@ window.fvStartMedia = async (force) => {
     let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
     if ((ready.voiceover_urls || []).length > 1) {
       fvSetMediaStatus('Joining voiceover parts…', 'loading')
-      const merged = await api.faceless.concatVoiceovers(ready.voiceover_urls)
-      const url = merged.url || merged.file?.url || merged.public_url
-      if (!url) throw new Error('Could not join the voiceover')
-      ready = { ...ready, voiceover_url: url }
+      try {
+        const url = await fvJoinVoiceoverUrls(ready.voiceover_urls)
+        ready = { ...ready, voiceover_url: url }
+      } catch (joinErr) {
+        // Last resort: broken Railway concat endpoint (still used by older clients).
+        if (isMediaConcatError(joinErr)) throw joinErr
+        throw new Error(joinErr.message || 'Could not join the voiceover')
+      }
     }
     if (isFalVideoModel(fvState.videoModel)) {
       try { ready = await fvApplyFalBroll(ready) } catch (e) {
@@ -10088,6 +10246,15 @@ window.fvStartMedia = async (force) => {
     try { fvNotifyStudio() } catch (_) {}
   } catch (e) {
     fvStopMediaPoll()
+    if (isMediaConcatError(e) && !force) {
+      try {
+        await finishLocal(e.message)
+        return
+      } catch (e2) {
+        fvSetMediaStatus(e2.message || e.message || 'Could not start media job', 'err')
+        return
+      }
+    }
     fvSetMediaStatus(e.message || 'Could not start media job', 'err')
   }
 }
