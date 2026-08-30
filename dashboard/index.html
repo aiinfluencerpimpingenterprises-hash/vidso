@@ -171,6 +171,8 @@
 body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
 #app-chrome{flex:0 0 auto;width:100%;position:relative}
+/* Archived entry points ship hidden so they never flash before scripts run. */
+[data-archived][hidden]{display:none!important}
 .app-banner{
   display:flex;align-items:center;width:100%;height:var(--chrome-banner-h);max-height:var(--chrome-banner-h);
   padding:0 var(--chrome-pad-x);overflow:hidden;background:#F3C4C8;color:#2A1014;position:relative;z-index:50
@@ -3800,7 +3802,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Getting started</span>
         <span class="settings-row-value">Tours →</span>
       </button>
-      <button type="button" class="settings-row-btn" id="settings-studio" aria-label="Open Faceless Studio">
+      <button type="button" class="settings-row-btn" id="settings-studio" aria-label="Open Faceless Studio" data-archived hidden>
         <span class="settings-row-label">Faceless Studio</span>
         <span class="settings-row-value">Test →</span>
       </button>
@@ -3927,7 +3929,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
+    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
@@ -3972,7 +3974,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" id="user-studio-btn">Faceless Studio</button>
+        <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -3992,7 +3994,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-  <button type="button" class="topnav-item" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
+  <button type="button" class="topnav-item" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
   <span class="nav-drawer-label">Short Form Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
@@ -6314,7 +6316,7 @@ import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
-import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic } from '/lib/app-chrome.js'
+import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js'
 import {
   tourById,
@@ -8723,13 +8725,16 @@ function resolvePanel(id) {
   if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
   if (id === 'mcp' || id === 'connectors') return DEFAULT_PANEL
+  if (panelArchived(id)) return DEFAULT_PANEL
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
 function panelFromPath() {
   const path = normalizePath(location.pathname)
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
-  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) return 'facelessstudio'
+  if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) {
+    return panelArchived('facelessstudio') ? DEFAULT_PANEL : 'facelessstudio'
+  }
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
@@ -8741,6 +8746,12 @@ function panelFromPath() {
 function isAuthPath() {
   const p = normalizePath(location.pathname)
   return p === '/login' || p === '/signup'
+}
+/** True when a saved link points at a panel that is currently archived. */
+function archivedPath(p) {
+  if (p === '/faceless-studio' || p.startsWith('/faceless-studio/')) return panelArchived('facelessstudio')
+  const mapped = PATH_TO_PANEL[p]
+  return !!mapped && panelArchived(mapped)
 }
 window.switchPanel = (id, btn, opts = {}) => {
   id = resolvePanel(id)
@@ -8829,7 +8840,7 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (HOME_PATHS.has(p)) {
+  if (HOME_PATHS.has(p) || archivedPath(p)) {
     history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
@@ -12093,6 +12104,7 @@ function bindGettingStarted() {
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
   const openStudio = (e) => {
     e.preventDefault()
+    if (panelArchived('facelessstudio')) return
     try { closeAccountSettings() } catch (_) {}
     try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
     window.switchPanel?.('facelessstudio')
@@ -12116,6 +12128,7 @@ initImageWorkspace({
   resolveAccess,
 })
 
+if (!panelArchived('facelessstudio')) {
 try {
 initFacelessStudio({
   api,
@@ -12163,6 +12176,7 @@ if (document.getElementById('panel-facelessstudio')?.classList.contains('active'
   try { window.fsStudioShow?.() } catch (_) {}
 }
 } catch (e) { console.warn('[faceless-studio]', e) }
+}
 
 checkAuth()
 bindGettingStarted()
