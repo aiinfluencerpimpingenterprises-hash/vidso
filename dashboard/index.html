@@ -6273,9 +6273,11 @@ import {
   TTS_CHUNK_CHARS,
   chunkNarrationText,
   concatAudioUrls,
+  concatMpegUrls,
   estimateWordsFromText,
   evenTimelineFromClips,
   isMediaConcatError,
+  isUploadFailedError,
   narrationNeedsChunking,
 } from '/lib/faceless-media-fallback.js'
 import { isJsonSyntaxError, parseScriptResponse, recoverScriptData } from '/lib/json-repair.js'
@@ -10031,20 +10033,86 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
   return fvWaitForMediaJob(jobId, label)
 }
 
-async function fvJoinVoiceoverUrls(urls) {
+function fvRevokeLocalVoiceover() {
+  const prev = fvState._localVoiceoverUrl
+  if (prev && String(prev).startsWith('blob:')) {
+    try { URL.revokeObjectURL(prev) } catch (_) {}
+  }
+  fvState._localVoiceoverUrl = ''
+  fvState._localVoiceoverBlob = null
+}
+
+/** Join CDN voiceover parts in-browser. Prefer a public upload; else a blob URL for preview. */
+async function fvJoinVoiceoverUrls(urls, { allowLocal = true } = {}) {
   const list = (urls || []).map(String).filter(Boolean)
   if (!list.length) throw new Error('No voiceover parts to join')
-  if (list.length === 1) return list[0]
+  if (list.length === 1) return { url: list[0], local: false }
   const token = typeof getToken === 'function' ? getToken() : ''
-  const joined = await concatAudioUrls(list, {
-    headers: token ? { Authorization: 'Bearer ' + token } : {},
+  const headers = token ? { Authorization: 'Bearer ' + token } : {}
+  // Proxy through Vidso so Safari can read CDN parts without CORS.
+  const proxied = list.map((u) => {
+    try { return api.faceless.voiceoverFetchUrl(u) } catch (_) { return u }
   })
-  const fd = new FormData()
-  fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
-  const up = await api.upload.file(fd)
-  const url = up.url || up.file_url || up.publicUrl
-  if (!url) throw new Error('Could not upload the joined voiceover')
-  return url
+  const joined = await concatMpegUrls(proxied, { headers })
+  try {
+    const fd = new FormData()
+    fd.append('file', new File([joined.blob], joined.filename || 'faceless-voiceover.mp3', {
+      type: joined.mime || 'audio/mpeg',
+    }))
+    const up = await api.upload.file(fd)
+    const url = up.url || up.file_url || up.publicUrl
+    if (url) {
+      fvRevokeLocalVoiceover()
+      return { url, local: false }
+    }
+  } catch (e) {
+    if (!allowLocal) throw e
+    fvLengthTrace('voiceover-upload-local', { reason: String(e?.message || e).slice(0, 120) })
+  }
+  if (!allowLocal) throw new Error('Could not upload the joined voiceover')
+  fvRevokeLocalVoiceover()
+  const localUrl = URL.createObjectURL(joined.blob)
+  fvState._localVoiceoverUrl = localUrl
+  fvState._localVoiceoverBlob = joined.blob
+  return { url: localUrl, local: true }
+}
+
+/** Ensure export has a publicly fetchable voiceover URL (not a blob:). */
+async function fvEnsurePublicVoiceoverUrl() {
+  const media = fvState.media
+  if (!media) throw new Error('Missing voiceover')
+  const current = String(media.voiceover_url || '')
+  if (current && !current.startsWith('blob:')) return current
+
+  const parts = (media.voiceover_urls || []).map(String).filter(Boolean)
+  if (parts.length > 1) {
+    try {
+      const merged = await api.faceless.concatVoiceovers(parts)
+      const url = merged.url || merged.file?.url || merged.public_url || ''
+      if (url) {
+        media.voiceover_url = url
+        fvRevokeLocalVoiceover()
+        return url
+      }
+    } catch (_) {}
+    const joined = await fvJoinVoiceoverUrls(parts, { allowLocal: false })
+    media.voiceover_url = joined.url
+    return joined.url
+  }
+
+  const blob = fvState._localVoiceoverBlob
+  if (blob) {
+    const fd = new FormData()
+    fd.append('file', new File([blob], 'faceless-voiceover.mp3', { type: blob.type || 'audio/mpeg' }))
+    const up = await api.upload.file(fd)
+    const url = up.url || up.file_url || up.publicUrl
+    if (!url) throw new Error('Could not upload the joined voiceover')
+    media.voiceover_url = url
+    fvRevokeLocalVoiceover()
+    return url
+  }
+
+  throw new Error('Voiceover is only on this device — rebuild Media, then export again')
 }
 
 async function fvSearchFallbackClips(script, aspect) {
@@ -10105,54 +10173,107 @@ async function fvBuildMediaViaTtsFallback() {
   fvSetMediaStatus('Joining voiceover parts…', 'loading')
   document.getElementById('fv-media-bar').style.width = '78%'
   const token = typeof getToken === 'function' ? getToken() : ''
-  const joined = await concatAudioUrls(urls, {
-    headers: token ? { Authorization: 'Bearer ' + token } : {},
-  })
-  const fd = new FormData()
-  fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
-  const up = await api.upload.file(fd)
-  const voiceoverUrl = up.url || up.file_url || up.publicUrl
-  if (!voiceoverUrl) throw new Error('Could not upload the joined voiceover')
+  const headers = token ? { Authorization: 'Bearer ' + token } : {}
+  let voiceoverUrl = ''
+  let duration = 0
+  let localJoin = false
+  try {
+    const mpeg = await concatMpegUrls(
+      urls.map((u) => {
+        try { return api.faceless.voiceoverFetchUrl(u) } catch (_) { return u }
+      }),
+      { headers },
+    )
+    try {
+      const fd = new FormData()
+      fd.append('file', new File([mpeg.blob], mpeg.filename || 'faceless-voiceover.mp3', {
+        type: mpeg.mime || 'audio/mpeg',
+      }))
+      const up = await api.upload.file(fd)
+      voiceoverUrl = up.url || up.file_url || up.publicUrl || ''
+    } catch (_) {
+      voiceoverUrl = ''
+    }
+    if (!voiceoverUrl) {
+      fvRevokeLocalVoiceover()
+      voiceoverUrl = URL.createObjectURL(mpeg.blob)
+      fvState._localVoiceoverUrl = voiceoverUrl
+      fvState._localVoiceoverBlob = mpeg.blob
+      localJoin = true
+    }
+    duration = await new Promise((resolve) => {
+      const a = new Audio()
+      a.preload = 'metadata'
+      a.onloadedmetadata = () => resolve(Number(a.duration) || 0)
+      a.onerror = () => resolve(0)
+      a.src = voiceoverUrl
+    })
+  } catch (_) {
+    const joined = await concatAudioUrls(urls, { headers })
+    duration = joined.duration
+    try {
+      const fd = new FormData()
+      fd.append('file', new File([joined.blob], 'faceless-voiceover.wav', { type: 'audio/wav' }))
+      const up = await api.upload.file(fd)
+      voiceoverUrl = up.url || up.file_url || up.publicUrl || ''
+    } catch (_) {
+      voiceoverUrl = ''
+    }
+    if (!voiceoverUrl) {
+      fvRevokeLocalVoiceover()
+      voiceoverUrl = URL.createObjectURL(joined.blob)
+      fvState._localVoiceoverUrl = voiceoverUrl
+      fvState._localVoiceoverBlob = joined.blob
+      localJoin = true
+    }
+  }
+  if (!voiceoverUrl) throw new Error('Could not join the voiceover')
+  if (!duration) duration = estimateWordsFromText(text, 0).length * 0.35
 
   let words = []
   fvSetMediaStatus('Timing words…', 'loading')
   document.getElementById('fv-media-bar').style.width = '88%'
-  try {
-    const t = await api.transcribe.start(voiceoverUrl)
-    const jobId = t.job_id || t.jobId
-    if (jobId) {
-      for (let i = 0; i < 60; i++) {
-        await new Promise((r) => setTimeout(r, 2000))
-        const p = await api.transcribe.poll(jobId)
-        if (p.status === 'completed' || p.status === 'done') {
-          words = p.words || p.result?.words || []
-          break
+  if (!localJoin) {
+    try {
+      const t = await api.transcribe.start(voiceoverUrl)
+      const jobId = t.job_id || t.jobId
+      if (jobId) {
+        for (let i = 0; i < 60; i++) {
+          await new Promise((r) => setTimeout(r, 2000))
+          const p = await api.transcribe.poll(jobId)
+          if (p.status === 'completed' || p.status === 'done') {
+            words = p.words || p.result?.words || []
+            break
+          }
+          if (p.status === 'error' || p.status === 'failed') break
         }
-        if (p.status === 'error' || p.status === 'failed') break
       }
-    }
-  } catch (_) {}
-  if (!words.length) words = estimateWordsFromText(text, joined.duration)
+    } catch (_) {}
+  }
+  if (!words.length) words = estimateWordsFromText(text, duration)
 
   fvSetMediaStatus('Finding B-roll…', 'loading')
   document.getElementById('fv-media-bar').style.width = '94%'
   const clips = await fvSearchFallbackClips(script, aspect)
-  const timeline = evenTimelineFromClips(clips, joined.duration)
+  const timeline = evenTimelineFromClips(clips, duration)
 
   return {
     jobId: 'local-' + Date.now(),
     status: 'completed',
     progress: 100,
     voiceover_url: voiceoverUrl,
-    duration: joined.duration,
+    voiceover_urls: urls,
+    duration,
     words,
     clips,
     timeline,
     aspect,
     voice_id: voiceId,
-    warning: chunks.length > 1
-      ? 'Built in parts on Vidso (Railway media/concat is unavailable for long scripts).'
-      : 'Built on Vidso after the media server failed.',
+    warning: localJoin
+      ? 'Built in parts on this device — export will upload the joined voiceover.'
+      : (chunks.length > 1
+        ? 'Built in parts on Vidso (Railway media/concat is unavailable for long scripts).'
+        : 'Built on Vidso after the media server failed.'),
   }
 }
 
@@ -10224,6 +10345,7 @@ window.fvStartMedia = async (force) => {
     if ((ready.voiceover_urls || []).length > 1) {
       fvSetMediaStatus('Joining voiceover parts…', 'loading')
       let url = ''
+      let local = false
       try {
         const merged = await api.faceless.concatVoiceovers(ready.voiceover_urls)
         url = merged.url || merged.file?.url || merged.public_url || ''
@@ -10231,14 +10353,20 @@ window.fvStartMedia = async (force) => {
         fvLengthTrace('media-concat-fallback', { reason: String(e?.message || e).slice(0, 120) })
       }
       if (!url) {
-        url = await fvJoinVoiceoverUrls(ready.voiceover_urls)
-        ready = {
-          ...ready,
-          warning: (ready.warning ? ready.warning + ' ' : '')
-            + 'Joined voiceover in the browser (server media/concat unavailable).',
-        }
+        // Gate upload often fails on long VOs ("Upload failed"). Join as MP3 in
+        // the browser and keep a blob URL so Media can finish; Export re-uploads.
+        const joined = await fvJoinVoiceoverUrls(ready.voiceover_urls, { allowLocal: true })
+        url = joined.url
+        local = joined.local
       }
-      ready = { ...ready, voiceover_url: url }
+      ready = {
+        ...ready,
+        voiceover_url: url,
+        warning: local
+          ? ((ready.warning ? ready.warning + ' ' : '')
+            + 'Voiceover joined on this device — export will upload it.')
+          : ready.warning,
+      }
     }
     if (isFalVideoModel(fvState.videoModel)) {
       try { ready = await fvApplyFalBroll(ready) } catch (e) {
@@ -10254,7 +10382,7 @@ window.fvStartMedia = async (force) => {
     try { fvNotifyStudio() } catch (_) {}
   } catch (e) {
     fvStopMediaPoll()
-    if (isMediaConcatError(e) && !force) {
+    if ((isMediaConcatError(e) || isUploadFailedError(e)) && !force) {
       try {
         await finishLocal(e.message)
         return
@@ -11358,8 +11486,10 @@ window.fvStartExport = async (opts = {}) => {
   const caption = fvCapStyle()
 
   try {
+    fvSetExportStatus('Preparing voiceover…', 'loading')
+    const voiceoverUrl = await fvEnsurePublicVoiceoverUrl()
     const { jobId } = await api.faceless.startRender({
-      voiceover_url: fvState.media.voiceover_url,
+      voiceover_url: voiceoverUrl,
       duration: fvState.media.duration,
       duration_id: picked.id,
       duration_seconds: picked.seconds,

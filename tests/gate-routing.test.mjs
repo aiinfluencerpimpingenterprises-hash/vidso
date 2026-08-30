@@ -93,6 +93,13 @@ test('studio routing is unchanged by the subpath merge', () => {
   assert.deepEqual(header.segs, ['projects'])
 })
 
+test('media/fetch stays on the one-segment gate path', () => {
+  const href = gateHref('/api/media/fetch?url=' + encodeURIComponent('https://cdn.example/a.mp3'))
+  assert.equal(href.startsWith('/api/gate/media?'), true)
+  assert.equal(gateFullSubpath({ url: href }), 'media/fetch')
+  assert.match(href, /url=https%3A%2F%2Fcdn\.example%2Fa\.mp3/)
+})
+
 test('quota rules still match the rebuilt subpaths', async () => {
   // The rules live in the gate handler; assert the strings they compare against.
   const script = gateFullSubpath({ url: gateHref('/api/faceless/script') })
@@ -102,3 +109,4 @@ test('quota rules still match the rebuilt subpaths', async () => {
   assert.equal(render, 'faceless/render')
   assert.equal(analyze, 'download/analyze')
 })
+

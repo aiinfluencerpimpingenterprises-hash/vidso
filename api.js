@@ -526,6 +526,12 @@ export const api = {
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
     concatVoiceovers: (urls) => gatedReq('POST', '/api/media/concat', { urls }),
+    /** Same-origin proxy for CDN voiceover parts (avoids browser CORS on join). */
+    voiceoverFetchUrl: (fileUrl) => {
+      const origin = (typeof location !== 'undefined' && /^https?:/.test(location.origin)) ? location.origin : ''
+      if (!origin) return String(fileUrl || '')
+      return origin + '/api/gate/media?p=fetch&url=' + encodeURIComponent(String(fileUrl || ''))
+    },
     // body: { query, aspect } → { clips }
     searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }

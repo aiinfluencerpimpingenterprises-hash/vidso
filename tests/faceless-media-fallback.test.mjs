@@ -3,9 +3,11 @@ import assert from 'node:assert/strict'
 import {
   TTS_CHUNK_CHARS,
   chunkNarrationText,
+  concatMpegUrls,
   estimateWordsFromText,
   evenTimelineFromClips,
   isMediaConcatError,
+  isUploadFailedError,
   narrationNeedsChunking,
 } from '../lib/faceless-media-fallback.js'
 
@@ -13,6 +15,12 @@ test('detects the Railway media/concat 404', () => {
   assert.equal(isMediaConcatError('Cannot POST /api/media/concat'), true)
   assert.equal(isMediaConcatError({ message: 'media/concat failed' }), true)
   assert.equal(isMediaConcatError('B-roll timed out'), false)
+})
+
+test('detects upload failures from the join step', () => {
+  assert.equal(isUploadFailedError('Upload failed'), true)
+  assert.equal(isUploadFailedError({ message: 'Could not save the merged voiceover' }), true)
+  assert.equal(isUploadFailedError('B-roll timed out'), false)
 })
 
 test('long narration is chunked under the TTS character cap', () => {
@@ -43,4 +51,20 @@ test('timeline spreads clips across the full duration', () => {
   assert.equal(tl[0].start, 0)
   assert.equal(tl[0].end, 5)
   assert.equal(tl[1].end, 10)
+})
+
+test('mpeg byte-join keeps parts in order', async () => {
+  const a = new Uint8Array([1, 2, 3]).buffer
+  const b = new Uint8Array([4, 5]).buffer
+  const fetchFn = async (url) => ({
+    ok: true,
+    headers: { get: () => 'audio/mpeg' },
+    arrayBuffer: async () => (url.endsWith('a') ? a : b),
+  })
+  const joined = await concatMpegUrls(['https://x/a', 'https://x/b'], { fetch: fetchFn })
+  assert.equal(joined.mime, 'audio/mpeg')
+  assert.equal(joined.bytes, 5)
+  assert.equal(joined.filename, 'faceless-voiceover.mp3')
+  const out = new Uint8Array(await joined.blob.arrayBuffer())
+  assert.deepEqual([...out], [1, 2, 3, 4, 5])
 })
