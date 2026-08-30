@@ -4,6 +4,7 @@
 import { withCompedPlan, emailsFromUser, COMPED_STUDIO_EMAILS } from '../../lib/comped.js'
 import { PAID_MEMBERSHIP_STATUSES } from '../../lib/paid-grant.js'
 import { resolveWhopPlan } from '../../lib/whop-map.js'
+import { kvConfigured } from '../../lib/kv.js'
 import {
   lookupPaidMembership,
   whopConfig,
@@ -148,6 +149,9 @@ function verdict({ configured, member, memberships, lookup }) {
 
 function warningsFor({ member, memberships }) {
   const out = []
+  if (!kvConfigured()) {
+    out.push('No durable grant store is configured, so a confirmed payment is only remembered until this lambda goes cold. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in Vercel so paid accounts survive a cold start.')
+  }
   if (member.ok && member.rows > 0 && member.emailReadable === false) {
     out.push('member:email:read is not granted, so Whop hides member emails. Matching still works when an email query returns exactly one member, but it cannot tell two members apart or catch a buyer who paid under a different email. Grant it in Whop under Developer, Company API Keys.')
   }
@@ -208,6 +212,7 @@ export default async function handler(req, res) {
     key: { configured: true, companyId },
     target: email,
     verdict: verdict({ configured: true, member, memberships, lookup }),
+    grantStore: kvConfigured() ? 'durable' : 'ephemeral',
     warnings: warningsFor({ member, memberships }),
     memberSearch: member,
     membershipList: memberships,

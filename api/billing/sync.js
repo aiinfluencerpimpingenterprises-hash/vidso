@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
 
-  const stored = withStoredGrant(user)
+  const stored = await withStoredGrant(user)
   if (stored.plan_status === 'active' && stored.plan && stored.plan !== 'free') {
     return send(res, 200, {
       active: true,
@@ -131,7 +131,7 @@ export default async function handler(req, res) {
 
   let grant
   try {
-    grant = saveGrant(user, hit)
+    grant = await saveGrant(user, hit)
   } catch (e) {
     return send(res, 200, {
       active: false,

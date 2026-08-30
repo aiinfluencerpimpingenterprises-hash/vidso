@@ -183,14 +183,14 @@ test('diagnostics blame the permission only when the search is genuinely ambiguo
   assert.equal(found.matchedBy, 'email')
 })
 
-test('grant store unlocks the same email on a later request', () => {
+test('grant store unlocks the same email on a later request', async () => {
   _resetGrantsForTests()
   const user = { id: 'u9', email: 'paid@example.com', plan_status: 'inactive' }
-  saveGrant(user, { tier: 'pro', cycle: 'monthly', planId: PRO_MONTHLY, source: 'whop' })
-  const again = withStoredGrant({ email: 'paid@example.com', plan: 'free', plan_status: 'inactive' })
+  await saveGrant(user, { tier: 'pro', cycle: 'monthly', planId: PRO_MONTHLY, source: 'whop' })
+  const again = await withStoredGrant({ email: 'paid@example.com', plan: 'free', plan_status: 'inactive' })
   assert.equal(again.plan, 'pro')
   assert.equal(again.active, true)
-  assert.equal(grantFor(user).tier, 'pro')
+  assert.equal((await grantFor(user)).tier, 'pro')
   _resetGrantsForTests()
 })
 
@@ -217,16 +217,16 @@ test('a receipt email can be claimed only after checkout from this account', () 
   _resetIntentsForTests()
 })
 
-test('the same Whop membership cannot be attached to a second account', () => {
+test('the same Whop membership cannot be attached to a second account', async () => {
   _resetGrantsForTests()
-  saveGrant({ email: 'first@example.com' }, {
+  await saveGrant({ email: 'first@example.com' }, {
     tier: 'pro',
     cycle: 'yearly',
     planId: PRO_MONTHLY,
     membershipId: 'mem_once',
     source: 'whop',
   })
-  assert.throws(
+  await assert.rejects(
     () => saveGrant({ email: 'second@example.com' }, {
       tier: 'pro',
       cycle: 'yearly',
@@ -289,7 +289,7 @@ test('membership.activated with checkout metadata grants the Vidso account', asy
   })
   assert.equal(result.ok, true)
   assert.equal(result.tier, 'pro')
-  const user = withStoredGrant({ id: 'u-auto', email: 'buyer@gmail.com', plan_status: 'inactive' })
+  const user = await withStoredGrant({ id: 'u-auto', email: 'buyer@gmail.com', plan_status: 'inactive' })
   assert.equal(user.plan, 'pro')
   _resetGrantsForTests()
 })
@@ -421,4 +421,114 @@ test('a rejected coarse filter keeps the user_ids query that makes the lookup pr
     assert.match(retry, /user_ids\[\]=user_1/)
     assert.doesNotMatch(retry, /plan_ids\[\]=/)
   })
+})
+
+// --- Durable grants: /tmp and process memory both vanish on Vercel cold starts.
+
+import { kvConfig, kvConfigured } from '../lib/kv.js'
+
+function fakeUpstash(store) {
+  const real = globalThis.fetch
+  process.env.UPSTASH_REDIS_REST_URL = 'https://kv.test'
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'tok'
+  globalThis.fetch = async (url, init) => {
+    const [cmd, key, ...rest] = JSON.parse(init.body)
+    let result = null
+    if (cmd === 'SET') { store.set(key, rest[0]); result = 'OK' }
+    if (cmd === 'GET') result = store.has(key) ? store.get(key) : null
+    if (cmd === 'SADD') {
+      const set = store.get(key) instanceof Set ? store.get(key) : new Set()
+      for (const m of rest) set.add(m)
+      store.set(key, set)
+      result = rest.length
+    }
+    if (cmd === 'SMEMBERS') {
+      const set = store.get(key)
+      result = set instanceof Set ? [...set] : []
+    }
+    return { ok: true, status: 200, json: async () => ({ result }) }
+  }
+  return () => {
+    globalThis.fetch = real
+    delete process.env.UPSTASH_REDIS_REST_URL
+    delete process.env.UPSTASH_REDIS_REST_TOKEN
+  }
+}
+
+test('kv reads either the Upstash or the Vercel integration env names', () => {
+  assert.equal(kvConfigured({}), false)
+  assert.equal(kvConfig({ UPSTASH_REDIS_REST_URL: 'https://a/', UPSTASH_REDIS_REST_TOKEN: 't' }).url, 'https://a')
+  const vercel = kvConfig({ KV_REST_API_URL: 'https://b', KV_REST_API_TOKEN: 't2' })
+  assert.equal(vercel.url, 'https://b')
+  assert.equal(vercel.token, 't2')
+})
+
+test('a paid grant survives losing the instance that recorded it', async () => {
+  const store = new Map()
+  const restore = fakeUpstash(store)
+  try {
+    _resetGrantsForTests()
+    await saveGrant({ id: 'u-kv', email: 'paid@example.com' }, {
+      tier: 'studio',
+      cycle: 'yearly',
+      planId: STUDIO_YEARLY,
+      membershipId: 'mem_kv',
+      source: 'whop',
+    })
+    // The cold start: file and process map are gone, Upstash is not.
+    _resetGrantsForTests()
+    const user = await withStoredGrant({ email: 'paid@example.com', plan: 'free', plan_status: 'inactive' })
+    assert.equal(user.plan, 'studio')
+    assert.equal(planIsActive(user), true)
+  } finally {
+    restore()
+    _resetGrantsForTests()
+  }
+})
+
+test('membership theft is still blocked after the recording instance is gone', async () => {
+  const store = new Map()
+  const restore = fakeUpstash(store)
+  try {
+    _resetGrantsForTests()
+    await saveGrant({ email: 'first@example.com' }, {
+      tier: 'pro', cycle: 'yearly', planId: PRO_MONTHLY, membershipId: 'mem_shared', source: 'whop',
+    })
+    _resetGrantsForTests()
+    await assert.rejects(
+      () => saveGrant({ email: 'second@example.com' }, {
+        tier: 'pro', cycle: 'yearly', planId: PRO_MONTHLY, membershipId: 'mem_shared', source: 'whop',
+      }),
+      /already attached/,
+    )
+    // The rightful owner can still re-save their own membership.
+    const again = await saveGrant({ email: 'first@example.com' }, {
+      tier: 'pro', cycle: 'yearly', planId: PRO_MONTHLY, membershipId: 'mem_shared', source: 'whop',
+    })
+    assert.equal(again.tier, 'pro')
+  } finally {
+    restore()
+    _resetGrantsForTests()
+  }
+})
+
+test('a KV outage falls back to the local copy instead of unpaying anyone', async () => {
+  const real = globalThis.fetch
+  process.env.UPSTASH_REDIS_REST_URL = 'https://kv.test'
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'tok'
+  globalThis.fetch = async () => { throw new Error('kv down') }
+  try {
+    _resetGrantsForTests()
+    const rec = await saveGrant({ email: 'paid@example.com' }, {
+      tier: 'pro', cycle: 'monthly', planId: PRO_MONTHLY, source: 'whop',
+    })
+    assert.equal(rec.tier, 'pro')
+    const user = await withStoredGrant({ email: 'paid@example.com', plan: 'free' })
+    assert.equal(user.plan, 'pro')
+  } finally {
+    globalThis.fetch = real
+    delete process.env.UPSTASH_REDIS_REST_URL
+    delete process.env.UPSTASH_REDIS_REST_TOKEN
+    _resetGrantsForTests()
+  }
 })

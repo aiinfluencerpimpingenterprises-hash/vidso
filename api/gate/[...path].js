@@ -79,12 +79,12 @@ async function railwayMe(token) {
     err.body = data
     throw err
   }
-  let user = withStoredGrant(withCompedPlan({ ...data, email: data.email || emailFromJwt(token) }))
+  let user = await withStoredGrant(withCompedPlan({ ...data, email: data.email || emailFromJwt(token) }))
   if (planIsActive(user)) return user
   try {
     const hit = await lookupPaidMembership(user)
     if (hit?.active && hit.tier) {
-      user = applyPaidGrant(user, saveGrant(user, hit))
+      user = applyPaidGrant(user, await saveGrant(user, hit))
     } else if (hit?.active && hit.legacy) {
       user = { ...user, plan_status: 'active', active: true }
     }
