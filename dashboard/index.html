@@ -2433,7 +2433,6 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
   display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:rgba(255,255,255,.62);
   font:inherit;font-size:.78rem;cursor:pointer;padding:4px 0;text-decoration:none
 }
-.fs-tool-mcp{margin-left:auto}
 .fs-conn-logos{display:inline-flex;gap:3px;align-items:center}
 .fs-conn-logos img{width:14px;height:14px;border-radius:3px;object-fit:contain;background:#111}
 .fs-temp-note{margin:10px 0 0;text-align:center;color:rgba(255,255,255,.4);font-size:.75rem}
@@ -2839,7 +2838,6 @@ body.fs-show-open{overflow:hidden}
     order:unset;flex:unset;min-height:56px;max-height:none;width:100%
   }
   .fs-home.has-composer .fs-composer-sc .fs-ref-add{order:unset}
-  .fs-tool-mcp{margin-left:0}
   .fs-stage-tools{top:8px;right:8px}
 }
 
@@ -2976,15 +2974,6 @@ body.fs-show-open{overflow:hidden}
   background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--border);
   border-radius:8px;padding:6px 8px;font:inherit
 }
-.mcp-setup{max-width:720px}
-.mcp-setup .fv-chip-row{margin:0 0 18px}
-.mcp-setup-steps{margin:0 0 16px;padding-left:1.2em;color:var(--text-body);font-size:.88rem;line-height:1.5;display:flex;flex-direction:column;gap:8px}
-.mcp-setup pre{
-  margin:0;padding:12px 14px;border-radius:10px;background:#111;font-size:.75rem;
-  overflow:auto;white-space:pre-wrap;color:rgba(255,255,255,.78);max-height:240px
-}
-.mcp-setup .btn{margin-top:10px}
-.mcp-setup #mcp-copy-msg{margin-top:14px}
 .settings-yt summary{cursor:pointer;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.7)}
 .settings-yt pre{
   margin:8px 0 0;padding:10px;border-radius:8px;background:#111;font-size:.68rem;
@@ -6316,9 +6305,6 @@ import {
   youtubeImportProvider,
   uploadBlobToYoutube,
   uploadViaServer,
-  mcpConfigJson,
-  claudeDesktopMcpConfigJson,
-  claudeCodeMcpConfigJson,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
@@ -6796,25 +6782,6 @@ window.closeAccountSettings = () => {
   _settingsPrevFocus = null
 }
 
-function fillYoutubeMcpConfigs(st) {
-  const url = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
-  const tok = typeof getToken === 'function' ? getToken() : ''
-  const setText = (id, text) => {
-    const el = document.getElementById(id)
-    if (el) el.textContent = text
-  }
-  setText('mcp-url', url)
-  setText('mcp-cursor-json', mcpConfigJson(url, tok))
-  setText('mcp-claude-desktop', claudeDesktopMcpConfigJson(url, tok))
-  setText('mcp-claude-code', claudeCodeMcpConfigJson(url, tok))
-}
-
-window.setMcpTab = (tab) => {
-  const id = tab === 'cursor' || tab === 'desktop' ? tab : 'claude'
-  document.querySelectorAll('[data-mcp-tab]').forEach((b) => b.classList.toggle('active', b.getAttribute('data-mcp-tab') === id))
-  document.querySelectorAll('[data-mcp-pane]').forEach((p) => { p.hidden = p.getAttribute('data-mcp-pane') !== id })
-}
-
 function ytSetSettingsMsg(text, kind) {
   const el = document.getElementById('settings-yt-msg')
   if (!el) return
@@ -6836,7 +6803,6 @@ async function refreshYoutubeSettings() {
     if (stateEl) { stateEl.textContent = 'Not connected'; stateEl.classList.remove('is-on') }
     disconnected.hidden = false
     connected.hidden = true
-    fillYoutubeMcpConfigs(_ytStatus)
     return
   }
   try {
@@ -6851,7 +6817,6 @@ async function refreshYoutubeSettings() {
   stateEl.classList.toggle('is-on', on)
   disconnected.hidden = on
   connected.hidden = !on
-  fillYoutubeMcpConfigs(st)
   if (st.configured === false) {
     disconnected.hidden = true
     ytSetSettingsMsg('YouTube publishing is turned off on this deployment.', 'err')
@@ -6925,32 +6890,6 @@ document.getElementById('settings-yt-disconnect')?.addEventListener('click', asy
 })
 document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
 document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
-document.getElementById('mcp-url-copy')?.addEventListener('click', () => copyMcpConfig('mcp-url', 'Claude connector URL copied'))
-document.getElementById('mcp-cursor-copy')?.addEventListener('click', () => copyMcpConfig('mcp-cursor-json', 'Cursor MCP config copied'))
-document.getElementById('mcp-claude-desktop-copy')?.addEventListener('click', () => copyMcpConfig('mcp-claude-desktop', 'Claude Desktop config copied'))
-document.getElementById('mcp-claude-code-copy')?.addEventListener('click', () => copyMcpConfig('mcp-claude-code', 'Claude Code config copied'))
-
-function mcpSetCopyMsg(text, kind) {
-  const el = document.getElementById('mcp-copy-msg')
-  if (!el) return
-  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
-  el.hidden = false
-  el.textContent = text
-  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
-}
-
-async function copyMcpConfig(id, ok) {
-  const text = document.getElementById(id)?.textContent || ''
-  try {
-    await navigator.clipboard.writeText(text)
-    mcpSetCopyMsg(ok, 'ok')
-    ytSetSettingsMsg(ok, 'ok')
-  } catch (_) {
-    mcpSetCopyMsg('Copy the text from the box', 'err')
-    ytSetSettingsMsg('Copy the config from the box', 'err')
-  }
-}
-
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
   const yt = q.get('youtube')
@@ -8803,7 +8742,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','mcp'].includes(id)
+    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -8812,10 +8751,6 @@ window.switchPanel = (id, btn, opts = {}) => {
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
   if (id === 'files') { try { loadFiles() } catch (_) {} }
-  if (id === 'mcp') {
-    try { fillYoutubeMcpConfigs(_ytStatus) } catch (_) {}
-    try { if (!_ytStatus) refreshYoutubeSettings() } catch (_) {}
-  }
   if (id === 'videogen' || id === 'ytvideogen') {
     try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
     try { fvInit() } catch (_) {}

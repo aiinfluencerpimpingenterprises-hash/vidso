@@ -135,3 +135,46 @@ test('token form bodies parse urlencoded and JSON', () => {
   assert.equal(parseForm('grant_type=authorization_code&code=abc').grant_type, 'authorization_code')
   assert.equal(parseForm('{"grant_type":"refresh_token"}').grant_type, 'refresh_token')
 })
+
+// --- The MCP server is archived: nothing should be able to discover or reach it.
+
+import { MCP_ARCHIVED, mcpArchived, mcpPreviewOn } from '../lib/mcp-oauth.js'
+
+function req(url = '/mcp', headers = {}) {
+  return { url, headers, method: 'GET' }
+}
+
+test('the youtube MCP server is archived', () => {
+  assert.equal(MCP_ARCHIVED, true)
+  assert.equal(mcpArchived(req('/mcp')), true)
+  assert.equal(mcpArchived(req('/api/youtube/mcp')), true)
+  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), true)
+  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), true)
+})
+
+test('a preview flag still reaches the archived server so it stays testable on prod', () => {
+  assert.equal(mcpPreviewOn(req('/mcp?mcp=1')), true)
+  assert.equal(mcpArchived(req('/mcp?mcp=1')), false)
+  assert.equal(mcpArchived(req('/oauth/token?mcp=1')), false)
+  // A header works too, since MCP clients control headers more easily than URLs.
+  assert.equal(mcpArchived(req('/mcp', { 'x-vidso-mcp-preview': '1' })), false)
+  // Anything else stays archived.
+  assert.equal(mcpArchived(req('/mcp?mcp=0')), true)
+  assert.equal(mcpArchived(req('/mcp?other=1')), true)
+  assert.equal(mcpPreviewOn(req('/mcp')), false)
+})
+
+test('the archive can be lifted by env without editing code', () => {
+  const saved = process.env.VIDSO_MCP_ARCHIVED
+  try {
+    process.env.VIDSO_MCP_ARCHIVED = '0'
+    assert.equal(mcpArchived(req('/mcp')), false)
+    process.env.VIDSO_MCP_ARCHIVED = 'false'
+    assert.equal(mcpArchived(req('/mcp')), false)
+    process.env.VIDSO_MCP_ARCHIVED = '1'
+    assert.equal(mcpArchived(req('/mcp')), true)
+  } finally {
+    if (saved === undefined) delete process.env.VIDSO_MCP_ARCHIVED
+    else process.env.VIDSO_MCP_ARCHIVED = saved
+  }
+})

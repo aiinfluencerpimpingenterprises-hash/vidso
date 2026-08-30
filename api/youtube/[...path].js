@@ -32,6 +32,7 @@ import {
   YT_BRIDGE_COOKIE,
 } from '../../lib/youtube.js'
 import {
+  mcpArchived,
   mcpConnectorPageHtml,
   mcpResourceFromReq,
   protectedResourceMetadataPath,
@@ -310,6 +311,9 @@ export default async function handler(req, res) {
   }
 
   if (sub === 'mcp') {
+    // Archived. The upload and connect routes below are a separate feature and
+    // stay live, so this guard is scoped to the MCP subpath only.
+    if (mcpArchived(req)) return send(res, 404, { error: 'Not found' })
     if (wantsBrowserPage(req)) {
       res.statusCode = 200
       res.setHeader('Content-Type', 'text/html; charset=utf-8')
