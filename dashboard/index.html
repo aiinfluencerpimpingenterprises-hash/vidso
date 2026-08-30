@@ -6242,7 +6242,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
-import { api, setSession, clearSession, getToken, getRefreshToken, tokenNeedsRefresh } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, tokenNeedsRefresh, ensureFreshToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
@@ -10011,6 +10011,7 @@ function fvWaitForMediaJob(jobId, label) {
 }
 
 async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
+  try { await ensureFreshToken() } catch (_) {}
   const { jobId } = await api.faceless.startMedia({
     script: {
       title: chunk.title || fvState.script.title,
@@ -10047,6 +10048,7 @@ async function fvJoinVoiceoverUrls(urls, { allowLocal = true } = {}) {
   const list = (urls || []).map(String).filter(Boolean)
   if (!list.length) throw new Error('No voiceover parts to join')
   if (list.length === 1) return { url: list[0], local: false }
+  try { await ensureFreshToken() } catch (_) {}
   const token = typeof getToken === 'function' ? getToken() : ''
   const headers = token ? { Authorization: 'Bearer ' + token } : {}
   // Proxy through Vidso so Safari can read CDN parts without CORS.
@@ -10286,6 +10288,10 @@ window.fvStartMedia = async (force) => {
   document.getElementById('fv-media-result').style.display = 'none'
   document.getElementById('fv-media-bar').style.width = '5%'
   fvSetMediaStatus('Queuing voiceover + B-roll…', 'loading')
+
+  try {
+    await ensureFreshToken()
+  } catch (_) {}
 
   const voiceId = fvState.voiceId || fvState.script.voice_id
   let picked
@@ -11487,6 +11493,7 @@ window.fvStartExport = async (opts = {}) => {
 
   try {
     fvSetExportStatus('Preparing voiceover…', 'loading')
+    try { await ensureFreshToken() } catch (_) {}
     const voiceoverUrl = await fvEnsurePublicVoiceoverUrl()
     const { jobId } = await api.faceless.startRender({
       voiceover_url: voiceoverUrl,

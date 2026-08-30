@@ -12,6 +12,7 @@ import {
   clearSession,
   sessionFromAuthPayload,
   tokenNeedsRefresh,
+  isExpiredAuthError,
 } from '/lib/session-store.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
@@ -19,10 +20,47 @@ const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
 // Google OAuth starts here; tokens return to the app via redirect hash/query.
 const SUPABASE_URL = 'https://ymtmgpgcmrazqeklixwf.supabase.co'
 
+let refreshInFlight = null
+
+async function refreshSessionOnce() {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const rt = getRefreshToken()
+      if (!rt) return false
+      try {
+        const data = await reqTo(BASE + '/api/auth/refresh', 'POST', { refresh_token: rt }, false, {
+          skipAuthRefresh: true,
+        })
+        const session = sessionFromAuthPayload(data)
+        if (!session?.access_token) return false
+        setSession(session)
+        return true
+      } catch {
+        return false
+      }
+    })().finally(() => {
+      refreshInFlight = null
+    })
+  }
+  return refreshInFlight
+}
+
+async function ensureFreshToken() {
+  const token = getToken()
+  if (!token) return false
+  if (!tokenNeedsRefresh(token)) return true
+  if (!getRefreshToken()) return false
+  return refreshSessionOnce()
+}
+
 async function reqTo(url, method, body, isFormData = false, opts = {}) {
+  if (!opts.skipAuthRefresh) {
+    try { await ensureFreshToken() } catch (_) {}
+  }
   const token = getToken()
   const headers = {}
-  if (token) headers['Authorization'] = `Bearer ${token}`
+  // Refresh calls must not send a stale Bearer — Railway treats it as auth failure.
+  if (token && !opts.skipAuthRefresh) headers['Authorization'] = `Bearer ${token}`
   const hasBody = method !== 'GET' && method !== 'HEAD' && body != null
   if (!isFormData && hasBody) headers['Content-Type'] = 'application/json'
   const timeoutMs = Number(opts.timeoutMs) > 0 ? Number(opts.timeoutMs) : 0
@@ -51,6 +89,14 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     if (recovered) return recovered
     const fallback = raw && !raw.trim().startsWith('{') ? raw.trim().slice(0, 180) : 'Request failed'
     const msg = data.message || data.error || fallback
+    if (
+      !opts.skipAuthRefresh
+      && !opts._authRetried
+      && isExpiredAuthError(msg, res.status)
+      && await refreshSessionOnce()
+    ) {
+      return reqTo(url, method, body, isFormData, { ...opts, _authRetried: true })
+    }
     const err = new Error(
       isJsonSyntaxError(msg)
         ? 'Script JSON was incomplete. Try Generate Script again.'
@@ -298,7 +344,9 @@ export const api = {
     },
     logout:  ()                      => req('POST', '/api/auth/logout'),
     refresh: async (refresh_token) => {
-      const data = await req('POST', '/api/auth/refresh', { refresh_token })
+      const data = await reqTo(BASE + '/api/auth/refresh', 'POST', { refresh_token }, false, {
+        skipAuthRefresh: true,
+      })
       const session = sessionFromAuthPayload(data)
       if (!session) throw new Error('refresh returned no session')
       return { ...data, session }
@@ -570,4 +618,4 @@ export const api = {
   },
 }
 
-export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, WHOP_CHECKOUT }
+export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, WHOP_CHECKOUT, ensureFreshToken }

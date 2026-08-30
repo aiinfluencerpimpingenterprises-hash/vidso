@@ -7,6 +7,7 @@ import {
   parseCookieValue,
   sessionFromAuthPayload,
   tokenNeedsRefresh,
+  isExpiredAuthError,
 } from '../lib/session-store.js'
 
 test('normalizeSecret drops missing and stringified empties', () => {
@@ -49,4 +50,11 @@ test('tokenNeedsRefresh uses JWT exp with a one-minute skew', () => {
   assert.equal(tokenNeedsRefresh(token), true)
   const later = Buffer.from(JSON.stringify({ exp: exp + 3600 })).toString('base64url')
   assert.equal(tokenNeedsRefresh(`x.${later}.y`), false)
+})
+
+test('isExpiredAuthError catches Railway auth copy', () => {
+  assert.equal(isExpiredAuthError('Invalid or expired token'), true)
+  assert.equal(isExpiredAuthError({ message: 'jwt expired' }), true)
+  assert.equal(isExpiredAuthError('Upload failed', 500), false)
+  assert.equal(isExpiredAuthError('nope', 401), true)
 })
