@@ -2521,6 +2521,9 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
 .fs-home.has-composer{position:relative;flex:1;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
 .fs-home.has-composer .fs-tabs{flex-shrink:0}
 .fs-home.has-composer .fs-tab-body{flex:1;min-height:0;overflow:auto;padding-bottom:8px}
+.fs-home.has-composer:not(.has-feed):not(.is-temp) .fs-tab-body{
+  display:flex;flex-direction:column;align-items:center;justify-content:center
+}
 .fs-home.has-composer .fs-composer-slot{
   flex-shrink:0;width:100%;z-index:20;padding:10px 0 8px;
   background:linear-gradient(180deg,rgba(16,16,18,0) 0%,#101012 32%)
@@ -2535,7 +2538,7 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
   color:#f3b4b8;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase
 }
 .fs-hero.fs-hero-center{
-  align-items:center;text-align:center;width:100%;margin:8px auto 18px
+  align-items:center;text-align:center;width:100%;margin:0 auto 8px
 }
 .fs-hero.fs-hero-center .fs-hero-title{width:100%;text-align:center;margin-left:auto;margin-right:auto}
 .fs-home.has-composer .fs-composer{
@@ -2584,10 +2587,54 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
 body.fs-feed-view-open{overflow:hidden}
 .fs-home.has-feed .fs-tab-body{padding-top:8px}
 .fs-hero{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;margin:0 0 22px}
-.fs-hero.fs-hero-center{align-items:center;text-align:center}
+.fs-hero.fs-hero-center{align-items:center;text-align:center;gap:18px;margin:0 auto 8px}
 .fs-hero-title{margin:0;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
+.fs-hero-title .lead,.fs-hero-title .accent{display:block;white-space:nowrap}
 .fs-hero-title .accent{color:var(--a1)}
-.fs-hero-sub{margin:0;color:rgba(245,245,244,.5);font-size:.95rem;font-weight:450}
+.fs-hero:has(.fs-hero-fan) .fs-hero-title{
+  font-size:clamp(1.7rem,4.6vw,3.15rem);line-height:.9;letter-spacing:-.045em
+}
+.fs-hero-sub{margin:0;color:rgba(245,245,244,.48);font-size:clamp(.84rem,1.5vw,.98rem);font-weight:400;letter-spacing:-.01em}
+.fs-hero-fan{
+  position:relative;width:min(480px,78vw);aspect-ratio:2.15 / 1;flex-shrink:0;
+  max-height:min(220px,32vh)
+}
+.fs-hero-fan::before{
+  content:'';position:absolute;inset:-28% -18% -36%;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 58% 46% at 50% 50%,rgba(var(--glow),.16),transparent 72%)
+}
+.fs-hero-card{position:absolute;width:38%;aspect-ratio:16 / 9;pointer-events:none;user-select:none}
+.fs-hero-card-inner{
+  width:100%;height:100%;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(245,245,244,.22);
+  box-shadow:0 16px 36px rgba(0,0,0,.48),0 2px 8px rgba(0,0,0,.28);
+  background:#141416
+}
+.fs-hero-card video{width:100%;height:100%;object-fit:cover;display:block}
+.fs-hero-card:nth-child(1){left:0;top:22%;z-index:1;animation:fs-fan-float 5.8s ease-in-out infinite}
+.fs-hero-card:nth-child(1) .fs-hero-card-inner{transform:rotate(-6deg) scale(.88)}
+.fs-hero-card:nth-child(2){left:18%;top:6%;z-index:3;animation:fs-fan-float 5.4s ease-in-out .35s infinite}
+.fs-hero-card:nth-child(2) .fs-hero-card-inner{transform:rotate(-2deg) scale(1)}
+.fs-hero-card:nth-child(3){left:40%;top:0;z-index:4;animation:fs-fan-float 5.2s ease-in-out .7s infinite}
+.fs-hero-card:nth-child(3) .fs-hero-card-inner{transform:rotate(2deg) scale(1.04)}
+.fs-hero-card:nth-child(4){left:60%;top:20%;z-index:2;animation:fs-fan-float 5.6s ease-in-out 1s infinite}
+.fs-hero-card:nth-child(4) .fs-hero-card-inner{transform:rotate(6deg) scale(.88)}
+@keyframes fs-fan-float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+@media (max-height:720px){
+  .fs-hero-fan{transform:scale(.86);transform-origin:center bottom;margin-bottom:-8px}
+  .fs-hero:has(.fs-hero-fan) .fs-hero-title{font-size:clamp(1.45rem,4vw,2.4rem)}
+}
+@media (max-height:560px){
+  .fs-hero-fan{transform:scale(.62);transform-origin:center bottom;margin-bottom:-8px}
+  .fs-hero:has(.fs-hero-fan) .fs-hero-title{font-size:clamp(1.15rem,3.4vw,1.7rem)}
+  .fs-hero-sub{font-size:.76rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .fs-hero-card{animation:none}
+}
 .fs-shot{
   position:relative;display:block;padding:0;border:none;border-radius:16px;overflow:hidden;
   background:#141416;cursor:pointer;aspect-ratio:16/9
@@ -2672,6 +2719,15 @@ body.fs-show-open{overflow:hidden}
 .fs-show-foot{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 .fs-show-tags{display:flex;gap:14px;color:rgba(255,255,255,.5);font-size:.78rem}
 @media (max-width:980px){
+  .fs-hero-fan{width:min(320px,88vw);aspect-ratio:1.85 / 1;max-height:150px}
+  .fs-hero-card{width:58%}
+  .fs-hero-card:nth-child(1),
+  .fs-hero-card:nth-child(4){display:none}
+  .fs-hero-card:nth-child(2){left:0;top:14%}
+  .fs-hero-card:nth-child(3){left:34%;top:0}
+  .fs-hero-card:nth-child(2) .fs-hero-card-inner{transform:rotate(-4deg) scale(.96)}
+  .fs-hero-card:nth-child(3) .fs-hero-card-inner{transform:rotate(4deg) scale(1.02)}
+  .fs-hero:has(.fs-hero-fan) .fs-hero-title{font-size:clamp(1.22rem,6.8vw,1.6rem);line-height:.92}
   .fs-shot-grid.fs-g-grid,.fs-g-grid,.fs-feed-grid.is-portrait{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fs-show{padding:10px}
   .fs-show-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
@@ -5693,9 +5749,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </div>
           <div class="fs-main" id="fs-main">
           <div class="fs-home has-composer">
-            <div class="fs-hero">
-              <h1 class="fs-hero-title"><span class="accent">Faceless</span> Studio</h1>
-              <p class="fs-hero-sub">Turn any topic into a clear, visual explainer video</p>
+            <div class="fs-hero fs-hero-center">
+              <h1 class="fs-hero-title">
+                <span class="lead">Start creating with</span>
+                <span class="accent">Vidso faceless</span>
+              </h1>
+              <p class="fs-hero-sub">Describe a topic, a style, or a story, and watch it come to life.</p>
             </div>
           </div>
         </div>
