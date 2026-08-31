@@ -2479,6 +2479,10 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
   display:grid;place-items:center;flex-shrink:0
 }
 .fs-send:disabled{opacity:.45;cursor:not-allowed}
+.fs-credit-cost{
+  font-size:.72rem;font-weight:600;color:rgba(255,255,255,.72);font-variant-numeric:tabular-nums;
+  padding:0 4px;white-space:nowrap
+}
 .fs-tool-row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;padding-top:4px}
 .fs-tool{
   display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:rgba(255,255,255,.62);
@@ -8712,7 +8716,10 @@ function populateUser() {
   else document.getElementById('credits-pill').textContent = q.compact
   if (creditsLabel) creditsLabel.textContent = q.unlimited || q.legacy ? '' : 'left'
   const pill = document.getElementById('credits-pill')
-  if (pill) pill.title = q.longText
+  if (pill) {
+    const credits = currentUser.studio_credits_remaining
+    pill.title = q.longText + (Number.isFinite(Number(credits)) ? ' · ' + credits + ' Faceless credits left' : '')
+  }
   const welcome = document.getElementById('dash-welcome-name')
   if (welcome) {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''

@@ -2,8 +2,8 @@ import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
 import { isStudioGatePath, studioRouteFromReq } from '../../lib/studio-gate.js'
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
-import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
-import { incrementUsage, readUsage } from '../../lib/usage-store.js'
+import { studioCreditView } from '../../lib/studio-credits.js'
+import { incrementUsage, hydrateUsage } from '../../lib/usage-store.js'
 import { withCompedPlan, planIsActive } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { saveGrant, withStoredGrant } from '../../lib/grants.js'
@@ -208,12 +208,16 @@ export default async function handler(req, res) {
   }
 
   const rule = ruleFor(req.method, subpath)
-  const usage = readUsage(user)
+  const usage = await hydrateUsage(user)
+  const credits = studioCreditView(user, usage)
 
   if (rule.type === 'usage') {
     return send(res, 200, {
       long_form_used: usage.long_form_used,
       short_form_used: usage.short_form_used,
+      studio_credits_used: usage.studio_credits_used,
+      studio_credits_limit: credits.limit,
+      studio_credits_remaining: credits.remaining,
       known: true,
       plan: user.plan || user.plan_tier,
       plan_status: user.plan_status,

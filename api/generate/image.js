@@ -1,6 +1,8 @@
 import { falImageInput } from '../../lib/fal-image.js'
 import { falVideoInput } from '../../lib/fal-video.js'
-import { evaluateFeature, evaluatePlan } from '../../lib/enforce.js'
+import { evaluateFeature, evaluatePlan, evaluateStudioCredits, toHttp } from '../../lib/enforce.js'
+import { creditCharge } from '../../lib/studio-credits.js'
+import { hydrateUsage, incrementStudioCredits } from '../../lib/usage-store.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
 
 export const config = { maxDuration: 30 }
@@ -65,6 +67,23 @@ export default async function handler(req, res) {
 
   const { endpoint, input, model, size } = built
   const label = wantVideo ? 'Video' : 'Image'
+  const charge = creditCharge({
+    kind: wantVideo ? 'video' : 'image',
+    model: model.id,
+    duration: body.duration || body.duration_seconds || input.duration,
+    resolution: input.resolution || body.resolution || body.quality,
+    generateAudio: input.generate_audio === true,
+    numImages: input.num_images || body.num_images,
+    aspect: input.aspect_ratio || body.aspect_ratio || body.aspect,
+    width: size?.width,
+    height: size?.height,
+  })
+  const usage = await hydrateUsage(user)
+  const credits = evaluateStudioCredits({ user, cost: charge, used: usage.studio_credits_used })
+  if (!credits.ok) {
+    const http = toHttp(credits)
+    return send(res, http.status, http.body)
+  }
 
   try {
     const falRes = await fetch('https://queue.fal.run/' + endpoint, {
@@ -84,6 +103,11 @@ export default async function handler(req, res) {
     if (!data.request_id || !data.status_url || !data.response_url) {
       return send(res, 502, { error: 'The ' + label.toLowerCase() + ' service did not return a request handle' })
     }
+    let remaining = credits.remaining
+    try {
+      const after = await incrementStudioCredits(user, credits.charge)
+      remaining = Math.max(0, credits.limit - (after.studio_credits_used || 0))
+    } catch (_) {}
     return send(res, 200, {
       kind: wantVideo ? 'video' : 'image',
       model: model.id,
@@ -93,6 +117,9 @@ export default async function handler(req, res) {
       responseUrl: data.response_url,
       width: size?.width || null,
       height: size?.height || null,
+      creditsCharged: credits.charge,
+      creditsRemaining: remaining,
+      creditsLimit: credits.limit,
     })
   } catch (e) {
     return send(res, 500, { error: e.message || (label + ' request failed') })

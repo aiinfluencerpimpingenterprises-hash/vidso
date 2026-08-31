@@ -172,6 +172,9 @@ async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
         height: st.height || start.height,
         model: start.model || body.model,
         kind: st.kind || start.kind || body.kind || 'image',
+        creditsCharged: start.creditsCharged,
+        creditsRemaining: start.creditsRemaining,
+        creditsLimit: start.creditsLimit,
       }
     }
   }
@@ -385,9 +388,12 @@ export const api = {
       const me = await req('GET', '/api/user/me')
       try {
         const u = await gatedReq('GET', '/api/usage')
-        if (u && (u.long_form_used != null || u.short_form_used != null)) {
+        if (u && (u.long_form_used != null || u.short_form_used != null || u.studio_credits_used != null)) {
           me.long_form_used = u.long_form_used
           me.short_form_used = u.short_form_used
+          if (u.studio_credits_used != null) me.studio_credits_used = u.studio_credits_used
+          if (u.studio_credits_limit != null) me.studio_credits_limit = u.studio_credits_limit
+          if (u.studio_credits_remaining != null) me.studio_credits_remaining = u.studio_credits_remaining
         }
       } catch (_) {}
       let user = withCompedPlan({ ...me, email: me.email || emailFromToken() })

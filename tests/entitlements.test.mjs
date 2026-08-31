@@ -18,6 +18,7 @@ import {
   evaluateGeneration,
   evaluateLength,
   evaluateQuota,
+  evaluateStudioCredits,
   resolveAccess,
 } from '../lib/enforce.js'
 import {
@@ -28,7 +29,7 @@ import {
   ROUTE_POLICY,
   SHORT_FORM_MAX_SECONDS,
 } from '../lib/quota.js'
-import { incrementUsage, readUsage, _resetStoreForTests } from '../lib/usage-store.js'
+import { incrementUsage, incrementStudioCredits, readUsage, _resetStoreForTests } from '../lib/usage-store.js'
 import { resolveWhopPlan, WHOP_PLAN_ENV_DEFAULTS, expectedPrice } from '../lib/whop-map.js'
 
 const plusUser = { plan_status: 'active', plan: 'plus' }
@@ -41,7 +42,7 @@ function user(tier, extra = {}) {
 
 test('max video length marketing row matches the matrix and is included on every tier', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Max video length')
-  assert.equal(FEATURE_ROWS.length, 17)
+  assert.equal(FEATURE_ROWS.length, 18)
   assert.equal(row.plus, '10 min')
   assert.equal(row.pro, '15 min')
   assert.equal(row.studio, '30 min')
@@ -70,6 +71,10 @@ test('unlimited is null, never a large integer', () => {
   assert.equal(ENTITLEMENTS.studio.short_form_per_month, UNLIMITED)
   assert.equal(isUnlimited(ENTITLEMENTS.studio.long_form_per_month), true)
   assert.equal(isUnlimited(ENTITLEMENTS.plus.long_form_per_month), false)
+  assert.equal(ENTITLEMENTS.plus.studio_credits_per_month, 300)
+  assert.equal(ENTITLEMENTS.pro.studio_credits_per_month, 500)
+  assert.equal(ENTITLEMENTS.studio.studio_credits_per_month, 600)
+  assert.equal(isUnlimited(ENTITLEMENTS.studio.studio_credits_per_month), false)
 })
 
 test('quota boundary: last allowed Plus long-form, then the next is refused', () => {
@@ -265,6 +270,25 @@ test('quota display matches advertised counts, not credits', () => {
   assert.equal(remaining.compact, '7 LF · 10 SF')
 })
 
+test('Faceless Studio credits are a priced row and Studio is still metered', () => {
+  const row = FEATURE_ROWS.find((r) => r.label === 'Faceless Studio credits')
+  assert.equal(row.plus, '300 / month')
+  assert.equal(row.pro, '500 / month')
+  assert.equal(row.studio, '600 / month')
+  const last = evaluateStudioCredits({ user: plusUser, cost: 56, used: 244 })
+  assert.equal(last.ok, true)
+  assert.equal(last.remaining, 0)
+  const over = evaluateStudioCredits({ user: plusUser, cost: 56, used: 245 })
+  assert.equal(over.ok, false)
+  assert.equal(over.code, 'credits_exhausted')
+  assert.equal(over.requiredTier, 'pro')
+  const studioOk = evaluateStudioCredits({ user: studioUser, cost: 320, used: 280 })
+  assert.equal(studioOk.ok, true)
+  const studioOut = evaluateStudioCredits({ user: studioUser, cost: 1, used: 600 })
+  assert.equal(studioOut.ok, false)
+  assert.equal(studioOut.requiredTier, undefined)
+})
+
 test('faceless render is the only quota consumer; captions are plan-only', () => {
   assert.ok(ROUTE_POLICY.consumeQuota['POST /api/faceless/render'])
   assert.equal(ROUTE_POLICY.consumeQuota['POST /api/caption/burn'], undefined)
@@ -326,13 +350,17 @@ test('Whop plan ID alone resolves the same length cap as plan name', () => {
   assert.equal(evaluateLength({ user: nested, durationSeconds: 901 }).ok, false)
 })
 
-test('usage store increments and resets on the anniversary window', () => {
+test('usage store increments and resets on the anniversary window', async () => {
   _resetStoreForTests()
   const user = { id: 'u1', created_at: '2026-01-15T00:00:00Z' }
   incrementUsage(user, 'long_form', new Date('2026-01-20T00:00:00Z'))
   incrementUsage(user, 'long_form', new Date('2026-01-20T00:00:00Z'))
   assert.equal(readUsage(user, new Date('2026-01-20T00:00:00Z')).long_form_used, 2)
-  assert.equal(readUsage(user, new Date('2026-02-15T00:00:00Z')).long_form_used, 0)
+  await incrementStudioCredits(user, 56, new Date('2026-01-20T00:00:00Z'))
+  assert.equal(readUsage(user, new Date('2026-01-20T00:00:00Z')).studio_credits_used, 56)
+  const nextMonth = readUsage(user, new Date('2026-02-15T00:00:00Z'))
+  assert.equal(nextMonth.long_form_used, 0)
+  assert.equal(nextMonth.studio_credits_used, 0)
 })
 
 test('comped Studio email keeps top-tier access when paywall is on', () => {
