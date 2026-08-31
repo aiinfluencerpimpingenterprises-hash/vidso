@@ -128,7 +128,7 @@
     .nav-drawer a,.nav-drawer button{display:flex;width:100%;align-items:center;justify-content:flex-start;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:500;color:var(--muted);background:none;border:none;font-family:inherit;cursor:pointer;text-align:left}
     .nav-drawer a:hover,.nav-drawer button:hover{background:rgba(255,255,255,.05);color:#fff}
     .nav-drawer .btn.btn-primary{justify-content:center;margin-top:8px;color:#fff;background:var(--grad);border:none;padding:13px 16px;font-weight:700}
-    .features,.proof,.pricing,.faq,.final,.gen-promo,.results,.claude-mcp{padding-left:0;padding-right:0}
+    .features,.proof,.pricing,.faq,.final,.gen-promo,.results,.lp-teasers{padding-left:0;padding-right:0}
     .features{padding-top:64px;padding-bottom:64px}
     .proof,.pricing,.results{padding-top:64px;padding-bottom:64px}
     .faq{padding-bottom:64px}
@@ -849,152 +849,28 @@
   .comp-cta h3{margin:0 0 10px;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;font-weight:800;color:#fff}
   .comp-cta p{margin:0 auto 22px;max-width:34em;color:var(--muted);font-size:15px;line-height:1.55}
 
-  /* Claude + YouTube landing block — preview only (?mcp=1) */
-  .mcp-only{display:none!important}
-  html.mcp-preview .nav-links a.mcp-only{display:inline!important}
-  html.mcp-preview .nav-drawer a.mcp-only{display:flex!important}
-  html.mcp-preview .fcol a.mcp-only{display:block!important}
-  html.mcp-preview section.mcp-only{display:block!important}
-  .claude-mcp,.youtube-connect{scroll-margin-top:88px}
-  .claude-mcp{padding:100px 0;position:relative}
-  .claude-mcp .s-head{max-width:720px}
-  .mcp-lockups{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:28px 48px;margin-top:28px
+  /* Claude / YouTube connect sections (this preview branch only) */
+  .lp-teasers{padding:80px 0;scroll-margin-top:88px}
+  .lp-teaser{
+    display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;
+    max-width:720px;margin:40px auto 0
   }
-  .mcp-lockup{
-    display:flex;align-items:center;justify-content:center;gap:12px
+  .lp-teaser h3{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+  .lp-teaser p{font-size:14.5px;color:var(--muted);margin:0;line-height:1.45}
+  .lp-teaser-ph{
+    position:relative;width:100%;overflow:visible;border-radius:0;
+    background:transparent;border:none;
+    display:flex;align-items:center;justify-content:center;gap:12px;min-height:64px
   }
-  .mcp-lockup img{
-    width:44px;height:44px;object-fit:contain;
-    filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))
-  }
-  .mcp-lockup-x{font-weight:800;color:var(--faint);font-size:18px}
-  .mcp-badge{
-    display:inline-flex;align-items:center;gap:8px;margin-top:18px;
-    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--faint);background:var(--panel);border:1px solid var(--line);
-    border-radius:999px;padding:7px 14px
-  }
-  .mcp-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.18)}
-  .mcp-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-top:48px;align-items:start}
-  .mcp-chat.browser{
-    background:var(--panel);border:1px solid var(--line-2);border-radius:22px;overflow:hidden;
-    box-shadow:0 0 0 1px rgba(255,255,255,.02),0 50px 120px rgba(0,0,0,.9)
-  }
-  .mcp-chat .browser-bar{display:flex;align-items:center;gap:7px;padding:14px 18px;border-bottom:1px solid var(--line);background:#050505}
-  .mcp-chat .browser-bar .d{width:10px;height:10px;border-radius:50%}
-  .mcp-chat .browser-bar .d:nth-child(1){background:#FF5F57}
-  .mcp-chat .browser-bar .d:nth-child(2){background:#FEBC2E}
-  .mcp-chat .browser-bar .d:nth-child(3){background:#28C840}
-  .mcp-chat .browser-bar .url{margin-left:14px;font-size:12px;color:var(--faint);background:rgba(255,255,255,.05);padding:5px 16px;border-radius:8px;flex:1}
-  .mcp-chat-body{padding:22px 20px 24px;background:var(--panel);display:flex;flex-direction:column;gap:16px;min-height:320px}
-  .mcp-msg{display:flex;gap:12px;align-items:flex-start;max-width:100%}
-  .mcp-msg .ava{
-    width:28px;height:28px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;
-    background:var(--soft-fill);border:1px solid var(--line);color:var(--muted)
-  }
-  .mcp-msg .ava svg{width:14px;height:14px}
-  .mcp-msg.user .ava{background:rgba(var(--glow),.12);border-color:rgba(var(--glow),.28);color:#F5A0A8}
-  .mcp-bubble{
-    flex:1;background:var(--bg);border:1px solid var(--line);border-radius:14px;
-    padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--muted)
-  }
-  .mcp-msg.user .mcp-bubble{color:var(--txt);border-color:var(--line-2)}
-  .mcp-result{
-    margin-top:10px;display:flex;gap:12px;align-items:center;
-    background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px;max-width:340px
-  }
-  .mcp-thumb{
-    width:88px;aspect-ratio:16/9;border-radius:8px;flex-shrink:0;position:relative;overflow:hidden;
-    background:linear-gradient(145deg,#1a1a1f 0%,#0c0c0c 100%);border:1px solid var(--line)
-  }
-  .mcp-thumb::after{
-    content:'';position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M9 7.5v9l8-4.5-8-4.5z'/%3E%3C/svg%3E") 55% 50%/12px 12px no-repeat
-  }
-  .mcp-result .meta{min-width:0}
-  .mcp-result .meta strong{display:block;font-size:13px;font-weight:600;color:var(--txt);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mcp-result .meta span{display:block;font-size:12px;color:var(--faint);margin-top:3px}
-  .mcp-values{display:flex;flex-direction:column;gap:14px}
-  .mcp-val{
-    padding:22px 22px 20px;border:1px solid var(--line);border-radius:var(--r);
-    background:var(--panel);transition:border-color .2s,background-color .2s
-  }
-  .mcp-val:hover{border-color:var(--line-2);background:var(--panel-2)}
-  .mcp-val .num{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--icon-muted);line-height:1;font-family:'Bricolage Grotesque','Inter',sans-serif}
-  .mcp-val h3{font-size:17px;font-weight:600;margin:10px 0 6px;letter-spacing:-.02em}
-  .mcp-val p{font-size:14px;color:var(--muted);line-height:1.5}
-  .mcp-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;justify-content:center}
-  .mcp-setup{margin-top:72px}
-  .mcp-tabs{
-    display:flex;width:fit-content;gap:4px;padding:4px;border-radius:999px;background:var(--panel);
-    border:1px solid var(--line);margin:0 auto 28px;justify-content:center
-  }
-  .mcp-tabs[hidden]{display:none}
-  .mcp-tab{
-    appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;
-    padding:8px 16px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s
-  }
-  .mcp-tab[aria-selected="true"]{background:var(--soft-fill);color:var(--txt)}
-  .mcp-tab:hover{color:var(--txt)}
-  .mcp-setup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .mcp-step{
-    padding:28px 24px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);
-    transition:border-color .2s
-  }
-  .mcp-step:hover{border-color:var(--line-2)}
-  .mcp-step .num{font-size:36px;font-weight:800;letter-spacing:-.04em;color:var(--icon-muted);line-height:1;font-family:'Bricolage Grotesque','Inter',sans-serif}
-  .mcp-step h3{font-size:18px;font-weight:600;margin:16px 0 8px;letter-spacing:-.02em}
-  .mcp-step p{font-size:14px;color:var(--muted);line-height:1.55}
-  .mcp-url-row{
-    display:flex;align-items:stretch;gap:8px;margin-top:16px;background:var(--bg);
-    border:1px solid var(--line-2);border-radius:12px;padding:6px 6px 6px 14px
-  }
-  .mcp-url-row code{
-    flex:1;min-width:0;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
-    font-size:12px;color:var(--txt);line-height:1.4;display:flex;align-items:center;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap
-  }
-  .mcp-url-row button{
-    flex-shrink:0;border:0;border-radius:9px;padding:8px 12px;font:inherit;font-size:12px;font-weight:600;
-    cursor:pointer;background:var(--soft-fill);color:var(--txt);transition:background .2s
-  }
-  .mcp-url-row button:hover{background:var(--hover-fill)}
-  .mcp-url-hint{margin-top:8px;font-size:12px;color:var(--faint)}
-  .mcp-setup-note{margin-top:18px;text-align:center;font-size:13.5px;color:var(--faint)}
-  .mcp-tools{margin-top:72px}
-  .mcp-tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px}
-  .mcp-tool{
-    padding:18px 18px 16px;border:1px solid var(--line);border-radius:16px;background:var(--panel);
-    transition:border-color .2s,background .2s
-  }
-  .mcp-tool:hover{border-color:var(--line-2);background:var(--panel-2)}
-  .mcp-tool .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-  .mcp-tool code{
-    font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:600;
-    color:var(--txt);letter-spacing:-.01em
-  }
-  .mcp-tool .soon{
-    font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-    color:#F5A0A8;background:rgba(var(--glow),.12);border:1px solid rgba(var(--glow),.22);
-    border-radius:999px;padding:3px 8px;white-space:nowrap
-  }
-  .mcp-tool p{font-size:13.5px;color:var(--muted);line-height:1.45;margin:0}
-  .youtube-connect{margin-top:96px;padding-top:96px;border-top:1px solid var(--line)}
-  @media(max-width:900px){
-    .mcp-hero{grid-template-columns:1fr}
-    .mcp-setup-grid,.mcp-tool-grid{grid-template-columns:1fr}
-    .claude-mcp{padding:64px 0}
-    .youtube-connect{margin-top:64px;padding-top:64px}
-  }
-  @media(max-width:520px){
-    .mcp-tool-grid{grid-template-columns:1fr}
-    .mcp-cta .btn{width:100%}
+  .lp-teaser-ph img{width:44px;height:44px;object-fit:contain;background:transparent;border-radius:0;padding:0;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
+  .lp-teaser-x{font-weight:800;color:var(--faint);font-size:18px}
+  @media(max-width:820px){
+    .lp-teaser{grid-template-columns:1fr;padding:20px}
+    .lp-teasers{padding:64px 0}
   }
 </style>
-<script>
-if (/(?:[?&])mcp=1(?:&|$)/.test(location.search || '')) document.documentElement.classList.add('mcp-preview')
-</script>
+
 
 <script type="application/ld+json">
 {
@@ -1107,8 +983,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="nav-links">
         <a href="#why-vidso">Features</a>
         <a href="#how">How it works</a>
-        <a class="mcp-only" href="#claude-mcp">Claude</a>
-        <a class="mcp-only" href="#youtube-connect">YouTube</a>
+        <a href="#connect-claude">MCP</a>
+        <a href="#connect-youtube">YouTube</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -1123,8 +999,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="nav-drawer" id="navDrawer">
       <a href="#why-vidso" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
       <a href="#how" onclick="document.querySelector('header').classList.remove('menu-open')">How it works</a>
-      <a class="mcp-only" href="#claude-mcp" onclick="document.querySelector('header').classList.remove('menu-open')">Claude</a>
-      <a class="mcp-only" href="#youtube-connect" onclick="document.querySelector('header').classList.remove('menu-open')">YouTube</a>
+      <a href="#connect-claude" onclick="document.querySelector('header').classList.remove('menu-open')">MCP</a>
+      <a href="#connect-youtube" onclick="document.querySelector('header').classList.remove('menu-open')">YouTube</a>
       <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing</a>
       <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
       <a href="/login" onclick="document.querySelector('header').classList.remove('menu-open')">Sign in</a>
@@ -1830,278 +1706,45 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
-<section class="claude-mcp mcp-only" id="claude-mcp">
+<section class="lp-teasers" id="connect-claude">
   <div class="wrap">
     <div class="s-head center">
-      <div class="eyebrow">Integrations</div>
-      <h2>Turn Claude into your video engine</h2>
-      <p>Connect Vidso to Claude and generate full long-form YouTube videos right from your conversation.</p>
-      <div class="mcp-lockups" aria-label="Claude and YouTube with Vidso">
-        <div class="mcp-lockup">
-          <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="Claude" width="44" height="44">
-          <span class="mcp-lockup-x" aria-hidden="true">×</span>
-          <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
-        </div>
-        <div class="mcp-lockup">
-          <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="YouTube" width="44" height="44">
-          <span class="mcp-lockup-x" aria-hidden="true">×</span>
-          <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
-        </div>
-      </div>
-      <div class="mcp-badge">
-        <span class="dot" aria-hidden="true"></span>
-        In setup
-      </div>
+      <div class="eyebrow">Connect</div>
+      <h2>Claude × Vidso</h2>
     </div>
-
-    <div class="mcp-hero">
-      <div class="browser mcp-chat" aria-label="Sample Claude conversation with Vidso">
-        <div class="browser-bar">
-          <span class="d" aria-hidden="true"></span>
-          <span class="d" aria-hidden="true"></span>
-          <span class="d" aria-hidden="true"></span>
-          <div class="url">Claude · Vidso connector</div>
-        </div>
-        <div class="mcp-chat-body">
-          <div class="mcp-msg user">
-            <div class="ava" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
-            </div>
-            <div class="mcp-bubble">Make a 4-minute 16:9 video about how airports make more money than airlines</div>
-          </div>
-          <div class="mcp-msg assistant">
-            <div class="ava" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 7h2a3 3 0 0 1 0 6H9"/><path d="M15 17h-2a3 3 0 0 1 0-6h2"/><path d="M11 10h2"/><circle cx="7" cy="10" r="1.5"/><circle cx="17" cy="14" r="1.5"/></svg>
-            </div>
-            <div class="mcp-bubble">
-              Generating your long-form video: script, voiceover, B-roll, and captions...
-              <div class="mcp-result">
-                <div class="mcp-thumb" aria-hidden="true"></div>
-                <div class="meta">
-                  <strong>Airport Revenue Explained</strong>
-                  <span>4:00 · 16:9 MP4 · Open in Vidso</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="lp-teaser">
+      <div class="lp-teaser-ph">
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="Claude" width="44" height="44">
+        <span class="lp-teaser-x" aria-hidden="true">×</span>
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
       </div>
-
-      <div class="mcp-values">
-        <div class="mcp-val">
-          <div class="num">01</div>
-          <h3>One prompt, full video</h3>
-          <p>Describe a topic and Claude runs Vidso's whole pipeline: script through finished MP4.</p>
-        </div>
-        <div class="mcp-val">
-          <div class="num">02</div>
-          <h3>Long-form, not just clips</h3>
-          <p>Script, narration, B-roll, and captions assemble into a finished 16:9 upload.</p>
-        </div>
-        <div class="mcp-val">
-          <div class="num">03</div>
-          <h3>Pick up in the app</h3>
-          <p>Open the result in Vidso to preview, edit, or export when you want more control.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mcp-cta">
-      <a class="btn btn-primary" href="#mcp-setup">Connect Claude</a>
-      <a class="btn btn-ghost" href="#mcp-tools">See how it works</a>
-    </div>
-
-    <div class="mcp-setup" id="mcp-setup">
-      <div class="s-head center">
-        <div class="eyebrow">Setup</div>
-        <h2>Connect Vidso in three steps</h2>
-        <p>Works with Claude Desktop, claude.ai, and Cursor. MCP is an open standard. CLI and other clients may differ.</p>
-      </div>
-
-      <div class="mcp-tabs" role="tablist" aria-label="Works with">
-        <button type="button" class="mcp-tab" role="tab" id="mcp-tab-claude" aria-selected="true" aria-controls="mcp-panel-claude" data-mcp-tab="claude">Claude</button>
-        <button type="button" class="mcp-tab" role="tab" id="mcp-tab-cursor" aria-selected="false" aria-controls="mcp-panel-cursor" data-mcp-tab="cursor">Cursor</button>
-      </div>
-
-      <div id="mcp-panel-claude" role="tabpanel" aria-labelledby="mcp-tab-claude" data-mcp-panel="claude">
-        <div class="mcp-setup-grid">
-          <div class="mcp-step">
-            <div class="num">01</div>
-            <h3>Open Claude settings</h3>
-            <p>Launch Claude Desktop or claude.ai and go to Settings → Connectors.</p>
-          </div>
-          <div class="mcp-step">
-            <div class="num">02</div>
-            <h3>Add the Vidso connector</h3>
-            <p>Add a new connector named <strong>Vidso</strong> and paste the MCP URL below.</p>
-            <div class="mcp-url-row">
-              <code id="mcpUrlValue">https://www.vidso.pro/mcp</code>
-              <button type="button" id="mcpCopyUrl" data-copy-target="mcpUrlValue">Copy</button>
-            </div>
-            <p class="mcp-url-hint">Paste this URL into Claude Connectors.</p>
-          </div>
-          <div class="mcp-step">
-            <div class="num">03</div>
-            <h3>Connect and generate</h3>
-            <p>Sign in with your Vidso account, then ask Claude to make a video. Requires an active Vidso plan and credits.</p>
-          </div>
-        </div>
-      </div>
-
-      <div id="mcp-panel-cursor" role="tabpanel" aria-labelledby="mcp-tab-cursor" data-mcp-panel="cursor" hidden>
-        <div class="mcp-setup-grid">
-          <div class="mcp-step">
-            <div class="num">01</div>
-            <h3>Open Cursor MCP settings</h3>
-            <p>In Cursor, open Settings and find the MCP / connectors configuration for your project or user.</p>
-          </div>
-          <div class="mcp-step">
-            <div class="num">02</div>
-            <h3>Add the Vidso connector</h3>
-            <p>Register a connector named <strong>Vidso</strong> with the same MCP URL used for Claude.</p>
-            <div class="mcp-url-row">
-              <code id="mcpUrlValueCursor">https://www.vidso.pro/mcp</code>
-              <button type="button" data-copy-target="mcpUrlValueCursor">Copy</button>
-            </div>
-            <p class="mcp-url-hint">Same URL as Claude. Cursor stores it in MCP settings.</p>
-          </div>
-          <div class="mcp-step">
-            <div class="num">03</div>
-            <h3>Connect and generate</h3>
-            <p>Authenticate with Vidso, then prompt Cursor's agent to generate a long-form video. Same plan and credits apply.</p>
-          </div>
-        </div>
-      </div>
-
-      <p class="mcp-setup-note">CLI and other MCP clients may use a different config format.</p>
-    </div>
-
-    <div class="mcp-tools" id="mcp-tools">
-      <div class="s-head center">
-        <div class="eyebrow">Tools</div>
-        <h2>What Claude can do with Vidso</h2>
-        <p>MCP tools mapped to Vidso's long-form pipeline. Names may settle as the server ships.</p>
-      </div>
-      <div class="mcp-tool-grid">
-        <div class="mcp-tool">
-          <div class="row">
-            <code>generate_video</code>
-            <span class="soon">Coming soon</span>
-          </div>
-          <p>Topic → full long-form video (script, voiceover, B-roll, captions, MP4).</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>create_script</code></div>
-          <p>Topic → long-form script via Vidso's script API.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>search_broll</code></div>
-          <p>Query → matching B-roll clips for the timeline.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>start_media</code></div>
-          <p>Script + voice → voiceover and media assembly job.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>render_video</code></div>
-          <p>Timeline → finished 16:9 MP4 render.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>get_job_status</code></div>
-          <p>Check media or render progress by job id.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row"><code>list_voices</code></div>
-          <p>List available narrator voices for TTS.</p>
-        </div>
-        <div class="mcp-tool">
-          <div class="row">
-            <code>list_models</code>
-            <span class="soon">Coming soon</span>
-          </div>
-          <p>Expose script or generation options once the MCP surface is finalized.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="youtube-connect" id="youtube-connect">
-      <div class="s-head center">
-        <div class="eyebrow">YouTube</div>
-        <h2>Upload from Vidso to YouTube</h2>
-        <p>Connect a channel once. Then Vidso or Claude can publish finished videos for you.</p>
-        <div class="mcp-lockups">
-          <div class="mcp-lockup">
-            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="YouTube" width="44" height="44">
-            <span class="mcp-lockup-x" aria-hidden="true">×</span>
-            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
-          </div>
-        </div>
-      </div>
-      <div class="mcp-setup-grid" style="margin-top:48px">
-        <div class="mcp-step">
-          <div class="num">01</div>
-          <h3>Sign in to Vidso</h3>
-          <p>Use the same Google account that owns the YouTube channel you want to publish to.</p>
-        </div>
-        <div class="mcp-step">
-          <div class="num">02</div>
-          <h3>Connect the channel</h3>
-          <p>Grant YouTube upload access. Vidso stores the connection for this account so you don't repeat it every video.</p>
-        </div>
-        <div class="mcp-step">
-          <div class="num">03</div>
-          <h3>Generate and publish</h3>
-          <p>Finish a video in Vidso, or ask Claude to upload it. The connected channel is the destination.</p>
-        </div>
+      <div>
+        <h3>Claude × Vidso</h3>
+        <p>Paste your personal connector link into Claude. Then ask Claude to check YouTube or upload a finished video.</p>
       </div>
     </div>
   </div>
 </section>
 
-<script>
-(function(){
-  var root = document.getElementById('claude-mcp');
-  if (!root) return;
-
-  root.querySelectorAll('[data-copy-target]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var id = btn.getAttribute('data-copy-target');
-      var el = id && document.getElementById(id);
-      var text = el ? (el.textContent || '').trim() : '';
-      if (!text) return;
-      function done(){
-        var prev = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function(){ btn.textContent = prev; }, 1400);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(function(){
-          try {
-            var ta = document.createElement('textarea');
-            ta.value = text; document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); document.body.removeChild(ta); done();
-          } catch (e) {}
-        });
-      }
-    });
-  });
-
-  var tabs = root.querySelectorAll('[data-mcp-tab]');
-  var panels = root.querySelectorAll('[data-mcp-panel]');
-  tabs.forEach(function(tab){
-    tab.addEventListener('click', function(){
-      var key = tab.getAttribute('data-mcp-tab');
-      tabs.forEach(function(t){
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-      });
-      panels.forEach(function(p){
-        if (p.getAttribute('data-mcp-panel') === key) p.removeAttribute('hidden');
-        else p.setAttribute('hidden', '');
-      });
-    });
-  });
-})();
-</script>
+<section class="lp-teasers" id="connect-youtube">
+  <div class="wrap">
+    <div class="s-head center">
+      <div class="eyebrow">Connect</div>
+      <h2>YouTube × Vidso</h2>
+    </div>
+    <div class="lp-teaser">
+      <div class="lp-teaser-ph">
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="YouTube" width="44" height="44">
+        <span class="lp-teaser-x" aria-hidden="true">×</span>
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
+      </div>
+      <div>
+        <h3>YouTube × Vidso</h3>
+        <p>Uploads can be fully automated. Connect once, then Vidso or Claude can publish finished videos for you.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- PRICING -->
 
@@ -2187,8 +1830,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
       <div class="fcol">
         <h4>Product</h4>
-        <a class="mcp-only" href="#claude-mcp">Claude</a>
-        <a class="mcp-only" href="#youtube-connect">YouTube</a>
+        <a href="#connect-claude">MCP</a>
+        <a href="#connect-youtube">YouTube</a>
         <a href="#how">Workflow</a>
         <a href="#why-vidso">Product</a>
         <a href="#pricing">Plans</a>
