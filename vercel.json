@@ -213,6 +213,16 @@
       "source": "/analytics/",
       "destination": "/video-generation",
       "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/video-generation",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/video-generation",
+      "permanent": false
     }
   ],
   "headers": [
