@@ -57,6 +57,7 @@ test('dashboard mounts the creative tools rail under the heading', () => {
   assert.match(dashboard, /id="dash-welcome"/)
   assert.match(dashboard, /id="dash-creative-tools"[^>]*data-creative-tools/)
   assert.doesNotMatch(dashboard, /id="panel-dashboard"[^>]*\bhidden\b/)
+  assert.match(dashboard, /#panel-dashboard \.tool-shot[\s\S]*border:1\.5px solid #6b717a/)
 })
 
 test('the top nav, profile dropdown, and settings keep Faceless Studio hidden', () => {
