@@ -1,16 +1,20 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 
-test('the OAuth homepage URL serves the marketing page, not a JS bounce', () => {
+test('the OAuth homepage is a small static page Google can fetch without JS', () => {
   const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'))
-  const home = vercel.rewrites.find((r) => r.source === '/')
-  assert.equal(home?.destination, '/home/index.html')
-  assert.equal(existsSync(new URL('../index.html', import.meta.url)), false)
-  const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
-  assert.match(html, /rel="canonical" href="https:\/\/www\.vidso\.pro\/"/)
+  assert.equal(vercel.rewrites.some((r) => r.source === '/'), false)
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
+  assert.ok(Buffer.byteLength(html) < 12_000)
+  assert.match(html, /<h1>Vidso makes long-form YouTube videos<\/h1>/)
+  assert.match(html, /href="\/privacy"/)
+  assert.match(html, /href="\/terms"/)
   assert.match(html, /google-site-verification/)
-  assert.doesNotMatch(html, /location\.replace\('\/home'/)
+  assert.match(html, /rel="canonical" href="https:\/\/www\.vidso\.pro\/"/)
+  assert.doesNotMatch(html, /location\.replace\(['"]\/home/)
+  assert.doesNotMatch(html, /<video/)
+  assert.doesNotMatch(html, /t\.whop\.tw/)
 })
 
 test('Search Console HTML file verification is at the site root', () => {

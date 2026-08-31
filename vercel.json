@@ -2,10 +2,6 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/home/index.html"
-    },
-    {
       "source": "/mcp",
       "destination": "/api/youtube/mcp"
     },
