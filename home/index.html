@@ -848,7 +848,35 @@
   }
   .comp-cta h3{margin:0 0 10px;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;font-weight:800;color:#fff}
   .comp-cta p{margin:0 auto 22px;max-width:34em;color:var(--muted);font-size:15px;line-height:1.55}
+
+  /* Claude + YouTube MCP — preview only (?mcp=1) */
+  #mcp-preview{display:none;padding:48px 0 80px}
+  html.mcp-preview #mcp-preview{display:block}
+  html.mcp-preview body > :not(header):not(#mcp-preview):not(#topo-bg){display:none!important}
+  html.mcp-preview .nav-links,
+  html.mcp-preview .nav-drawer a[href^="#"]{display:none!important}
+  .mcp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px}
+  .mcp-card{
+    display:flex;flex-direction:column;gap:14px;padding:26px 24px;border-radius:22px;
+    background:var(--panel);border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(0,0,0,.38)
+  }
+  .mcp-card img{width:40px;height:40px;object-fit:contain;border-radius:10px;background:#111}
+  .mcp-card h3{margin:0;font-size:22px;letter-spacing:-.03em;font-weight:800}
+  .mcp-card p{margin:0;color:var(--muted);font-size:15px;line-height:1.55}
+  .mcp-card pre{
+    margin:0;padding:12px 14px;border-radius:12px;background:#0d0d0e;border:1px solid var(--line);
+    font-size:13px;line-height:1.4;overflow:auto;white-space:pre-wrap;color:var(--txt)
+  }
+  .mcp-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  .mcp-msg{min-height:1.2em;font-size:13px;color:var(--faint)}
+  .mcp-msg.ok{color:#7dce8a}
+  .mcp-msg.err{color:#ff8a94}
+  @media(max-width:720px){.mcp-grid{grid-template-columns:1fr}}
 </style>
+<script>
+if (/(?:[?&])mcp=1(?:&|$)/.test(location.search || '')) document.documentElement.classList.add('mcp-preview')
+</script>
 
 <script type="application/ld+json">
 {
@@ -982,6 +1010,88 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
   </div>
 </header>
+
+<section class="mcp-preview" id="mcp-preview" aria-label="Claude and YouTube MCP">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="eyebrow">Preview</div>
+      <h2>Claude MCP and YouTube</h2>
+      <p>Connect a channel in Vidso. Claude or Cursor can use that same channel if you paste the MCP URL.</p>
+    </div>
+    <div class="mcp-grid">
+      <article class="mcp-card">
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="40" height="40">
+        <h3>YouTube</h3>
+        <p>Link the Google account that owns the channel. Finished videos can upload from Vidso after you connect.</p>
+        <div class="mcp-actions">
+          <button type="button" class="btn btn-primary" id="lp-yt-connect">Connect YouTube</button>
+        </div>
+        <p class="mcp-msg" id="lp-yt-msg"></p>
+      </article>
+      <article class="mcp-card">
+        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="40" height="40">
+        <h3>Claude MCP</h3>
+        <p>Paste this URL as a custom connector. Sign in to Vidso from Claude, then use the connected channel.</p>
+        <pre id="lp-mcp-url">https://www.vidso.pro/mcp?mcp=1</pre>
+        <div class="mcp-actions">
+          <button type="button" class="btn btn-primary" id="lp-mcp-copy">Copy MCP URL</button>
+          <a class="btn btn-ghost" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">Open Claude</a>
+        </div>
+        <p class="mcp-msg" id="lp-mcp-msg"></p>
+      </article>
+    </div>
+  </div>
+</section>
+<script type="module">
+import { restoreSession } from '/api.js'
+import { getToken } from '/lib/session-store.js'
+import { youtubeConnect, youtubeStatus } from '/lib/youtube-client.js'
+
+if (!document.documentElement.classList.contains('mcp-preview')) {
+  // Section stays hidden on the public landing page.
+} else {
+  const ytMsg = document.getElementById('lp-yt-msg')
+  const mcpMsg = document.getElementById('lp-mcp-msg')
+  const urlEl = document.getElementById('lp-mcp-url')
+  const mcpUrl = location.origin.replace(/\/+$/, '') + '/mcp?mcp=1'
+  if (urlEl) urlEl.textContent = mcpUrl
+
+  try {
+    await restoreSession()
+    if (getToken()) {
+      const st = await youtubeStatus()
+      if (st?.connected) ytMsg.textContent = 'Connected · ' + (st.channel?.title || 'YouTube channel')
+    }
+  } catch (_) {}
+
+  document.getElementById('lp-yt-connect')?.addEventListener('click', async () => {
+    try { await restoreSession() } catch (_) {}
+    if (!getToken()) { location.href = '/login'; return }
+    ytMsg.textContent = 'Waiting for Google…'
+    ytMsg.className = 'mcp-msg'
+    try {
+      const st = await youtubeConnect('/home?mcp=1')
+      if (!st) return
+      ytMsg.textContent = 'Connected · ' + (st.channel?.title || 'YouTube channel')
+      ytMsg.className = 'mcp-msg ok'
+    } catch (e) {
+      ytMsg.textContent = e.message || 'Could not connect YouTube'
+      ytMsg.className = 'mcp-msg err'
+    }
+  })
+
+  document.getElementById('lp-mcp-copy')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(mcpUrl)
+      mcpMsg.textContent = 'Copied'
+      mcpMsg.className = 'mcp-msg ok'
+    } catch (_) {
+      mcpMsg.textContent = 'Copy the URL from the box'
+      mcpMsg.className = 'mcp-msg err'
+    }
+  })
+}
+</script>
 
 <!-- HERO -->
 <section class="hero">
