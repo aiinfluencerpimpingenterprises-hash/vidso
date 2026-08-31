@@ -904,6 +904,8 @@
   .lp-int-cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .lp-int-cta .more{color:var(--muted);font-size:14px;font-weight:600}
   .lp-int-cta .more:hover{color:var(--txt)}
+  .lp-int-copy.is-center{text-align:center;max-width:640px;margin:0 auto}
+  .lp-int-copy.is-center .lp-int-cta{justify-content:center}
   .lp-int-proof{min-width:0}
   .media-ph{
     position:relative;width:100%;overflow:hidden;
@@ -1878,6 +1880,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <a class="btn btn-primary" href="/mcp?mcp=1">See how it works</a>
             <a class="more" href="/mcp?mcp=1">Open MCP</a>
           </div>
+          <div class="lp-url" style="margin-top:14px;max-width:360px">
+            <code data-mcp-url>https://vidso.pro/mcp</code>
+            <button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button>
+          </div>
         </div>
       </div>
     </div>
@@ -1895,43 +1901,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <p>Connect once with Google. Render, title, and publish without leaving Vidso.</p>
       </div>
 
-      <div class="lp-int-band is-flip">
-        <div class="lp-int-copy">
-          <h3>A finished render becomes a live video</h3>
-          <p class="lp-int-lead">Visibility stays public, unlisted, or private. Claude can upload the same finished file if you pasted the MCP URL above.</p>
-          <div class="lp-int-cta">
-            <a class="btn btn-primary" href="/youtube?yt=1">See how it works</a>
-            <a class="more" href="/youtube?yt=1">Open YouTube</a>
-          </div>
-        </div>
-        <div class="lp-int-proof">
-          <div class="lp-win" data-proof="youtube">
-            <div class="lp-int-mock" data-proof-mock>
-              <div class="lp-chrome">
-                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                <span class="brand">
-                  <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="16" height="16">
-                  Vidso · YouTube
-                </span>
-              </div>
-              <div class="lp-chat">
-                <div class="lp-bubble user">Upload the airport video to my channel as public.</div>
-                <div class="lp-assist">
-                  <div class="lp-assist-who">
-                    <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="" width="18" height="18" data-vidso-logo>
-                    Vidso
-                  </div>
-                  <p>Uploaded. Title and description came from the project.</p>
-                  <div class="media-ph lp-thumb" data-media-ph data-proof-thumb="youtube" style="aspect-ratio:16 / 9">
-                    <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claudemcpthumbnail.png" alt="Airport secrets video thumbnail" loading="lazy" decoding="async">
-                    <button type="button" class="lp-play" aria-label="Play video">
-                      <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.8v10.4L18 12 8 6.8z"/></svg></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="lp-int-copy is-center">
+        <h3>A finished render becomes a live video</h3>
+        <p class="lp-int-lead">Visibility stays public, unlisted, or private. Claude can upload the same finished file if you pasted the MCP URL above.</p>
+        <div class="lp-int-cta">
+          <a class="btn btn-primary" href="/youtube?yt=1">See how it works</a>
+          <a class="more" href="/youtube?yt=1">Open YouTube</a>
         </div>
       </div>
     </div>
