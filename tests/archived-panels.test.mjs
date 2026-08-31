@@ -4,8 +4,10 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import {
   ARCHIVED_PANELS,
+  HIDDEN_CHROME_PANELS,
   NAV_SEARCH_ITEMS,
   panelArchived,
+  panelHiddenFromChrome,
   removeArchivedNav,
 } from '../lib/app-chrome.js'
 import { TOOL_GALLERY } from '../lib/tools-gallery.js'
@@ -25,26 +27,28 @@ function stubBrowser({ search = '', store = {} } = {}) {
   }
 }
 
-test('faceless studio is live and reachable as its own panel', () => {
+test('faceless studio is live by URL but off the public chrome', () => {
   const restore = stubBrowser()
   try {
     assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), false)
     assert.equal(panelArchived('facelessstudio'), false)
-    const searchable = NAV_SEARCH_ITEMS.filter((it) => !panelArchived(it.id)).map((it) => it.id)
-    assert.equal(searchable.includes('facelessstudio'), true)
-    const cards = TOOL_GALLERY.filter((t) => !panelArchived(t.id)).map((t) => t.id)
-    assert.equal(cards.includes('facelessstudio'), true)
+    assert.equal(HIDDEN_CHROME_PANELS.includes('facelessstudio'), true)
+    assert.equal(panelHiddenFromChrome('facelessstudio'), true)
+    const searchable = NAV_SEARCH_ITEMS
+      .filter((it) => !panelArchived(it.id) && !panelHiddenFromChrome(it.id))
+      .map((it) => it.id)
+    assert.equal(searchable.includes('facelessstudio'), false)
+    const cards = TOOL_GALLERY.filter((t) => !panelArchived(t.id) && !panelHiddenFromChrome(t.id)).map((t) => t.id)
+    assert.equal(cards.includes('facelessstudio'), false)
   } finally {
     restore()
   }
 })
 
-test('the profile dropdown and settings keep Faceless Studio hidden', () => {
+test('the top nav, profile dropdown, and settings keep Faceless Studio hidden', () => {
+  assert.match(dashboard, /id="nav-facelessstudio"[^>]*\bhidden\b/)
   assert.match(dashboard, /id="user-studio-btn"[^>]*\bhidden\b/)
   assert.match(dashboard, /id="settings-studio"[^>]*\bhidden\b/)
-  // The top nav entry is the live way in — it must not stay archived.
-  assert.match(dashboard, /id="nav-facelessstudio"[^>]*data-panel="facelessstudio"/)
-  assert.doesNotMatch(dashboard, /id="nav-facelessstudio"[^>]*data-archived/)
 })
 
 test('archived entries still drop out of the nav when something is archived', () => {

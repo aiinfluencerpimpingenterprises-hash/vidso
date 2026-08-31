@@ -172,7 +172,7 @@ body{background:var(--bg);color:var(--ink);font-family:'SF Pro Display','Inter',
 
 #app-chrome{flex:0 0 auto;width:100%;position:relative}
 /* Archived entry points ship hidden so they never flash before scripts run. */
-[data-archived][hidden]{display:none!important}
+[data-archived][hidden],.topnav-item[hidden],.topnav-menu [hidden],.settings-row-btn[hidden]{display:none!important}
 .app-banner{
   display:flex;align-items:center;width:100%;height:var(--chrome-banner-h);max-height:var(--chrome-banner-h);
   padding:0 var(--chrome-pad-x);overflow:hidden;background:#F3C4C8;color:#2A1014;position:relative;z-index:50
@@ -3918,7 +3918,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
+    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
     <div class="topnav-drop" id="nav-tools-wrap">
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
@@ -3983,7 +3983,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-  <button type="button" class="topnav-item" data-panel="facelessstudio" onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
+  <button type="button" class="topnav-item" data-panel="facelessstudio" hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
   <span class="nav-drawer-label">Short Form Tools</span>
   <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
   <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
