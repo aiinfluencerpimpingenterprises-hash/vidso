@@ -910,15 +910,15 @@
     background:linear-gradient(160deg,#2c1c1e,#161618);
     border:1px solid rgba(245,245,244,.16)
   }
-  .media-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .media-ph > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   .media-ph-icon{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.42)}
   .media-ph-icon svg{width:32px;height:32px}
-  .media-ph.lp-win{
-    border-radius:16px;overflow:hidden;aspect-ratio:auto;
-    background:#161618;
+  .lp-win{
+    position:relative;border-radius:16px;overflow:hidden;
+    background:#161618;border:1px solid rgba(245,245,244,.16);
     box-shadow:0 18px 50px rgba(0,0,0,.38),0 0 0 1px rgba(var(--glow),.06)
   }
-  .media-ph.lp-win > img{z-index:3}
+  .lp-win > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3}
   .lp-int-mock{position:relative;z-index:1;display:flex;flex-direction:column;min-height:0}
   .lp-chrome{
     display:flex;align-items:center;gap:10px;padding:11px 14px 10px;
@@ -938,7 +938,10 @@
   }
   .lp-assist{align-self:flex-start;width:100%;max-width:100%}
   .lp-assist-who{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:12px;font-weight:700}
-  .lp-assist-who img{width:18px;height:18px;object-fit:contain}
+  .lp-assist-who img{
+    position:static;inset:auto;width:18px;height:18px;flex:0 0 18px;
+    object-fit:contain;display:block
+  }
   .lp-assist p{margin:0 0 12px;font-size:13.5px;line-height:1.5;color:var(--muted)}
   .media-ph.lp-thumb{
     border-radius:12px;aspect-ratio:16 / 9;width:min(100%,268px);max-width:68%
@@ -1844,7 +1847,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
       <div class="lp-int-band">
         <div class="lp-int-proof">
-          <div class="media-ph lp-win" data-media-ph data-proof="claude">
+          <div class="lp-win" data-proof="claude">
             <div class="lp-int-mock" data-proof-mock>
               <div class="lp-chrome">
                 <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -1902,7 +1905,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </div>
         </div>
         <div class="lp-int-proof">
-          <div class="media-ph lp-win" data-media-ph data-proof="youtube">
+          <div class="lp-win" data-proof="youtube">
             <div class="lp-int-mock" data-proof-mock>
               <div class="lp-chrome">
                 <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
