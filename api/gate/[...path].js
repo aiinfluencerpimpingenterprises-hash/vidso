@@ -2,6 +2,7 @@ import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
 import { isStudioGatePath, studioRouteFromReq } from '../../lib/studio-gate.js'
 import { evaluateFeature, evaluateGeneration, evaluateLength, toHttp } from '../../lib/enforce.js'
 import { enrichScriptBody, scriptUpstreamBody } from '../../lib/faceless-length.js'
+import { durationFromBody, generationKindFromSeconds } from '../../lib/quota.js'
 import { studioCreditView } from '../../lib/studio-credits.js'
 import { incrementUsage, hydrateUsage } from '../../lib/usage-store.js'
 import { withCompedPlan, planIsActive } from '../../lib/comped.js'
@@ -208,79 +209,83 @@ export default async function handler(req, res) {
   }
 
   const rule = ruleFor(req.method, subpath)
-  const usage = await hydrateUsage(user)
-  const credits = studioCreditView(user, usage)
+  try {
+    const usage = await hydrateUsage(user)
+    const credits = studioCreditView(user, usage)
 
-  if (rule.type === 'usage') {
-    return send(res, 200, {
-      long_form_used: usage.long_form_used,
-      short_form_used: usage.short_form_used,
-      studio_credits_used: usage.studio_credits_used,
-      studio_credits_limit: credits.limit,
-      studio_credits_remaining: credits.remaining,
-      known: true,
-      plan: user.plan || user.plan_tier,
-      plan_status: user.plan_status,
-    })
-  }
-
-  let body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
-  if (req.method === 'GET' && String(subpath).replace(/^\/+|\/+$/g, '') === 'media/fetch') {
-    return proxyVoiceoverPart(res, query.get('url') || '')
-  }
-  if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'media/concat') {
-    return concatVoiceoverParts(res, token, body)
-  }
-  const seconds = durationFromBody(body)
-  const kind = generationKindFromSeconds(seconds)
-  if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'faceless/script') {
-    body = enrichScriptBody(body, seconds)
-  }
-
-  if (rule.type === 'feature') {
-    const gate = evaluateFeature({ user, feature: rule.feature })
-    if (!gate.ok) {
-      const http = toHttp(gate)
-      return send(res, http.status, http.body)
+    if (rule.type === 'usage') {
+      return send(res, 200, {
+        long_form_used: usage.long_form_used,
+        short_form_used: usage.short_form_used,
+        studio_credits_used: usage.studio_credits_used,
+        studio_credits_limit: credits.limit,
+        studio_credits_remaining: credits.remaining,
+        known: true,
+        plan: user.plan || user.plan_tier,
+        plan_status: user.plan_status,
+      })
     }
-  }
 
-  if (rule.type === 'length' || rule.type === 'generate') {
-    const gate = rule.type === 'generate'
-      ? evaluateGeneration({
+    let body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readJson(req)
+    if (req.method === 'GET' && String(subpath).replace(/^\/+|\/+$/g, '') === 'media/fetch') {
+      return proxyVoiceoverPart(res, query.get('url') || '')
+    }
+    if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'media/concat') {
+      return concatVoiceoverParts(res, token, body)
+    }
+    const seconds = durationFromBody(body)
+    const kind = generationKindFromSeconds(seconds)
+    if (req.method === 'POST' && String(subpath).replace(/^\/+|\/+$/g, '') === 'faceless/script') {
+      body = enrichScriptBody(body, seconds)
+    }
+
+    if (rule.type === 'feature') {
+      const gate = evaluateFeature({ user, feature: rule.feature })
+      if (!gate.ok) {
+        const http = toHttp(gate)
+        return send(res, http.status, http.body)
+      }
+    }
+
+    if (rule.type === 'length' || rule.type === 'generate') {
+      const gate = rule.type === 'generate'
+        ? evaluateGeneration({
+          user,
+          durationSeconds: seconds,
+          kind: kind || undefined,
+          used: kind === 'short_form' ? usage.short_form_used : usage.long_form_used,
+        })
+        : evaluateLength({ user, durationSeconds: seconds })
+      if (!gate.ok) {
+        const http = toHttp(gate)
+        return send(res, http.status, http.body)
+      }
+    }
+
+    const path = String(subpath).replace(/^\/+|\/+$/g, '')
+    const forwardBody = path === 'faceless/script' ? scriptUpstreamBody(body) : body
+    const upstream = await forward(req, subpath, forwardBody)
+    if (path === 'faceless/script') {
+      const recovered = recoverScriptData(upstream.data, upstream.text)
+      if (recovered && (
+        upstream.status < 400 ||
+        isJsonSyntaxError(upstream.data?.error || upstream.data?.message || upstream.text)
+      )) {
+        upstream.status = 200
+        upstream.data = recovered
+      }
+    }
+    if (upstream.status >= 200 && upstream.status < 300 && rule.type === 'generate') {
+      const g = evaluateGeneration({
         user,
         durationSeconds: seconds,
         kind: kind || undefined,
         used: kind === 'short_form' ? usage.short_form_used : usage.long_form_used,
       })
-      : evaluateLength({ user, durationSeconds: seconds })
-    if (!gate.ok) {
-      const http = toHttp(gate)
-      return send(res, http.status, http.body)
+      if (g.ok && g.increment) incrementUsage(user, g.kind)
     }
+    return send(res, upstream.status, upstream.data)
+  } catch (e) {
+    return send(res, e.status || 500, { error: e.message || 'Request failed' })
   }
-
-  const path = String(subpath).replace(/^\/+|\/+$/g, '')
-  const forwardBody = path === 'faceless/script' ? scriptUpstreamBody(body) : body
-  const upstream = await forward(req, subpath, forwardBody)
-  if (path === 'faceless/script') {
-    const recovered = recoverScriptData(upstream.data, upstream.text)
-    if (recovered && (
-      upstream.status < 400 ||
-      isJsonSyntaxError(upstream.data?.error || upstream.data?.message || upstream.text)
-    )) {
-      upstream.status = 200
-      upstream.data = recovered
-    }
-  }
-  if (upstream.status >= 200 && upstream.status < 300 && rule.type === 'generate') {
-    const g = evaluateGeneration({
-      user,
-      durationSeconds: seconds,
-      kind: kind || undefined,
-      used: kind === 'short_form' ? usage.short_form_used : usage.long_form_used,
-    })
-    if (g.ok && g.increment) incrementUsage(user, g.kind)
-  }
-  return send(res, upstream.status, upstream.data)
 }
