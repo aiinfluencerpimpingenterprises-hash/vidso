@@ -160,6 +160,7 @@ test('studio connectors advertise the live youtube MCP', () => {
   assert.match(shell, /private MCP link/)
   assert.match(dashboard, /id="mcp-url"/)
   assert.match(dashboard, /id="mcp-url-copy"/)
+  assert.match(dashboard, /yt\.hidden = false/)
 })
 
 test('a preview flag is a no-op while the server is live', () => {

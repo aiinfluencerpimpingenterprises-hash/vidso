@@ -3893,7 +3893,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
         </div>
         <p class="settings-yt-sub" style="margin-top:12px">Claude / Cursor MCP</p>
-        <p class="settings-yt-sub">Paste this URL as a custom connector. Sign in to Vidso when Claude asks, then connect a YouTube channel here if you want it to upload.</p>
+        <p class="settings-yt-sub">Paste this URL as a custom connector. After Claude is signed in to Vidso, ask it to connect YouTube — it will give you a Google link. You can also connect a channel here.</p>
         <pre id="mcp-url"></pre>
         <button type="button" class="btn btn-ghost btn-sm" id="mcp-url-copy">Copy MCP URL</button>
         <p class="settings-yt-msg" id="mcp-copy-msg" hidden></p>
@@ -6696,6 +6696,7 @@ function consumeOAuthReturn() {
   const providerExpires = hash.get('expires_in') || query.get('expires_in')
   let wantYoutube = false
   try { wantYoutube = sessionStorage.getItem('vidso_yt_oauth') === '1' } catch (_) {}
+  if (!wantYoutube && (query.get('youtube') === 'import' || hash.get('youtube') === 'import')) wantYoutube = true
   if (wantYoutube) {
     try { sessionStorage.removeItem('vidso_yt_oauth') } catch (_) {}
     if (providerRefresh || providerToken) {
@@ -6859,7 +6860,10 @@ window.openAccountSettings = () => {
   shell?.focus?.()
   window.closeMobileNav?.()
   const yt = document.getElementById('settings-yt')
-  if (yt && !yt.hidden) refreshYoutubeSettings()
+  if (yt) {
+    yt.hidden = false
+    refreshYoutubeSettings()
+  }
 }
 window.closeAccountSettings = () => {
   const modal = document.getElementById('settings-modal')
@@ -7007,16 +7011,22 @@ document.getElementById('mcp-url-copy')?.addEventListener('click', async () => {
 })
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
-  const yt = q.get('youtube')
+  let yt = q.get('youtube')
+  if (!yt) {
+    try { yt = sessionStorage.getItem('vidso_yt_connect_intent') || '' } catch (_) { yt = '' }
+  }
   if (!yt) return
   const err = q.get('youtube_error') || ''
   q.delete('youtube')
   q.delete('youtube_error')
   const next = location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash
   history.replaceState(null, '', next)
-  if (yt === 'connect') {
+  if (yt === 'connect' || yt === 'import') {
+    try { sessionStorage.setItem('vidso_yt_connect_intent', yt) } catch (_) {}
     if (!currentUser) { showModal(); return }
-    window.connectYoutubeChannel()
+    try { sessionStorage.removeItem('vidso_yt_connect_intent') } catch (_) {}
+    if (yt === 'connect') window.connectYoutubeChannel()
+    else openAccountSettings()
     return
   }
   if (yt === 'connected' || yt === 'error') {

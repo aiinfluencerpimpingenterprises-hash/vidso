@@ -1,11 +1,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  buildYoutubeConnect,
   clampMaxResults,
   decryptRecord,
   encryptRecord,
   googleAuthUrl,
   isYoutubeSidecarName,
+  issueYoutubeConnectTicket,
   mapPlaylistItems,
   mcpInitializeResult,
   MCP_PROTOCOL,
@@ -14,10 +16,12 @@ import {
   parseMcpToolArgs,
   publicVideo,
   publicYoutubeStatus,
+  readYoutubeConnectTicket,
   runMcpTool,
   signPayload,
   verifyPayload,
   youtubeConfigured,
+  youtubeConnectStartUrl,
   youtubeDedicatedOAuth,
   youtubeRedirectUri,
   supabaseGoogleYoutubeUrl,
@@ -55,6 +59,7 @@ test('YouTube API subpath is read from the URL when Vercel omits query.path', ()
   assert.equal(youtubeApiSubpath({ url: '/api/youtube/status?x=1' }), 'status')
   assert.equal(youtubeApiSubpath({ url: '/mcp' }), 'mcp')
   assert.equal(youtubeApiSubpath({ url: '/api/youtube/import' }), 'import')
+  assert.equal(youtubeApiSubpath({ url: '/api/youtube/connect-start?ticket=abc' }), 'connect-start')
 })
 
 test('OAuth state round-trips and expires', () => {
@@ -193,12 +198,43 @@ test('unknown MCP tool is rejected without calling YouTube', async () => {
     () => runMcpTool('youtube_hack', {}, { token: 'tok', req: { headers: {} } }),
     (err) => err.code === -32601,
   )
+})
+
+test('MCP youtube_connect_url is a one-time Google start link for this Vidso account', async () => {
   const connect = await runMcpTool('youtube_connect_url', {}, {
     token: 'tok',
     req: { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } },
   })
   assert.equal(connect.isError, undefined)
-  assert.match(connect.content[0].text, /vidso\.pro\/video-generation\?youtube=connect/)
+  const text = connect.content[0].text
+  assert.match(text, /https:\/\/vidso\.pro\/api\/youtube\/connect-start\?ticket=/)
+  const ticket = decodeURIComponent(text.match(/ticket=([^\s]+)/)[1])
+  const payload = readYoutubeConnectTicket(ticket)
+  assert.equal(payload.typ, 'yt_connect')
+  assert.equal(payload.token, 'tok')
+})
+
+test('YouTube connect ticket starts Google OAuth without a Vidso browser session', () => {
+  const ticket = issueYoutubeConnectTicket({ token: 'vidso-jwt', returnTo: '/video-generation', env })
+  assert.equal(readYoutubeConnectTicket(ticket, env).token, 'vidso-jwt')
+  const start = youtubeConnectStartUrl('https://www.vidso.pro', ticket)
+  assert.match(start, /^https:\/\/www\.vidso\.pro\/api\/youtube\/connect-start\?ticket=/)
+  const supabase = buildYoutubeConnect({
+    token: 'vidso-jwt',
+    req: { headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } },
+    returnTo: '/video-generation?youtube=connected',
+  })
+  assert.equal(supabase.mode, 'supabase')
+  const redirectTo = new URL(supabase.url).searchParams.get('redirect_to')
+  assert.match(redirectTo, /youtube=import/)
+  const dedicated = buildYoutubeConnect({
+    token: 'vidso-jwt',
+    req: { headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } },
+    env,
+  })
+  assert.equal(dedicated.mode, 'dedicated')
+  assert.match(dedicated.url, /accounts\.google\.com/)
+  assert.ok(dedicated.bridge)
 })
 
 test('MCP config JSON points at the Vidso YouTube server', () => {

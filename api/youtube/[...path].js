@@ -5,7 +5,7 @@ import {
   deleteYoutubeRecord,
   exchangeGoogleCode,
   fetchYoutubeChannel,
-  googleAuthUrl,
+  buildYoutubeConnect,
   loadYoutubeRecord,
   mcpInitializeResult,
   MCP_PROTOCOL,
@@ -15,20 +15,18 @@ import {
   parseCookies,
   parseMcpToolArgs,
   publicYoutubeStatus,
+  readYoutubeConnectTicket,
   requestOrigin,
   requireYoutubeAccess,
   runMcpTool,
   saveYoutubeFromGoogleTokens,
   saveYoutubeRecord,
-  signPayload,
-  supabaseGoogleYoutubeUrl,
   uploadYoutubeFromArgs,
   verifyPayload,
   youtubeApiSubpath,
   youtubeConfigured,
   youtubeDedicatedOAuth,
   youtubeRedirectUri,
-  youtubeSecrets,
   YT_BRIDGE_COOKIE,
 } from '../../lib/youtube.js'
 import {
@@ -89,22 +87,35 @@ function rpcErr(req, res, id, code, message) {
   return sendRpc(req, res, 200, { jsonrpc: '2.0', id: id ?? null, error: { code, message } })
 }
 
-async function connectUrlFor(req, token, returnTo) {
-  const { clientId } = youtubeSecrets()
-  const redirectUri = youtubeRedirectUri(req)
-  const nonce = signPayload({ n: Math.random().toString(36).slice(2), t: Date.now() })
-  const bridge = signPayload({
-    token,
-    ret: String(returnTo || '/video-generation').slice(0, 120),
-    n: nonce,
-    exp: Date.now() + 15 * 60 * 1000,
-  })
-  const url = googleAuthUrl({
-    clientId,
-    redirectUri,
-    state: signPayload({ n: nonce, exp: Date.now() + 15 * 60 * 1000 }),
-  })
-  return { url, bridge }
+function queryTicket(req) {
+  const fromQuery = req?.query?.ticket
+  if (fromQuery) return String([].concat(fromQuery)[0] || '')
+  return new URLSearchParams(String(req?.url || '').split('?')[1] || '').get('ticket') || ''
+}
+
+async function handleConnectStart(req, res) {
+  if (!youtubeConfigured()) {
+    return send(res, 501, { error: 'YouTube publishing is turned off on this deployment.' })
+  }
+  let payload
+  try {
+    payload = readYoutubeConnectTicket(queryTicket(req))
+  } catch {
+    return send(res, 400, {
+      error: 'This YouTube connect link expired. Ask Claude for a new youtube_connect_url.',
+    })
+  }
+  try {
+    const started = buildYoutubeConnect({
+      token: payload.token,
+      req,
+      returnTo: payload.ret || '/video-generation?youtube=connected',
+    })
+    if (started.bridge) res.setHeader('Set-Cookie', bridgeCookieHeader(started.bridge))
+    return redirect(res, started.url)
+  } catch (e) {
+    return send(res, e.status || 400, { error: e.message || 'Could not start YouTube connect' })
+  }
 }
 
 async function handleStatus(req, res, token) {
@@ -122,18 +133,17 @@ async function handleConnect(req, res, token, body) {
   if (!youtubeConfigured()) {
     return send(res, 501, { error: 'YouTube publishing is turned off on this deployment.' })
   }
-  if (youtubeDedicatedOAuth()) {
-    const { url, bridge } = await connectUrlFor(req, token, body.returnTo || req.query.returnTo)
-    res.setHeader('Set-Cookie', bridgeCookieHeader(bridge))
-    return send(res, 200, { url, mode: 'dedicated' })
+  try {
+    const started = buildYoutubeConnect({
+      token,
+      req,
+      returnTo: body.returnTo || req.query?.returnTo,
+    })
+    if (started.bridge) res.setHeader('Set-Cookie', bridgeCookieHeader(started.bridge))
+    return send(res, 200, { url: started.url, mode: started.mode })
+  } catch (e) {
+    return send(res, e.status || 400, { error: e.message || 'Could not start YouTube connect' })
   }
-  const origin = requestOrigin(req)
-  const ret = String(body.returnTo || req.query.returnTo || '/video-generation')
-  const dest = new URL(ret.startsWith('/') ? ret : '/video-generation', origin)
-  return send(res, 200, {
-    url: supabaseGoogleYoutubeUrl(dest.toString()),
-    mode: 'supabase',
-  })
 }
 
 async function handleImport(req, res, token, body) {
@@ -308,6 +318,9 @@ export default async function handler(req, res) {
   const sub = pathOf(req)
   if (sub === 'callback' && req.method === 'GET') {
     return handleCallback(req, res)
+  }
+  if (sub === 'connect-start' && req.method === 'GET') {
+    return handleConnectStart(req, res)
   }
 
   if (sub === 'mcp') {
