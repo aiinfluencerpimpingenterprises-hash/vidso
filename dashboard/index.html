@@ -3005,6 +3005,7 @@ body.fs-show-open{overflow:hidden}
 .settings-row-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
 .settings-row-btn:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:1px}
 .settings-row-btn .settings-row-value{color:rgba(255,255,255,.4);font-weight:500;font-size:.78rem}
+.settings-yt[hidden]{display:none!important}
 .settings-yt{
   margin-top:4px;padding:12px;border-radius:12px;background:rgba(255,255,255,.03);
   border:1px solid var(--border);display:flex;flex-direction:column;gap:10px
@@ -3034,6 +3035,7 @@ body.fs-show-open{overflow:hidden}
 .settings-yt-msg{margin:0;font-size:.75rem;color:rgba(255,255,255,.5)}
 .settings-yt-msg.is-err{color:#ff8a94}
 .settings-yt-msg.is-ok{color:#7dce8a}
+#fv-yt-upload[hidden]{display:none!important}
 #fv-yt-status{display:none;margin-top:10px}
 
 /* ── Onboarding (full-page setup) ─────────────────────────────────────── */
@@ -3851,7 +3853,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <div class="settings-yt" id="settings-yt">
+      <div class="settings-yt" id="settings-yt" hidden>
         <div class="settings-yt-head">
           <strong>YouTube</strong>
           <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
@@ -6189,7 +6191,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
                 <video id="fv-export-video" controls playsinline style="width:100%;max-width:360px;border-radius:12px;background:#000;display:block;margin:0 auto"></video>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center">
                   <a class="btn btn-primary" id="fv-export-dl" download="vidso-faceless.mp4">⬇ Download Video</a>
-                  <button type="button" class="btn btn-secondary" id="fv-yt-upload" onclick="fvUploadToYoutube()">Upload to YouTube</button>
+                  <button type="button" class="btn btn-secondary" id="fv-yt-upload" hidden onclick="fvUploadToYoutube()">Upload to YouTube</button>
                   <button type="button" class="btn btn-ghost" onclick="fvStartExport(true)">↻ Render again</button>
                 </div>
                 <div class="status" id="fv-yt-status"></div>
@@ -6841,7 +6843,8 @@ window.openAccountSettings = () => {
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
   window.closeMobileNav?.()
-  refreshYoutubeSettings()
+  const yt = document.getElementById('settings-yt')
+  if (yt && !yt.hidden) refreshYoutubeSettings()
 }
 window.closeAccountSettings = () => {
   const modal = document.getElementById('settings-modal')

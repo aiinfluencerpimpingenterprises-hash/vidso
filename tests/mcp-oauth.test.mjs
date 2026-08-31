@@ -155,9 +155,13 @@ test('the youtube MCP server is archived', () => {
 
 test('studio connectors do not advertise the archived youtube MCP', () => {
   const shell = readFileSync(new URL('../lib/studio-shell.js', import.meta.url), 'utf8')
+  const dashboard = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
   assert.doesNotMatch(shell, /href="\/mcp"/)
   assert.doesNotMatch(shell, /private MCP link/)
-  assert.doesNotMatch(shell, /CLAUDE_ICON_URL/)
+  assert.doesNotMatch(shell, /href="\/youtube"/)
+  assert.doesNotMatch(shell, /Connect a channel/)
+  assert.match(dashboard, /id="settings-yt"[^>]*\bhidden\b/)
+  assert.match(dashboard, /id="fv-yt-upload"[^>]*\bhidden\b/)
 })
 
 test('a preview flag still reaches the archived server so it stays testable on prod', () => {
