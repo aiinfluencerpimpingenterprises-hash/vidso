@@ -19,6 +19,19 @@ test('Gmail dots and plus-tags collapse to the same account', () => {
   assert.equal(emailsMatch('a@example.com', 'b@example.com'), false)
 })
 
+test('timed Studio comp expires after a month', () => {
+  const email = 'jacoblewiswrestling@gmail.com'
+  const during = withCompedPlan({
+    email,
+    plan: 'free',
+    plan_status: 'inactive',
+  }, new Date('2026-09-15T00:00:00Z'))
+  assert.equal(during.plan, 'studio')
+  assert.equal(during.plan_status, 'active')
+  assert.equal(during.plan_interval, 'monthly')
+  assert.equal(compedTierForEmail(email, new Date('2026-10-01T00:00:00Z')), null)
+})
+
 test('login with dotted Gmail still gets the Pro grant', () => {
   assert.equal(compedTierForEmail('subramaniam.vishwak@gmail.com'), 'pro')
   const user = withCompedPlan({
