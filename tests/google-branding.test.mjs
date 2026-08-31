@@ -4,8 +4,8 @@ import { readFileSync, existsSync } from 'node:fs'
 
 test('the public homepage is the marketing site', () => {
   const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'))
-  const home = vercel.rewrites.find((r) => r.source === '/')
-  assert.equal(home?.destination, '/home/index.html')
+  const home = vercel.redirects.find((r) => r.source === '/')
+  assert.equal(home?.destination, '/home')
   assert.equal(existsSync(new URL('../index.html', import.meta.url)), false)
   const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
   assert.match(html, /Your faceless YouTube empire starts here/)

@@ -2,10 +2,6 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/home/index.html"
-    },
-    {
       "source": "/mcp",
       "destination": "/api/youtube/mcp"
     },
@@ -140,6 +136,11 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "destination": "/home",
+      "permanent": false
+    },
+    {
       "source": "/landing",
       "destination": "/home",
       "permanent": true
@@ -221,6 +222,15 @@
     }
   ],
   "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/og-image.jpg",
       "headers": [
