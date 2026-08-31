@@ -341,6 +341,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
+import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, pixelIdentify } from '/lib/meta-pixel.js'
 
 const APP = '/video-generation'
 let paywallCycle = 'annual'
@@ -359,6 +360,7 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
       return
     }
     try { sessionStorage.setItem('vidso_pending_tier', tier) } catch (_) {}
+    trackInitiateCheckout(tier, paywallCycle)
     setPaywallStatus('Opening checkout…', 'loading')
     const started = await api.billing.recordCheckoutIntent({ tier, cycle: paywallCycle }).catch(() => null)
     const url = started?.url || api.billing.checkoutUrl(tier, paywallCycle, {
@@ -476,6 +478,7 @@ async function watchForPurchase(tier) {
     if (me) currentUser = me
     if (me && (me.plan_status === 'active' || me.active === true)) {
       try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
+      trackPurchase(expectedTier || me.plan || me.plan_tier, paywallCycle, me.id || me.user_id)
       setPaywallStatus(`Plan active — ${api.billing.unlockCopy(me)} unlocked.`, 'ok')
       try { localStorage.setItem('vidso_plan_active', '1') } catch (_) {}
       setTimeout(() => location.replace(APP), 600)
@@ -610,6 +613,7 @@ const oauthReturned = consumeOAuthReturn()
 if (oauthReturned) {
   let signupIntent = false
   try { signupIntent = sessionStorage.getItem('vidso_auth_intent') === 'signup' } catch (_) {}
+  if (signupIntent) trackCompleteRegistration()
   afterAuth({ needOnboarding: signupIntent })
 } else {
   consumeOAuthErrorParams()
@@ -688,6 +692,7 @@ document.getElementById('login-cta').onclick = async () => {
   try {
     const data = await api.auth.login(email, pass)
     setSession(data.session)
+    pixelIdentify(email)
     afterAuth()
   } catch (e) {
     err.textContent = e.message
@@ -707,6 +712,8 @@ document.getElementById('signup-cta').onclick = async () => {
   try {
     const data = await api.auth.signup(email, pass, name)
     setSession(data.session)
+    pixelIdentify(email)
+    trackCompleteRegistration()
     afterAuth({ needOnboarding: true })
   } catch (e) {
     err.textContent = e.message
