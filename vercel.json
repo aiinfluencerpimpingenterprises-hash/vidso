@@ -6,6 +6,14 @@
       "destination": "/api/youtube/mcp"
     },
     {
+      "source": "/youtube",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/connections",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/oauth/:path*",
       "destination": "/api/oauth/:path*"
     },

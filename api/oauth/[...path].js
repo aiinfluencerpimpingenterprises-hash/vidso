@@ -168,8 +168,6 @@ export default async function handler(req, res) {
     res.statusCode = 204
     return res.end()
   }
-  // This sidecar exists only so Claude can connect to the YouTube MCP server.
-  // While that is archived, none of it should be discoverable.
   if (mcpArchived(req)) return send(res, 404, { error: 'Not found' })
 
   const origin = originOf(req)

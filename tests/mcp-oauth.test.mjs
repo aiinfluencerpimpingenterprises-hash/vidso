@@ -145,35 +145,30 @@ function req(url = '/mcp', headers = {}) {
   return { url, headers, method: 'GET' }
 }
 
-test('the youtube MCP server is archived', () => {
-  assert.equal(MCP_ARCHIVED, true)
-  assert.equal(mcpArchived(req('/mcp')), true)
-  assert.equal(mcpArchived(req('/api/youtube/mcp')), true)
-  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), true)
-  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), true)
+test('the youtube MCP server is live', () => {
+  assert.equal(MCP_ARCHIVED, false)
+  assert.equal(mcpArchived(req('/mcp')), false)
+  assert.equal(mcpArchived(req('/api/youtube/mcp')), false)
+  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), false)
+  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), false)
 })
 
-test('studio connectors do not advertise the archived youtube MCP', () => {
+test('studio connectors advertise the live youtube MCP', () => {
   const shell = readFileSync(new URL('../lib/studio-shell.js', import.meta.url), 'utf8')
   const dashboard = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
-  assert.doesNotMatch(shell, /href="\/mcp"/)
-  assert.doesNotMatch(shell, /private MCP link/)
-  assert.doesNotMatch(shell, /href="\/youtube"/)
-  assert.doesNotMatch(shell, /Connect a channel/)
-  assert.match(dashboard, /id="settings-yt"[^>]*\bhidden\b/)
-  assert.match(dashboard, /id="fv-yt-upload"[^>]*\bhidden\b/)
+  assert.match(shell, /href="\/mcp"/)
+  assert.match(shell, /private MCP link/)
+  assert.match(dashboard, /id="mcp-url"/)
+  assert.match(dashboard, /id="mcp-url-copy"/)
 })
 
-test('a preview flag still reaches the archived server so it stays testable on prod', () => {
+test('a preview flag is a no-op while the server is live', () => {
   assert.equal(mcpPreviewOn(req('/mcp?mcp=1')), true)
   assert.equal(mcpArchived(req('/mcp?mcp=1')), false)
   assert.equal(mcpArchived(req('/oauth/token?mcp=1')), false)
-  // A header works too, since MCP clients control headers more easily than URLs.
   assert.equal(mcpArchived(req('/mcp', { 'x-vidso-mcp-preview': '1' })), false)
-  // Anything else stays archived.
-  assert.equal(mcpArchived(req('/mcp?mcp=0')), true)
-  assert.equal(mcpArchived(req('/mcp?other=1')), true)
-  assert.equal(mcpPreviewOn(req('/mcp')), false)
+  assert.equal(mcpArchived(req('/mcp?mcp=0')), false)
+  assert.equal(mcpArchived(req('/mcp?other=1')), false)
 })
 
 test('the archive can be lifted by env without editing code', () => {

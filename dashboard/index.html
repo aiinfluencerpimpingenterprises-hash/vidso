@@ -2489,6 +2489,7 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
   display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:rgba(255,255,255,.62);
   font:inherit;font-size:.78rem;cursor:pointer;padding:4px 0;text-decoration:none
 }
+.fs-tool-mcp{margin-left:auto}
 .fs-conn-logos{display:inline-flex;gap:3px;align-items:center}
 .fs-conn-logos img{width:14px;height:14px;border-radius:3px;object-fit:contain;background:#111}
 .fs-temp-note{margin:10px 0 0;text-align:center;color:rgba(255,255,255,.4);font-size:.75rem}
@@ -2894,6 +2895,7 @@ body.fs-show-open{overflow:hidden}
     order:unset;flex:unset;min-height:56px;max-height:none;width:100%
   }
   .fs-home.has-composer .fs-composer-sc .fs-ref-add{order:unset}
+  .fs-tool-mcp{margin-left:0}
   .fs-stage-tools{top:8px;right:8px}
   .fs-gen-host{top:8px;left:8px}
 }
@@ -3890,6 +3892,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </label>
           <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
         </div>
+        <p class="settings-yt-sub" style="margin-top:12px">Claude / Cursor MCP</p>
+        <p class="settings-yt-sub">Paste this URL as a custom connector. Sign in to Vidso when Claude asks, then connect a YouTube channel here if you want it to upload.</p>
+        <pre id="mcp-url"></pre>
+        <button type="button" class="btn btn-ghost btn-sm" id="mcp-url-copy">Copy MCP URL</button>
+        <p class="settings-yt-msg" id="mcp-copy-msg" hidden></p>
       </div>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
@@ -6864,6 +6871,21 @@ window.closeAccountSettings = () => {
   _settingsPrevFocus = null
 }
 
+function fillYoutubeMcpConfigs(st) {
+  const el = document.getElementById('mcp-url')
+  if (!el) return
+  el.textContent = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
+}
+
+function mcpSetCopyMsg(text, kind) {
+  const el = document.getElementById('mcp-copy-msg')
+  if (!el) return
+  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
+  el.hidden = false
+  el.textContent = text
+  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
+}
+
 function ytSetSettingsMsg(text, kind) {
   const el = document.getElementById('settings-yt-msg')
   if (!el) return
@@ -6885,6 +6907,7 @@ async function refreshYoutubeSettings() {
     if (stateEl) { stateEl.textContent = 'Not connected'; stateEl.classList.remove('is-on') }
     disconnected.hidden = false
     connected.hidden = true
+    fillYoutubeMcpConfigs(_ytStatus)
     return
   }
   try {
@@ -6899,6 +6922,7 @@ async function refreshYoutubeSettings() {
   stateEl.classList.toggle('is-on', on)
   disconnected.hidden = on
   connected.hidden = !on
+  fillYoutubeMcpConfigs(st)
   if (st.configured === false) {
     disconnected.hidden = true
     ytSetSettingsMsg('YouTube publishing is turned off on this deployment.', 'err')
@@ -6972,6 +6996,15 @@ document.getElementById('settings-yt-disconnect')?.addEventListener('click', asy
 })
 document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
 document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
+document.getElementById('mcp-url-copy')?.addEventListener('click', async () => {
+  const text = document.getElementById('mcp-url')?.textContent || ''
+  try {
+    await navigator.clipboard.writeText(text)
+    mcpSetCopyMsg('MCP URL copied', 'ok')
+  } catch (_) {
+    mcpSetCopyMsg('Copy the URL from the box', 'err')
+  }
+})
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
   const yt = q.get('youtube')
@@ -8875,7 +8908,9 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (HOME_PATHS.has(p) || archivedPath(p)) {
+  if (p === '/youtube' || p === '/connections') {
+    history.replaceState(null, '', '/video-generation?youtube=connect' + (location.hash || ''))
+  } else if (HOME_PATHS.has(p) || archivedPath(p)) {
     history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
