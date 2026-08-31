@@ -27,13 +27,12 @@ function stubBrowser({ search = '', store = {} } = {}) {
   }
 }
 
-test('faceless studio is live by URL but off the public chrome', () => {
+test('faceless studio stays archived until it is public', () => {
   const restore = stubBrowser()
   try {
-    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), false)
-    assert.equal(panelArchived('facelessstudio'), false)
-    assert.equal(HIDDEN_CHROME_PANELS.includes('facelessstudio'), true)
-    assert.equal(panelHiddenFromChrome('facelessstudio'), true)
+    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), true)
+    assert.equal(panelArchived('facelessstudio'), true)
+    assert.equal(HIDDEN_CHROME_PANELS.includes('facelessstudio'), false)
     const searchable = NAV_SEARCH_ITEMS
       .filter((it) => !panelArchived(it.id) && !panelHiddenFromChrome(it.id))
       .map((it) => it.id)
@@ -45,10 +44,19 @@ test('faceless studio is live by URL but off the public chrome', () => {
   }
 })
 
+test('?studio=1 preview unlocks Faceless Studio for the tab', () => {
+  const restore = stubBrowser({ search: '?studio=1' })
+  try {
+    assert.equal(panelArchived('facelessstudio'), false)
+  } finally {
+    restore()
+  }
+})
+
 test('the top nav, profile dropdown, and settings keep Faceless Studio hidden', () => {
-  assert.match(dashboard, /id="nav-facelessstudio"[^>]*\bhidden\b/)
-  assert.match(dashboard, /id="user-studio-btn"[^>]*\bhidden\b/)
-  assert.match(dashboard, /id="settings-studio"[^>]*\bhidden\b/)
+  assert.match(dashboard, /id="nav-facelessstudio"[^>]*\bdata-archived\b/)
+  assert.match(dashboard, /id="user-studio-btn"[^>]*\bdata-archived\b/)
+  assert.match(dashboard, /id="settings-studio"[^>]*\bdata-archived\b/)
 })
 
 test('archived entries still drop out of the nav when something is archived', () => {

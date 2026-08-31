@@ -270,11 +270,13 @@ test('quota display matches advertised counts, not credits', () => {
   assert.equal(remaining.compact, '7 LF · 10 SF')
 })
 
-test('Faceless Studio credits are a priced row and Studio is still metered', () => {
+test('Faceless Studio credits stay metered but off the pricing cards', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Faceless Studio credits')
+  assert.equal(row.hidden, true)
   assert.equal(row.plus, '300 / month')
   assert.equal(row.pro, '500 / month')
   assert.equal(row.studio, '600 / month')
+  assert.equal(rowIncluded(row, 'plus'), true)
   const last = evaluateStudioCredits({ user: plusUser, cost: 56, used: 244 })
   assert.equal(last.ok, true)
   assert.equal(last.remaining, 0)
