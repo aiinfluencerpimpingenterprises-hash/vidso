@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>YouTube · Vidso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{color-scheme:dark;--bg:#0B0B0C;--ink:#F5F5F4;--muted:rgba(245,245,244,.68);--faint:rgba(245,245,244,.42);--line:rgba(245,245,244,.1);--ok:#7dce8a;--err:#ff8a94;--glow:233,75,88}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#E94B58;text-decoration:none}
+.wrap{width:min(720px,100%);margin:0 auto;padding:20px 20px 56px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
+.logo{display:inline-flex;align-items:center;gap:10px;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-weight:800}
+.logo img{width:26px;height:26px;object-fit:contain}
+.back{color:var(--muted);font-size:.88rem}
+.back:hover{color:var(--ink)}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.4rem);letter-spacing:-.04em;line-height:1.1;margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 22px}
+.card{background:#141416;border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.state{font-size:.78rem;font-weight:700}
+.state.on{color:var(--ok)}
+.state.off{color:var(--faint)}
+.channel{display:flex;align-items:center;gap:12px}
+.channel img{width:44px;height:44px;border-radius:99px;object-fit:cover;background:#111}
+.title{font-weight:700}
+.id{font-size:.78rem;color:var(--faint);margin-top:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted)}
+select{background:#111;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit}
+.btn{height:42px;padding:0 16px;border:0;border-radius:11px;font:inherit;font-weight:700;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#F0606C,#B31D2C);color:#fff}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.msg{font-size:.82rem;color:var(--muted);min-height:1.2em}
+.msg.err{color:var(--err)}
+.msg.ok{color:var(--ok)}
+pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink);overflow:auto;font-size:.78rem;white-space:pre-wrap}
+.hidden{display:none!important}
+</style>
+<script src="/brand.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="logo" href="/home"><img data-vidso-logo width="26" height="26" alt=""> Vidso</a>
+    <a class="back" href="/video-generation">Back to the app</a>
+  </nav>
+  <h1>YouTube</h1>
+  <p class="lead">Connect a channel to upload finished videos from Vidso. The same channel is what Claude or Cursor uses if you paste the MCP URL.</p>
+
+  <div class="card" id="gate" hidden>
+    <p>Sign in to Vidso first, then connect the Google account that owns the channel.</p>
+    <a class="btn btn-primary" href="/login" style="display:inline-flex;align-items:center;justify-content:center">Sign in</a>
+  </div>
+
+  <div class="card" id="panel" hidden>
+    <div class="head">
+      <strong>Channel</strong>
+      <span class="state off" id="state">Checking…</span>
+    </div>
+    <p class="msg" id="msg"></p>
+    <div id="off">
+      <button type="button" class="btn btn-primary" id="connect">Connect YouTube</button>
+    </div>
+    <div id="on" class="hidden">
+      <div class="channel">
+        <img id="thumb" alt="" hidden>
+        <div>
+          <div class="title" id="title">YouTube channel</div>
+          <div class="id" id="cid"></div>
+        </div>
+      </div>
+      <label class="row">Upload after export
+        <input type="checkbox" id="auto" checked>
+      </label>
+      <label class="row">Visibility
+        <select id="privacy">
+          <option value="unlisted">Unlisted</option>
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+        </select>
+      </label>
+      <button type="button" class="btn btn-ghost" id="disconnect">Disconnect</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <strong>Claude / Cursor MCP</strong>
+    <p class="lead" style="margin:0">Optional. Paste this as a custom connector. You still connect the channel on this page.</p>
+    <pre id="mcp"></pre>
+    <button type="button" class="btn btn-ghost" id="copy">Copy MCP URL</button>
+    <p class="msg" id="copy-msg"></p>
+  </div>
+</div>
+<script type="module" src="/youtube/page.js"></script>
+</body>
+</html>

@@ -7,11 +7,15 @@
     },
     {
       "source": "/youtube",
-      "destination": "/dashboard/index.html"
+      "destination": "/youtube/index.html"
+    },
+    {
+      "source": "/youtube/",
+      "destination": "/youtube/index.html"
     },
     {
       "source": "/connections",
-      "destination": "/dashboard/index.html"
+      "destination": "/youtube/index.html"
     },
     {
       "source": "/oauth/:path*",

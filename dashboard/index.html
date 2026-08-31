@@ -2550,7 +2550,8 @@ body > #fs-pop .fs-modal-back{pointer-events:auto}
 .fs-conn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px}
 .fs-conn-card{
   display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--border);border-radius:16px;
-  color:inherit;text-decoration:none;background:rgba(255,255,255,.03)
+  color:inherit;text-decoration:none;background:rgba(255,255,255,.03);width:100%;text-align:left;
+  font:inherit;cursor:pointer
 }
 .fs-conn-card img{width:36px;height:36px;object-fit:contain}
 .fs-memory{position:relative;min-height:70vh;display:flex;flex-direction:column}
@@ -3860,44 +3861,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <div class="settings-yt" id="settings-yt" hidden>
-        <div class="settings-yt-head">
-          <strong>YouTube</strong>
-          <span class="settings-yt-state" id="settings-yt-state">Not connected</span>
-        </div>
-        <p class="settings-yt-sub">Connect a channel to upload finished videos automatically.</p>
-        <p class="settings-yt-msg" id="settings-yt-msg" hidden></p>
-        <div id="settings-yt-disconnected">
-          <button type="button" class="btn btn-primary btn-sm" id="settings-yt-connect">Connect YouTube</button>
-        </div>
-        <div id="settings-yt-connected" hidden>
-          <div class="settings-yt-channel">
-            <img id="settings-yt-thumb" alt="" width="36" height="36" hidden>
-            <div>
-              <div class="settings-yt-title" id="settings-yt-title">YouTube channel</div>
-              <div class="settings-yt-id" id="settings-yt-id"></div>
-            </div>
-          </div>
-          <label class="settings-yt-toggle">
-            <span>Upload after export</span>
-            <input type="checkbox" id="settings-yt-auto" checked>
-          </label>
-          <label class="settings-yt-privacy">
-            <span>Visibility</span>
-            <select id="settings-yt-privacy" aria-label="YouTube visibility">
-              <option value="unlisted">Unlisted</option>
-              <option value="private">Private</option>
-              <option value="public">Public</option>
-            </select>
-          </label>
-          <button type="button" class="btn btn-ghost btn-sm" id="settings-yt-disconnect">Disconnect</button>
-        </div>
-        <p class="settings-yt-sub" style="margin-top:12px">Claude / Cursor MCP</p>
-        <p class="settings-yt-sub">Paste this URL as a custom connector. After Claude is signed in to Vidso, ask it to connect YouTube — it will give you a Google link. You can also connect a channel here.</p>
-        <pre id="mcp-url"></pre>
-        <button type="button" class="btn btn-ghost btn-sm" id="mcp-url-copy">Copy MCP URL</button>
-        <p class="settings-yt-msg" id="mcp-copy-msg" hidden></p>
-      </div>
+      <a class="settings-row-btn" id="settings-yt-link" href="/youtube">
+        <span class="settings-row-label">YouTube</span>
+        <span class="settings-row-value" id="settings-yt-state">Manage →</span>
+      </a>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
         <span class="badge-soon">Coming soon</span>
@@ -4029,6 +3996,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
+        <button type="button" role="menuitem" id="nav-yt-mcp-btn">YouTube MCP</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
@@ -6366,11 +6334,7 @@ import {
 } from '/lib/files-gallery.js'
 import {
   youtubeStatus,
-  youtubeConnect,
-  youtubeDisconnect,
-  youtubeSaveSettings,
   youtubeAccessToken,
-  youtubeImportProvider,
   uploadBlobToYoutube,
   uploadViaServer,
 } from '/lib/youtube-client.js'
@@ -6497,7 +6461,6 @@ function afterAuthReady(opts = {}) {
     loadFiles()
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
-    try { finishYoutubeProviderImport() } catch (_) {}
     return
   }
   obClearNeedFlag()
@@ -6508,7 +6471,6 @@ function afterAuthReady(opts = {}) {
     maybeShowPaywall()
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
-    try { finishYoutubeProviderImport() } catch (_) {}
     return
   }
   document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
@@ -6516,7 +6478,6 @@ function afterAuthReady(opts = {}) {
   if (opts.restoreRoute !== false) restorePanelFromHash()
   maybeStartUiTour()
   try { consumeYoutubeQuery() } catch (_) {}
-  try { finishYoutubeProviderImport() } catch (_) {}
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -6859,11 +6820,7 @@ window.openAccountSettings = () => {
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
   window.closeMobileNav?.()
-  const yt = document.getElementById('settings-yt')
-  if (yt) {
-    yt.hidden = false
-    refreshYoutubeSettings()
-  }
+  refreshYoutubeSettings()
 }
 window.closeAccountSettings = () => {
   const modal = document.getElementById('settings-modal')
@@ -6875,169 +6832,40 @@ window.closeAccountSettings = () => {
   _settingsPrevFocus = null
 }
 
-function fillYoutubeMcpConfigs(st) {
-  const el = document.getElementById('mcp-url')
-  if (!el) return
-  el.textContent = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
-}
-
-function mcpSetCopyMsg(text, kind) {
-  const el = document.getElementById('mcp-copy-msg')
-  if (!el) return
-  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
-  el.hidden = false
-  el.textContent = text
-  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
-}
-
-function ytSetSettingsMsg(text, kind) {
-  const el = document.getElementById('settings-yt-msg')
-  if (!el) return
-  if (!text) { el.hidden = true; el.textContent = ''; el.className = 'settings-yt-msg'; return }
-  el.hidden = false
-  el.textContent = text
-  el.className = 'settings-yt-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
-}
-
 let _ytStatus = null
 async function refreshYoutubeSettings() {
-  const disconnected = document.getElementById('settings-yt-disconnected')
-  const connected = document.getElementById('settings-yt-connected')
   const stateEl = document.getElementById('settings-yt-state')
-  if (!disconnected || !connected) return
-  ytSetSettingsMsg('')
+  const uploadBtn = document.getElementById('fv-yt-upload')
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
-    _ytStatus = { configured: true, connected: false, autoUpload: true, privacy: 'unlisted' }
-    if (stateEl) { stateEl.textContent = 'Not connected'; stateEl.classList.remove('is-on') }
-    disconnected.hidden = false
-    connected.hidden = true
-    fillYoutubeMcpConfigs(_ytStatus)
+    _ytStatus = { configured: true, connected: false }
+    if (stateEl) stateEl.textContent = 'Manage →'
+    if (uploadBtn) uploadBtn.hidden = true
     return
   }
   try {
     _ytStatus = await youtubeStatus()
-  } catch (e) {
-    _ytStatus = { configured: false, connected: false }
-    ytSetSettingsMsg(e.message || 'Could not load YouTube status', 'err')
-  }
-  const st = _ytStatus || {}
-  const on = !!st.connected
-  stateEl.textContent = on ? 'Connected' : (st.configured === false ? 'Not set up' : 'Not connected')
-  stateEl.classList.toggle('is-on', on)
-  disconnected.hidden = on
-  connected.hidden = !on
-  fillYoutubeMcpConfigs(st)
-  if (st.configured === false) {
-    disconnected.hidden = true
-    ytSetSettingsMsg('YouTube publishing is turned off on this deployment.', 'err')
-  }
-  if (!on) return
-  const title = document.getElementById('settings-yt-title')
-  const idEl = document.getElementById('settings-yt-id')
-  const thumb = document.getElementById('settings-yt-thumb')
-  if (title) title.textContent = st.channel?.title || 'YouTube channel'
-  if (idEl) idEl.textContent = st.channel?.id || ''
-  if (thumb) {
-    if (st.channel?.thumb) { thumb.src = st.channel.thumb; thumb.hidden = false }
-    else { thumb.removeAttribute('src'); thumb.hidden = true }
-  }
-  const auto = document.getElementById('settings-yt-auto')
-  if (auto) auto.checked = st.autoUpload !== false
-  const priv = document.getElementById('settings-yt-privacy')
-  if (priv) priv.value = st.privacy || 'unlisted'
-}
-
-window.connectYoutubeChannel = async () => {
-  ytSetSettingsMsg('Waiting for Google…')
-  try {
-    const st = await youtubeConnect(location.pathname || '/video-generation')
-    if (!st) return
-    _ytStatus = st
-    ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
-    await refreshYoutubeSettings()
-  } catch (e) { ytSetSettingsMsg(e.message || 'Could not start YouTube connect', 'err') }
-}
-
-async function finishYoutubeProviderImport() {
-  const pending = window.__ytProviderPending
-  const pendingErr = window.__ytProviderError
-  window.__ytProviderPending = null
-  window.__ytProviderError = ''
-  if (!pending && !pendingErr) return
-  openAccountSettings()
-  if (pendingErr) {
-    ytSetSettingsMsg(pendingErr, 'err')
-    return
-  }
-  ytSetSettingsMsg('Connecting YouTube…')
-  try {
-    _ytStatus = await youtubeImportProvider(pending)
-    ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
-    await refreshYoutubeSettings()
-  } catch (e) {
-    ytSetSettingsMsg(e.message || 'Could not connect YouTube', 'err')
-  }
-}
-
-async function saveYoutubePrefs() {
-  const auto = document.getElementById('settings-yt-auto')
-  const priv = document.getElementById('settings-yt-privacy')
-  try {
-    _ytStatus = await youtubeSaveSettings({
-      autoUpload: !!auto?.checked,
-      privacy: priv?.value || 'unlisted',
-    })
-    ytSetSettingsMsg('Saved', 'ok')
-  } catch (e) {
-    ytSetSettingsMsg(e.message || 'Could not save YouTube settings', 'err')
-  }
-}
-
-document.getElementById('settings-yt-connect')?.addEventListener('click', () => window.connectYoutubeChannel())
-document.getElementById('settings-yt-disconnect')?.addEventListener('click', async () => {
-  try {
-    _ytStatus = await youtubeDisconnect()
-    await refreshYoutubeSettings()
-    ytSetSettingsMsg('YouTube disconnected', 'ok')
-  } catch (e) {
-    ytSetSettingsMsg(e.message || 'Could not disconnect', 'err')
-  }
-})
-document.getElementById('settings-yt-auto')?.addEventListener('change', saveYoutubePrefs)
-document.getElementById('settings-yt-privacy')?.addEventListener('change', saveYoutubePrefs)
-document.getElementById('mcp-url-copy')?.addEventListener('click', async () => {
-  const text = document.getElementById('mcp-url')?.textContent || ''
-  try {
-    await navigator.clipboard.writeText(text)
-    mcpSetCopyMsg('MCP URL copied', 'ok')
   } catch (_) {
-    mcpSetCopyMsg('Copy the URL from the box', 'err')
+    _ytStatus = { configured: false, connected: false }
   }
-})
+  const on = !!_ytStatus?.connected
+  if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
+  if (uploadBtn) uploadBtn.hidden = !on
+}
+
+window.connectYoutubeChannel = () => { location.href = '/youtube' }
+window.startYoutubeMcp = () => { location.href = '/youtube' }
+
+document.getElementById('nav-yt-mcp-btn')?.addEventListener('click', () => window.startYoutubeMcp())
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
-  let yt = q.get('youtube')
-  if (!yt) {
-    try { yt = sessionStorage.getItem('vidso_yt_connect_intent') || '' } catch (_) { yt = '' }
-  }
+  const yt = q.get('youtube')
   if (!yt) return
-  const err = q.get('youtube_error') || ''
   q.delete('youtube')
   q.delete('youtube_error')
   const next = location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash
   history.replaceState(null, '', next)
-  if (yt === 'connect' || yt === 'import') {
-    try { sessionStorage.setItem('vidso_yt_connect_intent', yt) } catch (_) {}
-    if (!currentUser) { showModal(); return }
-    try { sessionStorage.removeItem('vidso_yt_connect_intent') } catch (_) {}
-    if (yt === 'connect') window.connectYoutubeChannel()
-    else openAccountSettings()
-    return
-  }
-  if (yt === 'connected' || yt === 'error') {
-    openAccountSettings()
-    if (yt === 'connected') ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
-    else ytSetSettingsMsg(err === 'not_configured' ? 'YouTube publishing is not configured yet.' : ('Could not connect YouTube' + (err ? ' (' + err + ')' : '')), 'err')
+  if (yt === 'connect' || yt === 'import' || yt === 'connected' || yt === 'error') {
+    location.href = '/youtube'
   }
 }
 document.addEventListener('keydown', (e) => {
@@ -8923,9 +8751,7 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (p === '/youtube' || p === '/connections') {
-    history.replaceState(null, '', '/video-generation?youtube=connect' + (location.hash || ''))
-  } else if (HOME_PATHS.has(p) || archivedPath(p)) {
+  if (HOME_PATHS.has(p) || archivedPath(p)) {
     history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
@@ -11610,8 +11436,8 @@ window.fvUploadToYoutube = async (opts = {}) => {
       throw new Error('YouTube publishing is not configured on this deployment yet.')
     }
     if (!st?.connected) {
-      fvSetYoutubeStatus('Connect YouTube in Account settings first', 'err')
-      openAccountSettings()
+      fvSetYoutubeStatus('Connect YouTube first', 'err')
+      location.href = '/youtube'
       return
     }
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
