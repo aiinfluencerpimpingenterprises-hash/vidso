@@ -80,3 +80,10 @@ test('dashboard refresh keeps a refresh-only session instead of bouncing to logi
   assert.match(html, /await restoreSession\(\)/)
   assert.doesNotMatch(html, /e.status === 401 \|\| e.status === 403/)
 })
+
+test('api.js does not double-export restoreSession', () => {
+  const src = readFileSync(new URL('../api.js', import.meta.url), 'utf8')
+  const fn = (src.match(/export async function restoreSession/g) || []).length
+  const list = /export \{[^}]*\brestoreSession\b/.test(src) ? 1 : 0
+  assert.equal(fn + list, 1)
+})

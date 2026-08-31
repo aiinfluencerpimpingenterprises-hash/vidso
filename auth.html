@@ -664,8 +664,10 @@ function showSignedInSwitch() {
 
 document.getElementById('tab-btn-login').onclick = () => switchTab('login')
 document.getElementById('tab-btn-signup').onclick = () => switchTab('signup')
-document.getElementById('tg-monthly').onclick = () => setPaywallCycle('monthly')
-document.getElementById('tg-annual').onclick = () => setPaywallCycle('annual')
+const tgMonthly = document.getElementById('tg-monthly')
+const tgAnnual = document.getElementById('tg-annual')
+if (tgMonthly) tgMonthly.onclick = () => setPaywallCycle('monthly')
+if (tgAnnual) tgAnnual.onclick = () => setPaywallCycle('annual')
 
 document.getElementById('google-cta').onclick = () => {
   const btn = document.getElementById('google-cta')

@@ -643,4 +643,4 @@ export const api = {
   },
 }
 
-export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, isInvalidRefreshError, WHOP_CHECKOUT, ensureFreshToken, restoreSession }
+export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, isInvalidRefreshError, WHOP_CHECKOUT, ensureFreshToken }
