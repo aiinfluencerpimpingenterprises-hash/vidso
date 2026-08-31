@@ -272,6 +272,9 @@ async function recordCheckoutIntent(opts = {}) {
       tier: opts.tier || '',
       cycle: opts.cycle || '',
       origin: opts.origin || appOrigin(),
+      fbp: opts.fbp || '',
+      fbc: opts.fbc || '',
+      test_event_code: opts.testEventCode || opts.test_event_code || '',
     })
   } catch (_) {
     return null

@@ -6322,7 +6322,7 @@ import { evaluateLength, evaluateFeature, evaluateGeneration, resolveAccess } fr
 import { assembleYoutubeBroll } from '/lib/youtube-broll.js'
 import { withCompedPlan } from '/lib/comped.js'
 import { generationKindFromFormat, parseUsageCounts, quotaView } from '/lib/quota.js'
-import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, trackViewContent, pixelIdentify } from '/lib/meta-pixel.js'
+import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, trackViewContent, pixelIdentify, pixelClickIds } from '/lib/meta-pixel.js'
 import { isHistorySidecarName } from '/lib/image-gen.js'
 import {
   fileKind,
@@ -6444,7 +6444,7 @@ function applyAuthRouteTab() {
 function afterAuthReady(opts = {}) {
   if (!uiPreviewForced()) clearUiPreviewFlag()
   persistPlanActive(hasActivePlan())
-  if (obIsSignupSession()) trackCompleteRegistration()
+  if (obIsSignupSession()) trackCompleteRegistration(currentUser?.email)
   // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
   if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
   else if (tourHasSeen()) _tourDoneThisSession = true
@@ -6745,7 +6745,7 @@ window.doSignup = async () => {
     setSession(data.session)
     clearUiPreviewFlag()
     obSetNeedFlag()
-    trackCompleteRegistration()
+    trackCompleteRegistration(email)
     currentUser = await api.user.me()
     afterAuthReady()
   } catch(e) { err.textContent = e.message; err.style.display = 'block' }
@@ -8418,7 +8418,7 @@ async function watchForPurchase(opts = {}) {
     if (hasActivePlan()) {
       try { sessionStorage.removeItem('vidso_pending_tier') } catch (_) {}
       if (tier || opts.fromWhop) {
-        trackPurchase(tier || currentUser?.plan || currentUser?.plan_tier, _paywallCycle, currentUser?.id || currentUser?.user_id)
+        trackPurchase(tier || currentUser?.plan || currentUser?.plan_tier, _paywallCycle, currentUser?.id || currentUser?.user_id, currentUser?.email)
       }
       obMarkSeen()
       tourMarkSeen()
@@ -8449,9 +8449,9 @@ window.startCheckout = async (tier) => {
     setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
     return
   }
-  trackInitiateCheckout(tier, _paywallCycle)
+  trackInitiateCheckout(tier, _paywallCycle, { userId: currentUser?.id || currentUser?.user_id, email })
   setPaywallStatus('Opening checkout…', 'loading')
-  const started = await api.billing.recordCheckoutIntent({ tier, cycle: _paywallCycle }).catch(() => null)
+  const started = await api.billing.recordCheckoutIntent({ tier, cycle: _paywallCycle, ...pixelClickIds() }).catch(() => null)
   const url = started?.url || api.billing.checkoutUrl(tier, _paywallCycle, {
     email,
     userId: currentUser?.id || currentUser?.user_id,

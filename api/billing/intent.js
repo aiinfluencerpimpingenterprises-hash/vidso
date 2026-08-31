@@ -1,5 +1,6 @@
 import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { saveIntent } from '../../lib/checkout-intents.js'
+import { purchaseEventId, sanitizeTestCode } from '../../lib/meta-capi.js'
 import { createCheckoutSession } from '../../lib/whop-checkout.js'
 
 export const config = { maxDuration: 15 }
@@ -55,7 +56,17 @@ export default async function handler(req, res) {
   if (!emailsFromUser(user).length) return send(res, 400, { error: 'This account has no email.' })
 
   const body = await readJson(req).catch(() => ({}))
-  const rec = saveIntent(user, { tier: body.tier, cycle: body.cycle })
+  const userId = user.id || user.user_id
+  const rec = saveIntent(user, {
+    tier: body.tier,
+    cycle: body.cycle,
+    fbp: body.fbp,
+    fbc: body.fbc,
+    ip: String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || String(req.headers['x-real-ip'] || ''),
+    ua: req.headers['user-agent'],
+    eventId: purchaseEventId({ id: userId, email: emailsFromUser(user)[0] }, body.tier),
+    testEventCode: sanitizeTestCode(body.test_event_code || body.testEventCode),
+  })
   const origin = String(body.origin || req.headers.origin || 'https://vidso.pro')
   const session = await createCheckoutSession({
     tier: body.tier,

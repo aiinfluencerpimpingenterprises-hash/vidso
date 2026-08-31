@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await fulfillWhopEvent(event)
+    const result = await fulfillWhopEvent(event, process.env)
     return send(res, 200, { received: true, ...result })
   } catch (e) {
     if (e.code === 'membership_taken') return send(res, 200, { received: true, skipped: 'membership_taken' })
