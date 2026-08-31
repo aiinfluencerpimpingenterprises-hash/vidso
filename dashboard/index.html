@@ -9053,7 +9053,7 @@ function fvFalBrollPrompts(job) {
   const rows = sections.map((sec, i) => {
     const heading = String(sec.heading || sec.title || 'Scene ' + (i + 1)).trim()
     const text = String(sec.text || sec.body || '').replace(/\s+/g, ' ').trim()
-    const prompt = [heading, text].filter(Boolean).join('. ').slice(0, 800)
+    const prompt = [style, heading, text].filter(Boolean).join('. ').slice(0, 800)
       || (style + ' cinematic B-roll, scene ' + (i + 1))
     return { prompt, duration: clipDur, query: heading }
   }).filter((row) => row.prompt)
