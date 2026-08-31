@@ -145,31 +145,31 @@ function req(url = '/mcp', headers = {}) {
   return { url, headers, method: 'GET' }
 }
 
-test('the youtube MCP server is live', () => {
-  assert.equal(MCP_ARCHIVED, false)
-  assert.equal(mcpArchived(req('/mcp')), false)
-  assert.equal(mcpArchived(req('/api/youtube/mcp')), false)
-  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), false)
-  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), false)
+test('the youtube MCP server is archived', () => {
+  assert.equal(MCP_ARCHIVED, true)
+  assert.equal(mcpArchived(req('/mcp')), true)
+  assert.equal(mcpArchived(req('/api/youtube/mcp')), true)
+  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), true)
+  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), true)
 })
 
-test('studio connectors advertise the live youtube MCP', () => {
+test('studio and dashboard keep YouTube MCP out of the product UI', () => {
   const shell = readFileSync(new URL('../lib/studio-shell.js', import.meta.url), 'utf8')
   const dashboard = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
-  assert.match(shell, /href="\/mcp"/)
-  assert.match(shell, /private MCP link/)
-  assert.match(dashboard, /id="mcp-url"/)
-  assert.match(dashboard, /id="mcp-url-copy"/)
-  assert.match(dashboard, /yt\.hidden = false/)
+  const ytPage = readFileSync(new URL('../youtube/index.html', import.meta.url), 'utf8')
+  assert.match(shell, /id="fs-yt-mcp"[^>]*hidden/)
+  assert.match(dashboard, /id="nav-yt-mcp-btn"[^>]*hidden/)
+  assert.match(dashboard, /id="settings-yt-link"[^>]*hidden/)
+  assert.match(ytPage, /location\.replace\('\/video-generation'\)/)
 })
 
-test('a preview flag is a no-op while the server is live', () => {
+test('a preview flag still reaches the archived MCP server', () => {
   assert.equal(mcpPreviewOn(req('/mcp?mcp=1')), true)
   assert.equal(mcpArchived(req('/mcp?mcp=1')), false)
   assert.equal(mcpArchived(req('/oauth/token?mcp=1')), false)
   assert.equal(mcpArchived(req('/mcp', { 'x-vidso-mcp-preview': '1' })), false)
-  assert.equal(mcpArchived(req('/mcp?mcp=0')), false)
-  assert.equal(mcpArchived(req('/mcp?other=1')), false)
+  assert.equal(mcpArchived(req('/mcp?mcp=0')), true)
+  assert.equal(mcpArchived(req('/mcp?other=1')), true)
 })
 
 test('the archive can be lifted by env without editing code', () => {

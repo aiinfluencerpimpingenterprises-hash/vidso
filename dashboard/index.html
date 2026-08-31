@@ -3861,7 +3861,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <a class="settings-row-btn" id="settings-yt-link" href="/youtube">
+      <a class="settings-row-btn" id="settings-yt-link" href="/youtube?yt=1" data-archived hidden>
         <span class="settings-row-label">YouTube</span>
         <span class="settings-row-value" id="settings-yt-state">Manage →</span>
       </a>
@@ -3996,7 +3996,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" id="nav-yt-mcp-btn">YouTube MCP</button>
+        <button type="button" role="menuitem" id="nav-yt-mcp-btn" data-archived hidden>YouTube MCP</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
@@ -6849,11 +6849,11 @@ async function refreshYoutubeSettings() {
   }
   const on = !!_ytStatus?.connected
   if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
-  if (uploadBtn) uploadBtn.hidden = !on
+  if (uploadBtn) uploadBtn.hidden = true
 }
 
-window.connectYoutubeChannel = () => { location.href = '/youtube' }
-window.startYoutubeMcp = () => { location.href = '/youtube' }
+window.connectYoutubeChannel = () => { location.href = '/youtube?yt=1' }
+window.startYoutubeMcp = () => { location.href = '/youtube?yt=1' }
 
 document.getElementById('nav-yt-mcp-btn')?.addEventListener('click', () => window.startYoutubeMcp())
 function consumeYoutubeQuery() {
@@ -6865,7 +6865,7 @@ function consumeYoutubeQuery() {
   const next = location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash
   history.replaceState(null, '', next)
   if (yt === 'connect' || yt === 'import' || yt === 'connected' || yt === 'error') {
-    location.href = '/youtube'
+    location.href = '/youtube?yt=1'
   }
 }
 document.addEventListener('keydown', (e) => {
@@ -11437,7 +11437,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
     }
     if (!st?.connected) {
       fvSetYoutubeStatus('Connect YouTube first', 'err')
-      location.href = '/youtube'
+      location.href = '/youtube?yt=1'
       return
     }
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)

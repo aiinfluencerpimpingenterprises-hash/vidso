@@ -113,7 +113,7 @@ async function handleConnectStart(req, res) {
     })
     if (started.bridge) res.setHeader('Set-Cookie', bridgeCookieHeader(started.bridge))
     if (!started.url || started.mode === 'gis') {
-      return redirect(res, appReturn(req, '/youtube', { youtube: 'connect' }))
+      return redirect(res, appReturn(req, '/youtube', { yt: '1', youtube: 'connect' }))
     }
     return redirect(res, started.url)
   } catch (e) {

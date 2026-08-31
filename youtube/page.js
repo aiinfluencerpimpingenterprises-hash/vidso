@@ -54,7 +54,7 @@ async function boot() {
   }
   const wantConnect = new URLSearchParams(location.search).get('youtube') === 'connect'
   if (wantConnect) {
-    history.replaceState(null, '', '/youtube')
+    history.replaceState(null, '', '/youtube?yt=1')
     if ($('on')?.classList.contains('hidden')) $('connect')?.click()
   }
 }
