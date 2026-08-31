@@ -85,6 +85,13 @@ test('token records encrypt and decrypt', () => {
 })
 
 test('public status never includes tokens', () => {
+  const gisOnly = publicYoutubeStatus({
+    access_token: 'secret2',
+    channel_id: 'UCabc',
+    channel_title: 'Faceless Lab',
+  }, { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, { configured: true })
+  assert.equal(gisOnly.connected, true)
+  assert.equal(JSON.stringify(gisOnly).includes('secret2'), false)
   const st = publicYoutubeStatus({
     refresh_token: 'secret',
     access_token: 'secret2',
@@ -223,14 +230,15 @@ test('YouTube connect ticket starts Google OAuth without a Vidso browser session
   assert.equal(readYoutubeConnectTicket(ticket, env).token, 'vidso-jwt')
   const start = youtubeConnectStartUrl('https://www.vidso.pro', ticket)
   assert.match(start, /^https:\/\/www\.vidso\.pro\/api\/youtube\/connect-start\?ticket=/)
-  const supabase = buildYoutubeConnect({
+  const gis = buildYoutubeConnect({
     token: 'vidso-jwt',
     req: { headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } },
     returnTo: '/video-generation?youtube=connected',
   })
-  assert.equal(supabase.mode, 'supabase')
-  const redirectTo = new URL(supabase.url).searchParams.get('redirect_to')
-  assert.match(redirectTo, /youtube=import/)
+  assert.equal(gis.mode, 'gis')
+  assert.equal(gis.url, '')
+  assert.ok(gis.clientId.endsWith('.apps.googleusercontent.com'))
+  assert.ok(gis.scopes.includes('youtube.upload'))
   const dedicated = buildYoutubeConnect({
     token: 'vidso-jwt',
     req: { headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } },

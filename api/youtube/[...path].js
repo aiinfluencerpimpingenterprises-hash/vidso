@@ -112,6 +112,9 @@ async function handleConnectStart(req, res) {
       returnTo: payload.ret || '/video-generation?youtube=connected',
     })
     if (started.bridge) res.setHeader('Set-Cookie', bridgeCookieHeader(started.bridge))
+    if (!started.url || started.mode === 'gis') {
+      return redirect(res, appReturn(req, '/video-generation', { youtube: 'connect' }))
+    }
     return redirect(res, started.url)
   } catch (e) {
     return send(res, e.status || 400, { error: e.message || 'Could not start YouTube connect' })
@@ -140,7 +143,12 @@ async function handleConnect(req, res, token, body) {
       returnTo: body.returnTo || req.query?.returnTo,
     })
     if (started.bridge) res.setHeader('Set-Cookie', bridgeCookieHeader(started.bridge))
-    return send(res, 200, { url: started.url, mode: started.mode })
+    return send(res, 200, {
+      url: started.url || '',
+      mode: started.mode,
+      clientId: started.clientId || '',
+      scopes: started.scopes || '',
+    })
   } catch (e) {
     return send(res, e.status || 400, { error: e.message || 'Could not start YouTube connect' })
   }

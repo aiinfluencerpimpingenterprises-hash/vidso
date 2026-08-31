@@ -6948,9 +6948,14 @@ async function refreshYoutubeSettings() {
 }
 
 window.connectYoutubeChannel = async () => {
-  ytSetSettingsMsg('Redirecting to Google…')
-  try { await youtubeConnect(location.pathname || '/video-generation') }
-  catch (e) { ytSetSettingsMsg(e.message || 'Could not start YouTube connect', 'err') }
+  ytSetSettingsMsg('Waiting for Google…')
+  try {
+    const st = await youtubeConnect(location.pathname || '/video-generation')
+    if (!st) return
+    _ytStatus = st
+    ytSetSettingsMsg('YouTube channel connected. New exports can upload automatically.', 'ok')
+    await refreshYoutubeSettings()
+  } catch (e) { ytSetSettingsMsg(e.message || 'Could not start YouTube connect', 'err') }
 }
 
 async function finishYoutubeProviderImport() {
