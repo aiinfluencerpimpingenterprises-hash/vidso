@@ -1898,6 +1898,46 @@ input:focus,textarea:focus,select:focus,
   display:block;padding:0 14px;font-size:.75rem;color:var(--text-body);line-height:1.4;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
+.tool-shot-chevron{font-weight:500;opacity:.55;margin-left:2px}
+.creative-tools{margin:0 0 36px}
+.creative-tools-bar{
+  display:flex;align-items:center;gap:16px;margin:0 0 16px;flex-wrap:wrap
+}
+.creative-tools-title{
+  margin:0;font-family:var(--font-heading);font-size:1.35rem;font-weight:650;
+  letter-spacing:-.03em;color:var(--ink);white-space:nowrap
+}
+.creative-tools-filters{
+  display:flex;align-items:center;gap:6px;flex:1 1 auto;min-width:0;
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none
+}
+.creative-tools-filters::-webkit-scrollbar{display:none}
+.creative-filter{
+  flex:0 0 auto;border:0;background:transparent;color:rgba(255,255,255,.55);
+  font:650 13px/1 var(--font-ui,inherit);padding:8px 12px;border-radius:999px;cursor:pointer
+}
+.creative-filter.is-on{background:rgba(255,255,255,.1);color:var(--ink)}
+.creative-filter:hover{color:var(--ink)}
+.creative-tools-arrows{display:flex;gap:8px;margin-left:auto}
+.creative-arrow{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer;display:grid;place-items:center
+}
+.creative-arrow:hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.08)}
+.creative-tools-scroller{
+  display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:2px 2px 8px;scrollbar-width:thin
+}
+.creative-tools-scroller .tool-shot{
+  flex:0 0 260px;width:260px;scroll-snap-align:start
+}
+.creative-tools-scroller .tool-shot-media{aspect-ratio:16/10;border-radius:18px 18px 0 0}
+@media (max-width:720px){
+  .creative-tools-bar{gap:10px}
+  .creative-tools-arrows{display:none}
+  .creative-tools-scroller .tool-shot{flex-basis:78vw;width:78vw}
+}
 
 /* Clipping V2: no outer card */
 #panel-clipper .tool-card{
@@ -2961,7 +3001,6 @@ body.fs-show-open{overflow:hidden}
 /* V2 punch list */
 .panel.active{width:100%}
 .content > .panel{width:100%}
-#panel-dashboard{display:none!important}
 #panel-dashboard .page-shell,
 #panel-dashboard .dash-shell{
   max-width:1280px!important;
@@ -4002,6 +4041,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
+    <button type="button" class="topnav-item" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
     <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
@@ -4067,6 +4107,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
+  <span class="nav-drawer-label">Workspace</span>
+  <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
   <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
@@ -4080,7 +4122,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
   <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
   <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-  <span class="nav-drawer-label">Workspace</span>
+  <span class="nav-drawer-label">Library</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
 </aside>
@@ -6251,12 +6293,13 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
     </div>
 
-    <div class="panel content-glow" id="panel-dashboard" hidden>
+    <div class="panel content-glow" id="panel-dashboard">
       <div class="page-shell dash-shell">
         <div class="page-header dash-welcome" id="dash-welcome">
           <h2>Welcome back<span id="dash-welcome-name"></span></h2>
           <p>Your usage and shortcuts in one place.</p>
         </div>
+        <div id="dash-creative-tools" data-creative-tools></div>
         <div class="dash-stats" id="dash-stats">
           <div class="dash-stat">
             <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
@@ -8670,15 +8713,15 @@ function populateUser() {
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
 const DEFAULT_PANEL = 'videogen'
 const DEFAULT_PATH = '/video-generation'
-const HOME_PATHS = new Set(['/', '/dashboard', '/overview', '/analytics', '/upscale'])
+const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Long Form Generator', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Long Form Generator', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors'
@@ -8690,7 +8733,7 @@ function normalizePath(p) {
 }
 function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
 function resolvePanel(id) {
-  if (id === 'home' || id === 'dashboard') return DEFAULT_PANEL
+  if (id === 'home') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
   if (id === 'mcp' || id === 'connectors') return DEFAULT_PANEL
   if (panelArchived(id)) return DEFAULT_PANEL
@@ -8707,7 +8750,7 @@ function panelFromPath() {
   if (mapped) return mapped
   try {
     const last = sessionStorage.getItem('vidso_last_panel')
-    if (last && titles[last] && last !== 'dashboard' && last !== 'mcp') return last
+    if (last && titles[last] && last !== 'mcp') return last
   } catch (_) {}
   return DEFAULT_PANEL
 }
@@ -8762,7 +8805,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files'].includes(id)
+    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')

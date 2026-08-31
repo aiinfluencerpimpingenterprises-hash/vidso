@@ -53,6 +53,12 @@ test('?studio=1 preview unlocks Faceless Studio for the tab', () => {
   }
 })
 
+test('dashboard mounts the creative tools rail under the heading', () => {
+  assert.match(dashboard, /id="dash-welcome"/)
+  assert.match(dashboard, /id="dash-creative-tools"[^>]*data-creative-tools/)
+  assert.doesNotMatch(dashboard, /id="panel-dashboard"[^>]*\bhidden\b/)
+})
+
 test('the top nav, profile dropdown, and settings keep Faceless Studio hidden', () => {
   assert.match(dashboard, /id="nav-facelessstudio"[^>]*\bdata-archived\b/)
   assert.match(dashboard, /id="user-studio-btn"[^>]*\bdata-archived\b/)
