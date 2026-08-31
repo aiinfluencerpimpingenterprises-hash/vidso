@@ -2309,6 +2309,44 @@ body.studio-open #panel-facelessstudio,
   position:absolute;top:14px;right:18px;z-index:12;display:flex;gap:8px;align-items:center;pointer-events:none
 }
 .fs-stage-tools > *{pointer-events:auto}
+.fs-gen-host{
+  position:absolute;top:14px;left:18px;z-index:14;pointer-events:none
+}
+.fs-gen-host[hidden]{display:none!important}
+.fs-gen-card{
+  display:flex;align-items:center;gap:12px;min-width:168px;
+  padding:10px 16px 10px 10px;border-radius:16px;
+  background:rgba(16,16,18,.92);border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 10px 32px rgba(0,0,0,.4);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
+.fs-gen-copy{display:flex;flex-direction:column;gap:2px;line-height:1.15}
+.fs-gen-copy strong{
+  font-size:.84rem;font-weight:750;letter-spacing:-.02em;color:#fff;text-transform:lowercase
+}
+.fs-gen-copy em{font-style:normal;font-size:.78rem;font-weight:650;color:rgba(255,255,255,.55)}
+.fs-gen-ring{
+  --fs-gen-deg:8deg;width:40px;height:40px;flex-shrink:0;position:relative
+}
+.fs-gen-ring::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from -90deg, var(--a1) var(--fs-gen-deg), rgba(255,255,255,.12) 0)
+}
+.fs-gen-ring::after{
+  content:'';position:absolute;inset:4px;border-radius:50%;background:#141416
+}
+.fs-gen-spin{
+  position:absolute;inset:-2px;border-radius:50%;
+  border:2px solid transparent;border-top-color:var(--a1);
+  border-right-color:rgba(233,75,88,.28);
+  animation:fs-gen-spin .85s linear infinite
+}
+.fs-gen-card.is-err .fs-gen-spin{animation:none;border-color:transparent;border-top-color:#f87171}
+.fs-gen-card.is-err .fs-gen-ring::before{
+  background:conic-gradient(from -90deg, #f87171 360deg, rgba(255,255,255,.12) 0)
+}
+.fs-gen-card.is-err .fs-gen-copy em{color:#f87171}
+@keyframes fs-gen-spin{to{transform:rotate(360deg)}}
 .fs-rail{
   width:240px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;
   border-right:1px solid var(--border);background:#101012;padding:12px 10px 16px;
@@ -2839,6 +2877,7 @@ body.fs-show-open{overflow:hidden}
   }
   .fs-home.has-composer .fs-composer-sc .fs-ref-add{order:unset}
   .fs-stage-tools{top:8px;right:8px}
+  .fs-gen-host{top:8px;left:8px}
 }
 
 
@@ -5740,6 +5779,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </div>
         </aside>
         <div class="fs-stage">
+          <div class="fs-gen-host" id="fs-gen-host" hidden></div>
           <div class="fs-stage-tools">
             <button type="button" class="fs-temp-btn" id="fs-temp-chat" aria-pressed="false" title="Start a temporary chat">Temporary chat</button>
           </div>
