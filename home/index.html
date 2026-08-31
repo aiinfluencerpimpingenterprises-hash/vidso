@@ -128,7 +128,7 @@
     .nav-drawer a,.nav-drawer button{display:flex;width:100%;align-items:center;justify-content:flex-start;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:500;color:var(--muted);background:none;border:none;font-family:inherit;cursor:pointer;text-align:left}
     .nav-drawer a:hover,.nav-drawer button:hover{background:rgba(255,255,255,.05);color:#fff}
     .nav-drawer .btn.btn-primary{justify-content:center;margin-top:8px;color:#fff;background:var(--grad);border:none;padding:13px 16px;font-weight:700}
-    .features,.proof,.pricing,.faq,.final,.gen-promo,.results,.lp-teasers{padding-left:0;padding-right:0}
+    .features,.proof,.pricing,.faq,.final,.gen-promo,.results,.lp-int{padding-left:0;padding-right:0}
     .features{padding-top:64px;padding-bottom:64px}
     .proof,.pricing,.results{padding-top:64px;padding-bottom:64px}
     .faq{padding-bottom:64px}
@@ -849,25 +849,105 @@
   .comp-cta h3{margin:0 0 10px;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;font-weight:800;color:#fff}
   .comp-cta p{margin:0 auto 22px;max-width:34em;color:var(--muted);font-size:15px;line-height:1.55}
 
-  /* Claude / YouTube connect sections (this preview branch only) */
-  .lp-teasers{padding:80px 0;scroll-margin-top:88px}
-  .lp-teaser{
-    display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;
-    max-width:720px;margin:40px auto 0
+  /* Integrations: Claude + YouTube */
+  .lp-int{padding:48px 0 40px}
+  .lp-int-kicker{
+    text-align:center;font-size:12px;letter-spacing:.22em;font-weight:600;
+    color:var(--a1);text-transform:uppercase;margin:0 0 8px
   }
-  .lp-teaser h3{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
-  .lp-teaser p{font-size:14.5px;color:var(--muted);margin:0;line-height:1.45}
-  .lp-teaser-ph{
-    position:relative;width:100%;overflow:visible;border-radius:0;
-    background:transparent;border:none;
-    display:flex;align-items:center;justify-content:center;gap:12px;min-height:64px
+  .lp-int-band{
+    display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+    gap:28px 44px;align-items:center;scroll-margin-top:88px;padding:32px 0
   }
-  .lp-teaser-ph img{width:44px;height:44px;object-fit:contain;background:transparent;border-radius:0;padding:0;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
-  .lp-teaser-x{font-weight:800;color:var(--faint);font-size:18px}
+  .lp-int-band + .lp-int-band{border-top:1px solid var(--line)}
+  .lp-int-band.is-flip{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)}
+  .lp-int-copy .eyebrow{color:var(--a1);letter-spacing:.22em}
+  .lp-int-copy h3{
+    font-size:clamp(22px,2.6vw,28px);letter-spacing:-.03em;font-weight:800;
+    line-height:1.15;margin:10px 0 8px
+  }
+  .lp-int-lead{color:var(--muted);font-size:16px;line-height:1.45;margin:0 0 18px}
+  .lp-int-caps{list-style:none;display:flex;flex-direction:column;gap:11px;margin:0 0 22px;padding:0}
+  .lp-int-caps li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;line-height:1.4;color:var(--txt)}
+  .lp-int-caps svg{width:18px;height:18px;flex:0 0 18px;margin-top:1px;color:var(--a1)}
+  .lp-int-cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .lp-int-cta .more{color:var(--muted);font-size:14px;font-weight:600}
+  .lp-int-cta .more:hover{color:var(--txt)}
+  .lp-int-proof{min-width:0}
+  .media-ph.lp-int-shot{
+    position:relative;width:100%;overflow:hidden;aspect-ratio:5 / 4;
+    border-radius:18px;
+    background:linear-gradient(160deg,#2c1c1e,#161618);
+    border:1px solid rgba(245,245,244,.16);
+    box-shadow:0 18px 50px rgba(0,0,0,.38),0 0 0 1px rgba(var(--glow),.06)
+  }
+  .media-ph.lp-int-shot > img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:2
+  }
+  .lp-int-mock{position:relative;z-index:1;height:100%;padding:12px;display:flex;flex-direction:column}
+  .lp-chrome{
+    display:flex;align-items:center;gap:8px;padding:0 4px 10px;color:var(--faint);font-size:11px;font-weight:600
+  }
+  .lp-chrome .dots{display:flex;gap:5px}
+  .lp-chrome .dots i{width:7px;height:7px;border-radius:99px;background:rgba(245,245,244,.18);display:block}
+  .lp-chrome .brand{display:inline-flex;align-items:center;gap:6px;margin-left:4px;color:var(--muted)}
+  .lp-chrome .brand img{width:14px;height:14px;object-fit:contain}
+  .lp-chat{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+  .lp-bubble{max-width:92%;padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.45}
+  .lp-bubble.user{align-self:flex-end;background:rgba(var(--glow),.16);border:1px solid rgba(var(--glow),.28);color:#fff}
+  .lp-tool{
+    align-self:flex-start;width:100%;background:var(--panel);border:1px solid var(--line-2);
+    border-radius:14px;padding:12px
+  }
+  .lp-tool-name{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--a1);margin-bottom:8px}
+  .lp-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .lp-chip{
+    display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:11.5px;color:var(--muted)
+  }
+  .lp-chip b{color:var(--txt);font-weight:650}
+  .lp-result{
+    align-self:flex-start;width:100%;background:rgba(111,207,151,.08);
+    border:1px solid rgba(111,207,151,.22);border-radius:14px;padding:12px
+  }
+  .lp-result strong{display:block;font-size:13px;margin-bottom:4px;color:#9ee0aa}
+  .lp-result p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.4}
+  .lp-yt{
+    flex:1;display:flex;flex-direction:column;gap:10px;background:var(--panel);
+    border:1px solid var(--line);border-radius:14px;padding:14px
+  }
+  .lp-yt-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .lp-yt-ch{display:flex;align-items:center;gap:10px}
+  .lp-yt-ch img{width:32px;height:32px;border-radius:99px;object-fit:cover;background:#111}
+  .lp-yt-ch .name{font-size:13px;font-weight:700}
+  .lp-yt-ch .meta{font-size:11px;color:var(--faint);margin-top:1px}
+  .lp-yt-state{font-size:11px;font-weight:700;color:#7dce8a}
+  .lp-field{display:flex;flex-direction:column;gap:4px}
+  .lp-field span{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+  .lp-field em{
+    font-style:normal;background:#111;border:1px solid var(--line);border-radius:8px;
+    padding:8px 10px;font-size:13px;color:var(--txt);line-height:1.35
+  }
+  .lp-field em.desc{color:var(--muted);font-size:12.5px;min-height:44px}
+  .lp-yt-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
+  .lp-yt-foot .vis{font-size:12px;color:var(--muted)}
+  .lp-yt-btn{
+    display:inline-flex;align-items:center;height:34px;padding:0 12px;border-radius:10px;
+    background:var(--grad);color:#fff;font-size:12.5px;font-weight:700
+  }
+  @media(max-width:1100px){
+    .lp-int-band,.lp-int-band.is-flip{grid-template-columns:1fr 1fr;gap:22px 28px}
+  }
   @media(max-width:820px){
-    .lp-teaser{grid-template-columns:1fr;padding:20px}
-    .lp-teasers{padding:64px 0}
+    .lp-int{padding:36px 0 28px}
+    .lp-int-band,.lp-int-band.is-flip{grid-template-columns:1fr;gap:18px;padding:22px 0}
+    .lp-int-proof{order:-1}
+    .lp-int-copy h3{font-size:24px}
+    .media-ph.lp-int-shot{aspect-ratio:auto}
+    .lp-int-mock{min-height:0}
+  }
+  @media(min-width:1920px){
+    .lp-int-band{padding:36px 0}
   }
 </style>
 
@@ -1706,43 +1786,134 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
-<section class="lp-teasers" id="connect-claude">
+<section class="lp-int" id="connect-stack">
   <div class="wrap">
-    <div class="s-head center">
-      <div class="eyebrow">Connect</div>
-      <h2>Claude × Vidso</h2>
-    </div>
-    <div class="lp-teaser">
-      <div class="lp-teaser-ph">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="Claude" width="44" height="44">
-        <span class="lp-teaser-x" aria-hidden="true">×</span>
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
-      </div>
-      <div>
-        <h3>Claude × Vidso</h3>
-        <p>Paste your personal connector link into Claude. Then ask Claude to check YouTube or upload a finished video.</p>
-      </div>
-    </div>
-  </div>
-</section>
+    <p class="lp-int-kicker">Connect Vidso to your stack</p>
 
-<section class="lp-teasers" id="connect-youtube">
-  <div class="wrap">
-    <div class="s-head center">
-      <div class="eyebrow">Connect</div>
-      <h2>YouTube × Vidso</h2>
-    </div>
-    <div class="lp-teaser">
-      <div class="lp-teaser-ph">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="YouTube" width="44" height="44">
-        <span class="lp-teaser-x" aria-hidden="true">×</span>
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
+    <article class="lp-int-band" id="connect-claude">
+      <div class="lp-int-proof">
+        <div class="media-ph lp-int-shot" data-media-ph data-proof="claude">
+          <div class="lp-int-mock" data-proof-mock>
+            <div class="lp-chrome">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="brand">
+                <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="14" height="14">
+                Claude
+              </span>
+            </div>
+            <div class="lp-chat">
+              <div class="lp-bubble user">Upload the finished airport video to my channel as unlisted.</div>
+              <div class="lp-tool">
+                <div class="lp-tool-name">Vidso · youtube_upload</div>
+                <div class="lp-chips">
+                  <span class="lp-chip">privacy <b>unlisted</b></span>
+                  <span class="lp-chip">title <b>Airport Secrets</b></span>
+                  <span class="lp-chip">file <b>MP4</b></span>
+                </div>
+              </div>
+              <div class="lp-result">
+                <strong>Uploaded to YouTube</strong>
+                <p>Unlisted. Open the video on the connected channel, or change title and privacy from chat.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <h3>YouTube × Vidso</h3>
-        <p>Uploads can be fully automated. Connect once, then Vidso or Claude can publish finished videos for you.</p>
+      <div class="lp-int-copy">
+        <div class="eyebrow">Integration</div>
+        <h3>Run Vidso from Claude</h3>
+        <p class="lp-int-lead">Connect once, then check or upload to YouTube from chat.</p>
+        <ul class="lp-int-caps">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h13"/></svg>
+            Check whether your channel is connected
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+            List recent uploads and inspect one video
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Update title, description, tags, or privacy
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V5M7 9l5-5 5 5"/><path d="M5 19h14"/></svg>
+            Upload a finished MP4 to the connected channel
+          </li>
+        </ul>
+        <div class="lp-int-cta">
+          <a class="btn btn-primary" href="/mcp?mcp=1">See how it works</a>
+          <a class="more" href="/mcp?mcp=1">Open MCP</a>
+        </div>
       </div>
-    </div>
+    </article>
+
+    <article class="lp-int-band is-flip" id="connect-youtube">
+      <div class="lp-int-copy">
+        <div class="eyebrow">Integration</div>
+        <h3>Straight to your channel</h3>
+        <p class="lp-int-lead">Render, title, and publish without leaving Vidso.</p>
+        <ul class="lp-int-caps">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9.5v5l5-2.5-5-2.5z"/></svg>
+            Connect your channel once with Google
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Title and description pulled from the project
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V5M7 9l5-5 5 5"/><path d="M5 19h14"/></svg>
+            Upload after export, or publish now
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12a8 8 0 1 0 8-8"/><path d="M12 8v4l3 2"/></svg>
+            Set visibility to public, unlisted, or private
+          </li>
+        </ul>
+        <div class="lp-int-cta">
+          <a class="btn btn-primary" href="/youtube?yt=1">See how it works</a>
+          <a class="more" href="/youtube?yt=1">Open YouTube</a>
+        </div>
+      </div>
+      <div class="lp-int-proof">
+        <div class="media-ph lp-int-shot" data-media-ph data-proof="youtube">
+          <div class="lp-int-mock" data-proof-mock>
+            <div class="lp-chrome">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="brand">
+                <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="14" height="14">
+                Vidso · Upload to YouTube
+              </span>
+            </div>
+            <div class="lp-yt">
+              <div class="lp-yt-row">
+                <div class="lp-yt-ch">
+                  <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="">
+                  <div>
+                    <div class="name">Airport Secrets</div>
+                    <div class="meta">Channel connected</div>
+                  </div>
+                </div>
+                <span class="lp-yt-state">Connected</span>
+              </div>
+              <div class="lp-field">
+                <span>Title from script</span>
+                <em>12 Airport Secrets Airlines Don't Want You to Know</em>
+              </div>
+              <div class="lp-field">
+                <span>Description from hook</span>
+                <em class="desc">What airports hide in plain sight, and why most travelers never notice.</em>
+              </div>
+              <div class="lp-yt-foot">
+                <span class="vis">Visibility · Public</span>
+                <span class="lp-yt-btn">Upload to YouTube</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
   </div>
 </section>
 
@@ -2184,10 +2355,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
+import { mountLandingIntegrations } from '/lib/landing-integrations.js'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
 mountResults(document.getElementById('results-root'))
+mountLandingIntegrations()
 if ((location.pathname || '').replace(/\/+$/, '') === '/pricing') {
   document.getElementById('pricing')?.scrollIntoView({ behavior: 'auto', block: 'start' })
 }
