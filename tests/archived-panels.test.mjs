@@ -1,13 +1,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import {
   ARCHIVED_PANELS,
   NAV_SEARCH_ITEMS,
-  archivePreviewOn,
   panelArchived,
   removeArchivedNav,
 } from '../lib/app-chrome.js'
 import { TOOL_GALLERY } from '../lib/tools-gallery.js'
+
+const dashboard = readFileSync(fileURLToPath(new URL('../dashboard/index.html', import.meta.url)), 'utf8')
 
 function stubBrowser({ search = '', store = {} } = {}) {
   const saved = { location: globalThis.location, sessionStorage: globalThis.sessionStorage }
@@ -22,46 +25,29 @@ function stubBrowser({ search = '', store = {} } = {}) {
   }
 }
 
-test('faceless studio is archived and falls back to the default panel', () => {
+test('faceless studio is live and reachable as its own panel', () => {
   const restore = stubBrowser()
   try {
-    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), true)
-    assert.equal(panelArchived('facelessstudio'), true)
-    assert.equal(panelArchived('videogen'), false)
-  } finally {
-    restore()
-  }
-})
-
-test('?studio=1 unlocks the archived panel for the rest of the tab session', () => {
-  const store = {}
-  let restore = stubBrowser({ search: '?studio=1', store })
-  try {
-    assert.equal(archivePreviewOn(), true)
+    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), false)
     assert.equal(panelArchived('facelessstudio'), false)
-  } finally {
-    restore()
-  }
-  // A later navigation drops the query string, but the session flag persists.
-  restore = stubBrowser({ search: '', store })
-  try {
-    assert.equal(panelArchived('facelessstudio'), false)
-  } finally {
-    restore()
-  }
-})
-
-test('a fresh tab without the flag stays archived', () => {
-  const restore = stubBrowser({ search: '', store: {} })
-  try {
-    assert.equal(archivePreviewOn(), false)
-    assert.equal(panelArchived('facelessstudio'), true)
+    const searchable = NAV_SEARCH_ITEMS.filter((it) => !panelArchived(it.id)).map((it) => it.id)
+    assert.equal(searchable.includes('facelessstudio'), true)
+    const cards = TOOL_GALLERY.filter((t) => !panelArchived(t.id)).map((t) => t.id)
+    assert.equal(cards.includes('facelessstudio'), true)
   } finally {
     restore()
   }
 })
 
-test('archived entries drop out of the nav and the tools gallery', () => {
+test('the profile dropdown and settings keep Faceless Studio hidden', () => {
+  assert.match(dashboard, /id="user-studio-btn"[^>]*\bhidden\b/)
+  assert.match(dashboard, /id="settings-studio"[^>]*\bhidden\b/)
+  // The top nav entry is the live way in — it must not stay archived.
+  assert.match(dashboard, /id="nav-facelessstudio"[^>]*data-panel="facelessstudio"/)
+  assert.doesNotMatch(dashboard, /id="nav-facelessstudio"[^>]*data-archived/)
+})
+
+test('archived entries still drop out of the nav when something is archived', () => {
   const restore = stubBrowser()
   try {
     const removed = []
@@ -76,34 +62,6 @@ test('archived entries drop out of the nav and the tools gallery', () => {
       globalThis.document = savedDoc
     }
     assert.deepEqual(removed, ['nav'])
-
-    const searchable = NAV_SEARCH_ITEMS.filter((it) => !panelArchived(it.id)).map((it) => it.id)
-    assert.equal(searchable.includes('facelessstudio'), false)
-    assert.equal(searchable.includes('videogen'), true)
-
-    const cards = TOOL_GALLERY.filter((t) => !panelArchived(t.id)).map((t) => t.id)
-    assert.equal(cards.includes('facelessstudio'), false)
-    assert.equal(cards.includes('imagegen'), true)
-  } finally {
-    restore()
-  }
-})
-
-test('previewing keeps the nav entry instead of removing it', () => {
-  const restore = stubBrowser({ search: '?studio=1' })
-  try {
-    const unhidden = []
-    const nodes = [
-      { remove() { throw new Error('should not remove while previewing') }, removeAttribute: (a) => unhidden.push(a) },
-    ]
-    const savedDoc = globalThis.document
-    globalThis.document = { querySelectorAll: () => nodes }
-    try {
-      removeArchivedNav()
-    } finally {
-      globalThis.document = savedDoc
-    }
-    assert.deepEqual(unhidden, ['hidden'])
   } finally {
     restore()
   }
