@@ -45,6 +45,19 @@
       } catch (eCk) {}
     }
     paid = localStorage.getItem('vidso_plan_active') === '1'
+    var refreshTok = ''
+    try { refreshTok = localStorage.getItem('clipzo_refresh') || '' } catch (eRfLs) {}
+    if (!refreshTok || refreshTok === 'undefined' || refreshTok === 'null') {
+      var rmBoot = document.cookie.match(/(?:^|; )clipzo_refresh=([^;]*)/)
+      if (rmBoot) {
+        try { refreshTok = decodeURIComponent(rmBoot[1]) } catch (eRfCk) { refreshTok = rmBoot[1] }
+      }
+    }
+    if (refreshTok && refreshTok !== 'undefined' && refreshTok !== 'null') {
+      try { localStorage.setItem('clipzo_refresh', refreshTok) } catch (eRfSet) {}
+    } else {
+      refreshTok = ''
+    }
     var q = location.search || ''
     var on = /(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview'
     var off = /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
@@ -63,7 +76,7 @@
     document.documentElement.classList.add('needs-gate')
     return
   }
-  if (!token) {
+  if (!token && !refreshTok) {
     location.replace('/login')
     return
   }
@@ -6271,7 +6284,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
-import { api, setSession, clearSession, getToken, getRefreshToken, tokenNeedsRefresh, ensureFreshToken } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
@@ -6554,7 +6567,18 @@ async function checkAuth() {
   if (obForcePreview()) {
     hideModal()
     maybeShowOnboarding()
-    if (!getToken()) return
+    if (!getToken() && !getRefreshToken()) return
+  }
+  try {
+    await restoreSession()
+  } catch (e) {
+    if (isInvalidRefreshError(e, e?.status)) {
+      persistPlanActive(false)
+      clearSession()
+      if (obForcePreview()) return
+      showModal()
+      return
+    }
   }
   if (!getToken()) { showModal(); return }
   revealOnboardingNow()
@@ -6570,22 +6594,23 @@ async function checkAuth() {
     return true
   }
   try {
-    if (tokenNeedsRefresh(getToken()) && await refreshAccess().catch(() => false)) {
-      /* access JWT was stale; continue with /user/me */
-    }
     await applyMe()
   } catch (e) {
-    const unauthorized = e && (e.status === 401 || e.status === 403)
+    const unauthorized = e && e.status === 401
     if (unauthorized) {
       try {
         if (!await refreshAccess()) throw e
         await applyMe()
-      } catch {
-        persistPlanActive(false)
-        clearSession()
-        if (obForcePreview()) return
-        showModal()
-        return
+      } catch (e2) {
+        if (isInvalidRefreshError(e2, e2?.status) || (e.status === 401 && !getRefreshToken())) {
+          persistPlanActive(false)
+          clearSession()
+          if (obForcePreview()) return
+          showModal()
+          return
+        }
+        if (!currentUser) currentUser = userStubFromToken()
+        if (!currentUser) { showModal(); return }
       }
     } else {
       // Network/5xx must not log the user out on refresh.
@@ -6603,6 +6628,12 @@ async function checkAuth() {
 function showModal() {
   if (uiPreviewMode()) { enterUiPreview(); return }
   persistPlanActive(false)
+  try {
+    const p = normalizePath(location.pathname)
+    if (p && p !== '/login' && p !== '/signup') {
+      sessionStorage.setItem('vidso_after_login', p + (location.search || ''))
+    }
+  } catch (_) {}
   location.replace('/login')
 }
 function hideModal() {

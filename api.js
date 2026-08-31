@@ -13,6 +13,8 @@ import {
   sessionFromAuthPayload,
   tokenNeedsRefresh,
   isExpiredAuthError,
+  isInvalidRefreshError,
+  hasSessionSecrets,
 } from '/lib/session-store.js'
 
 const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
@@ -32,11 +34,16 @@ async function refreshSessionOnce() {
           skipAuthRefresh: true,
         })
         const session = sessionFromAuthPayload(data)
-        if (!session?.access_token) return false
+        if (!session?.access_token) {
+          const err = new Error('refresh returned no session')
+          err.status = 401
+          throw err
+        }
         setSession(session)
         return true
-      } catch {
-        return false
+      } catch (e) {
+        if (isInvalidRefreshError(e, e?.status)) e.code = e.code || 'refresh_invalid'
+        throw e
       }
     })().finally(() => {
       refreshInFlight = null
@@ -47,10 +54,29 @@ async function refreshSessionOnce() {
 
 async function ensureFreshToken() {
   const token = getToken()
-  if (!token) return false
+  if (!token) {
+    if (!getRefreshToken()) return false
+    return refreshSessionOnce()
+  }
   if (!tokenNeedsRefresh(token)) return true
   if (!getRefreshToken()) return false
-  return refreshSessionOnce()
+  try {
+    return await refreshSessionOnce()
+  } catch (e) {
+    if (isInvalidRefreshError(e, e?.status)) throw e
+    return !!getToken()
+  }
+}
+
+/** Rebuild an access JWT from the stored refresh token after a reload. */
+export async function restoreSession() {
+  if (!hasSessionSecrets()) return false
+  try {
+    await ensureFreshToken()
+  } catch (e) {
+    if (isInvalidRefreshError(e, e?.status)) throw e
+  }
+  return !!getToken()
 }
 
 async function reqTo(url, method, body, isFormData = false, opts = {}) {
@@ -89,13 +115,12 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     if (recovered) return recovered
     const fallback = raw && !raw.trim().startsWith('{') ? raw.trim().slice(0, 180) : 'Request failed'
     const msg = data.message || data.error || fallback
-    if (
-      !opts.skipAuthRefresh
-      && !opts._authRetried
-      && isExpiredAuthError(msg, res.status)
-      && await refreshSessionOnce()
-    ) {
-      return reqTo(url, method, body, isFormData, { ...opts, _authRetried: true })
+    if (!opts.skipAuthRefresh && !opts._authRetried && isExpiredAuthError(msg, res.status)) {
+      try {
+        if (await refreshSessionOnce()) {
+          return reqTo(url, method, body, isFormData, { ...opts, _authRetried: true })
+        }
+      } catch (_) {}
     }
     const err = new Error(
       isJsonSyntaxError(msg)
@@ -618,4 +643,4 @@ export const api = {
   },
 }
 
-export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, WHOP_CHECKOUT, ensureFreshToken }
+export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, isInvalidRefreshError, WHOP_CHECKOUT, ensureFreshToken, restoreSession }

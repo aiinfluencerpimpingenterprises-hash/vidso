@@ -339,7 +339,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 })()
 </script>
 <script type="module">
-import { api, setSession, clearSession, getToken, getRefreshToken } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 
 const APP = '/video-generation'
@@ -542,33 +542,45 @@ function goAfterAuth() {
     location.replace(next)
     return
   }
+  let after = ''
+  try {
+    after = String(sessionStorage.getItem('vidso_after_login') || '')
+    sessionStorage.removeItem('vidso_after_login')
+  } catch (_) {}
+  if (after.startsWith('/') && !after.startsWith('//') && !after.includes('://')) {
+    persistPaidBeforeApp().finally(() => location.replace(after))
+    return
+  }
   persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 
 async function resumeConnectorIfSession() {
-  try { getToken() } catch (_) {}
-  if (!getToken()) {
+  try {
+    const ok = await restoreSession()
+    if (!ok) {
+      prepareConnectorLogin()
+      return
+    }
+  } catch (e) {
+    if (isInvalidRefreshError(e, e?.status)) clearSession()
     prepareConnectorLogin()
     return
-  }
-  const refreshAccess = async () => {
-    const rt = getRefreshToken()
-    if (!rt) return false
-    const { session } = await api.auth.refresh(rt)
-    if (!session?.access_token) return false
-    setSession(session)
-    return true
   }
   try {
     await api.user.me()
     goAfterAuth()
   } catch (e) {
-    const unauthorized = e && (e.status === 401 || e.status === 403)
+    const unauthorized = e && e.status === 401
     if (unauthorized) {
       try {
-        if (await refreshAccess()) {
-          goAfterAuth()
-          return
+        const rt = getRefreshToken()
+        if (rt) {
+          const { session } = await api.auth.refresh(rt)
+          if (session?.access_token) {
+            setSession(session)
+            goAfterAuth()
+            return
+          }
         }
       } catch (_) {}
       clearSession()
@@ -603,10 +615,28 @@ if (oauthReturned) {
   consumeOAuthErrorParams()
   const next = rememberAuthNext() || pendingOauth
   if (next) {
-    if (getToken()) resumeConnectorIfSession()
+    if (getToken() || getRefreshToken()) resumeConnectorIfSession()
     else prepareConnectorLogin()
-  } else if (getToken()) {
-    showSignedInSwitch()
+  } else if (getToken() || getRefreshToken()) {
+    resumeAppIfSession()
+  }
+}
+
+async function resumeAppIfSession() {
+  try {
+    const ok = await restoreSession()
+    if (!ok) {
+      if (getToken()) showSignedInSwitch()
+      return
+    }
+    goAfterAuth()
+  } catch (e) {
+    if (isInvalidRefreshError(e, e?.status)) {
+      clearSession()
+      return
+    }
+    if (getToken()) goAfterAuth()
+    else showSignedInSwitch()
   }
 }
 
