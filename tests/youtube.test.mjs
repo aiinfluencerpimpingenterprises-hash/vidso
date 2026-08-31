@@ -49,6 +49,10 @@ test('YouTube Connect can reuse Google sign-in OAuth', () => {
   assert.equal(u.origin + u.pathname, 'https://ymtmgpgcmrazqeklixwf.supabase.co/auth/v1/authorize')
   assert.equal(u.searchParams.get('provider'), 'google')
   assert.ok(u.searchParams.get('scopes').includes('youtube.upload'))
+  assert.equal(u.searchParams.get('prompt'), 'consent')
+  assert.equal(u.searchParams.get('access_type'), 'offline')
+  assert.equal(u.searchParams.get('query_params[prompt]'), 'consent')
+  assert.equal(u.searchParams.get('query_params[access_type]'), 'offline')
   assert.ok(SIGNIN_GOOGLE_CLIENT_ID.endsWith('.apps.googleusercontent.com'))
 })
 
