@@ -6945,7 +6945,7 @@ async function refreshYoutubeSettings() {
   }
   const on = !!_ytStatus?.connected
   if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
-  if (uploadBtn) uploadBtn.hidden = true
+  if (uploadBtn) uploadBtn.hidden = !on
 }
 
 window.connectYoutubeChannel = () => { location.href = '/youtube?yt=1' }
@@ -11532,10 +11532,12 @@ window.fvUploadToYoutube = async (opts = {}) => {
       throw new Error('YouTube publishing is not configured on this deployment yet.')
     }
     if (!st?.connected) {
-      fvSetYoutubeStatus('Connect YouTube first', 'err')
-      location.href = '/youtube?yt=1'
+      fvSetYoutubeStatus('Connect a YouTube channel first', 'err')
+      if (btn) btn.hidden = true
+      if (!opts.auto) location.href = '/youtube?yt=1'
       return
     }
+    if (btn) btn.hidden = false
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
     const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
     const privacy = st.privacy || 'unlisted'
@@ -11585,8 +11587,13 @@ async function fvMaybeAutoUploadYoutube() {
   try {
     const st = await youtubeStatus()
     _ytStatus = st
+    const uploadBtn = document.getElementById('fv-yt-upload')
+    if (uploadBtn) uploadBtn.hidden = !st?.connected
     if (st?.connected && st.autoUpload) await window.fvUploadToYoutube({ auto: true })
-  } catch (_) {}
+  } catch (_) {
+    const uploadBtn = document.getElementById('fv-yt-upload')
+    if (uploadBtn) uploadBtn.hidden = true
+  }
 }
 
 window.fvRegenerateSection = async (sectionId) => {

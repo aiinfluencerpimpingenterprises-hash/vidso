@@ -16,6 +16,8 @@ import {
   parseMcpToolArgs,
   publicVideo,
   publicYoutubeStatus,
+  youtubeRecordCanUpload,
+  ensureAccessToken,
   readYoutubeConnectTicket,
   runMcpTool,
   signPayload,
@@ -84,9 +86,35 @@ test('token records encrypt and decrypt', () => {
   assert.deepEqual(decryptRecord(wrapped, env), rec)
 })
 
+test('ensureAccessToken reuses a live GIS access token without a refresh token', async () => {
+  const rec = { access_token: 'live-gis', channel_id: 'UCabc', expiry: Date.now() + 120_000 }
+  const next = await ensureAccessToken(rec)
+  assert.equal(next.access_token, 'live-gis')
+})
+
+test('GIS access without a refresh token still counts as connected while it is live', () => {
+  const now = Date.now()
+  assert.equal(youtubeRecordCanUpload({
+    access_token: 'secret2',
+    channel_id: 'UCabc',
+    expiry: now + 3_600_000,
+  }, now), true)
+  assert.equal(youtubeRecordCanUpload({
+    access_token: 'secret2',
+    channel_id: 'UCabc',
+    expiry: now - 1000,
+  }, now), false)
+  assert.equal(youtubeRecordCanUpload({
+    channel_id: 'UCabc',
+    refresh_token: 'rt',
+    expiry: now - 1000,
+  }, now), true)
+})
+
 test('public status never includes tokens', () => {
   const gisOnly = publicYoutubeStatus({
     access_token: 'secret2',
+    expiry: Date.now() + 3_600_000,
     channel_id: 'UCabc',
     channel_title: 'Faceless Lab',
   }, { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, { configured: true })

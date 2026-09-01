@@ -7,6 +7,7 @@ import {
   fetchYoutubeChannel,
   buildYoutubeConnect,
   loadYoutubeRecord,
+  youtubeRecordCanUpload,
   mcpInitializeResult,
   MCP_PROTOCOL,
   mcpText,
@@ -227,7 +228,9 @@ async function handleToken(req, res, token) {
 
 async function handleSettings(req, res, token, body) {
   const rec = await loadYoutubeRecord(token)
-  if (!rec?.refresh_token) return send(res, 409, { error: 'Connect a YouTube channel first', code: 'not_connected' })
+  if (!youtubeRecordCanUpload(rec)) {
+    return send(res, 409, { error: 'Connect a YouTube channel first', code: rec?.channel_id ? 'reconnect' : 'not_connected' })
+  }
   if (body.autoUpload != null) rec.auto_upload = !!body.autoUpload
   if (body.privacy != null) rec.privacy = normalizePrivacy(body.privacy)
   await saveYoutubeRecord(token, rec)

@@ -44,8 +44,10 @@ async function boot() {
   try { await restoreSession() } catch (_) {}
   if (!getToken()) {
     $('gate').hidden = false
+    $('panel').hidden = true
     return
   }
+  $('gate').hidden = true
   $('panel').hidden = false
   try {
     render(await youtubeStatus())
