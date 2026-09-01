@@ -105,9 +105,9 @@ pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink)
           <span class="vis-label">Visibility</span>
           <span class="vis-hint">For new uploads</span>
         </div>
-        <input type="hidden" id="privacy" value="unlisted">
+        <input type="hidden" id="privacy" value="public">
         <div class="vis-opts" role="radiogroup" aria-label="YouTube visibility">
-          <button type="button" class="vis-opt is-on" role="radio" data-privacy="unlisted" aria-checked="true">
+          <button type="button" class="vis-opt" role="radio" data-privacy="unlisted" aria-checked="false">
             <b>Unlisted</b>
             <span>Anyone with the link</span>
           </button>
@@ -115,7 +115,7 @@ pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink)
             <b>Private</b>
             <span>Only you can watch</span>
           </button>
-          <button type="button" class="vis-opt" role="radio" data-privacy="public" aria-checked="false">
+          <button type="button" class="vis-opt is-on" role="radio" data-privacy="public" aria-checked="true">
             <b>Public</b>
             <span>Live on your channel</span>
           </button>

@@ -11553,7 +11553,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
     fvSyncYoutubeUploadBtn(st)
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
     const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
-    const privacy = st.privacy || 'unlisted'
+    const privacy = st.privacy || 'public'
     let result
     try {
       const tok = await youtubeAccessToken()
@@ -12345,7 +12345,7 @@ window.filesUploadToYoutube = async () => {
         blob,
         title,
         description,
-        privacy: tok.privacy || st.privacy || 'unlisted',
+        privacy: tok.privacy || st.privacy || 'public',
         onProgress: (pct) => filesSetYtStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
     } catch (e) {
@@ -12354,7 +12354,7 @@ window.filesUploadToYoutube = async () => {
         videoUrl: f.url,
         title,
         description,
-        privacy: st.privacy || 'unlisted',
+        privacy: st.privacy || 'public',
       })
     }
     const link = result.studioUrl || result.url

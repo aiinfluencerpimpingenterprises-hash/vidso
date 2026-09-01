@@ -36,11 +36,11 @@ function render(st) {
     thumb.hidden = true
   }
   $('auto').checked = st.autoUpload !== false
-  setPrivacy(st.privacy || 'unlisted')
+  setPrivacy(st.privacy || 'public')
 }
 
 function setPrivacy(value) {
-  const val = value === 'private' || value === 'public' ? value : 'unlisted'
+  const val = value === 'private' || value === 'unlisted' ? value : 'public'
   const input = $('privacy')
   if (input) input.value = val
   document.querySelectorAll('[data-privacy]').forEach((btn) => {
@@ -97,7 +97,7 @@ async function savePrefs() {
   try {
     render(await youtubeSaveSettings({
       autoUpload: !!$('auto')?.checked,
-      privacy: $('privacy')?.value || 'unlisted',
+      privacy: $('privacy')?.value || 'public',
     }))
     setMsg('Saved', 'ok')
   } catch (e) {

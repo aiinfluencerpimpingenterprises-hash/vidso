@@ -120,6 +120,7 @@ test('public status never includes tokens', () => {
     channel_title: 'Faceless Lab',
   }, { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, { configured: true })
   assert.equal(gisOnly.connected, true)
+  assert.equal(gisOnly.privacy, 'public')
   assert.equal(JSON.stringify(gisOnly).includes('secret2'), false)
   const st = publicYoutubeStatus({
     refresh_token: 'secret',
@@ -173,9 +174,11 @@ test('redirect URI prefers env then canonical production host', () => {
   )
 })
 
-test('privacy falls back to unlisted', () => {
+test('privacy falls back to public', () => {
+  assert.equal(normalizePrivacy('unlisted'), 'unlisted')
   assert.equal(normalizePrivacy('public'), 'public')
-  assert.equal(normalizePrivacy('weird'), 'unlisted')
+  assert.equal(normalizePrivacy('weird'), 'public')
+  assert.equal(normalizePrivacy(''), 'public')
 })
 
 test('oauth sidecar is hidden from My Files', () => {
@@ -313,7 +316,8 @@ test('YouTube settings uses visibility cards instead of a native select', () => 
   const js = readFileSync(new URL('../youtube/page.js', import.meta.url), 'utf8')
   assert.match(page, /data-privacy="unlisted"/)
   assert.match(page, /data-privacy="private"/)
-  assert.match(page, /data-privacy="public"/)
+  assert.match(page, /id="privacy" value="public"/)
+  assert.match(page, /data-privacy="public" aria-checked="true"/)
   assert.doesNotMatch(page, /<select id="privacy"/)
   assert.match(js, /function setPrivacy/)
 })
