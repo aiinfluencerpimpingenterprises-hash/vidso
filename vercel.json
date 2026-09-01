@@ -6,6 +6,10 @@
       "destination": "/api/youtube/mcp"
     },
     {
+      "source": "/api/pixel/event",
+      "destination": "/api/billing/intent?kind=pixel"
+    },
+    {
       "source": "/youtube",
       "destination": "/youtube/index.html"
     },
