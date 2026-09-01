@@ -395,8 +395,9 @@ select option{background:var(--card)}
 .files-lb[hidden]{display:none!important}
 .files-lb-stage{max-width:min(1100px,96vw);max-height:min(72vh,820px);width:100%;display:flex;align-items:center;justify-content:center}
 .files-lb-stage video,.files-lb-stage img,.files-lb-stage audio{max-width:100%;max-height:min(72vh,820px);border-radius:12px;background:#000}
-.files-lb-bar{display:flex;align-items:center;gap:12px;max-width:min(1100px,96vw);width:100%}
+.files-lb-bar{display:flex;align-items:center;gap:12px;max-width:min(1100px,96vw);width:100%;flex-wrap:wrap}
 .files-lb-name{flex:1;min-width:0;font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#files-lb-yt-status{max-width:min(1100px,96vw);width:100%;margin:0}
 .files-lb-x{position:absolute;top:16px;right:16px}
 #file-input{display:none}
 
@@ -5835,8 +5836,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="files-lb-stage" id="files-lb-stage"></div>
       <div class="files-lb-bar">
         <div id="files-lb-name"></div>
+        <button type="button" class="btn btn-secondary btn-sm" id="files-lb-yt" hidden onclick="filesUploadToYoutube()">Upload to YouTube</button>
         <a id="files-lb-dl" class="btn btn-primary btn-sm" download>Download</a>
       </div>
+      <div class="status" id="files-lb-yt-status" hidden></div>
     </div>
 
     <div class="panel" id="panel-facelessstudio">
@@ -12251,6 +12254,28 @@ window.setFilesFilter = (filter) => {
   renderFilesGallery()
 }
 
+let _filesLbFile = null
+let _filesYtBusy = false
+
+function filesSetYtStatus(msg, kind) {
+  const el = document.getElementById('files-lb-yt-status')
+  if (!el) return
+  if (!msg) { el.hidden = true; el.textContent = ''; el.style.display = 'none'; return }
+  el.hidden = false
+  el.style.display = 'flex'
+  el.className = 'status' + (kind === 'err' ? ' err' : kind === 'ok' ? ' ok' : '')
+  el.innerHTML = kind === 'loading'
+    ? `<span class="spinner"></span> ${msg}`
+    : (msg || '')
+}
+
+function filesSyncYtBtn(st, kind) {
+  const btn = document.getElementById('files-lb-yt')
+  if (!btn) return
+  btn.hidden = kind !== 'video'
+  btn.textContent = (st || _ytStatus)?.connected ? 'Upload to YouTube' : 'Connect YouTube'
+}
+
 window.openFilesLightbox = (id) => {
   const f = filesCache.find((x) => String(x.id) === String(id))
   const box = document.getElementById('files-lightbox')
@@ -12259,9 +12284,15 @@ window.openFilesLightbox = (id) => {
   const dl = document.getElementById('files-lb-dl')
   if (!f?.url || !box || !stage) return
   const kind = fileKind(f)
+  _filesLbFile = f
   name.textContent = f.original_name || 'Untitled'
   dl.href = f.url
   dl.setAttribute('download', f.original_name || 'download')
+  filesSetYtStatus('')
+  filesSyncYtBtn(_ytStatus, kind)
+  if (kind === 'video') {
+    youtubeStatus().then((st) => { _ytStatus = st; filesSyncYtBtn(st, kind) }).catch(() => filesSyncYtBtn({ connected: false }, kind))
+  }
   if (kind === 'video') stage.innerHTML = `<video src="${fvEsc(f.url)}" controls autoplay playsinline></video>`
   else if (kind === 'audio') stage.innerHTML = `<audio src="${fvEsc(f.url)}" controls autoplay></audio>`
   else stage.innerHTML = `<img src="${fvEsc(f.url)}" alt="">`
@@ -12269,6 +12300,8 @@ window.openFilesLightbox = (id) => {
 }
 
 window.closeFilesLightbox = () => {
+  _filesLbFile = null
+  filesSetYtStatus('')
   const box = document.getElementById('files-lightbox')
   const stage = document.getElementById('files-lb-stage')
   if (stage) {
@@ -12276,6 +12309,65 @@ window.closeFilesLightbox = () => {
     stage.innerHTML = ''
   }
   if (box) box.hidden = true
+}
+
+window.filesUploadToYoutube = async () => {
+  const f = _filesLbFile
+  if (!f?.url || _filesYtBusy) return
+  if (fileKind(f) !== 'video') return
+  _filesYtBusy = true
+  const btn = document.getElementById('files-lb-yt')
+  if (btn) btn.disabled = true
+  filesSetYtStatus('Connecting to YouTube…', 'loading')
+  try {
+    let st = _ytStatus
+    try { st = await youtubeStatus(); _ytStatus = st } catch (_) {}
+    filesSyncYtBtn(st, 'video')
+    if (!st?.configured) throw new Error('YouTube publishing is not configured on this deployment yet.')
+    if (!st?.connected) {
+      filesSetYtStatus('Connect a YouTube channel first', 'err')
+      location.href = '/youtube?yt=1'
+      return
+    }
+    const title = String(f.original_name || 'Vidso video').replace(/\.[a-z0-9]+$/i, '').slice(0, 100)
+    filesSetYtStatus('Uploading to YouTube…', 'loading')
+    let result
+    try {
+      const tok = await youtubeAccessToken()
+      const blob = await fetch(f.url).then((r) => {
+        if (!r.ok) throw new Error('Could not read the video')
+        return r.blob()
+      })
+      result = await uploadBlobToYoutube({
+        accessToken: tok.accessToken,
+        blob,
+        title,
+        description: title,
+        privacy: tok.privacy || st.privacy || 'unlisted',
+        onProgress: (pct) => filesSetYtStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
+      })
+    } catch (e) {
+      filesSetYtStatus('Uploading to YouTube from Vidso…', 'loading')
+      result = await uploadViaServer({
+        videoUrl: f.url,
+        title,
+        description: title,
+        privacy: st.privacy || 'unlisted',
+      })
+    }
+    const link = result.studioUrl || result.url
+    filesSetYtStatus(
+      link
+        ? `Uploaded. <a href="${link}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>`
+        : 'Uploaded to YouTube',
+      'ok',
+    )
+  } catch (e) {
+    filesSetYtStatus(e.message || 'YouTube upload failed', 'err')
+  } finally {
+    _filesYtBusy = false
+    if (btn) btn.disabled = false
+  }
 }
 
 async function loadFiles() {
