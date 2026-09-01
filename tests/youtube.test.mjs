@@ -320,4 +320,6 @@ test('YouTube settings uses visibility cards instead of a native select', () => 
   assert.match(page, /data-privacy="public" aria-checked="true"/)
   assert.doesNotMatch(page, /<select id="privacy"/)
   assert.match(js, /function setPrivacy/)
+  assert.match(page, /id="yt-mcp-card"[^>]*\bdata-archived\b/)
+  assert.match(page, /id="yt-mcp-card"[^>]*\bhidden\b/)
 })

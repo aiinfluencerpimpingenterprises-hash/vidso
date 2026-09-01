@@ -23,7 +23,8 @@ function render(st) {
   state.className = 'state ' + (on ? 'on' : 'off')
   $('off').classList.toggle('hidden', on || st?.configured === false)
   $('on').classList.toggle('hidden', !on)
-  $('mcp').textContent = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
+  const mcp = $('mcp')
+  if (mcp) mcp.textContent = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
   if (!on) return
   $('title').textContent = st.channel?.title || 'YouTube channel'
   $('cid').textContent = st.channel?.id || ''
@@ -51,7 +52,8 @@ function setPrivacy(value) {
 }
 
 async function boot() {
-  $('mcp').textContent = location.origin.replace(/\/+$/, '') + '/mcp'
+  const mcp = $('mcp')
+  if (mcp) mcp.textContent = location.origin.replace(/\/+$/, '') + '/mcp'
   try { await restoreSession() } catch (_) {}
   if (!getToken()) {
     $('gate').hidden = false
