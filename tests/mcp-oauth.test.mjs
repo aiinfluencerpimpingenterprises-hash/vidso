@@ -153,14 +153,18 @@ test('the youtube MCP server is archived', () => {
   assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), true)
 })
 
-test('studio and dashboard keep YouTube MCP out of the product UI', () => {
+test('studio still hides YouTube MCP until Studio is public', () => {
   const shell = readFileSync(new URL('../lib/studio-shell.js', import.meta.url), 'utf8')
-  const dashboard = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
-  const ytPage = readFileSync(new URL('../youtube/index.html', import.meta.url), 'utf8')
   assert.match(shell, /id="fs-yt-mcp"[^>]*hidden/)
-  assert.match(dashboard, /id="nav-yt-mcp-btn"[^>]*hidden/)
-  assert.match(dashboard, /id="settings-yt-link"[^>]*hidden/)
-  assert.match(ytPage, /location\.replace\('\/video-generation'\)/)
+})
+
+test('dashboard YouTube connect is reachable from settings and the profile menu', () => {
+  const dashboard = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
+  assert.match(dashboard, /id="nav-yt-mcp-btn"/)
+  assert.doesNotMatch(dashboard, /id="nav-yt-mcp-btn"[^>]*\bdata-archived\b/)
+  assert.match(dashboard, /id="settings-yt-link"/)
+  assert.doesNotMatch(dashboard, /id="settings-yt-link"[^>]*\bdata-archived\b/)
+  assert.match(dashboard, /id="fv-yt-upload"/)
 })
 
 test('a preview flag still reaches the archived MCP server', () => {

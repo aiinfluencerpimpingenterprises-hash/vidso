@@ -3953,9 +3953,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <a class="settings-row-btn" id="settings-yt-link" href="/youtube?yt=1" data-archived hidden>
+      <a class="settings-row-btn" id="settings-yt-link" href="/youtube?yt=1">
         <span class="settings-row-label">YouTube</span>
-        <span class="settings-row-value" id="settings-yt-state">Manage →</span>
+        <span class="settings-row-value" id="settings-yt-state">Connect →</span>
       </a>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
@@ -4089,7 +4089,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" id="nav-yt-mcp-btn" data-archived hidden>YouTube MCP</button>
+        <button type="button" role="menuitem" id="nav-yt-mcp-btn">YouTube</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
@@ -6929,13 +6929,23 @@ window.closeAccountSettings = () => {
 }
 
 let _ytStatus = null
-async function refreshYoutubeSettings() {
+function fvExportResultOpen() {
+  const box = document.getElementById('fv-export-result')
+  return !!(box && box.style.display !== 'none')
+}
+function fvSyncYoutubeUploadBtn(st) {
+  const btn = document.getElementById('fv-yt-upload')
   const stateEl = document.getElementById('settings-yt-state')
-  const uploadBtn = document.getElementById('fv-yt-upload')
+  const on = !!(st || _ytStatus)?.connected
+  if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
+  if (!btn) return
+  btn.hidden = !fvExportResultOpen()
+  btn.textContent = on ? 'Upload to YouTube' : 'Connect YouTube'
+}
+async function refreshYoutubeSettings() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
     _ytStatus = { configured: true, connected: false }
-    if (stateEl) stateEl.textContent = 'Manage →'
-    if (uploadBtn) uploadBtn.hidden = true
+    fvSyncYoutubeUploadBtn(_ytStatus)
     return
   }
   try {
@@ -6943,9 +6953,7 @@ async function refreshYoutubeSettings() {
   } catch (_) {
     _ytStatus = { configured: false, connected: false }
   }
-  const on = !!_ytStatus?.connected
-  if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
-  if (uploadBtn) uploadBtn.hidden = !on
+  fvSyncYoutubeUploadBtn(_ytStatus)
 }
 
 window.connectYoutubeChannel = () => { location.href = '/youtube?yt=1' }
@@ -11489,6 +11497,7 @@ window.fvStartExport = async (opts = {}) => {
         dl.href = url
         document.getElementById('fv-export-result').style.display = ''
         document.getElementById('fv-export-actions').style.display = 'none'
+        fvSyncYoutubeUploadBtn(_ytStatus)
         fvSaveRenderToLibrary(url, fvState.script?.title)
         fvMaybeAutoUploadYoutube()
       } catch (e) {
@@ -11533,11 +11542,11 @@ window.fvUploadToYoutube = async (opts = {}) => {
     }
     if (!st?.connected) {
       fvSetYoutubeStatus('Connect a YouTube channel first', 'err')
-      if (btn) btn.hidden = true
+      fvSyncYoutubeUploadBtn(st)
       if (!opts.auto) location.href = '/youtube?yt=1'
       return
     }
-    if (btn) btn.hidden = false
+    fvSyncYoutubeUploadBtn(st)
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
     const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
     const privacy = st.privacy || 'unlisted'
@@ -11587,12 +11596,10 @@ async function fvMaybeAutoUploadYoutube() {
   try {
     const st = await youtubeStatus()
     _ytStatus = st
-    const uploadBtn = document.getElementById('fv-yt-upload')
-    if (uploadBtn) uploadBtn.hidden = !st?.connected
+    fvSyncYoutubeUploadBtn(st)
     if (st?.connected && st.autoUpload) await window.fvUploadToYoutube({ auto: true })
   } catch (_) {
-    const uploadBtn = document.getElementById('fv-yt-upload')
-    if (uploadBtn) uploadBtn.hidden = true
+    fvSyncYoutubeUploadBtn({ connected: false })
   }
 }
 
