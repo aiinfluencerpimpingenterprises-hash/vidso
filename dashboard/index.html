@@ -6430,6 +6430,7 @@ import {
   galleryItems,
   generationFileName,
   sortFilesNewest,
+  youtubeTitleFromFileName,
 } from '/lib/files-gallery.js'
 import {
   youtubeStatus,
@@ -6943,7 +6944,7 @@ function fvSyncYoutubeUploadBtn(st) {
   if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
   if (!btn) return
   btn.hidden = !fvExportResultOpen()
-  btn.textContent = on ? 'Upload to YouTube' : 'Connect YouTube'
+  btn.textContent = 'Upload to YouTube'
 }
 async function refreshYoutubeSettings() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
@@ -12273,7 +12274,7 @@ function filesSyncYtBtn(st, kind) {
   const btn = document.getElementById('files-lb-yt')
   if (!btn) return
   btn.hidden = kind !== 'video'
-  btn.textContent = (st || _ytStatus)?.connected ? 'Upload to YouTube' : 'Connect YouTube'
+  btn.textContent = 'Upload to YouTube'
 }
 
 window.openFilesLightbox = (id) => {
@@ -12329,7 +12330,8 @@ window.filesUploadToYoutube = async () => {
       location.href = '/youtube?yt=1'
       return
     }
-    const title = String(f.original_name || 'Vidso video').replace(/\.[a-z0-9]+$/i, '').slice(0, 100)
+    const title = youtubeTitleFromFileName(f.original_name || f.name)
+    const description = title
     filesSetYtStatus('Uploading to YouTube…', 'loading')
     let result
     try {
@@ -12342,7 +12344,7 @@ window.filesUploadToYoutube = async () => {
         accessToken: tok.accessToken,
         blob,
         title,
-        description: title,
+        description,
         privacy: tok.privacy || st.privacy || 'unlisted',
         onProgress: (pct) => filesSetYtStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
@@ -12351,7 +12353,7 @@ window.filesUploadToYoutube = async () => {
       result = await uploadViaServer({
         videoUrl: f.url,
         title,
-        description: title,
+        description,
         privacy: st.privacy || 'unlisted',
       })
     }

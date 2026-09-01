@@ -7,6 +7,7 @@ import {
   galleryItems,
   generationFileName,
   sortFilesNewest,
+  youtubeTitleFromFileName,
 } from '../lib/files-gallery.js'
 
 test('generation filenames are dated and kind-prefixed', () => {
@@ -34,6 +35,19 @@ test('gallery classifies and filters uploads', () => {
   assert.equal(galleryItems(files, 'thumbnails').length, 1)
   assert.equal(galleryItems(files, 'audio').length, 1)
   assert.equal(galleryItems(files, 'all').length, 3)
+})
+
+test('YouTube titles come from the topic, not the filename slug', () => {
+  assert.equal(
+    youtubeTitleFromFileName('Long-form-top-10-dog-breeds-ranked-2026-09-01.mp4'),
+    'Top 10 Dog Breeds Ranked',
+  )
+  assert.equal(
+    youtubeTitleFromFileName('Long-form-5-biggest-tigers-of-all-time-2026-08-28.mp4'),
+    '5 Biggest Tigers of All Time',
+  )
+  assert.equal(youtubeTitleFromFileName('vacation.mp4'), 'Vacation')
+  assert.equal(youtubeTitleFromFileName('Long-form-2026-09-01.mp4'), 'Vidso video')
 })
 
 test('files sort newest first and sizes format', () => {

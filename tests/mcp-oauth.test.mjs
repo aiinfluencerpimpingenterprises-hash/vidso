@@ -166,6 +166,8 @@ test('dashboard YouTube connect is reachable from settings and the profile menu'
   assert.doesNotMatch(dashboard, /id="settings-yt-link"[^>]*\bdata-archived\b/)
   assert.match(dashboard, /id="fv-yt-upload"/)
   assert.match(dashboard, /id="files-lb-yt"/)
+  assert.match(dashboard, /youtubeTitleFromFileName/)
+  assert.doesNotMatch(dashboard, /btn\.textContent = .*Connect YouTube/)
 })
 
 test('a preview flag still reaches the archived MCP server', () => {
