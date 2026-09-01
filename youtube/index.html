@@ -29,7 +29,12 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.4re
 .channel img{width:44px;height:44px;border-radius:99px;object-fit:cover;background:#111}
 .title{font-weight:700}
 .id{font-size:.78rem;color:var(--faint);margin-top:2px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted)}
+#on{display:flex;flex-direction:column;gap:20px}
+.row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:4px;padding-top:16px;border-top:1px solid var(--line);
+  font-size:.9rem;color:var(--muted)
+}
 .vis{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;background:#0d0d0e;border:1px solid var(--line)}
 .vis-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .vis-label{font-size:.9rem;font-weight:650;color:var(--ink)}
