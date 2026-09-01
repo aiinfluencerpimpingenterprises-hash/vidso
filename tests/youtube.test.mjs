@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import {
   buildYoutubeConnect,
   clampMaxResults,
@@ -305,4 +306,14 @@ test('MCP initialize accepts Claude protocol versions', () => {
   assert.equal(mcpInitializeResult('2025-06-18').protocolVersion, '2025-06-18')
   assert.equal(mcpInitializeResult('2025-03-26').protocolVersion, '2025-03-26')
   assert.equal(mcpInitializeResult('nope').protocolVersion, MCP_PROTOCOL)
+})
+
+test('YouTube settings uses visibility cards instead of a native select', () => {
+  const page = readFileSync(new URL('../youtube/index.html', import.meta.url), 'utf8')
+  const js = readFileSync(new URL('../youtube/page.js', import.meta.url), 'utf8')
+  assert.match(page, /data-privacy="unlisted"/)
+  assert.match(page, /data-privacy="private"/)
+  assert.match(page, /data-privacy="public"/)
+  assert.doesNotMatch(page, /<select id="privacy"/)
+  assert.match(js, /function setPrivacy/)
 })

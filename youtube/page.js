@@ -36,7 +36,18 @@ function render(st) {
     thumb.hidden = true
   }
   $('auto').checked = st.autoUpload !== false
-  $('privacy').value = st.privacy || 'unlisted'
+  setPrivacy(st.privacy || 'unlisted')
+}
+
+function setPrivacy(value) {
+  const val = value === 'private' || value === 'public' ? value : 'unlisted'
+  const input = $('privacy')
+  if (input) input.value = val
+  document.querySelectorAll('[data-privacy]').forEach((btn) => {
+    const on = btn.getAttribute('data-privacy') === val
+    btn.classList.toggle('is-on', on)
+    btn.setAttribute('aria-checked', on ? 'true' : 'false')
+  })
 }
 
 async function boot() {
@@ -94,7 +105,12 @@ async function savePrefs() {
   }
 }
 $('auto')?.addEventListener('change', savePrefs)
-$('privacy')?.addEventListener('change', savePrefs)
+document.querySelectorAll('[data-privacy]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    setPrivacy(btn.getAttribute('data-privacy'))
+    savePrefs()
+  })
+})
 
 $('copy')?.addEventListener('click', async () => {
   const text = $('mcp')?.textContent || ''

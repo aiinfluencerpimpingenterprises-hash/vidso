@@ -30,7 +30,31 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.4re
 .title{font-weight:700}
 .id{font-size:.78rem;color:var(--faint);margin-top:2px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--muted)}
-select{background:#111;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit}
+.vis{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;background:#0d0d0e;border:1px solid var(--line)}
+.vis-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.vis-label{font-size:.9rem;font-weight:650;color:var(--ink)}
+.vis-hint{font-size:.75rem;color:var(--faint)}
+.vis-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.vis-opt{
+  appearance:none;-webkit-appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  min-height:78px;padding:12px;border-radius:12px;border:1px solid var(--line);
+  background:#141416;color:var(--ink);font:inherit;text-align:left;cursor:pointer;
+  transition:border-color .15s ease,background .15s ease,box-shadow .15s ease
+}
+.vis-opt:hover{border-color:rgba(245,245,244,.22)}
+.vis-opt:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.vis-opt.is-on{
+  border-color:rgba(var(--glow),.55);
+  background:rgba(var(--glow),.12);
+  box-shadow:0 0 0 3px rgba(var(--glow),.12)
+}
+.vis-opt b{font-size:.85rem;font-weight:700;letter-spacing:-.02em}
+.vis-opt span{font-size:.72rem;line-height:1.35;color:var(--muted)}
+.vis-opt.is-on span{color:rgba(245,245,244,.8)}
+@media (max-width:560px){
+  .vis-opts{grid-template-columns:1fr}
+  .vis-opt{min-height:0;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+}
 .btn{height:42px;padding:0 16px;border:0;border-radius:11px;font:inherit;font-weight:700;cursor:pointer}
 .btn-primary{background:linear-gradient(135deg,#F0606C,#B31D2C);color:#fff}
 .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
@@ -76,13 +100,27 @@ pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink)
       <label class="row">Upload after export
         <input type="checkbox" id="auto" checked>
       </label>
-      <label class="row">Visibility
-        <select id="privacy">
-          <option value="unlisted">Unlisted</option>
-          <option value="private">Private</option>
-          <option value="public">Public</option>
-        </select>
-      </label>
+      <div class="vis">
+        <div class="vis-head">
+          <span class="vis-label">Visibility</span>
+          <span class="vis-hint">For new uploads</span>
+        </div>
+        <input type="hidden" id="privacy" value="unlisted">
+        <div class="vis-opts" role="radiogroup" aria-label="YouTube visibility">
+          <button type="button" class="vis-opt is-on" role="radio" data-privacy="unlisted" aria-checked="true">
+            <b>Unlisted</b>
+            <span>Anyone with the link</span>
+          </button>
+          <button type="button" class="vis-opt" role="radio" data-privacy="private" aria-checked="false">
+            <b>Private</b>
+            <span>Only you can watch</span>
+          </button>
+          <button type="button" class="vis-opt" role="radio" data-privacy="public" aria-checked="false">
+            <b>Public</b>
+            <span>Live on your channel</span>
+          </button>
+        </div>
+      </div>
       <button type="button" class="btn btn-ghost" id="disconnect">Disconnect</button>
     </div>
   </div>
