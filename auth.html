@@ -141,7 +141,9 @@ html.auth-oauth body{padding:12px}
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:760px){
-  .auth-shell{max-width:420px;border-radius:18px;flex-direction:column}
+  body{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:14px 14px 24px;gap:12px}
+  .auth-home{position:static;align-self:flex-start;z-index:2;padding:2px 2px 0;line-height:1.2}
+  .auth-shell{width:100%;max-width:420px;align-self:center;border-radius:18px;flex-direction:column}
   .auth-showcase{display:flex;padding:16px 16px 0;border-right:none;background:transparent}
   .auth-showcase h3,.auth-sub,.auth-chips{display:none}
   .auth-panel{padding:24px 24px 32px}
