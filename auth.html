@@ -69,7 +69,7 @@ input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
 .auth-legal{margin-top:16px;font-size:.72rem;line-height:1.5;color:var(--faint);text-align:center}
 .auth-legal a{color:var(--a1);text-decoration:none;font-weight:500}
 .auth-legal a:hover{text-decoration:underline}
-.auth-home{position:absolute;top:18px;left:18px;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:600;text-decoration:none}
+.auth-home{position:absolute;top:18px;left:18px;z-index:3;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:600;text-decoration:none}
 .auth-home:hover{color:#fff}
 html.auth-oauth .auth-showcase{display:none}
 html.auth-oauth .auth-shell{max-width:440px}
@@ -141,7 +141,9 @@ html.auth-oauth body{padding:12px}
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:760px){
-  .auth-shell{max-width:420px;border-radius:18px;flex-direction:column}
+  body{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:16px 16px 28px;gap:14px}
+  .auth-home{position:static;align-self:flex-start;padding:2px 0}
+  .auth-shell{width:100%;max-width:none;border-radius:18px;flex-direction:column}
   .auth-showcase{display:flex;padding:16px 16px 0;border-right:none;background:transparent}
   .auth-showcase h3,.auth-sub,.auth-chips{display:none}
   .auth-panel{padding:24px 24px 32px}
