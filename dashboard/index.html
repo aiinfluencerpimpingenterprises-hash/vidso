@@ -6444,7 +6444,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
-import { initToolsGallery } from '/lib/tools-gallery.js'
+import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots'
 import {
   tourById,
   tourStepsOf,
@@ -8366,7 +8366,7 @@ function startPreviewTourEntry() {
     return
   }
   if (tourResumePlayAll()) return
-  if (tourPreviewPath() || uiPreviewMode()) {
+  if (tourPreviewPath()) {
     if (!tourIsCompleted('core')) {
       openUiTour({ tourId: 'core', force: true })
       return
