@@ -21,7 +21,7 @@ test('topic filters only return matching tools', () => {
   assert.ok(toolsForFilter('scripts').some((t) => t.id === 'videogen'))
 })
 
-test('dashboard cards use the Cloudflare tool shots except AI Captions', () => {
+test('dashboard cards use the Cloudflare tool shots', () => {
   const byId = Object.fromEntries(TOOL_GALLERY.map((t) => [t.id, t.image]))
   assert.match(byId.videogen, /01_Long_Form_Generator\.png$/)
   assert.match(byId.imagegen, /02_Thumbnail_Generator\.png$/)
@@ -33,7 +33,7 @@ test('dashboard cards use the Cloudflare tool shots except AI Captions', () => {
   assert.match(byId.downloader, /08_Video_Downloader\.png$/)
   assert.match(byId.commentary, /09_Video_Commentary\.png$/)
   assert.match(byId.files, /10_My_Files\.png$/)
-  assert.match(byId.captions, /Script\.png$/)
+  assert.match(byId.captions, /11_AI_Captions\.png$/)
 })
 
 test('every public tool has a topic so it can appear in the rail', () => {
