@@ -12,6 +12,7 @@ import {
 } from '../lib/hustle-spin.js'
 
 const home = readFileSync(fileURLToPath(new URL('../home/index.html', import.meta.url)), 'utf8')
+const spin = readFileSync(fileURLToPath(new URL('../spin/index.html', import.meta.url)), 'utf8')
 
 test('the reel always parks on Faceless YT Channel', () => {
   const reel = buildReel()
@@ -41,9 +42,10 @@ test('ease starts fast and finishes on 1', () => {
   assert.ok(easeOutSlot(0.9) > 0.9)
 })
 
-test('the landing hero mounts the spinner', () => {
-  assert.match(home, /id="hustle-spin"/)
-  assert.match(home, /data-hustle-track/)
-  assert.match(home, /\/lib\/hustle-spin\.js/)
-  assert.match(home, /FACELESS YT CHANNEL/)
+test('the spinner lives on its own section, not the landing hero', () => {
+  assert.doesNotMatch(home, /id="hustle-spin"/)
+  assert.match(spin, /id="hustle-spin"/)
+  assert.match(spin, /data-hustle-track/)
+  assert.match(spin, /\/lib\/hustle-spin\.js/)
+  assert.match(spin, /FACELESS YT CHANNEL/)
 })
