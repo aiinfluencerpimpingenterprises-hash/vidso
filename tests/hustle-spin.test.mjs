@@ -88,6 +88,8 @@ test('the spinner lives on its own section, not the landing hero', () => {
   assert.doesNotMatch(home, /id="hustle-spin"/)
   assert.match(spin, /id="hustle-spin"/)
   assert.match(spin, /data-hustle-track/)
+  assert.match(spin, /hustle-spin-mark is-left/)
+  assert.match(spin, /hustle-spin-mark is-right/)
   assert.match(spin, /\/lib\/hustle-spin\.js/)
   assert.match(spin, /FACELESS YT CHANNEL/)
 })
