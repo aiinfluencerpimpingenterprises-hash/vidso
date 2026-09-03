@@ -10,6 +10,7 @@ import {
   easeOutQuint,
   easeOutSlot,
   itemFace,
+  createHustleAudio,
 } from '../lib/hustle-spin.js'
 
 const home = readFileSync(fileURLToPath(new URL('../home/index.html', import.meta.url)), 'utf8')
@@ -51,6 +52,36 @@ test('on-screen labels stay sharp', () => {
   assert.ok(edge.opacity < 0.4)
   assert.ok(edge.opacity > 0)
   assert.equal(edge.filter, 'none')
+})
+
+test('reel audio can tick and land without a browser context', () => {
+  const silent = createHustleAudio(null)
+  assert.equal(silent.tick(), false)
+  assert.equal(silent.land(), false)
+  let osc = 0
+  class FakeCtx {
+    constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {} }
+    createOscillator() {
+      osc += 1
+      return {
+        type: 'sine',
+        frequency: { value: 0 },
+        connect() { return { connect() {} } },
+        start() {},
+        stop() {},
+      }
+    }
+    createGain() {
+      return {
+        gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        connect() { return this },
+      }
+    }
+  }
+  const live = createHustleAudio(FakeCtx)
+  assert.equal(live.tick(1), true)
+  assert.equal(live.land(), true)
+  assert.ok(osc >= 4)
 })
 
 test('the spinner lives on its own section, not the landing hero', () => {
