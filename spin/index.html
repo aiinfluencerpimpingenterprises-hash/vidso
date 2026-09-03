@@ -58,10 +58,17 @@
     padding:0 96px;
   }
   .hustle-spin-item span{display:inline-block}
+  .hustle-hint{
+    position:absolute;left:0;right:0;bottom:28px;
+    text-align:center;font-size:12px;font-weight:800;letter-spacing:.28em;
+    text-transform:uppercase;color:rgba(255,255,255,.38);
+    pointer-events:none;transition:opacity .3s;
+  }
+  .hustle-spin.is-landed .hustle-hint,.hustle-spin.is-spinning .hustle-hint{opacity:0}
   .hustle-spin-mark{
     position:absolute;
     top:50%;
-    width:34px;height:calc(var(--hustle-row) * .82);
+    width:34px;height:calc(var(--hustle-row) * 1.42);
     transform:translateY(-50%);
     pointer-events:none;
     z-index:2;
@@ -82,7 +89,7 @@
   .hustle-spin-mark.is-left::after{bottom:0;border-right:0;border-top:0}
   @media(max-width:720px){
     .hustle-spin-item{font-size:clamp(20px,7vw,34px);padding:0 64px;letter-spacing:-.04em}
-    .hustle-spin-mark{width:26px;height:calc(var(--hustle-row) * .78)}
+    .hustle-spin-mark{width:26px;height:calc(var(--hustle-row) * 1.28)}
     .hustle-spin-mark.is-left{left:calc(50% - var(--mark-out) - 26px)}
     .hustle-spin-mark::before,.hustle-spin-mark::after{width:20px;height:20px;border-width:6px}
   }
@@ -97,6 +104,7 @@
     </div>
     <div class="hustle-spin-mark is-left" aria-hidden="true"></div>
     <div class="hustle-spin-mark is-right" aria-hidden="true"></div>
+    <div class="hustle-hint">Tap to spin</div>
   </div>
 </section>
 <script type="module">
