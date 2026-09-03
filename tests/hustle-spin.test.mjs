@@ -9,6 +9,7 @@ import {
   targetOffset,
   easeOutQuint,
   easeOutSlot,
+  itemFace,
 } from '../lib/hustle-spin.js'
 
 const home = readFileSync(fileURLToPath(new URL('../home/index.html', import.meta.url)), 'utf8')
@@ -40,6 +41,15 @@ test('ease starts fast and finishes on 1', () => {
   assert.equal(easeOutSlot(1), 1)
   assert.ok(easeOutSlot(0.5) < 0.7)
   assert.ok(easeOutSlot(0.9) > 0.9)
+})
+
+test('on-screen labels stay sharp', () => {
+  const mid = itemFace(200, 400, 80)
+  const edge = itemFace(20, 400, 80)
+  assert.equal(mid.filter, 'none')
+  assert.equal(mid.opacity, 1)
+  assert.ok(edge.opacity >= 0.55)
+  assert.equal(edge.filter, 'none')
 })
 
 test('the spinner lives on its own section, not the landing hero', () => {
