@@ -42,7 +42,10 @@ test('ease starts fast and finishes on 1', () => {
   assert.ok(easeOutQuint(0.8) > 0.95)
   assert.equal(easeOutSlot(0), 0)
   assert.equal(easeOutSlot(1), 1)
-  assert.ok(easeOutSlot(0.5) < 0.7)
+  assert.ok(easeOutSlot(0.3) > 0.55)
+  assert.ok(easeOutSlot(0.5) > 0.86)
+  assert.ok(easeOutSlot(0.5) < 0.95)
+  assert.ok(easeOutSlot(0.85) < 0.99)
   assert.ok(easeOutSlot(0.9) > 0.9)
 })
 
