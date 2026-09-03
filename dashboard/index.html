@@ -71,6 +71,7 @@
       ui = true
     }
   } catch (e) {}
+  if (path === '/spin') return
   if (ui) return
   if (oauthReturn) {
     document.documentElement.classList.add('needs-gate')

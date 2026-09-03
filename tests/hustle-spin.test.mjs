@@ -15,6 +15,8 @@ import {
 
 const home = readFileSync(fileURLToPath(new URL('../home/index.html', import.meta.url)), 'utf8')
 const spin = readFileSync(fileURLToPath(new URL('../spin/index.html', import.meta.url)), 'utf8')
+const dashboard = readFileSync(fileURLToPath(new URL('../dashboard/index.html', import.meta.url)), 'utf8')
+const shell = readFileSync(fileURLToPath(new URL('../lib/hustle-spin.js', import.meta.url)), 'utf8')
 
 test('the reel always parks on Faceless YT Channel', () => {
   const reel = buildReel()
@@ -82,6 +84,11 @@ test('reel audio can tick and land without a browser context', () => {
   assert.equal(live.tick(1), true)
   assert.equal(live.land(), true)
   assert.ok(osc >= 4)
+})
+
+test('a tap starts the reel without waiting on audio', () => {
+  assert.match(shell, /unlockAudio\(\)\s*\n\s*if \(!spinning\) spin\(\)/)
+  assert.match(dashboard, /path === '\/spin'\) return/)
 })
 
 test('the spinner lives on its own section, not the landing hero', () => {

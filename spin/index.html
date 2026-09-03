@@ -68,7 +68,7 @@
   .hustle-spin-mark{
     position:absolute;
     top:50%;
-    width:34px;height:calc(var(--hustle-row) * 1.42);
+    width:34px;height:calc(var(--hustle-row) * 1.02);
     transform:translateY(-50%);
     pointer-events:none;
     z-index:2;
@@ -78,7 +78,7 @@
   .hustle-spin-mark::before,.hustle-spin-mark::after{
     content:'';
     position:absolute;
-    width:28px;height:28px;
+    width:28px;height:18px;
     border:7px solid var(--a1);
   }
   .hustle-spin-mark.is-right::before,.hustle-spin-mark.is-right::after{left:0}
@@ -89,15 +89,15 @@
   .hustle-spin-mark.is-left::after{bottom:0;border-right:0;border-top:0}
   @media(max-width:720px){
     .hustle-spin-item{font-size:clamp(20px,7vw,34px);padding:0 64px;letter-spacing:-.04em}
-    .hustle-spin-mark{width:26px;height:calc(var(--hustle-row) * 1.28)}
+    .hustle-spin-mark{width:26px;height:calc(var(--hustle-row) * 1)}
     .hustle-spin-mark.is-left{left:calc(50% - var(--mark-out) - 26px)}
-    .hustle-spin-mark::before,.hustle-spin-mark::after{width:20px;height:20px;border-width:6px}
+    .hustle-spin-mark::before,.hustle-spin-mark::after{width:20px;height:14px;border-width:6px}
   }
 </style>
 </head>
 <body>
 <section class="hustle-section" aria-label="Side hustle reel">
-  <div class="hustle-spin" id="hustle-spin" role="img" aria-label="FACELESS YT CHANNEL">
+  <div class="hustle-spin" id="hustle-spin" role="button" tabindex="0" aria-label="FACELESS YT CHANNEL">
     <span class="sr-only" data-hustle-live>FACELESS YT CHANNEL</span>
     <div class="hustle-spin-viewport">
       <div class="hustle-spin-track" data-hustle-track></div>
