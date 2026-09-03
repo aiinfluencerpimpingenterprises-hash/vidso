@@ -48,7 +48,8 @@ test('on-screen labels stay sharp', () => {
   const edge = itemFace(20, 400, 80)
   assert.equal(mid.filter, 'none')
   assert.equal(mid.opacity, 1)
-  assert.ok(edge.opacity >= 0.55)
+  assert.ok(edge.opacity < 0.4)
+  assert.ok(edge.opacity > 0)
   assert.equal(edge.filter, 'none')
 })
 
