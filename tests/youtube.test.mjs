@@ -187,9 +187,9 @@ test('oauth sidecar is hidden from My Files', () => {
   assert.equal(isHistorySidecarName('Thumbnail-demo-abcd.jpg'), false)
 })
 
-test('MCP tool list covers channel inspect upload and update', () => {
+test('MCP tool list covers YouTube plus Vidso generation', () => {
   const names = mcpTools().map((t) => t.name)
-  assert.deepEqual(names, [
+  assert.deepEqual(names.filter((n) => n.startsWith('youtube_')), [
     'youtube_status',
     'youtube_connect_url',
     'youtube_list_videos',
@@ -197,9 +197,17 @@ test('MCP tool list covers channel inspect upload and update', () => {
     'youtube_update_video',
     'youtube_upload',
   ])
+  assert.ok(names.includes('longform_make_video'))
+  assert.ok(names.includes('longform_script'))
+  assert.ok(names.includes('vidso_poll'))
+  assert.ok(names.includes('thumbnail_generate'))
+  assert.ok(names.includes('clip_start'))
+  assert.ok(names.includes('voiceover_generate'))
+  assert.ok(names.includes('files_list'))
   const init = mcpInitializeResult()
   assert.equal(init.protocolVersion, MCP_PROTOCOL)
-  assert.equal(init.serverInfo.name, 'vidso-youtube')
+  assert.equal(init.serverInfo.name, 'vidso')
+  assert.ok(init.instructions.includes('longform_make_video'))
   assert.ok(init.instructions.includes('youtube_status'))
 })
 

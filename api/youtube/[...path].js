@@ -39,6 +39,8 @@ import {
   wantsBrowserPage,
   wwwAuthenticate,
 } from '../../lib/mcp-oauth.js'
+import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
+import { resolveVidsoUser } from '../../lib/gate-run.js'
 
 export const config = { maxDuration: 300 }
 
@@ -246,8 +248,6 @@ async function handleUpload(req, res, token, body) {
   }
 }
 
-const MCP_OPEN_TOOLS = new Set(['youtube_status', 'youtube_connect_url'])
-
 async function handleMcpMessage(req, res, token, user, body) {
   const id = body?.id ?? null
   const method = String(body?.method || '')
@@ -273,7 +273,7 @@ async function handleMcpMessage(req, res, token, user, body) {
     if (!plan.ok) return rpc(req, res, id, { ...mcpText(plan.message), isError: true })
   }
   try {
-    const result = await runMcpTool(name, args, { token, req })
+    const result = await runMcpTool(name, args, { token, req, user })
     return rpc(req, res, id, result)
   } catch (e) {
     if (e.code === -32601) return rpcErr(req, res, id, -32601, e.message || 'Unknown tool')
@@ -298,7 +298,9 @@ async function requireMcpUser(req) {
     throw err
   }
   const unwrapped = unwrapMcpBearer(raw)
-  return requireUser(req, unwrapped.token)
+  const token = unwrapped.token
+  const user = await resolveVidsoUser(token)
+  return { user, token }
 }
 
 async function handleMcp(req, res, token, user) {
@@ -307,7 +309,7 @@ async function handleMcp(req, res, token, user) {
     res.setHeader('Allow', 'POST, OPTIONS')
     return send(res, 405, {
       error: 'Streamable HTTP MCP: POST JSON-RPC to this URL',
-      name: 'vidso-youtube',
+      name: 'vidso',
       protocolVersion: MCP_PROTOCOL,
     })
   }
