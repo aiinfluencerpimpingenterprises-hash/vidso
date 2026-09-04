@@ -137,7 +137,7 @@ test('token form bodies parse urlencoded and JSON', () => {
   assert.equal(parseForm('{"grant_type":"refresh_token"}').grant_type, 'refresh_token')
 })
 
-// --- The MCP server is archived: nothing should be able to discover or reach it.
+// --- MCP is live for Claude connectors; landing marketing stays hidden.
 
 import { MCP_ARCHIVED, mcpArchived, mcpPreviewOn } from '../lib/mcp-oauth.js'
 
@@ -145,12 +145,12 @@ function req(url = '/mcp', headers = {}) {
   return { url, headers, method: 'GET' }
 }
 
-test('the youtube MCP server is archived', () => {
-  assert.equal(MCP_ARCHIVED, true)
-  assert.equal(mcpArchived(req('/mcp')), true)
-  assert.equal(mcpArchived(req('/api/youtube/mcp')), true)
-  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), true)
-  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), true)
+test('the youtube MCP server is live for connectors', () => {
+  assert.equal(MCP_ARCHIVED, false)
+  assert.equal(mcpArchived(req('/mcp')), false)
+  assert.equal(mcpArchived(req('/api/youtube/mcp')), false)
+  assert.equal(mcpArchived(req('/oauth/authorize?client_id=x')), false)
+  assert.equal(mcpArchived(req('/.well-known/oauth-authorization-server')), false)
 })
 
 test('studio still hides YouTube MCP until Studio is public', () => {
@@ -170,13 +170,19 @@ test('dashboard YouTube connect is reachable from settings and the profile menu'
   assert.doesNotMatch(dashboard, /btn\.textContent = .*Connect YouTube/)
 })
 
-test('a preview flag still reaches the archived MCP server', () => {
+test('preview flags still work if the server is archived by env', () => {
   assert.equal(mcpPreviewOn(req('/mcp?mcp=1')), true)
-  assert.equal(mcpArchived(req('/mcp?mcp=1')), false)
-  assert.equal(mcpArchived(req('/oauth/token?mcp=1')), false)
-  assert.equal(mcpArchived(req('/mcp', { 'x-vidso-mcp-preview': '1' })), false)
-  assert.equal(mcpArchived(req('/mcp?mcp=0')), true)
-  assert.equal(mcpArchived(req('/mcp?other=1')), true)
+  const saved = process.env.VIDSO_MCP_ARCHIVED
+  try {
+    process.env.VIDSO_MCP_ARCHIVED = '1'
+    assert.equal(mcpArchived(req('/mcp')), true)
+    assert.equal(mcpArchived(req('/mcp?mcp=1')), false)
+    assert.equal(mcpArchived(req('/oauth/token?mcp=1')), false)
+    assert.equal(mcpArchived(req('/mcp', { 'x-vidso-mcp-preview': '1' })), false)
+  } finally {
+    if (saved === undefined) delete process.env.VIDSO_MCP_ARCHIVED
+    else process.env.VIDSO_MCP_ARCHIVED = saved
+  }
 })
 
 test('the archive can be lifted by env without editing code', () => {

@@ -140,6 +140,14 @@
     {
       "source": "/signup",
       "destination": "/auth.html"
+    },
+    {
+      "source": "/spin",
+      "destination": "/spin/index.html"
+    },
+    {
+      "source": "/spin/",
+      "destination": "/spin/index.html"
     }
   ],
   "redirects": [
@@ -339,6 +347,24 @@
     },
     {
       "source": "/home/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/spin",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/spin/",
       "headers": [
         {
           "key": "Cache-Control",

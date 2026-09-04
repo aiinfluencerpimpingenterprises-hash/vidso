@@ -113,9 +113,9 @@ test('quota rules still match the rebuilt subpaths', async () => {
 test('the gate still imports duration helpers used by Generate Script', async () => {
   const { readFileSync } = await import('node:fs')
   const { fileURLToPath } = await import('node:url')
-  const src = readFileSync(fileURLToPath(new URL('../api/gate/[...path].js', import.meta.url)), 'utf8')
+  const src = readFileSync(fileURLToPath(new URL('../lib/gate-run.js', import.meta.url)), 'utf8')
   assert.match(src, /durationFromBody/)
   assert.match(src, /generationKindFromSeconds/)
-  assert.match(src, /from '\.\.\/\.\.\/lib\/quota\.js'/)
+  assert.match(src, /from '\.\/quota\.js'/)
 })
 
