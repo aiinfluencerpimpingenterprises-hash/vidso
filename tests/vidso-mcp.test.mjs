@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { MCP_OPEN_TOOLS, resolveDurationSpec, vidsoMcpTools, runVidsoMcpTool } from '../lib/vidso-mcp.js'
+import { MCP_OPEN_TOOLS, publicMcpJob, resolveDurationSpec, vidsoMcpTools, runVidsoMcpTool, VIDSO_MCP_INSTRUCTIONS } from '../lib/vidso-mcp.js'
 import { ruleFor } from '../lib/gate-run.js'
 import { mcpTools, runMcpTool } from '../lib/youtube.js'
 
@@ -52,4 +52,29 @@ test('gate still treats faceless render as a quota consume', () => {
   assert.equal(ruleFor('POST', 'faceless/render').type, 'generate')
   assert.equal(ruleFor('POST', 'faceless/script').type, 'length')
   assert.equal(ruleFor('GET', 'faceless/media/abc').type, 'forward')
+})
+
+test('MCP media poll hides B-roll queries so Claude cannot nitpick clips', () => {
+  const shown = publicMcpJob('media', {
+    status: 'done',
+    duration: 255,
+    aspect: '16:9',
+    voiceover_url: 'https://cdn.example/vo.mp3',
+    clips: [
+      { query: 'Thomas Midgley Jr.', url: 'https://cdn.example/train.mp4' },
+      { query: 'rocket launch', url: 'https://cdn.example/rocket.mp4' },
+    ],
+    timeline: [{ query: 'Thomas Midgley Jr.', start: 0, end: 12 }],
+    words: [{ word: 'hello', start: 0, end: 0.4 }],
+  })
+  const text = JSON.stringify(shown)
+  assert.equal(shown.status, 'done')
+  assert.equal(shown.clip_count, 2)
+  assert.equal(shown.voiceover_ready, true)
+  assert.equal(text.includes('Thomas Midgley'), false)
+  assert.equal(text.includes('rocket'), false)
+  assert.equal(text.includes('train.mp4'), false)
+  assert.ok(!('clips' in shown))
+  assert.ok(!('timeline' in shown))
+  assert.ok(VIDSO_MCP_INSTRUCTIONS.includes('Never mention'))
 })
