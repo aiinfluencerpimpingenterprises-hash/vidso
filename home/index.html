@@ -1066,8 +1066,9 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<link rel="stylesheet" href="/home/landing-redesign.css">
 </head>
-<body>
+<body class="lp-red">
 <div id="topo-bg" aria-hidden="true"></div>
 <div class="scroll-prog" id="scrollProg"></div>
 
@@ -1106,7 +1107,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </header>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero-lp">
   <svg class="hero-mp" width="0" height="0" aria-hidden="true">
     <defs>
       <linearGradient id="mpg" x1="0" y1="0" x2="1" y2="0">
@@ -1115,105 +1116,302 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </defs>
   </svg>
   <div class="wrap">
-   <div class="hero-grid">
-            <div class="hero-copy">
-    <div class="trust-badge">
-      <span>Built for creators who want to <b>get paid</b> on YouTube</span>
-    </div>
-    <!-- Selected H1: Your faceless YouTube empire starts here -->
-    <h1 id="hero-h1">Your <span class="h1-mark"><span class="h1-accent">faceless YouTube empire</span><svg class="h1-swoosh" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M6 12.5C48 5.5 92 15.5 148 9.5C204 3.5 252 6.5 314 11.5"/></svg></span> starts here</h1>
-    <p class="sub">Turn an idea into a polished YouTube video using <span class="em">real footage</span>, B-roll, voiceover, and captions. Vidso handles the production workflow from <span class="em-red">script to final cut</span>, so you can <span class="em">publish consistently</span> without spending hours editing.</p>
-    <div class="hero-cta">
-      <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
-        Generate a Video Now
-      </button>
-    </div>
-    <div class="hero-platforms">
-      <div class="plabel">Supported platform</div>
-      <div class="plogos">
-        <span class="yt-em"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/></svg> YouTube</span>
+    <div class="hero-stage">
+      <div class="hero-cards" id="hero-cards" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <div class="trust-badge">
+          <span>Built for creators who want to <b>get paid</b> on YouTube</span>
+        </div>
+        <h1 id="hero-h1">Your <span class="h1-mark"><span class="h1-accent">faceless YouTube empire</span><svg class="h1-swoosh" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M6 12.5C48 5.5 92 15.5 148 9.5C204 3.5 252 6.5 314 11.5"/></svg></span> starts here</h1>
+        <p class="sub">Turn an idea into a polished YouTube video using <span class="em">real footage</span>, B-roll, voiceover, and captions. Vidso handles the production workflow from <span class="em-red">script to final cut</span>, so you can <span class="em">publish consistently</span> without spending hours editing.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg btn-glow" href="/signup">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
+            Generate a Video Now
+          </a>
+        </div>
+        <div class="hero-platforms">
+          <div class="plabel">Supported platform</div>
+          <div class="plogos">
+            <span class="yt-em"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/></svg> YouTube</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="hero-proof">
-      <div class="av-stack" id="trustedAvatars" aria-label="Trusted creators"></div>
-      <script>
-      (function () {
-        // Plain <img> (not next/image): R2 URLs must not go through Vercel image optimization.
-        var R2_BASE = window.VIDSO_R2_BASE;
-        var TRUSTED_CREATOR_FILES = window.VIDSO_TRUSTED_CREATOR_FILES || [];
-        var TRUSTED_CREATOR_ALTS = [
-          'Trusted creator portrait 1',
-          'Trusted creator portrait 2',
-          'Trusted creator portrait 3',
-          'Trusted creator portrait 4',
-          'Trusted creator portrait 5'
-        ];
-        var stack = document.getElementById('trustedAvatars');
-        if (!stack || !R2_BASE) return;
-        var html = '';
-        for (var i = 0; i < TRUSTED_CREATOR_FILES.length; i++) {
-          html += '<img class="av"'
-            + ' src="' + R2_BASE + '/' + TRUSTED_CREATOR_FILES[i] + '"'
-            + ' width="34" height="34"'
-            + ' alt="' + TRUSTED_CREATOR_ALTS[i] + '"'
-            + ' loading="eager" fetchpriority="high" decoding="async"'
-            + '>';
-        }
-        stack.innerHTML = html;
-      })();
-      </script>
-      <span class="lbl">Trusted by creators building <b>monetizable</b> YouTube channels</span>
-    </div>
-    </div><!-- /hero-copy -->
+  </div>
+</section>
 
-    <!-- hero visual -->
-    <div class="hero-visual">
-      <div class="hero-reel" id="mockup-clips" tabindex="0">
-        <div class="clip is-feature">
-          <video muted autoplay loop playsinline preload="auto" poster="/home/vidso-hero-poster.jpg" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4" aria-label="Full Vidso pipeline from script to finished video"></video>
-          <span class="clip-badge"><span class="dot"></span>Full pipeline</span>
-          <div class="hero-play-center" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
-          <div class="hero-ctrl">
-            <button type="button" class="hero-btn" id="hero-back" aria-label="Rewind 10 seconds">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 6L5 12l6 6"/><path d="M19 6L13 12l6 6"/></svg>
-            </button>
-            <button type="button" class="hero-btn" id="hero-pause" aria-label="Pause video">
-              <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
-              <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button type="button" class="hero-btn" id="hero-fwd" aria-label="Forward 10 seconds">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
-            </button>
-            <div class="hero-seek">
-              <span class="hero-time" id="hero-cur">0:00</span>
-              <input class="hero-range" id="hero-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
-              <span class="hero-time" id="hero-dur">0:00</span>
+<!-- PRODUCT DEMO -->
+<section class="demo-hero">
+  <div class="demo-frame" id="demo-frame">
+    <span class="demo-chip"><span class="dot"></span>Full pipeline</span>
+    <video id="demo-video" muted loop playsinline preload="metadata" poster="/home/vidso-hero-poster.jpg" aria-label="Full Vidso pipeline from script to finished video"></video>
+    <div class="demo-cursor" id="demo-cursor">Create Now <span aria-hidden="true">→</span></div>
+    <div class="demo-ctrl" id="demo-ctrl">
+      <button type="button" id="demo-back" aria-label="Rewind 10 seconds">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 6L5 12l6 6"/><path d="M19 6L13 12l6 6"/></svg>
+      </button>
+      <button type="button" id="demo-pause" aria-label="Pause video">
+        <svg class="ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
+      </button>
+      <button type="button" id="demo-fwd" aria-label="Forward 10 seconds">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
+      </button>
+      <div class="hero-seek">
+        <span class="hero-time" id="demo-cur">0:00</span>
+        <input class="hero-range" id="demo-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
+        <span class="hero-time" id="demo-dur">0:00</span>
+      </div>
+      <button type="button" class="mute-fab" id="demo-mute" data-mute aria-label="Unmute" style="position:static;width:36px;height:36px">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- LOVED BY CREATORS -->
+<section class="loved">
+  <div class="wrap">
+    <h2>Loved by creators building monetizable YouTube channels</h2>
+    <div class="loved-marquee">
+      <div class="loved-track" id="loved-track"></div>
+    </div>
+  </div>
+</section>
+
+<!-- IDEA PROMPT + SLIDESHOW -->
+<section class="ideas">
+  <div class="wrap">
+    <h2 class="ideas-title">Turn any idea into a video</h2>
+    <div class="ideas-stage">
+      <button type="button" class="ideas-nav prev" data-ideas-prev aria-label="Previous ideas">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="ideas-row" id="ideas-row"></div>
+      <button type="button" class="ideas-nav next" data-ideas-next aria-label="Next ideas">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="prompt-box" id="prompt-box" role="link" tabindex="0" aria-label="Generate a video from this idea">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+      <span class="typed" id="prompt-typed"></span>
+      <span class="prompt-send" aria-hidden="true">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase">
+  <div class="wrap">
+    <h2 class="two-line"><span class="l1">Make any YouTube video</span><span class="l2">from a single idea</span></h2>
+    <div class="ideas-stage">
+      <button type="button" class="ideas-nav prev" data-show-prev aria-label="Previous video">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="coverflow" id="coverflow"></div>
+      <button type="button" class="ideas-nav next" data-show-next aria-label="Next video">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ONE PLATFORM / WORKFLOW -->
+<section class="workflow-tiles" id="why-vidso">
+  <div class="wrap">
+    <h2 class="two-line"><span class="l1">One platform.</span><span class="l2">The full workflow.</span></h2>
+    <p class="lp-sub">The only workflow you need for faceless YouTube. Built around complete YouTube videos. Not just generating clips.</p>
+    <p class="lp-sub">Vidso brings the entire faceless YouTube production workflow into one place, so you can go from an idea to a publish-ready long-form video without stitching together multiple tools.</p>
+    <div class="wf-tiles">
+      <a class="wf-tile" href="#how">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
+        <div class="t">Idea / Script</div>
+      </a>
+      <a class="wf-tile" href="#feat-voice">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div>
+        <div class="t">Voiceover</div>
+      </a>
+      <a class="wf-tile" href="#feat-longform">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg></div>
+        <div class="t">Real Footage + B-Roll</div>
+      </a>
+      <a class="wf-tile" href="#feat-longform">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h12M4 17h8"/></svg></div>
+        <div class="t">Captions</div>
+      </a>
+      <a class="wf-tile" href="#formats">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div class="t">Finished YouTube Video</div>
+      </a>
+    </div>
+    <div class="punch" style="margin-top:36px;text-align:center">
+      <h3>Real content. Automated production.</h3>
+      <p>Let AI handle the repetitive production work while your videos are built around real footage viewers are already used to watching on YouTube.</p>
+    </div>
+  </div>
+</section>
+
+<div id="results-root"></div>
+
+<!-- FEATURE ROW A: Claude MCP -->
+<section class="lp-feat" id="connect-stack">
+  <article class="lp-hf" id="connect-claude">
+    <div class="wrap">
+      <div class="feat-grid">
+        <div class="feat-media">
+          <div class="chat-demo">
+            <div class="bubble user" id="mcp-chat-user"></div>
+            <div class="bubble bot" id="mcp-chat-bot" hidden>
+              <div class="lp-assist-who" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--muted)">
+                <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="18" height="18">
+                Claude
+              </div>
+              <p style="margin:0 0 8px">Script, voiceover, B-roll, and captions are in. Here is the cut.</p>
+              <div class="thumb media-ph lp-thumb" data-media-ph data-proof-thumb="claude" style="aspect-ratio:16 / 9">
+                <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claudemcpthumbnail.png" alt="Airport secrets video thumbnail" loading="lazy" decoding="async">
+              </div>
             </div>
-            <button type="button" class="hero-btn" id="hero-fs" aria-label="Full screen">
-              <svg class="ico-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
-              <svg class="ico-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/></svg>
+          </div>
+        </div>
+        <div class="feat-copy">
+          <div class="lp-lockup" aria-label="Vidso times Claude" style="margin-bottom:16px">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
+            <span class="x" aria-hidden="true">×</span>
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="Claude" width="44" height="44">
+          </div>
+          <h2>Claude AI video generator</h2>
+          <p>Connect Claude to Vidso MCP, then check your channel or upload a finished video from chat. Paste the connector once. Claude can generate a full long-form video from chat: script, voiceover, B-roll, and captions.</p>
+          <div class="feat-actions">
+            <a class="btn btn-primary" href="/signup">Start Creating</a>
+            <a class="btn" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">Learn More</a>
+          </div>
+        </div>
+      </div>
+      <div class="lp-steps">
+        <div class="lp-step">
+          <div class="n">Step 1</div>
+          <h3>Open Claude settings</h3>
+          <p>Launch the app or open claude.ai and go to</p>
+          <a class="lp-link" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">
+            Settings → Connectors
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+        <div class="lp-step">
+          <div class="n">Step 2</div>
+          <h3>Add a custom connector</h3>
+          <p>Name it Vidso and paste the URL:</p>
+          <div class="lp-url">
+            <code data-mcp-url>https://www.vidso.pro/mcp</code>
+            <button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button>
+          </div>
+        </div>
+        <div class="lp-step">
+          <div class="n">Step 3</div>
+          <h3>Connect and sign in</h3>
+          <p>Click Add, then Connect, and sign in with your Vidso account. Then ask Claude to generate a long-form video.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- FEATURE ROW B: Long-form -->
+<section class="lp-feat is-flip" id="feat-longform">
+  <div class="wrap">
+    <div class="feat-grid">
+      <div class="feat-copy">
+        <div class="eyebrow">Long-form output</div>
+        <h2>AI long-form built for retention</h2>
+        <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, earnings, and getting monetized.</p>
+        <div class="feat-actions">
+          <a class="btn btn-primary" href="/signup">Start Creating</a>
+          <a class="btn" href="#how">Learn More</a>
+        </div>
+      </div>
+      <div class="feat-media">
+        <div class="feat-ph ph-card"><span>Long-form demo video coming soon</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW C: Thumbnail generator -->
+<section class="lp-feat" id="feat-thumbs">
+  <div class="wrap">
+    <div class="feat-grid">
+      <div class="feat-media" id="thumb-demo">
+        <div class="feat-ph ph-card"><span>Thumbnail generator demo video coming soon</span></div>
+      </div>
+      <div class="feat-copy">
+        <h2>Generate YouTube thumbnails from a prompt</h2>
+        <p>Describe the thumbnail you want. Vidso generates YouTube thumbnail images you can download or recreate, then keep iterating in the same workspace.</p>
+        <div class="feat-actions">
+          <a class="btn btn-primary" href="/signup">Start Creating</a>
+          <a class="btn" href="#faq">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROW D: Voiceover -->
+<section class="lp-feat is-flip" id="feat-voice">
+  <div class="wrap">
+    <div class="feat-grid">
+      <div class="feat-copy">
+        <h2>Voiceover that matches the script</h2>
+        <p>Vidso generates narration from your script, then syncs word-level captions to the cut. Pick a narrator and tune stability, similarity, style, and speed before you render.</p>
+        <div class="feat-actions">
+          <a class="btn btn-primary" href="/signup">Start Creating</a>
+          <a class="btn" href="#how">Learn More</a>
+        </div>
+      </div>
+      <div class="feat-media">
+        <div class="vo-box">
+          <div class="k">Voice-over Script</div>
+          <div class="vo-row">
+            <p id="vo-typed"></p>
+            <button type="button" class="vo-mic" aria-hidden="true">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>
             </button>
           </div>
         </div>
       </div>
     </div>
-   </div><!-- /hero-grid -->
   </div>
 </section>
 
-<!-- REEL SHOWCASE (coverflow) -->
-<section class="reelshow">
-  <div class="wrap s-head center">
-    <div class="eyebrow">Long-form output</div>
-    <h2>AI long-form built for retention</h2>
-    <p>Full narrated YouTube videos with B-roll and captions: script to video for watch time, earnings, and getting monetized.</p>
+<!-- FORMATS -->
+<section class="formats-float" id="formats">
+  <div class="wrap">
+    <article class="fmt-float">
+      <h3>Faceless explainers</h3>
+      <p>Authority topics with narration + B-roll: classic monetizable YouTube.</p>
+    </article>
+    <article class="fmt-float">
+      <h3>Lists &amp; countdowns</h3>
+      <p>“10 secrets…” style videos that search well and keep people watching.</p>
+    </article>
+    <article class="fmt-float">
+      <h3>Stories &amp; documentaries</h3>
+      <p>Narrative long-form with chapters, tension, and a clear payoff.</p>
+    </article>
+    <article class="fmt-float">
+      <h3>Shorts</h3>
+      <p>30 to 60 second vertical cuts when you want a short from the same idea.</p>
+    </article>
+    <h2 class="two-line"><span class="l1">The videos that</span><span class="l2">make money on YouTube</span></h2>
+    <p class="lp-sub">Ship winning formats that earn: deep, searchable, retention-led long-form for a faceless YouTube channel, assembled with real footage and B-roll.</p>
+    <div class="cta-center">
+      <a class="btn btn-primary btn-lg btn-glow" href="/signup">Generate your first video</a>
+    </div>
   </div>
-  <div class="rs-viewport"><div class="rs-row is-marquee" id="rsRow"></div></div>
 </section>
 
-
-<!-- FORMAT ECONOMICS: Shorts vs Long-form -->
+<!-- FORMAT ECONOMICS -->
 <section class="format-econ" id="long-form-edge">
   <div class="wrap">
     <div class="s-head center">
@@ -1221,7 +1419,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <h2>Short-form gets views. <span class="accent">Long-form builds revenue.</span></h2>
       <p>Views aren't worth the same on every format. Long-form gives creators more ways to turn attention into meaningful watch time and revenue.</p>
     </div>
-
     <div class="fmt-grid">
       <article class="fmt-card is-muted">
         <span class="fmt-pill">Everyone else</span>
@@ -1238,7 +1435,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </div>
         </div>
       </article>
-
       <article class="fmt-card is-focus">
         <span class="fmt-pill">Vidso</span>
         <h3>Long-form</h3>
@@ -1255,114 +1451,48 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         </div>
       </article>
     </div>
-
     <div class="format-bridge">
       <h3>Vidso is built to make videos that compound.</h3>
       <p>Create complete long-form YouTube videos consistently, build watch time, grow a searchable content library, and give every upload more room to earn.</p>
-      <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Start Building Your Channel →</button>
+      <a class="btn btn-primary btn-lg" href="/signup">Start Building Your Channel →</a>
     </div>
-  </div>
-</section>
-
-<!-- WHY VIDSO / WORKFLOW -->
-<section class="why-vidso" id="why-vidso">
-  <div class="wrap">
-    <div class="s-head center">
-      <h2>The only workflow you need for <span class="accent">faceless YouTube</span></h2>
-      <p>Built around complete YouTube videos. Not just generating clips.</p>
-    </div>
-
-    <div class="wf-rail" aria-label="Faceless YouTube production workflow">
-      <div class="wf-step">
-        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
-        <div class="t">Idea / Script</div>
-      </div>
-      <div class="wf-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-      <div class="wf-step">
-        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div>
-        <div class="t">Voiceover</div>
-      </div>
-      <div class="wf-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-      <div class="wf-step">
-        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg></div>
-        <div class="t">Real Footage + B-Roll</div>
-      </div>
-      <div class="wf-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-      <div class="wf-step">
-        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h12M4 17h8"/></svg></div>
-        <div class="t">Captions</div>
-      </div>
-      <div class="wf-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-      <div class="wf-step">
-        <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-        <div class="t">Finished YouTube Video</div>
-      </div>
-    </div>
-
-    <p class="support">Vidso brings the entire faceless YouTube production workflow into one place, so you can go from an idea to a publish-ready long-form video without stitching together multiple tools.</p>
-
-    <div class="punch">
-      <h3>Real content. Automated production.</h3>
-      <p>Let AI handle the repetitive production work while your videos are built around real footage viewers are already used to watching on YouTube.</p>
-    </div>
-  </div>
-</section>
-
-<div id="results-root"></div>
-
-<!-- LONG-FORM TYPES -->
-<section class="gen-promo" id="formats">
-  <div class="wrap s-head center">
-    <h2>The videos that <span class="accent">make money</span> on YouTube</h2>
-    <p>Ship winning formats that earn: deep, searchable, retention-led long-form for a faceless YouTube channel, assembled with real footage and B-roll.</p>
-  </div>
-  <div class="wrap format-cards">
-    <div class="card" style="padding:22px 20px">
-      <h3 style="margin:0 0 8px;font-size:17px">Faceless explainers</h3>
-      <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.5">Authority topics with narration + <span style="white-space:nowrap">B-roll</span>: classic monetizable YouTube.</p>
-    </div>
-    <div class="card" style="padding:22px 20px">
-      <h3 style="margin:0 0 8px;font-size:17px">Lists &amp; countdowns</h3>
-      <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.5">“10 secrets…” style videos that search well and keep people watching.</p>
-    </div>
-    <div class="card" style="padding:22px 20px">
-      <h3 style="margin:0 0 8px;font-size:17px">Stories &amp; documentaries</h3>
-      <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.5">Narrative long-form with chapters, tension, and a clear payoff.</p>
-    </div>
-  </div>
-  <div class="wrap" style="text-align:center;margin-top:36px">
-    <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Generate your first video</button>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="flow" id="how">
+<section class="flow why-stack" id="how">
   <div class="wrap">
     <div class="s-head center">
       <div class="eyebrow">Workflow</div>
       <h2>From idea to long-form upload in 3 steps</h2>
       <p>No camera. No crew. Script to video: a finished 16:9 YouTube upload ready for watch hours and getting monetized.</p>
     </div>
-    <div class="steps">
-      <div class="step">
-        <div class="num">01</div>
-        <h3>Pick a money topic</h3>
-        <p>Enter the niche idea: secrets, explainers, stories, tutorials. Vidso drafts a full long-form script.</p>
+    <div class="tab-panel">
+      <div class="tab-list" id="how-tabs">
+        <button type="button" class="is-on" data-how="1">01 Pick a money topic</button>
+        <button type="button" data-how="2">02 Automate the production</button>
+        <button type="button" data-how="3">03 Upload &amp; earn</button>
       </div>
-      <div class="step">
-        <div class="num">02</div>
-        <h3>Automate the production</h3>
-        <p>Voiceover, real footage / B-roll, and word-synced captions assemble into a 16:9 long-form cut you can preview and tweak.</p>
-      </div>
-      <div class="step">
-        <div class="num">03</div>
-        <h3>Upload &amp; earn</h3>
-        <p>Export the MP4, post to YouTube, and stack watch hours toward monetization and ad revenue.</p>
+      <div class="tab-body">
+        <div class="step" data-how-pane="1">
+          <div class="num">01</div>
+          <h3>Pick a money topic</h3>
+          <p>Enter the niche idea: secrets, explainers, stories, tutorials. Vidso drafts a full long-form script.</p>
+        </div>
+        <div class="step" data-how-pane="2" hidden>
+          <div class="num">02</div>
+          <h3>Automate the production</h3>
+          <p>Voiceover, real footage / B-roll, and word-synced captions assemble into a 16:9 long-form cut you can preview and tweak.</p>
+        </div>
+        <div class="step" data-how-pane="3" hidden>
+          <div class="num">03</div>
+          <h3>Upload &amp; earn</h3>
+          <p>Export the MP4, post to YouTube, and stack watch hours toward monetization and ad revenue.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
-
 
 <!-- COMPARE -->
 <section class="compare">
@@ -1395,371 +1525,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
-<script>
-/* Shared media-audio unlock: browsers block unmute until a real user gesture.
-   First pointerdown/keydown anywhere silently primes AudioContext + muted videos
-   so later hover/tap unmute is allowed without clicking each card. */
-(function(){
-  if (window.VidsoMediaAudio) return;
-  var primed = false;
-  var waiters = [];
-  function safePlay(v){
-    if (!v) return;
-    try {
-      var p = v.play();
-      if (p && typeof p.catch === 'function') p.catch(function(){});
-    } catch (err) {}
-  }
-  function unlock(){
-    try {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) {
-        var ctx = window.__vidsoAudioCtx || (window.__vidsoAudioCtx = new AC());
-        if (ctx.state === 'suspended' && ctx.resume) {
-          try { ctx.resume().catch(function(){}); } catch (e0) {}
-        }
-        var buf = ctx.createBuffer(1, 1, 22050);
-        var src = ctx.createBufferSource();
-        src.buffer = buf;
-        src.connect(ctx.destination);
-        src.start(0);
-      }
-    } catch (e1) {}
-    // Under the user gesture: briefly unmute at volume 0 so later muted=false is allowed.
-    try {
-      var vids = document.querySelectorAll('video');
-      for (var i = 0; i < vids.length; i++) {
-        (function(v){
-          var prevVol = 1;
-          try { prevVol = v.volume; } catch (e2) {}
-          try {
-            v.volume = 0;
-            v.muted = false;
-            safePlay(v);
-            v.muted = true;
-            v.volume = prevVol;
-          } catch (e3) {
-            try { v.muted = true; v.volume = prevVol; } catch (e4) {}
-          }
-        })(vids[i]);
-      }
-    } catch (e5) {}
-  }
-  function flush(){
-    var q = waiters.splice(0, waiters.length);
-    for (var i = 0; i < q.length; i++) {
-      try { q[i](); } catch (err) {}
-    }
-  }
-  function prime(){
-    if (primed) return;
-    primed = true;
-    unlock();
-    flush();
-  }
-  window.VidsoMediaAudio = {
-    isPrimed: function(){ return primed; },
-    prime: prime,
-    whenPrimed: function(fn){
-      if (primed) { try { fn(); } catch (err) {} }
-      else waiters.push(fn);
-    }
-  };
-  document.addEventListener('pointerdown', prime, true);
-  document.addEventListener('keydown', prime, true);
-})();
-</script>
-<script>
-(function(){
-  var vp = document.querySelector('.rs-viewport');
-  var row = document.getElementById('rsRow');
-  if (!vp || !row) return;
-
-  var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
-  var RS_FILES = [
-    'videocarousel1.mp4','videocarousel2.mp4','videocarousel3.mp4','videocarousel4.mp4','videocarousel5.mp4',
-    'videocarousel6.mp4','videocarousel7.mp4','videocarousel8.mp4','videocarousel9.mp4','videocarousel10.mp4'
-  ];
-  var AUDIO_BTN_HTML = '<button type="button" class="rs-audio-btn" aria-label="Unmute video" aria-pressed="false">'
-    + '<svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>'
-    + '<svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>'
-    + '</button>';
-
-  function formatViews(n){
-    if (n >= 1000000) {
-      var m = n / 1000000;
-      var rounded = Math.round(m * 10) / 10;
-      return (Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)) + 'M views';
-    }
-    return Math.round(n / 1000) + 'K views';
-  }
-  function randomViews(){
-    return Math.floor(300000 + Math.random() * (5000000 - 300000 + 1));
-  }
-
-  function makeCard(file, i){
-    var card = document.createElement('div');
-    card.className = 'rs-card';
-    var vid = document.createElement('video');
-    vid.src = R2_BASE + '/' + file;
-    vid.muted = true;
-    vid.defaultMuted = true;
-    vid.autoplay = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.setAttribute('playsinline', '');
-    vid.setAttribute('webkit-playsinline', '');
-    vid.preload = 'auto';
-    vid.setAttribute('aria-label', 'Long-form sample video ' + (i + 1));
-    card.appendChild(vid);
-    var views = document.createElement('span');
-    views.className = 'rs-views';
-    views.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>'
-      + '<span>' + formatViews(randomViews()) + '</span>';
-    card.appendChild(views);
-    card.insertAdjacentHTML('beforeend', AUDIO_BTN_HTML);
-    return card;
-  }
-
-  // Build exactly 10 video cards (no labels / play glyphs).
-  RS_FILES.forEach(function(file, i){
-    row.appendChild(makeCard(file, i));
-  });
-
-  var reduce = false;
-  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
-  var canHover = false;
-  try { canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e2) {}
-
-  // Duplicate children once for a seamless -50% loop.
-  var originals = [].slice.call(row.children);
-  originals.forEach(function(node){
-    var clone = node.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    row.appendChild(clone);
-  });
-
-  var cards = [].slice.call(row.querySelectorAll('.rs-card'));
-  var videos = [].slice.call(row.querySelectorAll('video'));
-  var dragging = false;
-  var dragged = false;
-  var startX = 0;
-  var dragOrigin = 0;
-  var manualX = 0;
-  var audible = null;
-  var pendingUnmute = null;
-  var hoveredCard = null;
-
-  function safePlay(v){
-    if (!v) return;
-    try {
-      var p = v.play();
-      if (p && typeof p.catch === 'function') p.catch(function(){});
-    } catch (err) {}
-  }
-
-  function syncButtons(){
-    cards.forEach(function(card){
-      var btn = card.querySelector('.rs-audio-btn');
-      var v = card.querySelector('video');
-      if (!btn || !v) return;
-      var on = (v === audible) && !v.muted;
-      btn.classList.toggle('is-on', on);
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      btn.setAttribute('aria-label', on ? 'Mute video' : 'Unmute video');
-    });
-  }
-
-  function muteAll(){
-    videos.forEach(function(v){
-      try { v.muted = true; } catch (err) {}
-    });
-    audible = null;
-    pendingUnmute = null;
-    syncButtons();
-  }
-
-  function unmuteVideo(v){
-    if (!v) return;
-    videos.forEach(function(other){
-      if (other === v) return;
-      try { other.muted = true; } catch (err) {}
-    });
-    try {
-      v.muted = false;
-      safePlay(v);
-      audible = v;
-    } catch (err2) {
-      try { v.muted = true; } catch (err3) {}
-      audible = null;
-    }
-    syncButtons();
-  }
-
-  function requestUnmute(v){
-    if (!v) return;
-    pendingUnmute = v;
-    var unlock = window.VidsoMediaAudio;
-    if (unlock && !unlock.isPrimed()) {
-      unlock.whenPrimed(function(){
-        if (pendingUnmute === v || (canHover && hoveredCard && hoveredCard.querySelector('video') === v)) {
-          unmuteVideo(v);
-        }
-      });
-    }
-    unmuteVideo(v);
-  }
-
-  function toggleVideo(v){
-    if (!v) return;
-    if (audible === v && !v.muted) {
-      try { v.muted = true; } catch (err) {}
-      audible = null;
-      syncButtons();
-      return;
-    }
-    requestUnmute(v);
-  }
-
-  // Kick autoplay after clone (clones may not inherit playing state).
-  videos.forEach(function(v){
-    v.muted = true;
-    safePlay(v);
-  });
-  syncButtons();
-
-  function pause(){ row.classList.add('is-paused'); }
-  function resume(){
-    if (reduce || dragging) return;
-    row.classList.remove('is-paused');
-  }
-
-  // Highlight the card closest to viewport center (keeps "feat" treatment meaningful).
-  function updateFeat(){
-    var mid = vp.getBoundingClientRect().left + vp.clientWidth / 2;
-    var best = null, bestDist = Infinity;
-    for (var i = 0; i < cards.length; i++) {
-      var r = cards[i].getBoundingClientRect();
-      var c = r.left + r.width / 2;
-      var d = Math.abs(c - mid);
-      if (d < bestDist) { bestDist = d; best = cards[i]; }
-    }
-    cards.forEach(function(c){ c.classList.toggle('feat', c === best); });
-  }
-
-  if (!reduce) {
-    row.classList.add('is-marquee');
-    vp.addEventListener('mouseenter', pause);
-    vp.addEventListener('mouseleave', function(){
-      if (canHover) muteAll();
-      hoveredCard = null;
-      if (!dragging) resume();
-    });
-    // Keep feat synced while animating.
-    var raf = 0;
-    function tick(){ updateFeat(); raf = requestAnimationFrame(tick); }
-    raf = requestAnimationFrame(tick);
-  } else {
-    row.classList.remove('is-marquee');
-    updateFeat();
-  }
-
-  // Desktop: hover = sound. One card audible at a time. No click-to-play.
-  if (canHover) {
-    row.addEventListener('mouseover', function(e){
-      var card = e.target.closest && e.target.closest('.rs-card');
-      if (!card || !row.contains(card)) return;
-      if (card === hoveredCard) return;
-      hoveredCard = card;
-      var v = card.querySelector('video');
-      if (!v) return;
-      requestUnmute(v);
-    });
-    row.addEventListener('mouseout', function(e){
-      var card = e.target.closest && e.target.closest('.rs-card');
-      if (!card) return;
-      var related = e.relatedTarget;
-      if (related && card.contains(related)) return;
-      if (hoveredCard === card) hoveredCard = null;
-      var v = card.querySelector('video');
-      if (v && v === audible) {
-        try { v.muted = true; } catch (err) {}
-        audible = null;
-        syncButtons();
-      }
-      if (pendingUnmute === v) pendingUnmute = null;
-    });
-  }
-
-  function currentTranslate(){
-    var tr = getComputedStyle(row).transform;
-    if (!tr || tr === 'none') return 0;
-    var m = tr.match(/matrix\(([^)]+)\)/);
-    if (!m) return 0;
-    return parseFloat(m[1].split(',')[4]) || 0;
-  }
-
-  row.addEventListener('pointerdown', function(e){
-    dragging = true; dragged = false; startX = e.clientX;
-    // Desktop drag silences; touch keeps current audio until a real drag moves.
-    if (canHover) muteAll();
-    pause();
-    dragOrigin = currentTranslate();
-    row.style.animation = 'none';
-    row.style.transform = 'translate3d(' + dragOrigin + 'px,0,0)';
-    try { row.setPointerCapture(e.pointerId); } catch (err) {}
-  });
-  row.addEventListener('pointermove', function(e){
-    if (!dragging) return;
-    var dx = e.clientX - startX;
-    if (Math.abs(dx) > 6) {
-      if (!dragged && !canHover) muteAll();
-      dragged = true;
-    }
-    manualX = dragOrigin + dx;
-    // Wrap within one loop width (~50% of content)
-    var loopW = row.scrollWidth / 2;
-    if (loopW > 0) {
-      while (manualX <= -loopW) manualX += loopW;
-      while (manualX > 0) manualX -= loopW;
-    }
-    row.style.transform = 'translate3d(' + manualX + 'px,0,0)';
-    updateFeat();
-  });
-  function endDrag(e){
-    if (!dragging) return;
-    var wasDragged = dragged;
-    dragging = false;
-    row.style.animation = '';
-    row.style.transform = '';
-    if (!reduce) {
-      // Restart marquee cleanly from the seamless loop.
-      row.classList.remove('is-marquee');
-      void row.offsetWidth;
-      row.classList.add('is-marquee');
-      resume();
-    }
-    // Touch / no-hover: tap toggles audio (no drag).
-    if (!canHover && !wasDragged && e) {
-      var card = e.target && e.target.closest && e.target.closest('.rs-card');
-      if (card && row.contains(card)) {
-        var v = card.querySelector('video');
-        toggleVideo(v);
-      }
-    } else if (canHover && hoveredCard) {
-      // Restore hover audio after a drag that muted mid-hover.
-      var hv = hoveredCard.querySelector('video');
-      if (hv) requestUnmute(hv);
-    }
-  }
-  row.addEventListener('pointerup', endDrag);
-  row.addEventListener('pointercancel', function(){ endDrag(null); });
-  window.addEventListener('resize', updateFeat);
-  updateFeat();
-})();
-</script>
-
-
 <!-- COMPETITOR COMPARISON -->
 <section class="comp-compare" id="compare-tools">
   <div class="wrap">
@@ -1768,7 +1533,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <h2>Not every video tool is built for <span class="accent">YouTube</span>.</h2>
       <p>Compare Vidso with general-purpose video generators and see what you're actually built for.</p>
     </div>
-
     <div class="comp-table-wrap">
       <table class="comp-table" id="compTable">
         <thead>
@@ -1793,99 +1557,15 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         </tbody>
       </table>
     </div>
-
     <div class="comp-cta">
       <h3>One subscription. Your entire YouTube workflow.</h3>
       <p>Stop bouncing between script tools, voice generators, stock libraries, caption tools and editors. Build the whole video in Vidso.</p>
-      <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">Generate Your First Video →</button>
+      <a class="btn btn-primary btn-lg" href="/signup">Generate Your First Video →</a>
     </div>
   </div>
 </section>
 
-<section class="lp-int" id="connect-stack">
-  <article class="lp-hf" id="connect-claude">
-    <div class="wrap">
-      <div class="lp-lockup" aria-label="Vidso times Claude">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="Vidso" width="44" height="44" data-vidso-logo>
-        <span class="x" aria-hidden="true">×</span>
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="Claude" width="44" height="44">
-      </div>
-      <div class="s-head center">
-        <h2>Claude AI video generator</h2>
-        <p>Connect Claude to Vidso MCP, then check your channel or upload a finished video from chat.</p>
-      </div>
-
-      <div class="lp-steps">
-        <div class="lp-step">
-          <div class="n">Step 1</div>
-          <h3>Open Claude settings</h3>
-          <p>Launch the app or open claude.ai and go to</p>
-          <a class="lp-link" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">
-            Settings → Connectors
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
-          </a>
-        </div>
-        <div class="lp-step">
-          <div class="n">Step 2</div>
-          <h3>Add a custom connector</h3>
-          <p>Name it Vidso and paste the URL:</p>
-          <div class="lp-url">
-            <code data-mcp-url>https://www.vidso.pro/mcp</code>
-            <button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button>
-          </div>
-        </div>
-        <div class="lp-step">
-          <div class="n">Step 3</div>
-          <h3>Connect and sign in</h3>
-          <p>Click Add, then Connect, and sign in with your Vidso account. Then ask Claude to generate a long-form video.</p>
-        </div>
-      </div>
-
-      <div class="lp-int-band">
-        <div class="lp-int-proof">
-          <div class="lp-win" data-proof="claude">
-            <div class="lp-int-mock" data-proof-mock>
-              <div class="lp-chrome">
-                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              </div>
-              <div class="lp-chat">
-                <div class="lp-bubble user">Make a 12 minute faceless YouTube video on airport secrets airlines hide from travelers. 16:9, B-roll and captions.</div>
-                <div class="lp-assist">
-                  <div class="lp-assist-who">
-                    <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="18" height="18">
-                    Claude
-                  </div>
-                  <p>Script, voiceover, B-roll, and captions are in. Here is the cut.</p>
-                  <div class="media-ph lp-thumb" data-media-ph data-proof-thumb="claude" style="aspect-ratio:16 / 9">
-                    <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claudemcpthumbnail.png" alt="Airport secrets video thumbnail" loading="lazy" decoding="async">
-                    <button type="button" class="lp-play" aria-label="Play video">
-                      <i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.8v10.4L18 12 8 6.8z"/></svg></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="lp-int-copy">
-          <h3>Run your YouTube workflow from Claude</h3>
-          <p class="lp-int-lead">Paste the connector once. Claude can generate a full long-form video from chat: script, voiceover, B-roll, and captions.</p>
-          <div class="lp-int-cta">
-            <a class="btn btn-primary" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">Connect Claude</a>
-            <a class="more" href="#connect-claude">Copy the MCP URL</a>
-          </div>
-          <div class="lp-url" style="margin-top:14px;max-width:360px">
-            <code data-mcp-url>https://www.vidso.pro/mcp</code>
-            <button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </article>
-</section>
-
 <!-- PRICING -->
-
 <section class="pricing" id="pricing">
   <div class="wrap">
     <div class="s-head center">
@@ -1908,11 +1588,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <!-- FAQ -->
 <section class="faq" id="faq">
   <div class="wrap">
-    <div class="s-head center">
-      <div class="eyebrow">Help</div>
-      <h2>Questions, answered</h2>
-    </div>
-    <div class="faq-inner" style="margin-top:44px">
+    <h2 class="two-line"><span class="l1">Frequently asked</span><span class="l2">questions</span></h2>
+    <div class="faq-grid">
       <details>
         <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
         <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
@@ -1940,10 +1617,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <h2>Ready to build a YouTube channel that pays?</h2>
       <p>Generate your first video, from script to upload, and start stacking watch hours toward monetization.</p>
       <div class="hero-cta">
-        <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
+        <a class="btn btn-primary btn-lg btn-glow" href="/signup">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
           Generate a Video Now
-        </button>
+        </a>
       </div>
       <div class="microcopy">
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg> Upload-ready MP4s</span>
@@ -1989,180 +1666,56 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
     </div>
     <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
+    <div class="foot-mega" aria-hidden="true">
+      <img data-vidso-logo alt="" width="120" height="120" decoding="async">
+      <span class="word">Vidso</span>
+    </div>
   </div>
 </footer>
 
+
 <script>
-/* Hero reel: click to pause/play, seek, skip, and fullscreen. */
+/* Shared media-audio unlock: browsers block unmute until a real user gesture. */
 (function(){
-  var reel = document.getElementById('mockup-clips');
-  if (!reel) return;
-  var video = reel.querySelector('video');
-  var pauseBtn = document.getElementById('hero-pause');
-  var backBtn = document.getElementById('hero-back');
-  var fwdBtn = document.getElementById('hero-fwd');
-  var fsBtn = document.getElementById('hero-fs');
-  var range = document.getElementById('hero-range');
-  var curEl = document.getElementById('hero-cur');
-  var durEl = document.getElementById('hero-dur');
-  if (!video) return;
-  var userPaused = false;
-  var seeking = false;
-  var SKIP = 10;
-
-  function safePlay(){
-    if (userPaused) return;
+  if (window.VidsoMediaAudio) return;
+  var primed = false;
+  var waiters = [];
+  function unlock(){
     try {
-      var p = video.play();
-      if (p && typeof p.catch === 'function') p.catch(function(){});
-    } catch (err) {}
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        var ctx = window.__vidsoAudioCtx || (window.__vidsoAudioCtx = new AC());
+        if (ctx.state === 'suspended' && ctx.resume) {
+          try { ctx.resume().catch(function(){}); } catch (e0) {}
+        }
+      }
+    } catch (e1) {}
   }
-  function fsEl(){
-    return document.fullscreenElement || document.webkitFullscreenElement || null;
-  }
-  function isFs(){
-    return fsEl() === reel || !!(video.webkitDisplayingFullscreen);
-  }
-  function fmt(s){
-    if (!isFinite(s) || s < 0) s = 0;
-    s = Math.floor(s);
-    var m = Math.floor(s / 60);
-    var r = s % 60;
-    return m + ':' + (r < 10 ? '0' : '') + r;
-  }
-  function duration(){
-    var d = video.duration;
-    return (d && isFinite(d)) ? d : 0;
-  }
-  function paintRange(pct){
-    if (!range) return;
-    range.style.background = 'linear-gradient(90deg,var(--a1) ' + pct + '%,rgba(255,255,255,.22) ' + pct + '%)';
-  }
-  function syncSeek(){
-    var d = duration();
-    var t = video.currentTime || 0;
-    if (curEl) curEl.textContent = fmt(t);
-    if (durEl) durEl.textContent = fmt(d);
-    if (range && d && !seeking) {
-      var pct = (t / d) * 100;
-      range.value = String(pct);
-      paintRange(pct);
+  function flush(){
+    var q = waiters.splice(0, waiters.length);
+    for (var i = 0; i < q.length; i++) {
+      try { q[i](); } catch (err) {}
     }
   }
-  function syncUi(){
-    var paused = !!video.paused;
-    reel.classList.toggle('is-paused', paused);
-    if (pauseBtn) {
-      pauseBtn.classList.toggle('is-paused', paused);
-      pauseBtn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
+  function prime(){
+    if (primed) return;
+    primed = true;
+    unlock();
+    flush();
+  }
+  window.VidsoMediaAudio = {
+    isPrimed: function(){ return primed; },
+    prime: prime,
+    whenPrimed: function(fn){
+      if (primed) { try { fn(); } catch (err) {} }
+      else waiters.push(fn);
     }
-    if (fsBtn) {
-      var fs = isFs();
-      fsBtn.classList.toggle('is-fs', fs);
-      fsBtn.setAttribute('aria-label', fs ? 'Exit full screen' : 'Full screen');
-    }
-    syncSeek();
-  }
-  function togglePause(){
-    if (video.paused) {
-      userPaused = false;
-      safePlay();
-    } else {
-      userPaused = true;
-      try { video.pause(); } catch (err) {}
-    }
-    syncUi();
-  }
-  function skip(dir){
-    var d = duration();
-    var next = (video.currentTime || 0) + dir * SKIP;
-    if (next < 0) next = 0;
-    if (d && next > d) next = d;
-    try { video.currentTime = next; } catch (err) {}
-    syncSeek();
-  }
-  function seekFromRange(){
-    var d = duration();
-    if (!range || !d) return;
-    var pct = parseFloat(range.value);
-    if (!isFinite(pct)) return;
-    try { video.currentTime = (pct / 100) * d; } catch (err) {}
-    paintRange(pct);
-    if (curEl) curEl.textContent = fmt((pct / 100) * d);
-  }
-  function exitFs(){
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-    else if (video.webkitExitFullscreen) video.webkitExitFullscreen();
-  }
-  function enterFs(){
-    if (reel.requestFullscreen) return reel.requestFullscreen();
-    if (reel.webkitRequestFullscreen) return reel.webkitRequestFullscreen();
-    if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
-  }
-  function toggleFs(){
-    if (isFs()) exitFs();
-    else {
-      try { enterFs(); } catch (err) {}
-    }
-  }
-
-  video.muted = true;
-  video.defaultMuted = true;
-  video.playsInline = true;
-  video.loop = true;
-  video.setAttribute('playsinline', '');
-  video.setAttribute('webkit-playsinline', '');
-  video.addEventListener('play', syncUi);
-  video.addEventListener('pause', syncUi);
-  video.addEventListener('timeupdate', syncSeek);
-  video.addEventListener('loadedmetadata', syncSeek);
-  video.addEventListener('durationchange', syncSeek);
-  video.addEventListener('canplay', function(){ if (!userPaused) safePlay(); });
-  document.addEventListener('fullscreenchange', syncUi);
-  document.addEventListener('webkitfullscreenchange', syncUi);
-  video.addEventListener('webkitbeginfullscreen', syncUi);
-  video.addEventListener('webkitendfullscreen', syncUi);
-
-  reel.addEventListener('click', function(e){
-    if (e.target.closest('.hero-ctrl')) return;
-    togglePause();
-  });
-  if (pauseBtn) pauseBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    togglePause();
-  });
-  if (backBtn) backBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    skip(-1);
-  });
-  if (fwdBtn) fwdBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    skip(1);
-  });
-  if (fsBtn) fsBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    toggleFs();
-  });
-  if (range) {
-    range.addEventListener('pointerdown', function(){ seeking = true; });
-    range.addEventListener('input', seekFromRange);
-    range.addEventListener('change', function(){
-      seekFromRange();
-      seeking = false;
-    });
-    window.addEventListener('pointerup', function(){ seeking = false; });
-  }
-  reel.addEventListener('keydown', function(e){
-    if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePause(); }
-    if (e.key === 'f') { e.preventDefault(); toggleFs(); }
-    if (e.key === 'ArrowLeft' || e.key === 'j') { e.preventDefault(); skip(-1); }
-    if (e.key === 'ArrowRight' || e.key === 'l') { e.preventDefault(); skip(1); }
-  });
-  safePlay();
-  syncUi();
+  };
+  document.addEventListener('pointerdown', prime, true);
+  document.addEventListener('keydown', prime, true);
 })();
 </script>
+
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script src="/vendor/gsap/MotionPathPlugin.min.js"></script>
@@ -2205,7 +1758,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   } // respect reduced-motion: keep everything static
 
   // ---------- HERO load-in ----------
-  var heroH1 = document.querySelector('.hero h1');
+  var heroH1 = document.querySelector('.hero-lp h1');
   var words = heroH1 ? splitWords(heroH1) : [];
   // Keep CTA visible — never leave it stuck at opacity:0 if the timeline hiccups
   gsap.set('.hero-cta .btn', {opacity:1, visibility:'visible', clearProps:'transform'});
@@ -2213,12 +1766,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   heroTl
     .from('.trust-badge',{y:18,opacity:0,duration:.55})
     .from(words,{yPercent:115,opacity:0,duration:.75,stagger:.04,ease:'power4.out'},'-=.25')
-    .from('.hero .sub',{y:20,opacity:0,duration:.65},'-=.45')
+    .from('.hero-lp .sub',{y:20,opacity:0,duration:.65},'-=.45')
     .from('.hero-cta .btn',{y:12,duration:.45,clearProps:'transform'},'-=.35')
-    .from('.hero-platforms',{y:16,opacity:0,duration:.55},'-=.3')
-    .from('.hero-proof',{y:16,opacity:0,duration:.55},'-=.3')
-    .from('.hero .av-stack .av',{scale:0,opacity:0,duration:.45,stagger:.07,ease:'back.out(2)'},'-=.35')
-    .from('.hero-visual',{y:48,opacity:0,scale:.985,duration:1,ease:'power2.out'},'-=.55');
+    .from('.hero-platforms',{y:16,opacity:0,duration:.55},'-=.3'); 
   try { document.getElementById('hero-h1') && document.getElementById('hero-h1').classList.add('is-ready'); } catch(e) {}
 
   // ---------- DrawSVG: line art draws itself on ----------
@@ -2274,8 +1824,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   gsap.utils.toArray('.bar .p').forEach(countUp);
 
   // ---------- parallax on the hero mock ----------
-  gsap.to('.hero-reel',{yPercent:-7,ease:'none',
-    scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:true}});
+  
 
   // ---------- top scroll-progress bar ----------
   gsap.to('#scrollProg',{scaleX:1,ease:'none',
@@ -2321,12 +1870,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingIntegrations } from '/lib/landing-integrations.js'
+import { mountLandingPage } from '/lib/landing-page.js'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
 mountResults(document.getElementById('results-root'))
-mountLandingIntegrations()
+mountLandingPage()
 if ((location.pathname || '').replace(/\/+$/, '') === '/pricing') {
   document.getElementById('pricing')?.scrollIntoView({ behavior: 'auto', block: 'start' })
 }
