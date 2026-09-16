@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, HERO_CARDS, HERO_VIDEO_SRC, HOW_PANEL_SRC, IDEA_CARDS, PROMPT_IDEAS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC } from '../lib/landing-media.js'
+import { CREATE_HREF, HERO_CARDS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, IDEA_CARDS, PROMPT_IDEAS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
@@ -30,6 +30,14 @@ test('showcase cards use R2 clips and prompt ideas stay complete', () => {
   assert.match(HOW_PANEL_SRC, /videocarousel9\.mp4$/)
 })
 
+test('hero transition timing stays in range', () => {
+  assert.equal(HERO_TRANSITION.pinVh, 280)
+  assert.equal(HERO_TRANSITION.pinVhMobile, 180)
+  assert.ok(HERO_TRANSITION.aEnd < HERO_TRANSITION.bEnd)
+  assert.ok(HERO_TRANSITION.bEnd < HERO_TRANSITION.cEnd)
+  assert.ok(HERO_TRANSITION.cEnd < 1)
+})
+
 test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.match(html, /<meta name="description"/)
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1)
@@ -40,6 +48,11 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('What is Vidso?'))
   assert.ok(html.includes('Generate a Video Now'))
   assert.ok(html.includes('Make any YouTube video from a single idea'))
+  assert.ok(html.includes('Your faceless YouTube'))
+  assert.ok(html.includes('empire starts here'))
+  assert.ok(html.includes('Script to final cut'))
+  assert.ok(html.includes('id="hero-pin"'))
+  assert.ok(!html.includes('class="h1-swoosh"'))
   assert.ok(!html.includes('Turn any idea into a video'))
   assert.ok(!html.includes('topo-bg'))
   assert.ok(!html.includes('demo-mute'))
