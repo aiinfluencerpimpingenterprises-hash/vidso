@@ -57,21 +57,21 @@
     --line:rgba(245,245,244,.09);
     --line-2:rgba(245,245,244,.15);
     --txt:#F5F5F4;
-    --muted:rgba(245,245,244,.70);
-    --faint:rgba(245,245,244,.45);
-    --blue:#E94B58;
+    --muted:rgba(245,245,244,.78);
+    --faint:rgba(245,245,244,.64);
+    --blue:#FE0C30;
     --purple:#B31D2C;
-    --a1:#E94B58;
-    --a2:#D93A48;
-    --grad:linear-gradient(135deg,#F0606C 0%,#B31D2C 100%);
-    --glow:233,75,88;
+    --a1:#FE0C30;
+    --a2:#ff2444;
+    --grad:linear-gradient(135deg,#FE0C30 0%,#B31D2C 100%);
+    --glow:254,12,48;
     --nav-bg:rgba(12,12,14,.78);
     --nav-shadow:0 10px 40px rgba(0,0,0,.5);
     --hover-fill:rgba(255,255,255,.05);
     --soft-fill:rgba(255,255,255,.06);
     --icon-muted:rgba(245,245,244,.12);
-    --check:#6fcf97;
-    --xmark:rgba(245,245,244,.35);
+    --check:#FE0C30;
+    --xmark:rgba(245,245,244,.55);
     --r:20px;
     color-scheme:dark;
   }
@@ -88,9 +88,9 @@
   }
   a{color:inherit;text-decoration:none}
   h1,h2,h3,.logo,.stat .n,.plan .price,.score-big .v,.step .num{font-family:'Bricolage Grotesque','Inter',sans-serif;color:var(--txt)}
-  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 32px}
   section,header,footer{position:relative;z-index:1}
-  ::selection{background:rgba(233,75,88,.35);color:var(--txt)}
+  ::selection{background:rgba(254,12,48,.35);color:var(--txt)}
 
 
   /* ---------- nav ---------- */
@@ -336,7 +336,7 @@
   }
 
   /* ---------- section heads ---------- */
-  .eyebrow{font-size:12px;letter-spacing:.22em;font-weight:600;color:var(--faint);text-transform:uppercase}
+  .eyebrow{font-size:12px;letter-spacing:.16em;font-weight:650;color:rgba(245,245,244,.82);text-transform:uppercase}
   .s-head{max-width:640px}
   .s-head.center{margin:0 auto;text-align:center}
   h2{font-size:clamp(32px,4.6vw,54px);letter-spacing:-.04em;font-weight:800;line-height:1.04;margin-top:16px}
@@ -369,7 +369,7 @@
   .results.is-multi .results-slide{
     flex:0 0 88%;scroll-snap-align:center;scroll-snap-stop:always;min-width:0;display:flex
   }
-  @media(min-width:720px){.results.is-multi .results-slide{flex-basis:calc(50% - 9px)}}
+  @media(min-width:720px){.results.is-multi .results-slide{flex-basis:min(920px,86%)}}
   .results-card{
     display:flex;flex-direction:column;width:100%;height:100%;margin:0;padding:0;
     appearance:none;-webkit-appearance:none;background:var(--panel);border:1px solid rgba(var(--glow),.28);
@@ -499,7 +499,7 @@
   .cmp.good li{color:var(--muted)}
   .cmp.good li svg{color:var(--check)}
   .cmp.bad li{color:var(--faint)}
-  .cmp.bad li svg,.cmp.bad li svg path{color:#E94B58;stroke:#E94B58}
+  .cmp.bad li svg,.cmp.bad li svg path{color:var(--xmark);stroke:var(--xmark)}
   @media(max-width:720px){.cmp-grid{grid-template-columns:1fr}}
 
   /* ---------- testimonials ---------- */
@@ -672,7 +672,7 @@
   .gen-options{display:flex;flex-wrap:wrap;gap:8px}
   .gen-opt{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:border-color .15s,color .15s,background .15s}
   .gen-opt:hover{border-color:var(--line-2);color:#fff}
-  .gen-opt.active{border-color:rgba(255,59,74,.55);color:#fff;background:rgba(255,59,74,.1)}
+  .gen-opt.active{border-color:rgba(254,12,48,.55);color:#fff;background:rgba(254,12,48,.1)}
   .gen-opt .ico{color:var(--blue);display:flex}
   .gen-submit{width:100%;justify-content:center;padding:14px 24px;font-size:15px;gap:10px}
   @media(max-width:900px){
@@ -712,9 +712,7 @@
   .hero-copy .sub .em{color:var(--txt);font-weight:600}
   .hero-copy .sub .em-red{color:var(--a1);font-weight:600}
 
-  .s-head .accent,.accent{
-    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent
-  }
+  .s-head .accent,.accent{color:var(--a1);background:none}
 
   /* Format economics */
   .format-econ{padding:100px 0 80px}
@@ -736,7 +734,7 @@
     font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
     padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);color:var(--muted)
   }
-  .fmt-card.is-focus .fmt-pill{border-color:rgba(255,59,74,.45);color:#ff7a86;background:rgba(255,59,74,.1)}
+  .fmt-card.is-focus .fmt-pill{border-color:rgba(254,12,48,.45);color:#FE0C30;background:rgba(254,12,48,.1)}
   .fmt-card h3{margin:0;font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--txt);align-self:stretch;width:100%;text-align:left}
   .fmt-stats{display:grid;gap:14px;align-self:stretch;width:100%;text-align:left}
   .fmt-stat{display:grid;gap:4px}
@@ -756,7 +754,7 @@
   .fmt-example .views{font-size:15px;font-weight:650;color:rgba(255,255,255,.86);min-width:0}
   .fmt-example .result{display:inline-flex;align-items:baseline;gap:8px;flex:0 0 auto;white-space:nowrap}
   .fmt-example .cash{font-size:28px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1}
-  .fmt-card.is-focus .fmt-example .cash{color:#ff7a86}
+  .fmt-card.is-focus .fmt-example .cash{color:#FE0C30}
   .fmt-example .approx{color:var(--faint);font-size:14px;font-weight:600;line-height:1}
 
   .format-bridge{margin:56px auto 0;max-width:720px;display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -788,12 +786,12 @@
   }
   .wf-step .ico{
     width:36px;height:36px;margin:0 auto 10px;border-radius:10px;display:grid;place-items:center;
-    background:rgba(255,59,74,.1);border:1px solid rgba(255,59,74,.25);color:#ff7a86
+    background:rgba(254,12,48,.1);border:1px solid rgba(254,12,48,.25);color:#FE0C30
   }
   .wf-step .ico svg{width:18px;height:18px}
   .wf-step .t{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.3}
   .wf-arrow{
-    display:flex;align-items:center;justify-content:center;color:rgba(255,59,74,.65);padding:0 4px;flex:0 0 auto
+    display:flex;align-items:center;justify-content:center;color:rgba(254,12,48,.7);padding:0 4px;flex:0 0 auto
   }
   .wf-arrow svg{width:18px;height:18px}
   .why-vidso .support{max-width:40em;margin:28px auto 0;text-align:center;color:var(--muted);font-size:15px;line-height:1.55}
@@ -827,10 +825,10 @@
   .comp-head{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:100%}
   .comp-best{
     font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:999px;
-    background:rgba(255,59,74,.16);border:1px solid rgba(255,59,74,.4);color:#ff8a94;white-space:nowrap
+    background:rgba(254,12,48,.16);border:1px solid rgba(254,12,48,.4);color:#FE0C30;white-space:nowrap
   }
-  .comp-yes{color:#ff6b78;font-weight:700}
-  .comp-no{color:rgba(255,255,255,.28)}
+  .comp-yes{color:#FE0C30;font-weight:700}
+  .comp-no{color:rgba(245,245,244,.55)}
   .comp-soft{color:rgba(255,255,255,.55);font-size:13px}
   .comp-feat-label{display:inline-flex;align-items:center;gap:8px}
   .comp-feat-ico{width:14px;height:14px;flex:0 0 auto;color:rgba(255,255,255,.42)}
@@ -838,7 +836,7 @@
   .comp-price .start{display:block;font-size:10px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
   .comp-save{
     display:inline-flex;margin-top:6px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;
-    background:rgba(255,59,74,.14);border:1px solid rgba(255,59,74,.35);color:#ff8a94
+    background:rgba(254,12,48,.14);border:1px solid rgba(254,12,48,.35);color:#FE0C30
   }
   .comp-na{color:var(--faint);font-size:12px;font-style:italic}
   .comp-foot{margin:14px 0 0;font-size:12px;color:var(--faint);line-height:1.45;text-align:center}
@@ -1122,6 +1120,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <p class="sub" data-hero-exit="sub">Turn an idea into a polished YouTube video using real footage, B-roll, voiceover, and captions. Vidso handles the production workflow from script to final cut, so you can publish consistently without spending hours editing.</p>
         <div class="hero-cta" data-hero-exit="cta">
           <a class="btn btn-primary btn-lg btn-glow" href="/signup">
+            <span class="btn-ring" aria-hidden="true"></span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
             Generate a Video Now
           </a>
@@ -1170,10 +1169,36 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
+<!-- IDEA CAROUSEL + TYPING PROMPT -->
+<section class="ideas" id="ideas">
+  <div class="wrap">
+    <div class="s-head center">
+      <div class="eyebrow">Formats</div>
+      <h2>Turn any idea into a video</h2>
+    </div>
+    <div class="ideas-stage">
+      <button type="button" class="ideas-nav prev" data-idea-prev aria-label="Previous idea">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="ideas-row" id="ideas-row"></div>
+      <button type="button" class="ideas-nav next" data-idea-next aria-label="Next idea">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <a class="prompt-box" id="prompt-box" href="/signup">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+      <span class="typed-wrap"><span class="typed" id="prompt-typed"></span><span class="caret" aria-hidden="true"></span></span>
+      <span class="prompt-send" aria-hidden="true">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </span>
+    </a>
+  </div>
+</section>
+
 <!-- SHOWCASE -->
 <section class="showcase">
   <div class="wrap">
-    <h2 class="ideas-title">Make any YouTube video from a single idea</h2>
+    <h2 class="two-line"><span class="l1">Make any YouTube video</span><span class="l2">from a single idea</span></h2>
     <div class="ideas-stage">
       <button type="button" class="ideas-nav prev" data-show-prev aria-label="Previous video">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
@@ -1184,13 +1209,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </button>
     </div>
     <div class="cover-dots" id="cover-dots"></div>
-    <div class="prompt-box" id="prompt-box" role="link" tabindex="0" aria-label="Generate a video from this idea">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
-      <span class="typed-wrap"><span class="typed" id="prompt-typed"></span><span class="caret" aria-hidden="true"></span></span>
-      <span class="prompt-send" aria-hidden="true">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-      </span>
-    </div>
   </div>
 </section>
 
@@ -1198,34 +1216,35 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="workflow-tiles" id="why-vidso">
   <div class="wrap">
     <h2 class="two-line"><span class="l1">One platform.</span><span class="l2">The full workflow.</span></h2>
-    <p class="lp-sub">The only workflow you need for faceless YouTube. Built around complete YouTube videos. Not just generating clips.</p>
-    <p class="lp-sub">Vidso brings the entire faceless YouTube production workflow into one place, so you can go from an idea to a publish-ready long-form video without stitching together multiple tools.</p>
+    <p class="lp-sub">The only workflow you need for faceless YouTube. Built around complete YouTube videos, not just generating clips. Vidso brings the entire faceless YouTube production workflow into one place, so you can go from an idea to a publish-ready long-form video without stitching together multiple tools.</p>
     <div class="wf-tiles">
       <a class="wf-tile" href="#how">
+        <div class="n">01</div>
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
         <div class="t">Idea / Script</div>
       </a>
       <a class="wf-tile" href="#feat-voice">
+        <div class="n">02</div>
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div>
         <div class="t">Voiceover</div>
       </a>
       <a class="wf-tile" href="#feat-longform">
+        <div class="n">03</div>
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg></div>
         <div class="t">Real Footage + B-Roll</div>
       </a>
       <a class="wf-tile" href="#feat-longform">
+        <div class="n">04</div>
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h12M4 17h8"/></svg></div>
         <div class="t">Captions</div>
       </a>
       <a class="wf-tile" href="#formats">
+        <div class="n">05</div>
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
         <div class="t">Finished YouTube Video</div>
       </a>
     </div>
-    <div class="punch" style="margin-top:36px;text-align:center">
-      <h3>Real content. Automated production.</h3>
-      <p>Let AI handle the repetitive production work while your videos are built around real footage viewers are already used to watching on YouTube.</p>
-    </div>
+    <p class="wf-punch">Real content. Automated production.</p>
   </div>
 </section>
 
@@ -1281,7 +1300,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <p>Name it Vidso and paste the URL:</p>
           <div class="lp-url">
             <code data-mcp-url>https://www.vidso.pro/mcp</code>
-            <button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button>
+            <button type="button" data-mcp-copy aria-label="Copy connector URL"><span data-mcp-copy-label>Copy</span></button>
           </div>
         </div>
         <div class="lp-step">
@@ -1307,9 +1326,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <a class="btn" href="#how">Learn More</a>
         </div>
       </div>
-      <div class="feat-media">
-        <div class="feat-ph ph-card"><span>Long-form demo video coming soon</span></div>
-      </div>
+      <div class="feat-media" id="longform-demo"></div>
     </div>
   </div>
 </section>
@@ -1318,9 +1335,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="lp-feat" id="feat-thumbs">
   <div class="wrap">
     <div class="feat-grid">
-      <div class="feat-media" id="thumb-demo">
-        <div class="feat-ph ph-card"><span>Thumbnail generator demo video coming soon</span></div>
-      </div>
+      <div class="feat-media" id="thumb-demo"></div>
       <div class="feat-copy">
         <h2>Generate YouTube thumbnails from a prompt</h2>
         <p>Describe the thumbnail you want. Vidso generates YouTube thumbnail images you can download or recreate, then keep iterating in the same workspace.</p>
@@ -1350,7 +1365,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="k">Voice-over Script</div>
           <div class="vo-row">
             <p id="vo-typed"></p>
-            <button type="button" class="vo-mic" aria-hidden="true">
+            <button type="button" class="vo-mic" aria-label="Voiceover preview">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>
             </button>
           </div>
@@ -1364,25 +1379,37 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="formats-float" id="formats">
   <div class="wrap">
     <article class="fmt-float">
-      <h3>Faceless explainers</h3>
-      <p>Authority topics with narration + B-roll: classic monetizable YouTube.</p>
+      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-body">
+        <h3>Faceless explainers</h3>
+        <p>Authority topics with narration + B-roll: classic monetizable YouTube.</p>
+      </div>
     </article>
     <article class="fmt-float">
-      <h3>Lists &amp; countdowns</h3>
-      <p>“10 secrets…” style videos that search well and keep people watching.</p>
+      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-body">
+        <h3>Lists &amp; countdowns</h3>
+        <p>“10 secrets…” style videos that search well and keep people watching.</p>
+      </div>
     </article>
     <article class="fmt-float">
-      <h3>Stories &amp; documentaries</h3>
-      <p>Narrative long-form with chapters, tension, and a clear payoff.</p>
+      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-body">
+        <h3>Stories &amp; documentaries</h3>
+        <p>Narrative long-form with chapters, tension, and a clear payoff.</p>
+      </div>
     </article>
     <article class="fmt-float">
-      <h3>Shorts</h3>
-      <p>30 to 60 second vertical cuts when you want a short from the same idea.</p>
+      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-body">
+        <h3>Shorts</h3>
+        <p>30 to 60 second vertical cuts when you want a short from the same idea.</p>
+      </div>
     </article>
     <h2 class="two-line"><span class="l1">The videos that</span><span class="l2">make money on YouTube</span></h2>
     <p class="lp-sub">Ship winning formats that earn: deep, searchable, retention-led long-form for a faceless YouTube channel, assembled with real footage and B-roll.</p>
     <div class="cta-center">
-      <a class="btn btn-primary btn-lg btn-glow" href="/signup">Generate your first video</a>
+      <a class="btn btn-primary btn-lg btn-glow" href="/signup"><span class="btn-ring" aria-hidden="true"></span>Generate your first video</a>
     </div>
   </div>
 </section>
@@ -1392,7 +1419,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <div class="s-head center">
       <div class="eyebrow">Why long-form?</div>
-      <h2>Short-form gets views. <span class="accent">Long-form builds revenue.</span></h2>
+      <h2 class="h-tier">Short-form gets views. <span class="accent">Long-form builds revenue.</span></h2>
       <p>Views aren't worth the same on every format. Long-form gives creators more ways to turn attention into meaningful watch time and revenue.</p>
     </div>
     <div class="fmt-grid">
@@ -1467,6 +1494,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <p>Export the MP4, post to YouTube, and stack watch hours toward monetization and ad revenue.</p>
         </div>
       </div>
+      <div class="tab-still" aria-hidden="true">
+        <img src="/home/vidso-hero-poster.jpg" alt="" loading="lazy" decoding="async">
+      </div>
     </div>
   </div>
 </section>
@@ -1491,11 +1521,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="cmp bad">
         <h3>The old way</h3>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#E94B58" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#E94B58"/></svg> Film, hire editors, or sit on ideas for weeks</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#E94B58" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#E94B58"/></svg> Script, voice, and edit every video yourself</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#E94B58" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#E94B58"/></svg> Juggle five tools for one upload</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#E94B58" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#E94B58"/></svg> Slow output = slow monetization</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#E94B58" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#E94B58"/></svg> Burnout before the channel pays</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor"/></svg> Film, hire editors, or sit on ideas for weeks</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor"/></svg> Script, voice, and edit every video yourself</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor"/></svg> Juggle five tools for one upload</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor"/></svg> Slow output = slow monetization</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor"/></svg> Burnout before the channel pays</li>
         </ul>
       </div>
     </div>
@@ -1567,22 +1597,50 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <h2 class="two-line"><span class="l1">Frequently asked</span><span class="l2">questions</span></h2>
     <div class="faq-grid">
-      <details open>
-        <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
-      </details>
-      <details>
-        <summary>How does AI long-form generation work?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>You pick a topic and length. Vidso writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download.</p>
-      </details>
-      <details>
-        <summary>What kinds of videos should I make to monetize?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Faceless explainers, listicles, story docs, and videos on niched topics tend to perform well: searchable topics with strong hooks and enough length to build watch time toward YouTube monetization.</p>
-      </details>
-      <details>
-        <summary>How do I stay consistent for monetization?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Connect your channel to keep publishing consistently. Vidso helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling.</p>
-      </details>
+      <div class="faq-col">
+        <details open>
+          <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
+        </details>
+        <details>
+          <summary>How does AI long-form generation work?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>You pick a topic and length. Vidso writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download.</p>
+        </details>
+        <details>
+          <summary>What kinds of videos should I make to monetize?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Faceless explainers, listicles, story docs, and videos on niched topics tend to perform well: searchable topics with strong hooks and enough length to build watch time toward YouTube monetization.</p>
+        </details>
+        <details>
+          <summary>How do I stay consistent for monetization?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Connect your channel to keep publishing consistently. Vidso helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling.</p>
+        </details>
+        <details>
+          <summary>Does Vidso support Shorts?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. Vidso can cut 30 to 60 second vertical Shorts from the same idea. Plus includes 15 short-form videos a month, Pro includes 30, and Studio is unlimited.</p>
+        </details>
+      </div>
+      <div class="faq-col">
+        <details>
+          <summary>What is the max video length on each plan?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Plus allows videos up to 10 min. Pro allows videos up to 15 min. Studio allows videos up to 30 min.</p>
+        </details>
+        <details>
+          <summary>How does the Claude MCP connector work?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Open Claude settings, add a custom connector named Vidso, and paste https://www.vidso.pro/mcp. Click Add, then Connect, and sign in with your Vidso account. Claude can then generate a full long-form video from chat: script, voiceover, B-roll, and captions.</p>
+        </details>
+        <details>
+          <summary>Can I cancel anytime?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. Cancel anytime. No hidden fees.</p>
+        </details>
+        <details>
+          <summary>What format are exports?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Vidso renders a 16:9 MP4 you can preview, edit, and download, then upload to YouTube.</p>
+        </details>
+        <details>
+          <summary>How many long-form videos do I get per month?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Plus includes 10 long-form videos a month. Pro includes 25. Studio is unlimited.</p>
+        </details>
+      </div>
     </div>
   </div>
 </section>
@@ -1595,6 +1653,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <p>Generate your first video, from script to upload, and start stacking watch hours toward monetization.</p>
       <div class="hero-cta">
         <a class="btn btn-primary btn-lg btn-glow" href="/signup">
+          <span class="btn-ring" aria-hidden="true"></span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
           Generate a Video Now
         </a>
@@ -1618,7 +1677,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div class="foot-social" data-vidso-socials></div>
       </div>
       <div class="fcol">
-        <h4>Product</h4>
+        <p class="fcol-h">Product</p>
         <a href="#connect-claude">MCP</a>
         <a href="#how">Workflow</a>
         <a href="#why-vidso">Product</a>
@@ -1626,13 +1685,13 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <a href="#faq">Help</a>
       </div>
       <div class="fcol">
-        <h4>Account</h4>
+        <p class="fcol-h">Account</p>
         <a href="/login">Log in</a>
         <a href="/signup">Sign up</a>
         <a href="/overview">Dashboard</a>
       </div>
       <div class="fcol">
-        <h4>Legal</h4>
+        <p class="fcol-h">Legal</p>
         <a href="/terms">Terms of service</a>
         <a href="/privacy">Privacy policy</a>
         <a href="/refund">Refund policy</a>

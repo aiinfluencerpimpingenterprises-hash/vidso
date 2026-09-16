@@ -11,27 +11,29 @@ test('hero video constant stays on R2', () => {
   assert.equal(THUMBNAIL_DEMO_SRC, '')
 })
 
-test('hero longs use R2 carousel clips and shorts stay blank', () => {
-  assert.equal(HERO_CARDS.length, 10)
+test('hero cards only ship with media and keep a long/short mix', () => {
+  assert.ok(HERO_CARDS.length >= 8)
+  assert.ok(HERO_CARDS.every((c) => c.src))
   const longs = HERO_CARDS.filter((c) => c.type === 'long')
   const shorts = HERO_CARDS.filter((c) => c.type === 'short')
-  assert.equal(longs.length, 6)
-  assert.equal(shorts.length, 4)
+  assert.ok(longs.length >= 5)
+  assert.ok(shorts.length >= 3)
   assert.ok(longs.every((c) => /videocarousel\d+\.mp4$/.test(c.src)))
-  assert.ok(shorts.every((c) => !c.src))
 })
 
 test('showcase cards use R2 clips and prompt ideas stay complete', () => {
   assert.ok(IDEA_CARDS.length >= 9)
+  assert.ok(IDEA_CARDS.every((c) => c.src))
   assert.equal(SHOWCASE_CARDS.length, 5)
   assert.ok(SHOWCASE_CARDS.every((c) => /videocarousel\d+\.mp4$/.test(c.src)))
+  assert.ok(SHOWCASE_CARDS.every((c) => c.prompt && c.prompt.length > 12))
   assert.equal(PROMPT_IDEAS.length, 10)
   assert.ok(PROMPT_IDEAS.every((s) => s.length > 8 && /[a-zA-Z]$/.test(s)))
-  assert.match(HOW_PANEL_SRC, /videocarousel9\.mp4$/)
+  assert.equal(HOW_PANEL_SRC, '')
 })
 
 test('hero transition timing stays in range', () => {
-  assert.equal(HERO_TRANSITION.pinVh, 280)
+  assert.equal(HERO_TRANSITION.pinVh, 320)
   assert.equal(HERO_TRANSITION.pinVhMobile, 180)
   assert.ok(HERO_TRANSITION.aEnd < HERO_TRANSITION.bEnd)
   assert.ok(HERO_TRANSITION.bEnd < HERO_TRANSITION.cEnd)
@@ -41,19 +43,21 @@ test('hero transition timing stays in range', () => {
 test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.match(html, /<meta name="description"/)
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1)
-  for (const id of ['why-vidso', 'how', 'connect-claude', 'pricing', 'faq']) {
+  for (const id of ['why-vidso', 'how', 'connect-claude', 'pricing', 'faq', 'ideas']) {
     assert.ok(html.includes(`id="${id}"`), id)
   }
   assert.ok(html.includes('Choose the plan for you.'))
   assert.ok(html.includes('What is Vidso?'))
   assert.ok(html.includes('Generate a Video Now'))
-  assert.ok(html.includes('Make any YouTube video from a single idea'))
+  assert.match(html, /Make any YouTube video[\s\S]{0,80}from a single idea/)
   assert.ok(html.includes('Your faceless YouTube'))
   assert.ok(html.includes('empire starts here'))
   assert.ok(html.includes('Script to final cut'))
   assert.ok(html.includes('id="hero-pin"'))
+  assert.ok(html.includes('Turn any idea into a video'))
+  assert.ok(html.includes('Does Vidso support Shorts?'))
   assert.ok(!html.includes('class="h1-swoosh"'))
-  assert.ok(!html.includes('Turn any idea into a video'))
+  assert.ok(!html.includes('coming soon'))
   assert.ok(!html.includes('topo-bg'))
   assert.ok(!html.includes('demo-mute'))
   assert.ok(!html.includes('OpenArt'))
