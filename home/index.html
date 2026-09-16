@@ -84,7 +84,7 @@
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
-    overflow-x:hidden;
+    overflow-x:visible;
   }
   a{color:inherit;text-decoration:none}
   h1,h2,h3,.logo,.stat .n,.plan .price,.score-big .v,.step .num{font-family:'Bricolage Grotesque','Inter',sans-serif;color:var(--txt)}
@@ -841,8 +841,8 @@
   .comp-na{color:var(--faint);font-size:12px;font-style:italic}
   .comp-foot{margin:14px 0 0;font-size:12px;color:var(--faint);line-height:1.45;text-align:center}
   .comp-cta{
-    margin:36px auto 0;max-width:760px;text-align:center;padding:36px 28px;border-radius:24px;
-    border:1px solid var(--line);background:var(--panel);box-shadow:none
+    margin:36px auto 0;max-width:none;width:100%;text-align:center;padding:36px 28px;border-radius:24px;
+    border:1px solid var(--line);background:var(--panel);box-shadow:none;box-sizing:border-box
   }
   .comp-cta h3{margin:0 0 10px;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;font-weight:800;color:#fff}
   .comp-cta p{margin:0 auto 22px;max-width:34em;color:var(--muted);font-size:15px;line-height:1.55}
@@ -1064,7 +1064,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f6">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -1135,8 +1135,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </section>
     <section class="demo-hero" id="demo-hero">
       <div class="demo-frame" id="demo-frame">
-        <span class="demo-chip"><span class="dot"></span>Full pipeline</span>
-        <video id="demo-video" muted loop playsinline preload="metadata" poster="/home/vidso-hero-poster.jpg" aria-label="Full Vidso pipeline from script to finished video"></video>
+        <video id="demo-video" muted loop playsinline preload="none" poster="/home/vidso-hero-poster.jpg" aria-label="Full Vidso pipeline from script to finished video"></video>
         <div class="demo-cursor" id="demo-cursor">Create Now <span aria-hidden="true">→</span></div>
         <div class="demo-ctrl" id="demo-ctrl">
           <button type="button" id="demo-back" aria-label="Rewind 10 seconds">
@@ -1173,7 +1172,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="ideas" id="ideas">
   <div class="wrap">
     <div class="s-head center">
-      <div class="eyebrow">Formats</div>
+      <div class="eyebrow">Ideas</div>
       <h2>Turn any idea into a video</h2>
     </div>
     <div class="ideas-stage">
@@ -1379,28 +1378,36 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="formats-float" id="formats">
   <div class="wrap">
     <article class="fmt-float">
-      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-vis" aria-hidden="true">
+        <video muted playsinline preload="none" data-src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel4.mp4#t=0.8"></video>
+      </div>
       <div class="fmt-body">
         <h3>Faceless explainers</h3>
         <p>Authority topics with narration + B-roll: classic monetizable YouTube.</p>
       </div>
     </article>
     <article class="fmt-float">
-      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-vis" aria-hidden="true">
+        <video muted playsinline preload="none" data-src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel1.mp4#t=0.8"></video>
+      </div>
       <div class="fmt-body">
         <h3>Lists &amp; countdowns</h3>
         <p>“10 secrets…” style videos that search well and keep people watching.</p>
       </div>
     </article>
     <article class="fmt-float">
-      <div class="fmt-vis" aria-hidden="true"></div>
+      <div class="fmt-vis" aria-hidden="true">
+        <video muted playsinline preload="none" data-src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel2.mp4#t=0.8"></video>
+      </div>
       <div class="fmt-body">
         <h3>Stories &amp; documentaries</h3>
         <p>Narrative long-form with chapters, tension, and a clear payoff.</p>
       </div>
     </article>
-    <article class="fmt-float">
-      <div class="fmt-vis" aria-hidden="true"></div>
+    <article class="fmt-float is-short">
+      <div class="fmt-vis" aria-hidden="true">
+        <video muted playsinline preload="none" data-src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel8.mp4#t=0.8"></video>
+      </div>
       <div class="fmt-body">
         <h3>Shorts</h3>
         <p>30 to 60 second vertical cuts when you want a short from the same idea.</p>
@@ -1419,7 +1426,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <div class="s-head center">
       <div class="eyebrow">Why long-form?</div>
-      <h2 class="h-tier">Short-form gets views. <span class="accent">Long-form builds revenue.</span></h2>
+      <h2 class="h-split"><span class="l1"><span class="nowrap">Short-form</span> gets views.</span><span class="l2"><span class="nowrap">Long-form</span> builds revenue.</span></h2>
       <p>Views aren't worth the same on every format. Long-form gives creators more ways to turn attention into meaningful watch time and revenue.</p>
     </div>
     <div class="fmt-grid">
@@ -1467,7 +1474,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <div class="s-head center">
       <div class="eyebrow">Workflow</div>
-      <h2>From idea to long-form upload in 3 steps</h2>
+      <h2>From idea to <span class="nowrap">long-form</span> upload in 3 steps</h2>
       <p>No camera. No crew. Script to video: a finished 16:9 YouTube upload ready for watch hours and getting monetized.</p>
     </div>
     <div class="tab-panel">
@@ -1900,7 +1907,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingPage } from '/lib/landing-page.js'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f6'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)

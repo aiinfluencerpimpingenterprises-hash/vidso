@@ -13,7 +13,7 @@ test('hero video constant stays on R2', () => {
 
 test('hero cards only ship with media and keep a long/short mix', () => {
   assert.ok(HERO_CARDS.length >= 8)
-  assert.ok(HERO_CARDS.every((c) => c.src))
+  assert.ok(HERO_CARDS.every((c) => c.src && c.poster))
   const longs = HERO_CARDS.filter((c) => c.type === 'long')
   const shorts = HERO_CARDS.filter((c) => c.type === 'short')
   assert.ok(longs.length >= 5)
