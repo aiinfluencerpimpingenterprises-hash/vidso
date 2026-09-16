@@ -1069,7 +1069,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <link rel="stylesheet" href="/home/landing-redesign.css">
 </head>
 <body class="lp-red">
-<div id="topo-bg" aria-hidden="true"></div>
 <div class="scroll-prog" id="scrollProg"></div>
 
 <header>
@@ -1122,7 +1121,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div class="trust-badge">
           <span>Built for creators who want to <b>get paid</b> on YouTube</span>
         </div>
-        <h1 id="hero-h1">Your <span class="h1-mark"><span class="h1-accent">faceless YouTube empire</span><svg class="h1-swoosh" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M6 12.5C48 5.5 92 15.5 148 9.5C204 3.5 252 6.5 314 11.5"/></svg></span> starts here</h1>
+        <h1 id="hero-h1">Your <span class="h1-mark"><span class="h1-accent">faceless YouTube empire</span><svg class="h1-swoosh" width="320" height="14" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M6 12.5C48 5.5 92 15.5 148 9.5C204 3.5 252 6.5 314 11.5"/></svg></span> starts here</h1>
         <p class="sub">Turn an idea into a polished YouTube video using <span class="em">real footage</span>, B-roll, voiceover, and captions. Vidso handles the production workflow from <span class="em-red">script to final cut</span>, so you can <span class="em">publish consistently</span> without spending hours editing.</p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg btn-glow" href="/signup">
@@ -1162,9 +1161,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <input class="hero-range" id="demo-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
         <span class="hero-time" id="demo-dur">0:00</span>
       </div>
-      <button type="button" class="mute-fab" id="demo-mute" data-mute aria-label="Unmute" style="position:static;width:36px;height:36px">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
-      </button>
     </div>
   </div>
 </section>
@@ -1173,39 +1169,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="loved">
   <div class="wrap">
     <h2>Loved by creators building monetizable YouTube channels</h2>
-    <div class="loved-marquee">
-      <div class="loved-track" id="loved-track"></div>
-    </div>
-  </div>
-</section>
-
-<!-- IDEA PROMPT + SLIDESHOW -->
-<section class="ideas">
-  <div class="wrap">
-    <h2 class="ideas-title">Turn any idea into a video</h2>
-    <div class="ideas-stage">
-      <button type="button" class="ideas-nav prev" data-ideas-prev aria-label="Previous ideas">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
-      </button>
-      <div class="ideas-row" id="ideas-row"></div>
-      <button type="button" class="ideas-nav next" data-ideas-next aria-label="Next ideas">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-    </div>
-    <div class="prompt-box" id="prompt-box" role="link" tabindex="0" aria-label="Generate a video from this idea">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
-      <span class="typed" id="prompt-typed"></span>
-      <span class="prompt-send" aria-hidden="true">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-      </span>
-    </div>
+    <div class="loved-row" id="loved-track"></div>
   </div>
 </section>
 
 <!-- SHOWCASE -->
 <section class="showcase">
   <div class="wrap">
-    <h2 class="two-line"><span class="l1">Make any YouTube video</span><span class="l2">from a single idea</span></h2>
+    <h2 class="ideas-title">Make any YouTube video from a single idea</h2>
     <div class="ideas-stage">
       <button type="button" class="ideas-nav prev" data-show-prev aria-label="Previous video">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
@@ -1214,6 +1185,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <button type="button" class="ideas-nav next" data-show-next aria-label="Next video">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
       </button>
+    </div>
+    <div class="cover-dots" id="cover-dots"></div>
+    <div class="prompt-box" id="prompt-box" role="link" tabindex="0" aria-label="Generate a video from this idea">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+      <span class="typed-wrap"><span class="typed" id="prompt-typed"></span><span class="caret" aria-hidden="true"></span></span>
+      <span class="prompt-send" aria-hidden="true">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </span>
     </div>
   </div>
 </section>
@@ -1468,6 +1447,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <p>No camera. No crew. Script to video: a finished 16:9 YouTube upload ready for watch hours and getting monetized.</p>
     </div>
     <div class="tab-panel">
+      <video id="how-bg" class="tab-bg" muted loop playsinline preload="none" aria-hidden="true"></video>
       <div class="tab-list" id="how-tabs">
         <button type="button" class="is-on" data-how="1">01 Pick a money topic</button>
         <button type="button" data-how="2">02 Automate the production</button>
@@ -1590,7 +1570,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <h2 class="two-line"><span class="l1">Frequently asked</span><span class="l2">questions</span></h2>
     <div class="faq-grid">
-      <details>
+      <details open>
         <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
         <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
       </details>
@@ -1636,11 +1616,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap">
     <div class="foot">
       <div>
-        <a href="/home" class="logo">
-          <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
-          Vidso
-        </a>
-        <p class="fdesc">Create YouTube videos with AI: script, voice, B-roll, and captions. Built for creators who want to monetize.</p>
+        <p class="foot-tag">Create YouTube videos with AI.</p>
+        <p class="fdesc">Script, voice, B-roll, and captions. Built for creators who want to monetize.</p>
         <div class="foot-social" data-vidso-socials></div>
       </div>
       <div class="fcol">
@@ -1667,7 +1644,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
     <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
     <div class="foot-mega" aria-hidden="true">
-      <img data-vidso-logo alt="" width="120" height="120" decoding="async">
       <span class="word">Vidso</span>
     </div>
   </div>
@@ -1901,6 +1877,5 @@ if (window.gsap) {
   })
 }
 </script>
-<script src="/topo-bg.js"></script>
 </body>
 </html>

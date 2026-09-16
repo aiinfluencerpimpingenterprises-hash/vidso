@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, HERO_CARDS, HERO_VIDEO_SRC, IDEA_CARDS, PROMPT_IDEAS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC } from '../lib/landing-media.js'
+import { CREATE_HREF, HERO_CARDS, HERO_VIDEO_SRC, HOW_PANEL_SRC, IDEA_CARDS, PROMPT_IDEAS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
@@ -11,21 +11,23 @@ test('hero video constant stays on R2', () => {
   assert.equal(THUMBNAIL_DEMO_SRC, '')
 })
 
-test('hero cards are placeholder-first with a 60/40 mix', () => {
+test('hero longs use R2 carousel clips and shorts stay blank', () => {
   assert.equal(HERO_CARDS.length, 10)
-  assert.ok(HERO_CARDS.every((c) => !c.src))
-  const longs = HERO_CARDS.filter((c) => c.type === 'long').length
-  const shorts = HERO_CARDS.filter((c) => c.type === 'short').length
-  assert.equal(longs, 6)
-  assert.equal(shorts, 4)
+  const longs = HERO_CARDS.filter((c) => c.type === 'long')
+  const shorts = HERO_CARDS.filter((c) => c.type === 'short')
+  assert.equal(longs.length, 6)
+  assert.equal(shorts.length, 4)
+  assert.ok(longs.every((c) => /videocarousel\d+\.mp4$/.test(c.src)))
+  assert.ok(shorts.every((c) => !c.src))
 })
 
-test('idea and showcase cards stay empty until R2 URLs are filled', () => {
+test('showcase cards use R2 clips and prompt ideas stay complete', () => {
   assert.ok(IDEA_CARDS.length >= 9)
-  assert.ok(IDEA_CARDS.every((c) => !c.src))
   assert.equal(SHOWCASE_CARDS.length, 5)
-  assert.ok(SHOWCASE_CARDS.every((c) => !c.src))
+  assert.ok(SHOWCASE_CARDS.every((c) => /videocarousel\d+\.mp4$/.test(c.src)))
   assert.equal(PROMPT_IDEAS.length, 10)
+  assert.ok(PROMPT_IDEAS.every((s) => s.length > 8 && /[a-zA-Z]$/.test(s)))
+  assert.match(HOW_PANEL_SRC, /videocarousel9\.mp4$/)
 })
 
 test('landing keeps SEO, one H1, and nav anchors', () => {
@@ -37,6 +39,10 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Choose the plan for you.'))
   assert.ok(html.includes('What is Vidso?'))
   assert.ok(html.includes('Generate a Video Now'))
+  assert.ok(html.includes('Make any YouTube video from a single idea'))
+  assert.ok(!html.includes('Turn any idea into a video'))
+  assert.ok(!html.includes('topo-bg'))
+  assert.ok(!html.includes('demo-mute'))
   assert.ok(!html.includes('OpenArt'))
   assert.ok(!html.includes('10M+ creators'))
   assert.ok(!html.includes('Featured on'))
