@@ -63,6 +63,8 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.match(html, /Make any YouTube video[\s\S]{0,80}from a single idea/)
   assert.ok(html.includes('Your faceless YouTube'))
   assert.ok(html.includes('empire starts here'))
+  assert.ok(html.includes('class="h1-mark"'))
+  assert.ok(html.includes('class="nav-left"'))
   assert.ok(!html.includes('Script to final cut'))
   assert.ok(html.includes('id="hero-pin"'))
   assert.ok(html.includes('id="hero-prompt"'))
@@ -119,7 +121,7 @@ test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserv
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
-  assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro')
+  assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro_v2')
   assert.equal(LANDING_ANNOUNCE.href, '/image-generation')
   assert.match(LANDING_ANNOUNCE.text, /Seedream 5.0 Pro/)
   assert.match(LANDING_ANNOUNCE.textMobile, /Thumbnail Generator/)

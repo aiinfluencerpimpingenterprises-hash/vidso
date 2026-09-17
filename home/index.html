@@ -1065,17 +1065,17 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f19">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f20">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
 
 <div class="lp-sitehead" id="lp-sitehead">
-<div class="lp-announce" id="lp-announce" hidden>
+<div class="lp-announce" id="lp-announce">
   <div class="lp-announce-inner">
     <p class="lp-announce-text">
-      <span class="is-desk" data-announce-desk></span>
-      <span class="is-mob" data-announce-mob></span>
+      <span class="is-desk" data-announce-desk>Seedream 5.0 Pro is now available in the Thumbnail Generator.</span>
+      <span class="is-mob" data-announce-mob>Seedream 5.0 Pro now in Thumbnail Generator</span>
     </p>
     <a class="lp-announce-cta" data-announce-cta href="/image-generation">Try it now ›</a>
     <button type="button" class="lp-announce-x" data-announce-close aria-label="Dismiss announcement">×</button>
@@ -1084,16 +1084,18 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <header>
   <div class="wrap" style="position:relative">
     <nav>
-      <a href="/home" class="logo">
-        <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
-        Vidso
-      </a>
-      <div class="nav-links">
-        <a href="#why-vidso">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#connect-claude">MCP</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#faq">FAQ</a>
+      <div class="nav-left">
+        <a href="/home" class="logo">
+          <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
+          Vidso
+        </a>
+        <div class="nav-links">
+          <a href="#why-vidso">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#connect-claude">MCP</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
       </div>
       <div class="nav-cta">
 <a href="/login" class="ghost">Sign in</a>
@@ -1127,9 +1129,13 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <span>Built for creators who want to <b>get paid</b> on YouTube</span>
         </div>
         <h1 id="hero-h1" data-hero-exit="title">
-          <span class="h1-l">Your faceless YouTube</span>
+          <span class="h1-l"><span class="h1-mark">Your faceless YouTube</span></span>
           <span class="h1-l">empire starts here</span>
         </h1>
+        <div class="hero-trust" id="hero-trust" data-hero-exit="trust">
+          <div class="hero-trust-avs" id="hero-trust-avs" aria-hidden="true"></div>
+          <p>Trusted by creators building monetizable YouTube channels</p>
+        </div>
         <p class="sub" data-hero-exit="sub">Long-form YouTube videos with real footage, B-roll, voiceover, and captions.</p>
         <div class="hero-cta" data-hero-exit="cta">
           <a class="hero-pill" href="/signup">Generate a Video Now</a>
@@ -1148,10 +1154,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         </form>
         <div class="hero-marquee" id="hero-marquee" data-hero-exit="cards">
           <div class="hero-marquee-track" id="hero-marquee-track"></div>
-        </div>
-        <div class="hero-trust" id="hero-trust" data-hero-exit="trust">
-          <div class="hero-trust-avs" id="hero-trust-avs" aria-hidden="true"></div>
-          <p>Trusted by creators building monetizable YouTube channels</p>
         </div>
       </div>
     </section>
@@ -1893,11 +1895,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   heroTl
     .from('.hero-lp .trust-badge',{y:18,opacity:0,duration:.55})
     .from(heroLines,{y:28,opacity:0,duration:.75,stagger:.08,ease:'power4.out'},'-=.25')
-    .from('.hero-lp .sub',{y:20,opacity:0,duration:.65},'-=.45')
+    .from('.hero-trust',{y:12,opacity:0,duration:.4},'-=.45')
+    .from('.hero-lp .sub',{y:20,opacity:0,duration:.65},'-=.35')
     .from('.hero-cta',{y:12,opacity:0,duration:.45},'-=.35')
     .from('.hero-prompt',{y:16,opacity:0,duration:.5},'-=.25')
-    .from('.hero-marquee',{y:18,opacity:0,duration:.55},'-=.3')
-    .from('.hero-trust',{y:12,opacity:0,duration:.4},'-=.25');
+    .from('.hero-marquee',{y:18,opacity:0,duration:.55},'-=.3');
   try { document.getElementById('hero-h1') && document.getElementById('hero-h1').classList.add('is-ready'); } catch(e) {}
 
   // ---------- DrawSVG: line art draws itself on ----------
@@ -2004,7 +2006,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f19'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f20'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
