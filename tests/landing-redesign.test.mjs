@@ -1,13 +1,14 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, HERO_CARDS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
+import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
 test('hero video constant stays on R2', () => {
   assert.equal(HERO_VIDEO_SRC, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4')
   assert.equal(CREATE_HREF, '/signup')
+  assert.equal(GENERATE_HREF, '/video-generation')
   assert.equal(THUMBNAIL_DEMO_SRC, '')
 })
 
@@ -18,6 +19,10 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
   const shorts = HERO_CARDS.filter((c) => c.type === 'short')
   assert.ok(longs.length >= 5)
   assert.ok(shorts.length >= 3)
+  assert.deepEqual(HERO_CARDS.map((c) => c.aspect), ['16:9', '9:16', '16:9', '16:9', '9:16', '16:9', '16:9', '9:16'])
+  assert.deepEqual(HERO_CARDS.map((c) => c.label), ['Documentary', 'Shorts', 'Explainer', 'Listicle', 'Shorts', 'Story', 'History', 'Shorts'])
+  assert.equal(HERO_PROMPTS.length, 8)
+  assert.match(HERO_PROMPTS[0], /airport secrets/)
   assert.ok(HERO_CARDS.every((c) => /\/landing\/hero-card-\d\d\.mp4$/.test(c.src)))
   assert.ok(HERO_CARDS.every((c) => /\/landing\/hero-card-\d\d\.jpg$/.test(c.poster)))
   assert.equal(landingVideo('hero-card', 1), HERO_CARDS[0].src)
@@ -60,6 +65,12 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('empire starts here'))
   assert.ok(!html.includes('Script to final cut'))
   assert.ok(html.includes('id="hero-pin"'))
+  assert.ok(html.includes('id="hero-prompt"'))
+  assert.ok(html.includes('id="hero-marquee"'))
+  assert.ok(html.includes('Trusted by creators building monetizable YouTube channels'))
+  assert.ok(!html.includes('class="loved"'))
+  assert.ok(!html.includes('Loved by creators'))
+  assert.ok(!html.includes('Supported platform'))
   assert.ok(!html.includes('Turn any idea into a video'))
   assert.match(html, /Shorts from the[\s\S]{0,80}same idea/)
   assert.ok(html.includes('Long-form'))
