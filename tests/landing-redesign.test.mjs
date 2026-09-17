@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, HERO_CARDS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
+import { CREATE_HREF, HERO_CARDS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
@@ -80,4 +80,17 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(!html.includes('OpenArt'))
   assert.ok(!html.includes('10M+ creators'))
   assert.ok(!html.includes('Featured on'))
+  assert.ok(html.includes('id="lp-announce"'))
+  assert.ok(html.includes('class="js-reveal"') || html.includes("classList.add('js-reveal')"))
+  assert.ok(!html.includes('hero-ghost-cta'))
+  assert.ok(html.includes('btn-label'))
+})
+
+test('announcement config and long-form demo start stay in one place', () => {
+  assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro')
+  assert.equal(LANDING_ANNOUNCE.href, '/image-generation')
+  assert.match(LANDING_ANNOUNCE.text, /Seedream 5.0 Pro/)
+  assert.match(LANDING_ANNOUNCE.textMobile, /Thumbnail Generator/)
+  assert.equal(LANDING_ANNOUNCE.cta, 'Try it now ›')
+  assert.equal(LONGFORM_DEMO_START, 12)
 })
