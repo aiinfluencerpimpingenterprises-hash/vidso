@@ -4,7 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <script>!function(w,d,s,u,n,a,b){if(w[n])return;a=w[n]={q:[],t:+new Date,s:[],o:u,track:function(){a.q.push([+new Date].concat([].slice.call(arguments)))},setScope:function(){a.s=[].slice.call(arguments).filter(function(x){return typeof x==="string"});a.q.push([+new Date,"setScope"].concat(a.s))},scope:function(){var c=[].slice.call(arguments);return{track:function(){a.q.push([+new Date].concat([].slice.call(arguments)).concat([{__scope:c}]))}}}};b=d.createElement(s);b.async=1;b.src=u+"/s.js";d.getElementsByTagName(s)[0].parentNode.insertBefore(b,d.getElementsByTagName(s)[0])}(window,document,"script","https://t.whop.tw","whop");whop.setScope("biz_1rGZhPBGkczqgF");whop.track("page");</script>
-<title>Vidso · Dashboard</title>
+<title>Vidso · AI YouTube Tools</title>
+<meta name="description" content="Vidso tools for long-form YouTube: script, voiceover, B-roll, captions, thumbnails, and clips.">
+<meta name="robots" content="index,follow" id="robots-meta">
 <script>
 (function(){
   var hash = location.hash || ''
@@ -77,7 +79,40 @@
     document.documentElement.classList.add('needs-gate')
     return
   }
+  var publicTools = {
+    '/video-generation':1,'/youtube-generation':1,'/image-generation':1,'/clipping':1,
+    '/ranking':1,'/captions':1,'/voiceover':1,'/reframe':1,'/editor':1,'/downloader':1,
+    '/commentary':1,'/tools':1
+  }
+  var toolSeo = {
+    '/video-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',1],
+    '/youtube-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',1],
+    '/image-generation':['Thumbnail Generator · Vidso','Describe a scene, a subject, a mood, or a style, and generate a YouTube thumbnail.',1],
+    '/clipping':['Clipping · Vidso','Paste a link. Vidso finds the best moments and reframes them to 9:16.',1],
+    '/ranking':['Ranking · Vidso','Assemble ranked short videos with a live 9:16 preview.',1],
+    '/captions':['AI Captions · Vidso','Upload a video or paste a URL to auto-transcribe and get a full SRT caption file.',1],
+    '/voiceover':['AI Voiceover · Vidso','Choose a voice and type your script. Get a studio-quality MP3 back instantly.',1],
+    '/reframe':['AI Reframe · Vidso','Auto-fit landscape footage into a vertical or square crop around the subject.',1],
+    '/editor':['Video Editor · Vidso','Edit on a multi-track timeline in Vidso.',1],
+    '/downloader':['Video Downloader · Vidso','Download videos from YouTube, TikTok, Instagram, Twitter, Reddit and more.',1],
+    '/commentary':['Video Commentary · Vidso','Add voice and captions on clips.',1],
+    '/tools':['Short Form Tools · Vidso','Every Vidso tool in one place.',1],
+    '/dashboard':['Dashboard · Vidso','Your usage and shortcuts in one place.',0],
+    '/files':['My Files · Vidso','Every video and thumbnail you generate is kept here.',0]
+  }
+  var seo = toolSeo[path]
+  if (seo) {
+    document.title = seo[0]
+    var desc = document.querySelector('meta[name="description"]')
+    if (desc) desc.setAttribute('content', seo[1])
+    var robots = document.getElementById('robots-meta')
+    if (robots) robots.setAttribute('content', seo[2] ? 'index,follow' : 'noindex,nofollow')
+  }
   if (!token && !refreshTok) {
+    if (publicTools[path]) {
+      document.documentElement.classList.add('is-guest-preview')
+      return
+    }
     location.replace('/login')
     return
   }
@@ -127,7 +162,7 @@
   // app immediately; unpaid users should see onboarding or the paywall, not a
   // blank #0B0B0C frame while /user/me runs.
   if (needOb) document.documentElement.classList.add('needs-onboarding')
-  else if (!paid) document.documentElement.classList.add('needs-paywall')
+  else if (!paid && !publicTools[path]) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -835,6 +870,29 @@ html.needs-onboarding #app-chrome,html.needs-onboarding main{visibility:hidden}
 html.needs-auth #auth-modal{display:flex!important}
 html.needs-paywall #paywall-modal,
 html.needs-paywall #paywall-modal.hidden{display:flex!important;z-index:20001}
+html.is-guest-preview .guest-only{display:flex}
+html.is-guest-preview #credits-pill,
+html.is-guest-preview #nav-avatar-wrap{display:none}
+.guest-only{display:none;align-items:center;gap:10px}
+.guest-only .ghost{color:rgba(245,245,244,.78);text-decoration:none;font-size:13px;font-weight:650}
+.preview-pill{
+  display:none;margin-left:10px;padding:3px 8px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);color:rgba(245,245,244,.62);
+  font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle
+}
+html.is-guest-preview .preview-pill,
+html.is-plan-preview .preview-pill{display:inline-flex}
+.page-header h2 .preview-pill{position:relative;top:-2px}
+.preview-gate{position:fixed;inset:0;z-index:20040;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
+.preview-gate[hidden]{display:none}
+.preview-gate-card{
+  width:min(420px,100%);background:#121214;border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)
+}
+.preview-gate-card h3{margin:0 0 8px;font-size:20px;letter-spacing:-.03em}
+.preview-gate-card p{margin:0 0 18px;color:rgba(245,245,244,.7);line-height:1.45;font-size:14px}
+.preview-gate-actions{display:flex;gap:10px;flex-wrap:wrap}
+.preview-gate-actions .btn{min-height:42px;padding:10px 16px;border-radius:999px}
 html.needs-gate #paywall-modal{display:none!important}
 #onboarding-modal{z-index:20000}
 html.needs-onboarding #onboarding-modal,
@@ -4020,6 +4078,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </div>
 
+<div class="preview-gate" id="preview-gate" hidden>
+  <div class="preview-gate-card" role="dialog" aria-modal="true" aria-labelledby="preview-gate-title">
+    <h3 id="preview-gate-title">Create an account to generate</h3>
+    <p id="preview-gate-copy">Sign up to run this tool. Preview lets you try the interface first.</p>
+    <div class="preview-gate-actions" id="preview-gate-actions"></div>
+  </div>
+</div>
+
 <!-- APP CHROME -->
 <div id="app-chrome">
 <div class="app-banner" id="app-banner" hidden>
@@ -4075,6 +4141,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <input class="nav-search-input" id="nav-search-input" type="search" placeholder="Jump to a tool" autocomplete="off">
         <div id="nav-search-list"></div>
       </div>
+    </div>
+    <div class="guest-only" id="guest-auth">
+      <a class="ghost" href="/login">Sign in</a>
+      <a class="btn btn-primary" href="/signup">Sign up</a>
     </div>
     <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
@@ -5895,7 +5965,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
-        <h2 id="fv-page-title">Long Form Generator</h2>
+        <h2 id="fv-page-title">Long Form Generator <span class="preview-pill">Preview</span></h2>
         <p id="fv-page-sub">Turn a topic into a narrated short or long-form video: script, voice, B-roll, and captions.</p>
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
@@ -6510,6 +6580,98 @@ function paywallDevBypass() {
   return uiPreviewMode()
 }
 
+const PUBLIC_TOOL_PATHS = new Set([
+  '/video-generation','/youtube-generation','/image-generation','/clipping','/ranking',
+  '/captions','/voiceover','/reframe','/editor','/downloader','/commentary','/tools'
+])
+const PRIVATE_TOOL_PATHS = new Set(['/dashboard','/files'])
+const PREVIEW_ACTION_SEL = [
+  '#fv-gen-script-btn','#fv-to-phase3-btn','#fv-to-phase4-btn','#fv-to-phase5-btn',
+  '#fv-export-btn','#fv-export-short-btn','#img-btn','#tts-btn','#clip-url-btn',
+  '#clip-export-btn','#clip-viral-btn','#rf-analyze-btn','#rf-render-btn','#rf-viral-btn',
+  '#dl-fetch-btn','#dl-download-btn','#ed-export-btn','#vr-generate-btn','#cap-btn',
+  '#cap-burn-btn','#cm-script-btn','#cm-final-btn'
+].join(',')
+
+function isGuestPreview() {
+  if (uiPreviewMode()) return false
+  if (getToken() || getRefreshToken()) return false
+  return PUBLIC_TOOL_PATHS.has(normalizePath(location.pathname))
+}
+
+function isPublicToolPath(path) {
+  return PUBLIC_TOOL_PATHS.has(normalizePath(path || location.pathname))
+}
+
+function stashGuestReturn() {
+  try {
+    const p = normalizePath(location.pathname)
+    if (p && p !== '/login' && p !== '/signup') {
+      sessionStorage.setItem('vidso_after_login', p + (location.search || ''))
+    }
+    const topic = document.getElementById('fv-topic')?.value?.trim()
+    if (topic) sessionStorage.setItem('vidso_guest_topic', topic)
+  } catch (_) {}
+}
+
+function closePreviewGate() {
+  const el = document.getElementById('preview-gate')
+  if (el) el.hidden = true
+}
+window.closePreviewGate = closePreviewGate
+window.openPreviewGate = openPreviewGate
+
+function openPreviewGate(kind) {
+  const el = document.getElementById('preview-gate')
+  const title = document.getElementById('preview-gate-title')
+  const copy = document.getElementById('preview-gate-copy')
+  const actions = document.getElementById('preview-gate-actions')
+  if (!el || !title || !copy || !actions) return false
+  if (kind === 'plan') {
+    title.textContent = 'An active plan is required'
+    copy.textContent = 'Generating uses a paid Vidso plan. See plans to continue.'
+    actions.innerHTML = `<a class="btn btn-primary" href="/home#pricing">See plans</a>
+      <button type="button" class="btn btn-ghost" id="preview-gate-close">Close</button>`
+  } else {
+    stashGuestReturn()
+    title.textContent = 'Create an account to generate'
+    copy.textContent = 'Sign up to run this tool. Preview lets you try the interface first.'
+    actions.innerHTML = `<a class="btn btn-primary" href="/signup">Sign up</a>
+      <a class="btn btn-ghost" href="/login">Log in</a>`
+  }
+  el.hidden = false
+  actions.querySelector('#preview-gate-close')?.addEventListener('click', closePreviewGate)
+  return false
+}
+
+window.requireToolAction = function requireToolAction() {
+  if (uiPreviewMode()) return true
+  if (!getToken()) return openPreviewGate('auth')
+  if (paywallOn() && currentUser && !hasActivePlan()) return openPreviewGate('plan')
+  return true
+}
+
+function paintPreviewPills() {
+  const title = document.querySelector('.panel.active .page-header h2, .panel.active #fv-page-title, .panel.active #rf-intro')
+  if (!title || title.querySelector('.preview-pill')) return
+  const pill = document.createElement('span')
+  pill.className = 'preview-pill'
+  pill.textContent = 'Preview'
+  title.appendChild(pill)
+}
+
+function enterGuestPreview() {
+  currentUser = null
+  document.documentElement.classList.add('is-guest-preview')
+  document.documentElement.classList.remove('needs-gate', 'needs-auth', 'needs-paywall', 'needs-onboarding')
+  hideModal()
+  try { closePaywall() } catch (_) {}
+  try { closeOnboarding() } catch (_) {}
+  paintPreviewPills()
+  restorePanelFromHash()
+  try { applyGuestTopic() } catch (_) {}
+}
+
 function enterUiPreview() {
   currentUser = {
     id: 'local-preview',
@@ -6557,19 +6719,29 @@ function afterAuthReady(opts = {}) {
     document.documentElement.classList.remove('needs-paywall')
     closePaywall()
     maybeShowOnboarding()
-    loadUsage()
-    loadVoices()
-    loadFiles()
+    if (getToken()) {
+      loadUsage()
+      loadVoices()
+      loadFiles()
+    }
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
     return
   }
   obClearNeedFlag()
-  loadUsage()
-  loadVoices()
-  loadFiles()
+  if (getToken()) {
+    loadUsage()
+    loadVoices()
+    loadFiles()
+  }
   if (funnelLocked() && !introPending()) {
-    maybeShowPaywall()
+    if (isPublicToolPath()) {
+      document.documentElement.classList.add('is-plan-preview')
+      document.documentElement.classList.remove('needs-paywall', 'needs-gate')
+      paintPreviewPills()
+    } else {
+      maybeShowPaywall()
+    }
     if (opts.restoreRoute !== false) restorePanelFromHash()
     try { consumeYoutubeQuery() } catch (_) {}
     return
@@ -6628,6 +6800,10 @@ async function checkAuth() {
   consumeOAuthReturn()
   if (uiPreviewMode()) {
     enterUiPreview()
+    return
+  }
+  if (isGuestPreview()) {
+    enterGuestPreview()
     return
   }
   applyAuthRouteTab()
@@ -8609,7 +8785,7 @@ window.openPaywall = (opts = {}) => {
 window.closePaywall = () => {
   const modal = document.getElementById('paywall-modal')
   if (!modal) return
-  if (paywallOn() && currentUser && !hasActivePlan() && !introPending()) {
+  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !isPublicToolPath()) {
     modal.classList.remove('hidden')
     document.body.classList.add('paywalled')
     document.documentElement.classList.add('needs-paywall')
@@ -8626,6 +8802,11 @@ window.closePaywall = () => {
 
 window.maybeShowPaywall = () => {
   if (!paywallOn()) { closePaywall(); return }
+  if (isPublicToolPath() && currentUser && !hasActivePlan()) {
+    document.documentElement.classList.add('is-plan-preview')
+    paintPreviewPills()
+    return
+  }
   if (!currentUser) return
   if (hasActivePlan()) { closePaywall(); return }
   const auth = document.getElementById('auth-modal')
@@ -8694,6 +8875,7 @@ window.addEventListener('scroll', () => {
 }, true)
 
 function populateUser() {
+  if (!currentUser) return
   document.getElementById('user-email').textContent = currentUser.email || ''
   pixelIdentify(currentUser.email)
   const nameEl = document.getElementById('user-name')
@@ -8787,7 +8969,11 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if ((id === 'dashboard' || id === 'files') && isGuestPreview()) {
+    openPreviewGate('auth')
+    return
+  }
+  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !tourOpen && !obOpen && !opts.allowLocked && !isPublicToolPath(pathForPanel(id))) {
     openPaywall({ force: true })
     return
   }
@@ -8825,8 +9011,9 @@ window.switchPanel = (id, btn, opts = {}) => {
     document.body.classList.toggle('studio-open', id === 'facelessstudio')
   }
   window.closeMobileNav?.()
-  if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
-  if (id === 'files') { try { loadFiles() } catch (_) {} }
+  try { applyToolPageSeo(pathForPanel(id)) } catch (_) {}
+  if (id === 'voiceover' && getToken()) { try { loadVoiceLibrary() } catch (_) {} }
+  if (id === 'files' && getToken()) { try { loadFiles() } catch (_) {} }
   if (id === 'videogen' || id === 'ytvideogen') {
     try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
     try { fvInit() } catch (_) {}
@@ -8887,6 +9074,7 @@ try { restorePanelFromPath({ skipTour: true }) } catch (_) {}
 
 // ── USAGE ────────────────────────────────────────────────────────────────────
 async function loadUsage() {
+  if (!getToken()) return
   try {
     const u = await api.user.usage()
     lastUsage = u
@@ -9698,14 +9886,57 @@ function fvBindGenerateScript() {
   })
 }
 
+function applyGuestTopic() {
+  const input = document.getElementById('fv-topic')
+  if (!input || String(input.value || '').trim()) return
+  let idea = ''
+  try { idea = sessionStorage.getItem('vidso_guest_topic') || '' } catch (_) {}
+  if (!idea) {
+    try { idea = new URLSearchParams(location.search || '').get('idea') || '' } catch (_) {}
+  }
+  if (idea) input.value = idea
+}
+
+function applyToolPageSeo(path) {
+  const map = {
+    '/video-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',true],
+    '/youtube-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',true],
+    '/image-generation':['Thumbnail Generator · Vidso','Describe a scene, a subject, a mood, or a style, and generate a YouTube thumbnail.',true],
+    '/clipping':['Clipping · Vidso','Paste a link. Vidso finds the best moments and reframes them to 9:16.',true],
+    '/ranking':['Ranking · Vidso','Assemble ranked short videos with a live 9:16 preview.',true],
+    '/captions':['AI Captions · Vidso','Upload a video or paste a URL to auto-transcribe and get a full SRT caption file.',true],
+    '/voiceover':['AI Voiceover · Vidso','Choose a voice and type your script. Get a studio-quality MP3 back instantly.',true],
+    '/reframe':['AI Reframe · Vidso','Auto-fit landscape footage into a vertical or square crop around the subject.',true],
+    '/editor':['Video Editor · Vidso','Edit on a multi-track timeline in Vidso.',true],
+    '/downloader':['Video Downloader · Vidso','Download videos from YouTube, TikTok, Instagram, Twitter, Reddit and more.',true],
+    '/commentary':['Video Commentary · Vidso','Add voice and captions on clips.',true],
+    '/tools':['Short Form Tools · Vidso','Every Vidso tool in one place.',true],
+    '/dashboard':['Dashboard · Vidso','Your usage and shortcuts in one place.',false],
+    '/files':['My Files · Vidso','Every video and thumbnail you generate is kept here.',false]
+  }
+  const seo = map[normalizePath(path || location.pathname)]
+  if (!seo) return
+  document.title = seo[0]
+  const desc = document.querySelector('meta[name="description"]')
+  if (desc) desc.setAttribute('content', seo[1])
+  const robots = document.getElementById('robots-meta')
+  if (robots) robots.setAttribute('content', seo[2] ? 'index,follow' : 'noindex,nofollow')
+}
+
 function fvInit() {
   fvBindGenerateScript()
   fvRenderDurationChips()
   fvSyncBrollSourceUi()
   applyVoiceControls('fv', fvState.voiceSettings || VOICE_SETTING_DEFAULTS)
   applyVoiceControls('vo', VOICE_SETTING_DEFAULTS)
+  applyGuestTopic()
   if (voices.length) fvPopulateVoices()
-  else loadVoices().then(() => fvPopulateVoices())
+  else if (getToken()) loadVoices().then(() => fvPopulateVoices())
+  else {
+    voicesLoadState = 'empty'
+    voicesLoadError = 'Sign in to load voices'
+    fvPopulateVoices()
+  }
   fvState.inited = true
 }
 window.fvInit = fvInit
@@ -12039,6 +12270,10 @@ window.generateVoiceover = async () => {
 async function loadVoiceLibrary() {
   const container = document.getElementById('voice-library')
   if (!container) return
+  if (!getToken()) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:.8rem;padding:8px">Saved voiceovers show up here after you sign in.</div>'
+    return
+  }
   try {
     const items = await api.tts.library()
     if (!items.length) {
@@ -12374,6 +12609,12 @@ window.filesUploadToYoutube = async () => {
 }
 
 async function loadFiles() {
+  if (!getToken()) {
+    filesCache = []
+    try { renderDashRecent([]) } catch (_) {}
+    try { renderFilesGallery() } catch (_) {}
+    return
+  }
   try {
     const raw = await api.upload.list()
     const all = Array.isArray(raw) ? raw : (raw?.files || [])
@@ -12534,6 +12775,28 @@ if (document.getElementById('panel-facelessstudio')?.classList.contains('active'
 
 checkAuth()
 bindGettingStarted()
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'preview-gate') { closePreviewGate(); return }
+  const action = e.target.closest && e.target.closest(PREVIEW_ACTION_SEL)
+  if (!action) return
+  if (typeof requireToolAction === 'function' && !requireToolAction()) {
+    e.preventDefault()
+    e.stopImmediatePropagation()
+  }
+}, true)
+document.addEventListener('change', (e) => {
+  const input = e.target
+  if (!input || input.type !== 'file') return
+  if (!input.closest || !input.closest('.panel')) return
+  if (typeof requireToolAction === 'function' && !requireToolAction()) {
+    input.value = ''
+    e.preventDefault()
+    e.stopImmediatePropagation()
+  }
+}, true)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closePreviewGate()
+})
 
 // ── VIDEO CLIPPER ─────────────────────────────────────────────────────────────
 let clipDuration = 0
@@ -17453,6 +17716,11 @@ window.cmResetWizard = () => {
 }
 
 async function cmLoadHelpers() {
+  if (!getToken()) {
+    cmRenderPresets()
+    cmGoStep(1)
+    return
+  }
   try {
     const voices = await api.tts.voices()
     const sel = document.getElementById('cm-voice')

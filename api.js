@@ -79,7 +79,25 @@ export async function restoreSession() {
   return !!getToken()
 }
 
+function guestBlockedRequest(url, method, opts = {}) {
+  if (opts.allowGuest || opts.skipAuthRefresh) return false
+  if (getToken() || getRefreshToken()) return false
+  if (/\/api\/auth\//.test(String(url || ''))) return false
+  const m = String(method || 'GET').toUpperCase()
+  if (m === 'GET' || m === 'HEAD') {
+    return /\/api\/(user(?:\/|$)|upload|generate\/images|tts\/library|tts\/voices)/.test(String(url || ''))
+  }
+  return true
+}
+
 async function reqTo(url, method, body, isFormData = false, opts = {}) {
+  if (guestBlockedRequest(url, method, opts)) {
+    const err = new Error('Sign in to generate.')
+    err.status = 401
+    err.code = 'guest_preview'
+    err.guest = true
+    throw err
+  }
   if (!opts.skipAuthRefresh) {
     try { await ensureFreshToken() } catch (_) {}
   }
@@ -414,7 +432,7 @@ export const api = {
   },
   tts: {
     voices:   ()      => reqTo(BASE + '/api/tts/voices', 'GET', undefined, false, { timeoutMs: 12000 }),
-    generate: (body)  => req('POST', '/api/tts/generate', body),
+    generate: (body)  => gatedReq('POST', '/api/tts/generate', body),
     library:  ()      => req('GET',  '/api/tts/library'),
     deleteVo: (id)    => req('DELETE', `/api/tts/library/${id}`),
   },
@@ -488,12 +506,12 @@ export const api = {
     },
   },
   transcribe: {
-    start: (file_url) => req('POST', '/api/transcribe', { file_url }),
+    start: (file_url) => gatedReq('POST', '/api/transcribe', { file_url }),
     poll:  (jobId)    => req('GET',  `/api/transcribe/${jobId}`),
   },
   download: {
-    info:      (url) => req('POST', '/api/download/info', { url }),
-    search:    (q, limit) => req('POST', '/api/download/search', { q, limit }),
+    info:      (url) => gatedReq('POST', '/api/download/info', { url }),
+    search:    (q, limit) => gatedReq('POST', '/api/download/search', { q, limit }),
     analyze:   (url) => gatedReq('POST', '/api/download/analyze', { url }),
     streamUrl: (url) => `${BASE}/api/download/stream?url=${encodeURIComponent(url)}&token=${encodeURIComponent(getToken())}`,
     clipUrl:   (url, start, end, frame, crop) => {
@@ -535,7 +553,7 @@ export const api = {
   },
   reframe: {
     // Step 1: kick off download + subject tracking for a URL. Returns { jobId }.
-    start: (url) => req('POST', '/api/reframe', { url }),
+    start: (url) => gatedReq('POST', '/api/reframe', { url }),
     // Step 2: poll analysis status. Returns { status: 'processing'|'ready'|'error', duration, width, height, error }.
     poll: (jobId) => req('GET', `/api/reframe/${jobId}`),
     // Step 3: render with chosen aspect/layout (fast — reuses the cached download
@@ -558,7 +576,7 @@ export const api = {
     },
   },
   ranking: {
-    start: (body) => req('POST', '/api/ranking', body),
+    start: (body) => gatedReq('POST', '/api/ranking', body),
     poll:  (jobId) => req('GET', `/api/ranking/${jobId}`),
     download: async (jobId) => {
       const res = await fetch(BASE + `/api/ranking/${jobId}/download`, {
@@ -575,9 +593,9 @@ export const api = {
   },
   commentary: {
     // body: { file_url, trim:{start,end}, script, subtitle:{...}, shape:{aspect,bg}, audio:{...} }
-    start: (body) => req('POST', '/api/commentary', body),
+    start: (body) => gatedReq('POST', '/api/commentary', body),
     // body: { topic, tone, length, hook, cta } → { script }
-    script: (body) => req('POST', '/api/commentary/script', body),
+    script: (body) => gatedReq('POST', '/api/commentary/script', body),
     poll:  (jobId) => req('GET', `/api/commentary/${jobId}`),
     download: async (jobId) => {
       const res = await fetch(BASE + `/api/commentary/${jobId}/download`, {

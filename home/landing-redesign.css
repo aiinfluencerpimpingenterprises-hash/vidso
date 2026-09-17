@@ -96,7 +96,7 @@ html,.lp-red{overflow-x:visible}
 }
 .lp-red .lp-sitehead header{
   position:relative!important;top:auto!important;left:auto;right:auto;z-index:1;width:100%;
-  background:rgba(11,11,12,.72);backdrop-filter:blur(12px)
+  background:rgba(11,11,12,.72);backdrop-filter:blur(12px);overflow:visible
 }
 .lp-red .lp-sitehead nav{
   display:flex;align-items:center;justify-content:space-between;gap:24px;
@@ -107,12 +107,78 @@ html,.lp-red{overflow-x:visible}
 }
 .lp-red .lp-sitehead .logo{justify-self:unset;flex:0 0 auto}
 .lp-red .lp-sitehead .nav-links{
-  justify-self:unset;margin:0;gap:22px;flex-wrap:nowrap
+  justify-self:unset;margin:0;gap:22px;flex-wrap:nowrap;align-items:center
 }
 .lp-red .lp-sitehead .nav-cta{justify-self:unset;margin-left:auto;flex:0 0 auto}
+.lp-red .lp-sitehead .nav-tools-btn{
+  appearance:none;background:none;border:0;padding:0;color:inherit;font:inherit;
+  font-weight:500;cursor:pointer
+}
+.lp-red .lp-sitehead .nav-tools-btn:hover,
+.lp-red .lp-sitehead header.tools-open .nav-tools-btn{color:var(--txt)}
+.lp-red .lp-sitehead .tools-mega{
+  position:absolute;left:0;right:0;top:100%;z-index:20;
+  background:#0e0e10;border-top:1px solid rgba(255,255,255,.08);
+  border-radius:0 0 22px 22px;box-shadow:0 28px 60px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(-8px);pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease
+}
+.lp-red .lp-sitehead .tools-mega.is-open{opacity:1;transform:translateY(0);pointer-events:auto}
+.lp-red .lp-sitehead .tools-mega-inner{max-width:var(--wrap);margin:0 auto;padding:28px 32px 22px}
+.lp-red .lp-sitehead .tools-mega-grid{
+  display:grid;grid-template-columns:1.15fr 1fr .95fr .8fr 1fr;gap:22px 28px
+}
+.lp-red .lp-sitehead .tools-mega-h{
+  margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(245,245,244,.48)
+}
+.lp-red .lp-sitehead .tools-mega-item{
+  display:block;padding:10px 12px;margin:0 -12px;border-radius:12px;text-decoration:none
+}
+.lp-red .lp-sitehead .tools-mega-item:hover,
+.lp-red .lp-sitehead .tools-mega-item:focus-visible{background:rgba(255,255,255,.04)}
+.lp-red .lp-sitehead .tools-mega-name{
+  display:flex;align-items:center;gap:6px;color:#fff;font-size:14px;font-weight:650;line-height:1.3
+}
+.lp-red .lp-sitehead .tools-mega-arrow{opacity:0;color:#FE0C30;margin-left:2px}
+.lp-red .lp-sitehead .tools-mega-item:hover .tools-mega-name,
+.lp-red .lp-sitehead .tools-mega-item:focus-visible .tools-mega-name{color:#FE0C30}
+.lp-red .lp-sitehead .tools-mega-item:hover .tools-mega-arrow,
+.lp-red .lp-sitehead .tools-mega-item:focus-visible .tools-mega-arrow{opacity:1}
+.lp-red .lp-sitehead .tools-mega-desc{
+  display:block;margin-top:4px;font-size:12px;line-height:1.4;color:rgba(245,245,244,.56)
+}
+.lp-red .lp-sitehead .tools-mega-dot{
+  width:6px;height:6px;border-radius:50%;background:#FE0C30;flex:0 0 auto
+}
+.lp-red .lp-sitehead .tools-mega-foot{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.lp-red .lp-sitehead .tools-mega-cta{min-height:40px;padding:8px 18px;border-radius:999px}
+.lp-red .lp-sitehead .tools-acc{display:none}
+@media(max-width:1100px){
+  .lp-red .lp-sitehead .tools-mega-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 @media(max-width:900px){
   .lp-red .lp-sitehead .nav-left{gap:0}
   .lp-red .lp-sitehead .nav-links,.lp-red .lp-sitehead .nav-cta{display:none}
+  .lp-red .lp-sitehead .tools-mega{display:none}
+  .lp-red .lp-sitehead .tools-acc{display:block;width:100%}
+  .lp-red .lp-sitehead .tools-acc-btn{
+    width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;
+    font-weight:650;padding:14px 0;cursor:pointer
+  }
+  .lp-red .lp-sitehead .tools-acc-h{
+    margin:10px 0 6px;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:rgba(245,245,244,.48)
+  }
+  .lp-red .lp-sitehead .tools-acc-item{
+    display:block;padding:12px 0;text-decoration:none;min-height:44px
+  }
+  .lp-red .lp-sitehead .tools-acc-name{display:block;color:#fff;font-weight:650}
+  .lp-red .lp-sitehead .tools-acc-desc{display:block;margin-top:3px;font-size:12px;color:rgba(245,245,244,.56);line-height:1.4}
+  .lp-red .lp-sitehead .tools-acc-cta{margin:14px 0 8px;width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .lp-red .lp-sitehead .tools-mega{transition:none;transform:none}
 }
 .hero-pin,.ideas,.shorts,.showcase,.workflow-tiles,.lp-feat,.mcp-hero,.formats-float,.why-stack,.faq,.final,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,footer{isolation:isolate}
 .lp-red a:focus-visible,.lp-red button:focus-visible,.lp-red [tabindex]:focus-visible,.lp-red input:focus-visible{

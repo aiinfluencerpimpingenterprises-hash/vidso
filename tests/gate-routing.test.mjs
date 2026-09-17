@@ -17,6 +17,14 @@ const GATED_PATHS = [
   '/api/faceless/media',
   '/api/faceless/render',
   '/api/download/analyze',
+  '/api/tts/generate',
+  '/api/ranking',
+  '/api/commentary',
+  '/api/commentary/script',
+  '/api/transcribe',
+  '/api/reframe',
+  '/api/download/info',
+  '/api/download/search',
 ]
 
 test('gated requests never use more than one segment after /api/gate', () => {

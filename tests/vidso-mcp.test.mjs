@@ -54,6 +54,15 @@ test('gate still treats faceless render as a quota consume', () => {
   assert.equal(ruleFor('GET', 'faceless/media/abc').type, 'forward')
 })
 
+test('tool generation starts require an active plan at the gate', () => {
+  assert.equal(ruleFor('POST', 'tts/generate').type, 'plan')
+  assert.equal(ruleFor('POST', 'ranking').type, 'plan')
+  assert.equal(ruleFor('POST', 'commentary').type, 'plan')
+  assert.equal(ruleFor('POST', 'transcribe').type, 'plan')
+  assert.equal(ruleFor('POST', 'reframe').type, 'plan')
+  assert.equal(ruleFor('POST', 'download/info').type, 'plan')
+})
+
 test('MCP media poll hides B-roll queries so Claude cannot nitpick clips', () => {
   const shown = publicMcpJob('media', {
     status: 'done',
