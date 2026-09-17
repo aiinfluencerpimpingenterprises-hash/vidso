@@ -61,7 +61,7 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(!html.includes('Script to final cut'))
   assert.ok(html.includes('id="hero-pin"'))
   assert.ok(!html.includes('Turn any idea into a video'))
-  assert.ok(html.includes('Shorts from the same idea'))
+  assert.match(html, /Shorts from the[\s\S]{0,80}same idea/)
   assert.ok(html.includes('Long-form'))
   assert.ok(html.includes('Does Vidso support Shorts?'))
   assert.ok(html.includes('Vidso MCP'))
@@ -98,6 +98,13 @@ test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserv
   assert.ok(css.includes('.lp-sitehead'))
   assert.ok(css.includes('position:fixed'))
   assert.match(css, /\.rv-clip,\s*\.rv-line/)
+  assert.ok(css.includes('.lp-red .results .eyebrow'))
+  assert.ok(css.includes('.formats-float .formats-mid'))
+  assert.ok(css.includes('.mcp-panel::after{display:none}'))
+  assert.ok(css.includes('.lp-red .comp-cta::before{display:none}'))
+  assert.ok(css.includes('.final-box::before{display:none}'))
+  assert.ok(css.includes('.shorts-ico'))
+  assert.ok(!css.includes('margin-top:-18px'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
