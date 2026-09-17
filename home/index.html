@@ -1065,11 +1065,12 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f12">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f17">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
 
+<div class="lp-sitehead" id="lp-sitehead">
 <div class="lp-announce" id="lp-announce" hidden>
   <div class="lp-announce-inner">
     <p class="lp-announce-text">
@@ -1080,7 +1081,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="lp-announce-x" data-announce-close aria-label="Dismiss announcement">×</button>
   </div>
 </div>
-
 <header>
   <div class="wrap" style="position:relative">
     <nav>
@@ -1114,6 +1114,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
   </div>
 </header>
+</div>
 
 <!-- HERO + DEMO (scroll-pinned together) -->
 <div class="hero-pin" id="hero-pin">
@@ -1156,8 +1157,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 6L5 12l6 6"/><path d="M19 6L13 12l6 6"/></svg>
           </button>
           <button type="button" id="demo-pause" aria-label="Pause video">
-            <svg class="ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
-            <svg class="ico-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="ico-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
+            <svg class="ico-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path transform="translate(1 0)" d="M8 5v14l11-7z"/></svg>
           </button>
           <button type="button" id="demo-fwd" aria-label="Forward 10 seconds">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
@@ -1919,6 +1920,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   });
   }
 
+  if (!document.documentElement.classList.contains('js-reveal')) {
   // ---------- workflow steps: simple staggered reveal (no pin, normal scrolling) ----------
   var stepEls = gsap.utils.toArray('.steps .step');
   gsap.from(stepEls, {y:40, autoAlpha:0, duration:.7, ease:'power3.out', stagger:.14,
@@ -1929,6 +1931,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   // ---------- terminal "types" out on view ----------
   gsap.from('.term > div',{opacity:0,x:-10,duration:.4,stagger:.18,ease:'none',
     scrollTrigger:{trigger:'.term', start:'top 80%'}});
+  }
 
   // ---------- score bars fill on view ----------
   gsap.utils.toArray('.bar .fill').forEach(function(fill){
@@ -1998,7 +2001,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f12'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f17'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)

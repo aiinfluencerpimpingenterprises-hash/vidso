@@ -81,9 +81,23 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(!html.includes('10M+ creators'))
   assert.ok(!html.includes('Featured on'))
   assert.ok(html.includes('id="lp-announce"'))
+  assert.ok(html.includes('id="lp-sitehead"'))
   assert.ok(html.includes('class="js-reveal"') || html.includes("classList.add('js-reveal')"))
   assert.ok(!html.includes('hero-ghost-cta'))
   assert.ok(html.includes('btn-label'))
+  assert.ok(html.includes('transform="translate(1 0)"'))
+  assert.ok(html.includes('class="ico-play"'))
+})
+
+test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserver', () => {
+  const reveal = readFileSync(new URL('../lib/landing-reveal.js', import.meta.url), 'utf8')
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  assert.ok(reveal.includes('scrub: 0.6'))
+  assert.ok(reveal.includes('startAt(i === 0 ? 95 : 92)'))
+  assert.ok(!reveal.includes('IntersectionObserver'))
+  assert.ok(css.includes('.lp-sitehead'))
+  assert.ok(css.includes('position:fixed'))
+  assert.match(css, /\.rv-clip,\s*\.rv-line/)
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
