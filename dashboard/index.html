@@ -82,7 +82,7 @@
   var publicTools = {
     '/video-generation':1,'/youtube-generation':1,'/image-generation':1,'/clipping':1,
     '/ranking':1,'/captions':1,'/voiceover':1,'/reframe':1,'/editor':1,'/downloader':1,
-    '/commentary':1,'/tools':1
+    '/commentary':1,'/tools':1,'/brand-kit':1,'/templates':1,'/tutorials':1
   }
   var toolSeo = {
     '/video-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',1],
@@ -96,8 +96,11 @@
     '/editor':['Video Editor · Vidso','Edit on a multi-track timeline in Vidso.',1],
     '/downloader':['Video Downloader · Vidso','Download videos from YouTube, TikTok, Instagram, Twitter, Reddit and more.',1],
     '/commentary':['Video Commentary · Vidso','Add voice and captions on clips.',1],
-    '/tools':['Short Form Tools · Vidso','Every Vidso tool in one place.',1],
-    '/dashboard':['Dashboard · Vidso','Your usage and shortcuts in one place.',0],
+    '/tools':['Tools · Vidso','Every Vidso tool in one place.',1],
+    '/brand-kit':['Brand kit · Vidso','Save logos, colors, fonts, and intro clips for later.',1],
+    '/templates':['Templates · Vidso','Start from a Vidso layout.',1],
+    '/tutorials':['Tutorials · Vidso','Walkthroughs of Vidso tools.',1],
+    '/dashboard':['Home · Vidso','What are we making today?',0],
     '/files':['My Files · Vidso','Every video and thumbnail you generate is kept here.',0]
   }
   var seo = toolSeo[path]
@@ -3575,7 +3578,7 @@ body.tour-active #fv-export-box.show{min-height:160px}
   .paywall-plan .feat-row{min-height:0}
 }
 body.paywalled{overflow:hidden}
-body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointer-events:none;user-select:none}
+body.paywalled #studio-topbar,body.paywalled #app-banner,body.paywalled main{pointer-events:none;user-select:none}
 
 /* Mobile chrome (drawer) — desktop unchanged */
 .mobile-nav-toggle,.mobile-nav-close{display:none}
@@ -3643,6 +3646,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   .brand{font-size:1.1rem}
 }
 </style>
+<link rel="stylesheet" href="/dashboard/studio-shell.css">
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
 <script>
@@ -3662,7 +3666,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 </head>
-<body class="has-page-header">
+<body class="has-page-header studio-shell">
 <!-- ONBOARDING -->
 <div class="modal-bg hidden" id="onboarding-modal">
   <div class="modal onboarding-shell" role="dialog" aria-modal="true" aria-labelledby="ob-title" tabindex="-1">
@@ -4098,59 +4102,47 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </div>
 
-<header class="app-topnav" id="app-topnav">
-  <div class="topnav-start">
-    <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="nav-drawer" aria-expanded="false">
+</div>
+<button type="button" class="studio-scrim" id="studio-scrim" hidden aria-label="Close menu"></button>
+<div class="studio-frame">
+<aside class="studio-sidebar" id="studio-sidebar" aria-label="Studio"></aside>
+<button type="button" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
+<div class="studio-col">
+<header class="studio-topbar" id="studio-topbar">
+  <div class="studio-topbar-left">
+    <button type="button" class="studio-ico-btn studio-hamburger" id="nav-hamburger" aria-label="Open menu" aria-controls="studio-sidebar" aria-expanded="false">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <a href="/home" class="topnav-logo" aria-label="Vidso home">
-      <img data-vidso-logo width="28" height="28" alt="" decoding="async">
+    <button type="button" class="studio-ico-btn studio-collapse-btn" id="studio-collapse" aria-label="Collapse sidebar" aria-expanded="true">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <a href="/home" class="studio-top-logo" aria-label="Vidso home">
+      <img data-vidso-logo width="24" height="24" alt="" decoding="async">
       <span class="brand">Vidso</span>
     </a>
+    <div class="studio-crumb" id="topbar-title">Home</div>
   </div>
-  <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
-    <button type="button" class="topnav-item" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
-    <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-    <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-    <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
-    <div class="topnav-drop" id="nav-tools-wrap">
-      <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
-        Short Form Tools
-        <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div class="topnav-menu" id="nav-tools-menu" role="menu" aria-label="Short Form Tools">
-        <button type="button" role="menuitem" id="nav-clipper" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-        <button type="button" role="menuitem" id="nav-ranking" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-        <button type="button" role="menuitem" id="nav-captions" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-        <button type="button" role="menuitem" id="nav-voiceover" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-        <button type="button" role="menuitem" id="nav-reframe" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-        <button type="button" role="menuitem" id="nav-editor" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-        <button type="button" role="menuitem" id="nav-downloader" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-        <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-      </div>
-    </div>
-    <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-  </nav>
-  <div class="topnav-right">
-    <div class="topnav-drop" id="nav-search-wrap">
-      <button type="button" class="topnav-ico-btn" id="nav-search-btn" aria-label="Search tools" aria-haspopup="true" aria-expanded="false" aria-controls="nav-search-pop">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
-      </button>
-      <div class="nav-search-pop" id="nav-search-pop" role="menu" aria-label="Search tools">
-        <label class="sr-only" for="nav-search-input">Search tools</label>
-        <input class="nav-search-input" id="nav-search-input" type="search" placeholder="Jump to a tool" autocomplete="off">
-        <div id="nav-search-list"></div>
-      </div>
-    </div>
+  <div class="studio-topbar-right">
+    <button type="button" class="studio-search-btn" id="studio-search-btn" aria-label="Search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+      <span>Search</span>
+      <kbd class="studio-search-kbd">⌘K</kbd>
+    </button>
     <div class="guest-only" id="guest-auth">
       <a class="ghost" href="/login">Sign in</a>
       <a class="btn btn-primary" href="/signup">Sign up</a>
     </div>
     <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-      <span class="credits-pill-count" id="credits-count">—</span>
+      <span class="credits-pill-count" id="credits-count">-</span>
       <span class="credits-pill-label">videos</span>
     </span>
+    <div class="topnav-drop" id="nav-help-wrap">
+      <button type="button" class="studio-ico-btn" id="studio-help-btn" aria-label="Help" aria-haspopup="menu" aria-expanded="false" aria-controls="studio-help-menu">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <div class="topnav-menu studio-help-menu" id="studio-help-menu" role="menu" aria-label="Help"></div>
+    </div>
     <div class="topnav-drop" id="nav-avatar-wrap">
       <button type="button" class="topnav-avatar" id="nav-avatar-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-avatar-menu">
         <span id="user-avatar">?</span>
@@ -4169,39 +4161,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
   </div>
 </header>
-</div>
-<div id="nav-portal"></div>
-
-<aside class="nav-drawer" id="nav-drawer" aria-label="Main navigation">
-  <div class="nav-drawer-head">
-    <span class="brand">Vidso</span>
-    <button type="button" class="topnav-ico-btn" onclick="closeMobileNav()" aria-label="Close menu">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-  </div>
-  <span class="nav-drawer-label">Workspace</span>
-  <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
-  <span class="nav-drawer-label">Generate</span>
-  <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-  <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
-  <button type="button" class="topnav-item" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
-  <span class="nav-drawer-label">Short Form Tools</span>
-  <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-  <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-  <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-  <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-  <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-  <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-  <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-  <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-  <span class="nav-drawer-label">Library</span>
-  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
-  <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-</aside>
-
-<div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
-
-<!-- MAIN -->
 <main class="main">
   <div class="content content-scrim">
 
@@ -5896,6 +5855,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <button type="button" class="fv-chip" data-filter="thumbnails" onclick="setFilesFilter('thumbnails')">Thumbnails</button>
             <button type="button" class="fv-chip" data-filter="audio" onclick="setFilesFilter('audio')">Audio</button>
           </div>
+          <label class="sr-only" for="files-sort">Sort files</label>
+          <select id="files-sort" aria-label="Sort files" onchange="setFilesSort(this.value)">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name</option>
+          </select>
           <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('files-input').click()">Upload</button>
           <input type="file" id="files-input" accept="video/*,audio/*,image/*" style="display:none" onchange="uploadFile(this)"/>
         </div>
@@ -6358,81 +6323,30 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
 
     <div class="panel content-glow" id="panel-tools">
-      <div class="tools-page">
-        <div class="page-header">
-          <h2>Tools</h2>
-          <p>Every Vidso tool in one place.</p>
-        </div>
-        <div id="tools-gallery"></div>
-      </div>
+      <div id="studio-tools-root"></div>
+      <div id="tools-gallery" hidden></div>
     </div>
 
     <div class="panel content-glow" id="panel-dashboard">
-      <div class="page-shell dash-shell">
-        <div class="page-header dash-welcome" id="dash-welcome">
-          <h2>Welcome back<span id="dash-welcome-name"></span></h2>
-          <p>Your usage and shortcuts in one place.</p>
-        </div>
-        <div id="dash-creative-tools" data-creative-tools></div>
-        <div class="dash-stats" id="dash-stats">
-          <div class="dash-stat">
-            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h14"/></svg></span>
-            <div><div class="stat-num" id="dash-transcriptions">0</div><div class="stat-label">Transcriptions</div></div>
-          </div>
-          <div class="dash-stat">
-            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></span>
-            <div><div class="stat-num" id="dash-voiceovers">0</div><div class="stat-label">Voiceovers</div></div>
-          </div>
-          <div class="dash-stat">
-            <span class="dash-stat-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <div><div class="stat-num" id="dash-images">0</div><div class="stat-label">Thumbnails generated</div></div>
-          </div>
-        </div>
-        <div class="section-label">Quick actions</div>
-        <div class="qa-grid" id="dash-quick-actions">
-          <button type="button" class="qa-card" onclick="switchPanel('videogen',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h12v10H4z"/><path d="M16 9l4-2v8l-4-2"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">Start a faceless video</div>
-              <div class="qa-sub">Script, voice, B-roll, and captions</div>
-            </div>
-          </button>
-          <button type="button" class="qa-card" onclick="switchPanel('clipper',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">Clip a video</div>
-              <div class="qa-sub">Find viral moments from any link</div>
-            </div>
-          </button>
-          <button type="button" class="qa-card" onclick="switchPanel('ranking',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v4a5 5 0 01-10 0V4z"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">Build a ranking</div>
-              <div class="qa-sub">Assemble ranked short videos</div>
-            </div>
-          </button>
-          <button type="button" class="qa-card" onclick="switchPanel('imagegen',null)">
-            <span class="qa-ico" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <div class="qa-body">
-              <div class="qa-title">Make a thumbnail</div>
-              <div class="qa-sub">Prompt to a YouTube thumbnail</div>
-            </div>
-          </button>
-        </div>
-        <div class="section-label">Recent</div>
-        <div class="dash-recent-wrap" id="dash-recent">
-          <div class="ui-empty" style="min-height:108px;border:none;background:transparent">
-            <div class="ui-empty-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
-            <div class="ui-empty-title">No recent files</div>
-            <div class="ui-empty-sub">Uploads and exports will show up here.</div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="switchPanel('files',null)">Open My Files</button>
-          </div>
-        </div>
-      </div>
+      <div id="studio-home-root"></div>
+      <span id="dash-welcome-name" hidden></span>
+    </div>
+
+    <div class="panel" id="panel-brandkit">
+      <div id="studio-brandkit-root"></div>
+    </div>
+    <div class="panel" id="panel-templates">
+      <div id="studio-templates-root"></div>
+    </div>
+    <div class="panel" id="panel-tutorials">
+      <div id="studio-tutorials-root"></div>
     </div>
 
   </div><!-- /content -->
 </main>
+</div><!-- /studio-col -->
+</div><!-- /studio-frame -->
+<div id="nav-portal"></div>
 
 <script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
@@ -6515,6 +6429,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
+import { initStudioShell } from '/lib/app-studio-shell.js'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
 import {
   tourById,
@@ -6582,7 +6497,8 @@ function paywallDevBypass() {
 
 const PUBLIC_TOOL_PATHS = new Set([
   '/video-generation','/youtube-generation','/image-generation','/clipping','/ranking',
-  '/captions','/voiceover','/reframe','/editor','/downloader','/commentary','/tools'
+  '/captions','/voiceover','/reframe','/editor','/downloader','/commentary','/tools',
+  '/brand-kit','/templates','/tutorials'
 ])
 const PRIVATE_TOOL_PATHS = new Set(['/dashboard','/files'])
 const PREVIEW_ACTION_SEL = [
@@ -8902,6 +8818,10 @@ function populateUser() {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
     welcome.textContent = display ? `, ${display}` : ''
   }
+  const first = ((currentUser.name || '').trim().split(/\s+/)[0]) || ''
+  document.querySelectorAll('[data-studio-hello]').forEach((el) => {
+    el.textContent = first ? `, ${first}` : ''
+  })
   try { fvRenderDurationChips() } catch (_) {}
 }
 
@@ -8910,16 +8830,18 @@ const DEFAULT_PANEL = 'videogen'
 const DEFAULT_PATH = '/video-generation'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Long Form Generator', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
-  videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
+  home:'Long Form Generator', dashboard:'Home', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
-  downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP'
+  downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP',
+  brandkit:'Brand kit', templates:'Templates', tutorials:'Tutorials'
 }
 const PANEL_PATHS = {
   dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
-  downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors'
+  downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors',
+  brandkit:'/brand-kit', templates:'/templates', tutorials:'/tutorials'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 function normalizePath(p) {
@@ -8937,6 +8859,7 @@ function resolvePanel(id) {
 }
 function panelFromPath() {
   const path = normalizePath(location.pathname)
+  if (path === '/overview' || path === '/analytics' || path === '/upscale') return 'dashboard'
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
   if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) {
     return panelArchived('facelessstudio') ? DEFAULT_PANEL : 'facelessstudio'
@@ -8999,13 +8922,14 @@ window.switchPanel = (id, btn, opts = {}) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
   document.getElementById('panel-' + (id === 'ytvideogen' ? 'videogen' : id)).classList.add('active')
   markNavActive(id)
+  try { window.studioOnPanelChange?.(id) } catch (_) {}
   try { sessionStorage.setItem('vidso_last_panel', id) } catch (_) {}
   try { closeNavMenusPublic() } catch (_) {}
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files'].includes(id)
-    titleEl.classList.toggle('is-hidden', hasPageHeader)
+    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','brandkit','templates','tutorials'].includes(id)
+    titleEl.classList.toggle('is-hidden', false)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
     document.body.classList.toggle('studio-open', id === 'facelessstudio')
@@ -9031,7 +8955,13 @@ window.switchPanel = (id, btn, opts = {}) => {
       if (cur === '/faceless-studio' || cur.startsWith('/faceless-studio/')) next = cur
       else next = '/faceless-studio'
     }
-    if (normalizePath(location.pathname) !== normalizePath(next)) {
+    if (opts.query) {
+      const q = String(opts.query).startsWith('?') ? opts.query : '?' + opts.query
+      next = pathForPanel(id) + q
+    }
+    const here = normalizePath(location.pathname) + (location.search || '')
+    const there = next
+    if (here !== there) {
       history.pushState({ panel: id }, '', next)
     }
   }
@@ -9047,7 +8977,9 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (HOME_PATHS.has(p) || archivedPath(p)) {
+  if (p === '/overview' || p === '/analytics' || p === '/upscale') {
+    history.replaceState(null, '', '/dashboard' + (location.search || '') + (location.hash || ''))
+  } else if ((HOME_PATHS.has(p) && p !== '/overview') || archivedPath(p)) {
     history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
@@ -9888,13 +9820,17 @@ function fvBindGenerateScript() {
 
 function applyGuestTopic() {
   const input = document.getElementById('fv-topic')
-  if (!input || String(input.value || '').trim()) return
+  if (!input || String(input.value || '').trim()) {
+    try { window.applyStudioPrefill?.() } catch (_) {}
+    return
+  }
   let idea = ''
   try { idea = sessionStorage.getItem('vidso_guest_topic') || '' } catch (_) {}
   if (!idea) {
-    try { idea = new URLSearchParams(location.search || '').get('idea') || '' } catch (_) {}
+    try { idea = new URLSearchParams(location.search || '').get('idea') || new URLSearchParams(location.search || '').get('topic') || '' } catch (_) {}
   }
   if (idea) input.value = idea
+  try { window.applyStudioPrefill?.() } catch (_) {}
 }
 
 function applyToolPageSeo(path) {
@@ -9910,8 +9846,11 @@ function applyToolPageSeo(path) {
     '/editor':['Video Editor · Vidso','Edit on a multi-track timeline in Vidso.',true],
     '/downloader':['Video Downloader · Vidso','Download videos from YouTube, TikTok, Instagram, Twitter, Reddit and more.',true],
     '/commentary':['Video Commentary · Vidso','Add voice and captions on clips.',true],
-    '/tools':['Short Form Tools · Vidso','Every Vidso tool in one place.',true],
-    '/dashboard':['Dashboard · Vidso','Your usage and shortcuts in one place.',false],
+    '/tools':['Tools · Vidso','Every Vidso tool in one place.',true],
+    '/brand-kit':['Brand kit · Vidso','Save logos, colors, fonts, and intro clips for later.',true],
+    '/templates':['Templates · Vidso','Start from a Vidso layout.',true],
+    '/tutorials':['Tutorials · Vidso','Walkthroughs of Vidso tools.',true],
+    '/dashboard':['Home · Vidso','What are we making today?',false],
     '/files':['My Files · Vidso','Every video and thumbnail you generate is kept here.',false]
   }
   const seo = map[normalizePath(path || location.pathname)]
@@ -12426,6 +12365,7 @@ function renderDashRecent(files) {
       <div class="ui-empty-sub">Uploads and exports will show up here.</div>
       <button type="button" class="btn btn-secondary btn-sm" onclick="switchPanel('files',null)">Open My Files</button>
     </div>`
+    try { window.studioPaintRecent?.(files) } catch (_) {}
     return
   }
   const recent = files.slice(0, 5)
@@ -12435,10 +12375,12 @@ function renderDashRecent(files) {
       <div class="dash-recent-meta">${f.created_at ? new Date(f.created_at).toLocaleDateString() : ''}</div>
       <a href="${fvEsc(f.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">Open</a>
     </div>`).join('')}</div>`
+  try { window.studioPaintRecent?.(files) } catch (_) {}
 }
 
 let filesCache = []
 let filesFilter = 'all'
+let filesSort = 'newest'
 
 function filesTileMedia(f) {
   const kind = fileKind(f)
@@ -12454,7 +12396,7 @@ function renderFilesGallery() {
   document.querySelectorAll('#files-filters .fv-chip').forEach((b) => {
     b.classList.toggle('active', b.dataset.filter === filesFilter)
   })
-  const items = galleryItems(filesCache, filesFilter)
+  const items = sortFilesView(galleryItems(filesCache, filesFilter))
   if (!items.length) {
     const empty = filesCache.length
       ? 'Nothing in this filter yet.'
@@ -12489,6 +12431,20 @@ function renderFilesGallery() {
 window.setFilesFilter = (filter) => {
   filesFilter = filter || 'all'
   renderFilesGallery()
+}
+window.setFilesSort = (value) => {
+  filesSort = value === 'oldest' || value === 'name' ? value : 'newest'
+  renderFilesGallery()
+}
+function sortFilesView(items) {
+  const list = [...(items || [])]
+  if (filesSort === 'name') {
+    return list.sort((a, b) => String(a.original_name || '').localeCompare(String(b.original_name || '')))
+  }
+  if (filesSort === 'oldest') {
+    return list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
+  }
+  return sortFilesNewest(list)
 }
 
 let _filesLbFile = null
@@ -12710,6 +12666,7 @@ function bindGettingStarted() {
 
 initBanner()
 initTopNav()
+try { initStudioShell() } catch (err) { console.error('studio shell', err) }
 try { fvBindGenerateScript() } catch (_) {}
 initToolsGallery()
 try { bindMediaPlaceholders(document.getElementById('fv-how')) } catch (_) {}

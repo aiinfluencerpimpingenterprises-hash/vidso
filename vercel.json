@@ -137,6 +137,18 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/brand-kit",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/templates",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/tutorials",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/pricing",
       "destination": "/home/index.html"
     },

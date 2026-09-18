@@ -53,9 +53,9 @@ test('?studio=1 preview unlocks Faceless Studio for the tab', () => {
   }
 })
 
-test('dashboard mounts the creative tools rail under the heading', () => {
-  assert.match(dashboard, /id="dash-welcome"/)
-  assert.match(dashboard, /id="dash-creative-tools"[^>]*data-creative-tools/)
+test('dashboard home uses the studio shell root', () => {
+  assert.match(dashboard, /id="studio-home-root"/)
+  assert.match(dashboard, /id="studio-sidebar"/)
   assert.doesNotMatch(dashboard, /id="panel-dashboard"[^>]*\bhidden\b/)
 })
 
