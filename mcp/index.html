@@ -26,8 +26,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
-<link rel="stylesheet" href="/home/lp-base.css?v=d1f29">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f29">
+<link rel="stylesheet" href="/home/lp-base.css?v=d1f31">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f31">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -87,46 +87,57 @@
 
     <div class="mcp-keys" aria-hidden="true">
       <span class="mcp-key-glow"></span>
-      <div class="mcp-key is-white" style="--rot:-16deg;--bob:-8px;--delay:-.4s">
+      <div class="mcp-key is-white" style="--rot:-18deg;--bob:-10px;--delay:-.4s">
         <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
-            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-claude.png" data-mcp-fallback="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="">
           </span>
         </div>
       </div>
-      <div class="mcp-key is-white" style="--rot:-8deg;--bob:-4px;--delay:-1.1s">
+      <div class="mcp-key is-white" style="--rot:-8deg;--bob:-5px;--delay:-1.1s">
         <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
-            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/openai-icon.svg" alt="">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-chatgpt.png" data-mcp-fallback="https://pub-f40c956471ff49feab622906892ec527.r2.dev/openai-icon.svg" alt="">
           </span>
         </div>
       </div>
-      <div class="mcp-key is-vidso is-center" style="--rot:0deg;--bob:-12px;--delay:0s">
+      <div class="mcp-key is-vidso is-center" style="--rot:0deg;--bob:-14px;--delay:0s">
         <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
             <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="" data-vidso-logo>
           </span>
         </div>
       </div>
-      <div class="mcp-key is-white" style="--rot:9deg;--bob:-5px;--delay:-.7s">
+      <div class="mcp-key is-white" style="--rot:9deg;--bob:-6px;--delay:-.7s">
         <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
-            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/cursor-ai-code-icon.svg" alt="">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-cursor.png" data-mcp-fallback="https://pub-f40c956471ff49feab622906892ec527.r2.dev/cursor-ai-code-icon.svg" alt="">
           </span>
         </div>
       </div>
-      <div class="mcp-key is-white" style="--rot:16deg;--bob:-9px;--delay:-1.6s">
+      <div class="mcp-key is-white" style="--rot:17deg;--bob:-11px;--delay:-1.6s">
         <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
-            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-kimi.png" data-mcp-fallback="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
           </span>
         </div>
       </div>
+      <span class="mcp-keys-reflect"></span>
     </div>
 
     <div class="mcp-urlbar">
@@ -169,12 +180,12 @@
           </button>
         </div>
         <div class="mcp-mode" role="group" aria-label="Connector type">
-          <button type="button" class="mcp-mode-btn is-on" aria-pressed="true">MCP</button>
-          <button type="button" class="mcp-mode-btn" disabled aria-disabled="true">CLI <span class="mcp-soon">Soon</span></button>
+          <button type="button" class="mcp-mode-btn is-on" data-mcp-mode="mcp" aria-pressed="true">MCP</button>
+          <button type="button" class="mcp-mode-btn" data-mcp-mode="cli" aria-pressed="false">CLI</button>
         </div>
       </div>
 
-      <div class="mcp-client-panes">
+      <div class="mcp-client-panes" data-mcp-client-panes>
         <div class="mcp-client-pane is-on" id="pane-claude" role="tabpanel" data-mcp-client-pane="claude" aria-labelledby="tab-claude">
           <div class="mcp-steps">
             <article class="mcp-step">
@@ -310,6 +321,56 @@
           </div>
         </div>
       </div>
+
+      <div class="mcp-cli-pane" data-mcp-cli-pane hidden>
+        <div class="mcp-steps">
+          <article class="mcp-step">
+            <h3><span class="n">1</span> Install in terminal</h3>
+            <div class="mcp-term" data-cli-cmd="unix">
+              <p class="mcp-term-os">macOS and Linux</p>
+              <pre><code>curl -fsSL https://www.vidso.pro/install.sh | sh</code></pre>
+              <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-copy-text="curl -fsSL https://www.vidso.pro/install.sh | sh" data-mcp-idle="Copy" aria-label="Copy macOS and Linux install command">
+                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                <span class="sr-only" data-mcp-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="mcp-term" data-cli-cmd="windows">
+              <p class="mcp-term-os">Windows</p>
+              <pre><code>irm https://www.vidso.pro/install.ps1 | iex</code></pre>
+              <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-copy-text="irm https://www.vidso.pro/install.ps1 | iex" data-mcp-idle="Copy" aria-label="Copy Windows install command">
+                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                <span class="sr-only" data-mcp-copy-label>Copy</span>
+              </button>
+            </div>
+          </article>
+          <article class="mcp-step">
+            <h3><span class="n">2</span> Sign in</h3>
+            <p>Signs in with your Vidso account in the browser.</p>
+            <div class="mcp-term" data-cli-cmd="login">
+              <pre><code>vidso login</code></pre>
+              <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-copy-text="vidso login" data-mcp-idle="Copy" aria-label="Copy vidso login">
+                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                <span class="sr-only" data-mcp-copy-label>Copy</span>
+              </button>
+            </div>
+          </article>
+          <article class="mcp-step">
+            <h3><span class="n">3</span> Generate</h3>
+            <p>Writes the narration, starts voice plus B-roll, and leaves a captioned MP4 in My Files.</p>
+            <div class="mcp-term" data-cli-cmd="generate">
+              <pre><code>vidso video "12 airport secrets airlines hide" --length 12 --aspect 16:9</code></pre>
+              <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-copy-text="vidso video &quot;12 airport secrets airlines hide&quot; --length 12 --aspect 16:9" data-mcp-idle="Copy" aria-label="Copy generate command">
+                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                <span class="sr-only" data-mcp-copy-label>Copy</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
     </div>
     <p class="mcp-panel-note">Steps vary slightly by app version. The connector URL is always the same.</p>
   </div>
@@ -334,7 +395,22 @@
         <p>Ask for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for the captioned MP4.</p>
         <a class="btn btn-primary" href="/video-generation">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-longform"></div>
+      <div class="mcp-mock" data-mcp-mock="longform">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full="Make a 12 minute faceless YouTube video on airport secrets airlines hide from travelers. 16:9, B-roll and captions."></span><span class="mcp-caret"></span></div>
+          <div class="mcp-mock-dots" data-mcp-dots hidden><i></i><i></i><i></i></div>
+          <div class="mcp-mock-bubble is-bot">
+            <ul>
+              <li hidden data-mcp-step>Script ✓</li>
+              <li hidden data-mcp-step>Voiceover ✓</li>
+              <li hidden data-mcp-step>B-roll ✓</li>
+              <li hidden data-mcp-step>Captions ✓</li>
+            </ul>
+          </div>
+          <div class="mcp-blank is-blank" hidden data-mcp-reveal data-mcp-file="mcp-feature-longform-01" data-mcp-ext="mp4"></div>
+        </div>
+      </div>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="clips" hidden>
       <div class="mcp-feat-copy">
@@ -342,7 +418,17 @@
         <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> assemble ranked shorts, vertical crops, or commentary.</p>
         <a class="btn btn-primary" href="/clipping">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-clips"></div>
+      <div class="mcp-mock" data-mcp-mock="clips">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full="Analyze this public video URL for viral moments and start autoclip. Then reframe the best clip to 9:16."></span><span class="mcp-caret"></span></div>
+          <div class="mcp-mock-shorts">
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-v" data-mcp-file="mcp-shorts-01" data-mcp-ext="mp4"></div><figcaption>0:42</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-v" data-mcp-file="mcp-shorts-02" data-mcp-ext="mp4"></div><figcaption>0:38</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-v" data-mcp-file="mcp-shorts-03" data-mcp-ext="mp4"></div><figcaption>0:51</figcaption></figure>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs" hidden>
       <div class="mcp-feat-copy">
@@ -350,7 +436,18 @@
         <p><code>thumbnail_generate</code> starts a YouTube thumbnail from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
         <a class="btn btn-primary" href="/image-generation">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-thumbs"></div>
+      <div class="mcp-mock" data-mcp-mock="thumbs">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full="Generate a YouTube thumbnail for a video about airport secrets. High contrast, shocked face energy, readable title text."></span><span class="mcp-caret"></span></div>
+          <div class="mcp-mock-thumbs" hidden data-mcp-reveal>
+            <div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-thumb-01" data-mcp-ext="jpg"></div>
+            <div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-thumb-02" data-mcp-ext="jpg"></div>
+            <div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-thumb-03" data-mcp-ext="jpg"></div>
+            <div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-thumb-04" data-mcp-ext="jpg"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="audio" hidden>
       <div class="mcp-feat-copy">
@@ -358,7 +455,17 @@
         <p><code>voiceover_generate</code> narrates a script with a Vidso voice. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
         <a class="btn btn-primary" href="/voiceover">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-audio"></div>
+      <div class="mcp-mock" data-mcp-mock="audio">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full="List narrator voices, then generate a voiceover for this script about airport boarding groups."></span><span class="mcp-caret"></span></div>
+          <div class="mcp-wave" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="mcp-blank is-blank" data-mcp-file="mcp-voice-01" data-mcp-ext="mp4"></div>
+          <p class="mcp-caption" data-mcp-caption data-mcp-full="Boarding group A is called first. Keep your bag at your heels."></p>
+        </div>
+      </div>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="files" hidden>
       <div class="mcp-feat-copy">
@@ -366,7 +473,20 @@
         <p><code>files_list</code> lists recent generated videos, thumbnails, and uploads on the signed-in account so your agent can reuse what is already in My Files.</p>
         <a class="btn btn-primary" href="/signup">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-files"></div>
+      <div class="mcp-mock" data-mcp-mock="files">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full="Show my recent files"></span><span class="mcp-caret"></span></div>
+          <div class="mcp-mock-files">
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-01" data-mcp-ext="jpg"></div><figcaption>airport-secrets.mp4<br>12:04</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-02" data-mcp-ext="jpg"></div><figcaption>thumb-a.jpg<br>image</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-03" data-mcp-ext="jpg"></div><figcaption>clip-042.mp4<br>0:42</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-04" data-mcp-ext="jpg"></div><figcaption>voice-board.mp3<br>1:18</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-05" data-mcp-ext="jpg"></div><figcaption>thumb-b.jpg<br>image</figcaption></figure>
+            <figure hidden data-mcp-reveal><div class="mcp-blank is-blank is-sq" data-mcp-file="mcp-files-06" data-mcp-ext="jpg"></div><figcaption>reframe-916.mp4<br>0:38</figcaption></figure>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="connect" hidden>
       <div class="mcp-feat-copy">
@@ -374,7 +494,12 @@
         <p>Paste https://www.vidso.pro/mcp once. <code>vidso_catalog</code> lists every tool the agent can call on that connection, including YouTube status, upload, and account quota.</p>
         <a class="btn btn-primary" href="/signup">Try it now</a>
       </div>
-      <div class="mcp-blank" data-mcp-media="feat-connect"></div>
+      <div class="mcp-mock" data-mcp-mock="connect">
+        <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="mcp-mock-body">
+          <ul class="mcp-tool-list" data-mcp-connect-list></ul>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -385,7 +510,7 @@
     <p class="lp-sub">Example prompts that only use tools the connector actually exposes.</p>
     <div class="mcp-ask-grid">
       <div class="mcp-ask-list">
-        <article class="mcp-ask-item is-on" data-mcp-ask="longform">
+        <article class="mcp-ask-item is-on" data-mcp-ask="longform" data-mcp-ask-file="mcp-chat-longform-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">Make a long-form YouTube video</button>
@@ -399,7 +524,7 @@
             </div>
           </div>
         </article>
-        <article class="mcp-ask-item" data-mcp-ask="thumbs">
+        <article class="mcp-ask-item" data-mcp-ask="thumbs" data-mcp-ask-file="mcp-chat-thumbs-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">Generate a thumbnail</button>
@@ -413,7 +538,7 @@
             </div>
           </div>
         </article>
-        <article class="mcp-ask-item" data-mcp-ask="clips">
+        <article class="mcp-ask-item" data-mcp-ask="clips" data-mcp-ask-file="mcp-chat-clips-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">Clip a public video</button>
@@ -427,7 +552,7 @@
             </div>
           </div>
         </article>
-        <article class="mcp-ask-item" data-mcp-ask="voice">
+        <article class="mcp-ask-item" data-mcp-ask="voice" data-mcp-ask-file="mcp-chat-voice-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">Narrate a script</button>
@@ -441,7 +566,7 @@
             </div>
           </div>
         </article>
-        <article class="mcp-ask-item" data-mcp-ask="files">
+        <article class="mcp-ask-item" data-mcp-ask="files" data-mcp-ask-file="mcp-chat-files-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">List my recent files</button>
@@ -455,7 +580,7 @@
             </div>
           </div>
         </article>
-        <article class="mcp-ask-item" data-mcp-ask="account">
+        <article class="mcp-ask-item" data-mcp-ask="account" data-mcp-ask-file="mcp-chat-account-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
             <button type="button" class="mcp-ask-h">Check my plan and quota</button>
@@ -471,12 +596,13 @@
         </article>
       </div>
       <div class="mcp-ask-media" data-mcp-ask-media>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-longform"></div>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-thumbs" hidden></div>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-clips" hidden></div>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-voice" hidden></div>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-files" hidden></div>
-        <div class="mcp-blank is-blank" data-mcp-media="chat-account" hidden></div>
+        <div class="mcp-mock" data-mcp-ask-mock data-mcp-mock="ask">
+          <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="mcp-mock-body">
+            <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full=""></span><span class="mcp-caret"></span></div>
+            <div class="mcp-blank is-blank" hidden data-mcp-reveal data-mcp-ask-slot data-mcp-file="mcp-chat-longform-01" data-mcp-ext="mp4"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -547,6 +673,10 @@
           <summary>Do I need an API key?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>No. The connector uses OAuth. When you connect, you sign in with your Vidso account. There is no separate Vidso API key product for this server.</p>
         </details>
+        <details>
+          <summary>Can I connect more than one agent?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. The same URL works in any client that can add a Streamable HTTP MCP server and complete OAuth. Each connection signs in with your Vidso account, and credits and files stay on that account.</p>
+        </details>
       </div>
       <div class="faq-col">
         <details>
@@ -566,8 +696,12 @@
           <p>The connector issues a short-lived access token (about 55 minutes) and a refresh token that lasts 30 days. When the session is no longer valid, the agent will ask you to connect and sign in again.</p>
         </details>
         <details>
-          <summary>Can I connect more than one agent?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-          <p>Yes. The same URL works in any client that can add a Streamable HTTP MCP server and complete OAuth. Each connection signs in with your Vidso account, and credits and files stay on that account.</p>
+          <summary>How do I install the Vidso CLI?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Open the CLI tab and copy the macOS and Linux command or the Windows command. After it runs, use <code>vidso login</code> to sign in with your Vidso account in the browser.</p>
+        </details>
+        <details>
+          <summary>Which platforms does the CLI support?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>The CLI tab lists install commands for macOS, Linux, and Windows. The same Vidso account is used after <code>vidso login</code>.</p>
         </details>
       </div>
     </div>
@@ -633,7 +767,7 @@
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f29'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f31'
 mountMcpPage()
 </script>
 </body>

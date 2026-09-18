@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_FEATURE_MEDIA, mcpAgentLogo } from '../lib/landing-media.js'
+import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_CONNECT_TOOLS, MCP_FEATURE_MEDIA, VIDSO_CLI, mcpAgentLogo } from '../lib/landing-media.js'
 import { TOOL_MENU_ITEMS } from '../lib/public-tools.js'
 import { vidsoMcpTools } from '../lib/vidso-mcp.js'
 import { mcpTools } from '../lib/youtube.js'
@@ -12,7 +12,7 @@ const vercel = readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
 const names = new Set([...mcpTools(), ...vidsoMcpTools()].map((t) => t.name))
 
-test('mcp marketing page is public, indexable, and has every client tab', () => {
+test('mcp marketing page is public, indexable, and has every client tab plus CLI', () => {
   assert.match(html, /<title>Vidso MCP/)
   assert.match(html, /<meta name="description"/)
   assert.match(html, /name="robots" content="index,follow"/)
@@ -21,10 +21,12 @@ test('mcp marketing page is public, indexable, and has every client tab', () => 
     assert.ok(html.includes(`data-mcp-client-pane="${id}"`), id + ' pane')
   }
   assert.ok(html.includes('Other MCP agents'))
-  assert.ok(html.includes('CLI'))
-  assert.ok(html.includes('Soon'))
-  assert.ok(!html.includes('curl'))
-  assert.ok(!html.includes('install.sh'))
+  assert.ok(html.includes('data-mcp-mode="cli"'))
+  assert.ok(html.includes(VIDSO_CLI.unix))
+  assert.ok(html.includes(VIDSO_CLI.windows))
+  assert.ok(html.includes(VIDSO_CLI.login))
+  assert.ok(!html.includes('Soon'))
+  assert.ok(!html.includes('Coming soon'))
   assert.ok(!html.includes('OpenArt'))
   assert.ok(!html.includes('—'))
   assert.ok(html.includes('https://www.vidso.pro/mcp'))
@@ -53,30 +55,40 @@ test('mcp page only claims real tools', () => {
     assert.ok(names.has(name), name)
     assert.ok(html.includes(name), name)
   }
+  for (const name of MCP_CONNECT_TOOLS) assert.ok(names.has(name), name)
   assert.ok(!html.includes('studio_generate'))
   assert.ok(html.includes('Video Editor and Faceless Studio are not exposed'))
 })
 
 test('placeholder mappings stay honest', () => {
   assert.deepEqual(MCP_AGENT_LOGOS.map((r) => r.file), [
-    'claude-ai-icon.webp',
-    'openai-icon.svg',
-    'cursor-ai-code-icon.svg',
-    'kimi-ai-icon.svg',
+    'agent-logo-claude.png',
+    'agent-logo-chatgpt.png',
+    'agent-logo-cursor.png',
+    'agent-logo-kimi.png',
+    'agent-logo-other.png',
   ])
-  assert.ok(mcpAgentLogo('claude-ai-icon.webp').endsWith('/claude-ai-icon.webp'))
-  assert.deepEqual(MCP_FEATURE_MEDIA.map((r) => r.tab), ['longform', 'clips', 'thumbs', 'audio', 'files', 'connect'])
+  assert.ok(mcpAgentLogo('agent-logo-claude.png').endsWith('/landing/agent-logo-claude.png'))
+  assert.ok(html.includes('agent-logo-claude.png'))
+  assert.ok(html.includes('data-mcp-mock="longform"'))
+  assert.ok(html.includes('mcp-feature-longform-01'))
+  assert.ok(html.includes('mcp-shorts-01'))
+  assert.deepEqual(MCP_FEATURE_MEDIA[0].tab, 'longform')
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.item), ['longform', 'thumbs', 'clips', 'voice', 'files', 'account'])
-  for (const file of MCP_AGENT_LOGOS.map((r) => r.file)) {
-    assert.ok(html.includes(file), file)
-  }
-  assert.ok(html.includes('data-mcp-feat="longform"'))
+})
+
+test('cli command constant matches the tab copy', () => {
+  assert.equal(VIDSO_CLI.unix, 'curl -fsSL https://www.vidso.pro/install.sh | sh')
+  assert.equal(VIDSO_CLI.windows, 'irm https://www.vidso.pro/install.ps1 | iex')
+  assert.equal(VIDSO_CLI.login, 'vidso login')
+  assert.match(VIDSO_CLI.generate, /vidso video/)
 })
 
 test('mcp page spacing tokens match the denser layout', () => {
   assert.ok(css.includes('clamp(56px,7vw,108px)'))
   assert.ok(css.includes('.lp-red.is-mcp-page{--sec-y:96px}'))
   assert.ok(css.includes('width:min(580px,100%)'))
+  assert.ok(css.includes('perspective:1100px'))
 })
 
 test('landing excerpt and nav point at /mcp without duplicating the old block', () => {
