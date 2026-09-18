@@ -631,7 +631,7 @@ html,.lp-red{overflow-x:visible}
 .mcp-key.is-vidso .mcp-key-face{background:linear-gradient(180deg,#ff4d63,#FE0C30 55%,#9a0a20)}
 .mcp-key.is-dark .mcp-key-face{background:linear-gradient(180deg,#3a3a40,#161618 62%,#0b0b0c);color:#fff}
 .mcp-key-face svg{width:42%;height:42%;position:relative;z-index:1}
-.mcp-key-face img{width:46%;height:46%;object-fit:contain;position:relative;z-index:1}
+.mcp-key-face img{width:52%;height:52%;object-fit:contain;position:relative;z-index:1}
 .mcp-key.is-vidso .mcp-key-face img{filter:brightness(0) invert(1)}
 .mcp-key:hover .mcp-key-bob{animation:none;transform:translateY(8px)}
 .mcp-key:hover .mcp-key-face{box-shadow:0 8px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.45)}
@@ -711,7 +711,9 @@ html,.lp-red{overflow-x:visible}
   display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
   background:#161618;border:1px solid var(--line);color:#fff;font-size:13px;font-weight:700
 }
-.mcp-chip img{width:16px;height:16px;object-fit:contain}
+.mcp-chip img{width:16px;height:16px;object-fit:contain;display:block}
+.mcp-chip.is-logo{padding:8px;min-width:36px;justify-content:center}
+.mcp-chip.is-ink img,.mcp-client.is-ink img{filter:invert(1)}
 .mcp-excerpt .mcp-urlbar{margin-bottom:16px}
 .mcp-more{
   display:inline-flex;align-items:center;gap:6px;color:#fff;font-size:14px;font-weight:650
