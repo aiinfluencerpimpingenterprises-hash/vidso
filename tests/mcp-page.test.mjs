@@ -59,13 +59,12 @@ test('mcp page only claims real tools', () => {
 
 test('placeholder mappings stay honest', () => {
   assert.deepEqual(MCP_AGENT_LOGOS.map((r) => r.file), [
-    'agent-logo-claude.png',
-    'agent-logo-chatgpt.png',
-    'agent-logo-cursor.png',
-    'agent-logo-kimi.png',
-    'agent-logo-other.png',
+    'claude-ai-icon.webp',
+    'openai-icon.svg',
+    'cursor-ai-code-icon.svg',
+    'kimi-ai-icon.svg',
   ])
-  assert.ok(mcpAgentLogo('agent-logo-claude.png').endsWith('/landing/agent-logo-claude.png'))
+  assert.ok(mcpAgentLogo('claude-ai-icon.webp').endsWith('/claude-ai-icon.webp'))
   assert.deepEqual(MCP_FEATURE_MEDIA.map((r) => r.tab), ['longform', 'clips', 'thumbs', 'audio', 'files', 'connect'])
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.item), ['longform', 'thumbs', 'clips', 'voice', 'files', 'account'])
   for (const file of MCP_AGENT_LOGOS.map((r) => r.file)) {

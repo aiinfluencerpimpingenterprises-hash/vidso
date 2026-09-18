@@ -668,7 +668,9 @@ html,.lp-red{overflow-x:visible}
   display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:8px 12px;
   background:transparent;color:rgba(245,245,244,.52);font:650 13px inherit;cursor:pointer
 }
-.mcp-client-tab img{width:16px;height:16px;object-fit:contain;opacity:.42;filter:grayscale(.2)}
+.mcp-client-tab img,.mcp-client-tab svg{width:16px;height:16px;object-fit:contain;flex:0 0 16px}
+.mcp-client-tab img{opacity:.7}
+.mcp-client-tab.is-ink img{filter:invert(1)}
 .mcp-client-tab.is-on{background:#fff;color:#111}
 .mcp-client-tab.is-on img{opacity:1;filter:none}
 .mcp-mode{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12)}
@@ -832,7 +834,7 @@ html,.lp-red{overflow-x:visible}
 .mcp-client-logo{
   width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#0e0e10;border:1px solid var(--line)
 }
-.mcp-client-logo img{width:20px;height:20px;object-fit:contain}
+.mcp-client-logo img,.mcp-client-logo svg{width:20px;height:20px;object-fit:contain;color:#fff}
 .mcp-final{position:relative;overflow:hidden}
 .mcp-final-wash{
   position:absolute;left:0;right:0;top:0;height:55%;pointer-events:none;
