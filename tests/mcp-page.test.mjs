@@ -87,8 +87,8 @@ test('cli command constant matches the tab copy', () => {
 test('mcp page spacing tokens match the denser layout', () => {
   assert.ok(css.includes('clamp(56px,7vw,108px)'))
   assert.ok(css.includes('.lp-red.is-mcp-page{--sec-y:96px}'))
-  assert.ok(css.includes('width:min(580px,100%)'))
-  assert.ok(css.includes('perspective:1100px'))
+  assert.ok(css.includes('width:min(600px,100%)'))
+  assert.ok(css.includes('perspective:1200px'))
 })
 
 test('landing excerpt and nav point at /mcp without duplicating the old block', () => {

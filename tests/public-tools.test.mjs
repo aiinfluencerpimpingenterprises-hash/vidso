@@ -40,6 +40,8 @@ test('mega menu uses real shipped routes and existing copy', () => {
 test('landing points generate CTAs at the long-form tool', () => {
   assert.match(landingJs, /mountLandingToolsMenu/)
   assert.match(menuJs, /nav-tools-btn/)
+  assert.match(menuJs, /nav-tools-chevron/)
+  assert.match(menuJs, /tools-mega-ico/)
   assert.match(html, /href="\/video-generation"/)
   assert.match(html, /Long Form Generator/)
   assert.match(html, /Thumbnail Generator/)
