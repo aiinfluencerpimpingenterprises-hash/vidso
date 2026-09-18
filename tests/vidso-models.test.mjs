@@ -75,7 +75,7 @@ test('hero modes and models nav are wired', () => {
 
 test('footer lists product, models, resources, account, and legal', () => {
   const html = footerInnerHtml()
-  assert.match(html, /Create YouTube videos with AI/)
+  assert.match(html, /Create videos with AI/)
   assert.match(html, />Product</)
   assert.match(html, />Models</)
   assert.match(html, />Resources</)
