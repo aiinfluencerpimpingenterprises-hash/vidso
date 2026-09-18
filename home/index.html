@@ -1065,7 +1065,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f26">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f28">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -1289,17 +1289,17 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <p class="lp-sub">Connect Vidso to Claude, then generate long-form videos from chat.</p>
     <div class="mcp-chips">
       <span class="mcp-chip">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="16" height="16" onerror="this.remove()">
+        <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-claude.png" alt="" width="16" height="16">
         Claude
       </span>
-      <span class="mcp-chip is-logo is-ink">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/openai-icon.svg" alt="" width="16" height="16" onerror="this.remove()">
+      <span class="mcp-chip is-logo">
+        <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-chatgpt.png" alt="" width="16" height="16">
       </span>
       <span class="mcp-chip is-logo">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/cursor-ai-code-icon.svg" alt="" width="16" height="16" onerror="this.remove()">
+        <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-cursor.png" alt="" width="16" height="16">
       </span>
-      <span class="mcp-chip is-logo is-ink">
-        <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="" width="16" height="16" onerror="this.remove()">
+      <span class="mcp-chip is-logo">
+        <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-kimi.png" alt="" width="16" height="16">
       </span>
     </div>
     <div class="mcp-urlbar">
@@ -1924,7 +1924,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f26'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f28'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
