@@ -3,6 +3,17 @@
   "rewrites": [
     {
       "source": "/mcp",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "(?i).*text/html.*"
+        }
+      ],
+      "destination": "/mcp/index.html"
+    },
+    {
+      "source": "/mcp",
       "destination": "/api/youtube/mcp"
     },
     {

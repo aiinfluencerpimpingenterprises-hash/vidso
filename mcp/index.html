@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>!function(w,d,s,u,n,a,b){if(w[n])return;a=w[n]={q:[],t:+new Date,s:[],o:u,track:function(){a.q.push([+new Date].concat([].slice.call(arguments)))},setScope:function(){a.s=[].slice.call(arguments).filter(function(x){return typeof x==="string"});a.q.push([+new Date,"setScope"].concat(a.s))},scope:function(){var c=[].slice.call(arguments);return{track:function(){a.q.push([+new Date].concat([].slice.call(arguments)).concat([{__scope:c}]))}}}};b=d.createElement(s);b.async=1;b.src=u+"/s.js";d.getElementsByTagName(s)[0].parentNode.insertBefore(b,d.getElementsByTagName(s)[0])}(window,document,"script","https://t.whop.tw","whop");whop.setScope("biz_1rGZhPBGkczqgF");whop.track("page");</script>
+<script>document.documentElement.classList.add('js-reveal')</script>
+<title>Vidso MCP · Run your YouTube workflow from Claude</title>
+<meta name="description" content="Connect Vidso to Claude as a custom connector. Generate long-form videos, thumbnails, clips, voiceover, and captions from chat using your Vidso plan.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.vidso.pro/mcp">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vidso">
+<meta property="og:url" content="https://www.vidso.pro/mcp">
+<meta property="og:title" content="Vidso MCP · Run your YouTube workflow from Claude">
+<meta property="og:description" content="Connect Vidso to Claude as a custom connector. Generate long-form videos, thumbnails, clips, voiceover, and captions from chat.">
+<meta property="og:image" content="https://www.vidso.pro/og-image-v2.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vidso MCP · Run your YouTube workflow from Claude">
+<meta name="twitter:description" content="Connect Vidso to Claude as a custom connector and run Vidso tools from chat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="/brand.js"></script>
+<link rel="stylesheet" href="/home/lp-base.css?v=d1f25">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f25">
+</head>
+<body class="lp-red is-mcp-page">
+<div class="scroll-prog" id="scrollProg"></div>
+
+<div class="lp-sitehead" id="lp-sitehead">
+<div class="lp-announce" id="lp-announce">
+  <div class="lp-announce-inner">
+    <p class="lp-announce-text">
+      <span class="is-desk" data-announce-desk>Seedream 5.0 Pro is now available in the Thumbnail Generator.</span>
+      <span class="is-mob" data-announce-mob>Seedream 5.0 Pro now in Thumbnail Generator</span>
+    </p>
+    <a class="lp-announce-cta" data-announce-cta href="/image-generation">Try it now ›</a>
+    <button type="button" class="lp-announce-x" data-announce-close aria-label="Dismiss announcement">×</button>
+  </div>
+</div>
+<header>
+  <div class="wrap" style="position:relative">
+    <nav>
+      <div class="nav-left">
+        <a href="/home" class="logo">
+          <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
+          Vidso
+        </a>
+        <div class="nav-links">
+          <a href="/home#why-vidso">Features</a>
+          <a href="/home#how">How it works</a>
+          <a href="/mcp" aria-current="page">MCP</a>
+          <a href="/home#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+      <div class="nav-cta">
+        <a href="/login" class="ghost">Sign in</a>
+        <button class="btn btn-primary" onclick="location.href='/signup'">Sign up <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:-2px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu" onclick="document.querySelector('header').classList.toggle('menu-open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+    <div class="nav-drawer" id="navDrawer">
+      <a href="/home#why-vidso" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
+      <a href="/home#how" onclick="document.querySelector('header').classList.remove('menu-open')">How it works</a>
+      <a href="/mcp" onclick="document.querySelector('header').classList.remove('menu-open')">MCP</a>
+      <a href="/home#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing</a>
+      <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
+      <a href="/login" onclick="document.querySelector('header').classList.remove('menu-open')">Sign in</a>
+      <button class="btn btn-primary" onclick="location.href='/signup'">Get Started</button>
+    </div>
+  </div>
+</header>
+</div>
+
+<section class="mcp-hero" id="mcp-top">
+  <div class="wrap">
+    <h1 class="mcp-title">Vidso MCP</h1>
+    <p class="mcp-sub">Run your YouTube workflow inside your AI agent</p>
+
+    <div class="mcp-keys" aria-hidden="true">
+      <span class="mcp-key-glow"></span>
+      <div class="mcp-key is-white" style="--rot:-16deg;--bob:-8px;--delay:-.4s">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-01.png" alt="" onerror="this.remove()">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-white" style="--rot:-8deg;--bob:-4px;--delay:-1.1s">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-02.png" alt="" onerror="this.remove()">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-vidso is-center" style="--rot:0deg;--bob:-12px;--delay:0s">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso-logo.png" alt="" data-vidso-logo>
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-dark" style="--rot:9deg;--bob:-5px;--delay:-.7s">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-03.png" alt="" onerror="this.remove()">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-white" style="--rot:16deg;--bob:-9px;--delay:-1.6s">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/landing/agent-logo-04.png" alt="" onerror="this.remove()">
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mcp-urlbar">
+      <code class="mcp-url" aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
+      <button type="button" class="mcp-copy" data-mcp-copy data-mcp-idle="Copy URL" aria-label="Copy connector URL">
+        <svg class="ico-copy" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+        <svg class="ico-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+        <span data-mcp-copy-label>Copy URL</span>
+      </button>
+    </div>
+    <p class="sr-only" data-mcp-live aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="mcp-setup" id="setup">
+  <div class="wrap">
+    <div class="mcp-panel">
+      <span class="mcp-panel-wash" aria-hidden="true"></span>
+      <div class="mcp-panel-top">
+        <div class="mcp-works">
+          <img data-claude-icon src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="" width="18" height="18">
+          Works with Claude
+        </div>
+      </div>
+      <div class="mcp-steps">
+        <article class="mcp-step">
+          <h3><span class="n">1</span> Open Claude settings</h3>
+          <p>Launch the app or open claude.ai and go to <strong>Settings → Connectors</strong>.</p>
+          <a class="btn mcp-out" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">
+            Open Claude settings
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </article>
+        <article class="mcp-step">
+          <h3><span class="n">2</span> Add a custom connector</h3>
+          <p>Name it <strong>Vidso</strong> and paste the URL:</p>
+          <div class="mcp-miniurl">
+            <code aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
+            <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy connector URL">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span class="sr-only" data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-step">
+          <h3><span class="n">3</span> Connect and sign in</h3>
+          <p>Click <strong>Add</strong>, then <strong>Connect</strong>, and sign in with your <strong>Vidso</strong> account. Then ask Claude to generate a long-form video.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mcp-bring" id="capabilities">
+  <div class="wrap">
+    <h2 class="two-line"><span class="l1">What Vidso MCP brings</span><span class="l2">to your AI agent</span></h2>
+    <p class="lp-sub">One Claude connector exposes the Vidso tools below. Each tab maps to a real MCP function.</p>
+    <div class="mcp-feat-tabs" role="tablist" aria-label="Vidso MCP capabilities">
+      <button type="button" class="mcp-feat-tab is-on" role="tab" aria-selected="true" data-mcp-feat="longform">Long-form from chat</button>
+      <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="clips">Shorts and clips</button>
+      <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="thumbs">Thumbnails</button>
+      <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="audio">Voiceover and captions</button>
+      <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="files">Use your files</button>
+      <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="connect">One connection</button>
+    </div>
+
+    <div class="mcp-feat-pane is-on" data-mcp-feat-pane="longform">
+      <div class="mcp-feat-copy">
+        <h3>Long-form from chat</h3>
+        <p>Ask Claude for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for the captioned MP4.</p>
+        <a class="btn btn-primary" href="/video-generation">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-longform"></div>
+    </div>
+    <div class="mcp-feat-pane" data-mcp-feat-pane="clips" hidden>
+      <div class="mcp-feat-copy">
+        <h3>Shorts and clips</h3>
+        <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> assemble ranked shorts, vertical crops, or commentary.</p>
+        <a class="btn btn-primary" href="/clipping">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-clips"></div>
+    </div>
+    <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs" hidden>
+      <div class="mcp-feat-copy">
+        <h3>Thumbnails</h3>
+        <p><code>thumbnail_generate</code> starts a YouTube thumbnail from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
+        <a class="btn btn-primary" href="/image-generation">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-thumbs"></div>
+    </div>
+    <div class="mcp-feat-pane" data-mcp-feat-pane="audio" hidden>
+      <div class="mcp-feat-copy">
+        <h3>Voiceover and captions</h3>
+        <p><code>voiceover_generate</code> narrates a script with a Vidso voice. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
+        <a class="btn btn-primary" href="/voiceover">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-audio"></div>
+    </div>
+    <div class="mcp-feat-pane" data-mcp-feat-pane="files" hidden>
+      <div class="mcp-feat-copy">
+        <h3>Use your files</h3>
+        <p><code>files_list</code> lists recent generated videos, thumbnails, and uploads on the signed-in account so Claude can reuse what is already in My Files.</p>
+        <a class="btn btn-primary" href="/signup">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-files"></div>
+    </div>
+    <div class="mcp-feat-pane" data-mcp-feat-pane="connect" hidden>
+      <div class="mcp-feat-copy">
+        <h3>One connection</h3>
+        <p>Paste https://www.vidso.pro/mcp once. <code>vidso_catalog</code> lists every tool Claude can call on that connection, including YouTube status, upload, and account quota.</p>
+        <a class="btn btn-primary" href="/signup">Try it now</a>
+      </div>
+      <div class="mcp-blank" data-mcp-media="feat-connect"></div>
+    </div>
+  </div>
+</section>
+
+<section class="mcp-ask" id="just-ask">
+  <div class="wrap">
+    <h2 class="mcp-ask-title">Just ask. Here is what Vidso MCP does through <em>chat.</em></h2>
+    <p class="lp-sub">Example prompts that only use tools the connector actually exposes.</p>
+    <div class="mcp-ask-grid">
+      <div class="mcp-ask-list">
+        <article class="mcp-ask-item is-on" data-mcp-ask="longform">
+          <button type="button" class="mcp-ask-h">Make a long-form YouTube video</button>
+          <div class="mcp-ask-body" data-mcp-ask-body>
+            <p data-mcp-prompt>Make a 12 minute faceless YouTube video on airport secrets airlines hide from travelers. 16:9, B-roll and captions.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-ask-item" data-mcp-ask="thumbs">
+          <button type="button" class="mcp-ask-h">Generate a thumbnail</button>
+          <div class="mcp-ask-body" data-mcp-ask-body hidden>
+            <p data-mcp-prompt>Generate a YouTube thumbnail for a video about airport secrets. High contrast, shocked face energy, readable title text.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-ask-item" data-mcp-ask="clips">
+          <button type="button" class="mcp-ask-h">Clip a public video</button>
+          <div class="mcp-ask-body" data-mcp-ask-body hidden>
+            <p data-mcp-prompt>Analyze this public video URL for viral moments and start autoclip. Then reframe the best clip to 9:16.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-ask-item" data-mcp-ask="voice">
+          <button type="button" class="mcp-ask-h">Narrate a script</button>
+          <div class="mcp-ask-body" data-mcp-ask-body hidden>
+            <p data-mcp-prompt>List narrator voices, then generate a voiceover for this script about airport boarding groups.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-ask-item" data-mcp-ask="files">
+          <button type="button" class="mcp-ask-h">List my recent files</button>
+          <div class="mcp-ask-body" data-mcp-ask-body hidden>
+            <p data-mcp-prompt>List my recent Vidso files and tell me which long-form renders are ready.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+        <article class="mcp-ask-item" data-mcp-ask="account">
+          <button type="button" class="mcp-ask-h">Check my plan and quota</button>
+          <div class="mcp-ask-body" data-mcp-ask-body hidden>
+            <p data-mcp-prompt>Show my Vidso plan and how many long-form and short-form videos I have left this month.</p>
+            <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+              <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+              <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              <span data-mcp-copy-label>Copy</span>
+            </button>
+          </div>
+        </article>
+      </div>
+      <div class="mcp-ask-media" data-mcp-ask-media>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-longform"></div>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-thumbs" hidden></div>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-clips" hidden></div>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-voice" hidden></div>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-files" hidden></div>
+        <div class="mcp-blank is-blank" data-mcp-media="chat-account" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mcp-clients" id="clients">
+  <div class="wrap">
+    <div class="mcp-clients-card">
+      <span class="mcp-clients-wash" aria-hidden="true"></span>
+      <p class="mcp-clients-k">Works with</p>
+      <div class="mcp-clients-row">
+        <span class="mcp-client">
+          <span class="mcp-client-logo">
+            <img data-claude-icon src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="">
+          </span>
+          Claude
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <h2 class="two-line"><span class="l1">Frequently asked</span><span class="l2">questions</span></h2>
+    <div class="faq-grid">
+      <div class="faq-col">
+        <details open>
+          <summary>What is Vidso MCP?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Vidso MCP is a Streamable HTTP server at https://www.vidso.pro/mcp. Claude adds it as a custom connector, you sign in with your Vidso account, and Claude can call Vidso tools from chat.</p>
+        </details>
+        <details>
+          <summary>How do I add Vidso as a Claude connector?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Open Claude settings, go to Settings → Connectors, add a custom connector named Vidso, and paste https://www.vidso.pro/mcp. Click Add, then Connect, and sign in with your Vidso account.</p>
+        </details>
+        <details>
+          <summary>Do I need an API key?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>No. Claude uses OAuth. When you click Connect, you sign in with your Vidso account. There is no separate Vidso API key product for this connector.</p>
+        </details>
+        <details>
+          <summary>Which Vidso tools can my agent use?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Claude can run long-form script and render, thumbnails, clipping, ranking, commentary, reframe, voiceover, captions, video download lookup, stock B-roll search, My Files listing, account quota, and YouTube connect, list, update, and upload. Video Editor and Faceless Studio are not exposed over MCP.</p>
+        </details>
+      </div>
+      <div class="faq-col">
+        <details>
+          <summary>Does it use my plan's limits?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. Generation tools require an active Vidso plan and use the same long-form, short-form, and Faceless Studio credit limits as the app. <code>vidso_account</code> can show what is left. Account and catalog tools work without a paid-plan check at the MCP layer.</p>
+        </details>
+        <details>
+          <summary>Where do my generated videos go?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Finished outputs land in My Files on the signed-in account. Claude can list them with <code>files_list</code>. If YouTube is connected, <code>youtube_upload</code> can publish a finished render to that channel.</p>
+        </details>
+        <details>
+          <summary>Does it work on Plus, Pro, and Studio?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. Any active plan can use the connector. Clipping analysis is a Pro+ feature. Video length and monthly quotas still follow the plan you are on.</p>
+        </details>
+        <details>
+          <summary>What happens if my session expires?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>The connector issues a short-lived access token (about 55 minutes) and a refresh token that lasts 30 days. When the session is no longer valid, Claude will ask you to connect and sign in again.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <div class="final-box mcp-final">
+      <span class="mcp-final-wash" aria-hidden="true"></span>
+      <h2>Run your YouTube workflow from chat</h2>
+      <p>Add the Claude connector, sign in, and ask for a long-form video, a thumbnail, or a clip.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg btn-glow" href="/signup">
+          <span class="btn-ring" aria-hidden="true"></span>
+          <span class="btn-label">Create a Vidso account</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <p class="foot-tag">Create YouTube videos with AI.</p>
+        <p class="fdesc">Script, voice, B-roll, and captions. Built for creators who want to monetize.</p>
+        <div class="foot-social" data-vidso-socials></div>
+      </div>
+      <div class="fcol">
+        <p class="fcol-h">Product</p>
+        <a href="/video-generation">Long Form Generator</a>
+        <a href="/image-generation">Thumbnail Generator</a>
+        <a href="/clipping">Clipping</a>
+        <a href="/mcp">MCP</a>
+        <a href="/home#how">Workflow</a>
+        <a href="/home#why-vidso">Product</a>
+        <a href="/home#pricing">Plans</a>
+        <a href="#faq">Help</a>
+      </div>
+      <div class="fcol">
+        <p class="fcol-h">Account</p>
+        <a href="/login">Log in</a>
+        <a href="/signup">Sign up</a>
+        <a href="/overview">Dashboard</a>
+      </div>
+      <div class="fcol">
+        <p class="fcol-h">Legal</p>
+        <a href="/terms">Terms of service</a>
+        <a href="/privacy">Privacy policy</a>
+        <a href="/refund">Refund policy</a>
+        <a data-vidso-support data-label="Contact support" data-fill-text></a>
+      </div>
+    </div>
+    <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
+    <div class="foot-mega" aria-hidden="true">
+      <span class="word">Vidso</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/vendor/gsap/gsap.min.js"></script>
+<script src="/vendor/gsap/ScrollTrigger.min.js"></script>
+<script type="module">
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f25'
+mountMcpPage()
+</script>
+</body>
+</html>

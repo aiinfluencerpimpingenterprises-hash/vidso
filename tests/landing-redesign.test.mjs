@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_TRANSITION, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
+import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
@@ -43,12 +43,14 @@ test('showcase is long-form only and shorts cards stay blank-ready', () => {
   assert.equal(HOW_PANEL_SRC, '')
 })
 
-test('hero transition timing stays in range', () => {
-  assert.equal(HERO_TRANSITION.pinVh, 240)
-  assert.equal(HERO_TRANSITION.pinVhMobile, 160)
-  assert.ok(HERO_TRANSITION.aEnd < HERO_TRANSITION.bEnd)
-  assert.ok(HERO_TRANSITION.bEnd < HERO_TRANSITION.cEnd)
-  assert.ok(HERO_TRANSITION.cEnd < 1)
+test('hero pin transition is gone', () => {
+  assert.ok(!html.includes('id="hero-pin"'))
+  assert.ok(!html.includes('hero-dark-beat'))
+  assert.ok(!html.includes('hero-pin-stage'))
+  assert.ok(html.includes('id="demo-hero"'))
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  assert.ok(!css.includes('--hero-pin-vh'))
+  assert.ok(!css.includes('hero-pin-stage'))
 })
 
 test('landing keeps SEO, one H1, and nav anchors', () => {
@@ -73,7 +75,7 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Thumbnail Generator'))
   assert.ok(html.includes('Clipping'))
   assert.ok(!html.includes('Script to final cut'))
-  assert.ok(html.includes('id="hero-pin"'))
+  assert.ok(!html.includes('id="hero-pin"'))
   assert.ok(html.includes('id="hero-prompt"'))
   assert.ok(html.includes('id="hero-marquee"'))
   assert.ok(html.includes('Trusted by creators building monetizable YouTube channels'))
@@ -84,10 +86,13 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.match(html, /Shorts from the[\s\S]{0,80}same idea/)
   assert.ok(html.includes('Long-form'))
   assert.ok(html.includes('Does Vidso support Shorts?'))
-  assert.ok(html.includes('Vidso MCP'))
-  assert.ok(html.includes('Run your YouTube workflow from Claude'))
-  assert.ok(html.includes('Works with Claude'))
+  assert.ok(html.includes('id="connect-claude"'))
+  assert.ok(html.includes('Run Vidso from'))
+  assert.ok(html.includes('See how it works'))
   assert.ok(html.includes('https://www.vidso.pro/mcp'))
+  assert.ok(!html.includes('mcp-keys'))
+  assert.ok(!html.includes('mcp-chat'))
+  assert.ok(!html.includes('Connect Claude'))
   assert.ok(!html.includes('Claude AI video generator'))
   assert.ok(!html.includes('id="connect-stack"'))
   assert.ok(!html.includes('ChatGPT'))
