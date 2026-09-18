@@ -34,6 +34,7 @@ const REWRITES = new Map([
   ['/home', '/home/index.html'],
   ['/pricing', '/home/index.html'],
   ['/mcp', '/mcp/index.html'],
+  ['/models', '/models/index.html'],
 ])
 
 const TYPES = {

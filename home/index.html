@@ -16,10 +16,10 @@
 })()
 </script>
 <script>document.documentElement.classList.add('js-reveal')</script>
-<title>Vidso · AI Long-Form Videos for YouTube</title>
+<title>Vidso · Make any video you can imagine</title>
 <meta name="google-site-verification" content="yHxnlqDRCP6NXQ1Cu8QglsQjyz7NxsOu2anCc1Tt1NI">
 <meta name="google-site-verification" content="ewq8xStt8tEBZ80eVf-Fmucu902PQeY3rhV-M87thKg">
-<meta name="description" content="Vidso generates AI long-form videos for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
+<meta name="description" content="Vidso makes long-form YouTube videos, Shorts, thumbnails, voiceovers, and captions in one place. Script, footage, and voiceover for creators who want to get paid on YouTube.">
 <link rel="canonical" href="https://www.vidso.pro/">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -28,19 +28,19 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vidso">
 <meta property="og:url" content="https://www.vidso.pro/">
-<meta property="og:title" content="Vidso · AI Long-Form Videos for YouTube">
-<meta property="og:description" content="Build a faceless YouTube channel with an automated production workflow: script to final cut using real footage, B-roll, voiceover, and captions.">
+<meta property="og:title" content="Vidso · Make any video you can imagine">
+<meta property="og:description" content="Long-form YouTube videos, Shorts, thumbnails, voiceovers, and captions in one place. Built for creators who want to get paid on YouTube.">
 <meta property="og:image" content="https://www.vidso.pro/og-image-v2.jpg">
 <meta property="og:image:secure_url" content="https://www.vidso.pro/og-image-v2.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Vidso — AI long-form videos for YouTube">
+<meta property="og:image:alt" content="Vidso AI videos for YouTube">
 <meta name="twitter:image" content="https://www.vidso.pro/og-image-v2.jpg">
-<meta name="twitter:image:alt" content="Vidso — AI long-form videos for YouTube">
+<meta name="twitter:image:alt" content="Vidso AI videos for YouTube">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vidso · AI Long-Form Videos for YouTube">
-<meta name="twitter:description" content="Script to videos for long-form YouTube: AI scripts, voiceover, B-roll, and burned-in captions. Faceless channel automation built for watch time and monetization.">
+<meta name="twitter:title" content="Vidso · Make any video you can imagine">
+<meta name="twitter:description" content="Long-form YouTube videos, Shorts, thumbnails, voiceovers, and captions in one place. Built for creators who want to get paid on YouTube.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1065,7 +1065,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f32">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f40">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -1126,14 +1126,13 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <span>Built for creators who want to <b>get paid</b> on YouTube</span>
         </div>
         <h1 id="hero-h1">
-          <span class="h1-l"><span class="h1-mark">Your faceless YouTube</span></span>
-          <span class="h1-l">empire starts here</span>
+          <span class="h1-l">Make <span class="h1-mark">any video</span> you can imagine</span>
         </h1>
         <div class="hero-trust" id="hero-trust">
           <div class="hero-trust-avs" id="hero-trust-avs" aria-hidden="true"></div>
           <p>Trusted by creators building monetizable YouTube channels</p>
         </div>
-        <p class="sub">Long-form YouTube videos with real footage, B-roll, voiceover, and captions.</p>
+        <p class="sub">Long-form videos, Shorts, thumbnails, voiceovers, and captions, all in one place.</p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg btn-glow" href="/video-generation">
             <span class="btn-ring" aria-hidden="true"></span>
@@ -1147,6 +1146,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <span class="hero-prompt-ph" id="hero-prompt-ph" aria-hidden="true"></span>
           </div>
           <div class="hero-prompt-bar">
+            <label class="sr-only" for="hero-prompt-mode">Mode</label>
+            <select class="hero-prompt-mode" id="hero-prompt-mode" name="format">
+              <option value="long">Long-form</option>
+              <option value="shorts">Shorts</option>
+              <option value="thumbnail">Thumbnail</option>
+            </select>
             <button type="submit" class="hero-prompt-send" aria-label="Generate a video">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
             </button>
@@ -1276,6 +1281,17 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </a>
     </div>
     <p class="wf-punch">Real content. Automated production.</p>
+  </div>
+</section>
+
+<section class="top-models" id="top-models">
+  <div class="top-models-stage">
+    <div class="top-models-orbit" id="top-models-orbit"></div>
+    <div class="top-models-copy">
+      <h2 class="two-line"><span class="l1">Top AI models.</span><span class="l2">All in one platform.</span></h2>
+      <p class="lp-sub">Every model Vidso uses for script, footage, voice, and thumbnails.</p>
+      <a class="btn btn-primary top-models-cta" href="/models">Browse all models</a>
+    </div>
   </div>
 </section>
 
@@ -1924,7 +1940,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
 import { mountResults } from '/lib/results.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f32'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f40'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)

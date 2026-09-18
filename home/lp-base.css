@@ -102,9 +102,13 @@ footer{border-top:1px solid var(--line);padding:72px 0 36px}
   .nav-drawer a:hover,.nav-drawer button:hover{background:rgba(255,255,255,.05);color:#fff}
   .nav-drawer .btn.btn-primary{justify-content:center;margin-top:8px;color:#fff;background:var(--grad);border:none;padding:13px 16px;font-weight:700}
 }
+@media(max-width:1100px){
+  .foot{grid-template-columns:1fr 1fr 1fr;gap:32px}
+  .foot > .foot-brand,.foot > div:first-child{grid-column:1/-1}
+}
 @media(max-width:820px){
   .foot{grid-template-columns:1fr 1fr;gap:36px}
-  .foot > div:first-child{grid-column:1/-1}
+  .foot > .foot-brand,.foot > div:first-child{grid-column:1/-1}
 }
-@media(max-width:520px){.foot{grid-template-columns:1fr}}
+@media(max-width:480px){.foot{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
