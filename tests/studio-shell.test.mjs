@@ -151,6 +151,8 @@ test('home is public preview and files stay private', () => {
   assert.match(css, /#FE0C30/)
   assert.match(css, /prefers-reduced-motion/)
   assert.match(css, /studio-prompt:focus-within/)
+  assert.match(shell, /studio-mcp-row/)
+  assert.match(shell, /studio-tile-shot/)
   assert.match(shell, /getElementById\('studio-prompt'\)/)
   assert.match(shell, /q\.get\('topic'\) \|\| q\.get\('idea'\)/)
 })
