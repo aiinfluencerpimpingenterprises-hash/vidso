@@ -1421,9 +1421,16 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .models-hero-bg.has-media{
   background-size:cover;background-position:center;filter:blur(18px) brightness(.32);transform:scale(1.08)
 }
+.models-hero-bg.has-video{filter:none;transform:none}
+.models-hero-bg.has-video video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover
+}
 .models-hero-bg::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(11,11,12,.2),#0B0B0C)
+}
+.models-hero-bg.has-video::after{
+  background:linear-gradient(180deg,rgba(11,11,12,.4),#0B0B0C 88%)
 }
 .models-hero .eyebrow{
   margin:0 0 18px;letter-spacing:.02em;text-transform:none;font-size:16px;
@@ -1459,6 +1466,18 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   position:absolute;left:16px;top:50%;z-index:2;width:44px;height:44px;border-radius:50%;
   background:#FE0C30;color:#fff;display:grid;place-items:center;transform:translateY(-50%);
   box-shadow:0 8px 20px rgba(0,0,0,.35)
+}
+.model-card-go{
+  position:absolute;right:16px;bottom:18px;z-index:3;width:44px;height:44px;border-radius:50%;
+  background:#FE0C30;color:#fff;display:grid;place-items:center;
+  opacity:0;transform:translateY(6px) scale(.94);pointer-events:none;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+  transition:opacity .18s ease,transform .18s ease
+}
+.model-card:hover .model-card-go,
+.model-card:focus .model-card-go,
+.model-card:focus-visible .model-card-go{
+  opacity:1;transform:none
 }
 .model-card:hover .model-card-shot,.model-card:focus-visible .model-card-shot{outline:1px solid rgba(255,255,255,.12)}
 .model-card.is-target .model-card-shot{outline:2px solid #FE0C30}
@@ -1547,7 +1566,8 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .shorts-arc [data-arc]{stroke-dashoffset:0!important}
   .demo-cursor{display:none!important}
   .model-card,.model-card:hover,.model-card:focus-visible{transform:none!important;transition:none!important}
-  .models-hero-bg.has-media{filter:none;transform:none}
+  .model-card-go{transition:none!important;transform:none}
+  .models-hero-bg.has-media,.models-hero-bg.has-video{filter:none;transform:none}
   .hero-lp,.demo-hero{position:relative!important;inset:auto;opacity:1!important;transform:none!important;pointer-events:auto}
   .demo-hero{padding:24px 16px 56px}
   html{scroll-behavior:auto}

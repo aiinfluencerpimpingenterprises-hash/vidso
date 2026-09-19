@@ -11,9 +11,12 @@ import {
   MODELS_PROMO,
   MODELS_PROMO_COPY,
   MODEL_GROUPS,
+  CATALOG_CLIP_FILES,
   CATALOG_MODELS,
+  MODELS_HERO_VIDEO,
   VIDSO_MODELS,
   featuredModels,
+  modelCardClipSrc,
   modelCardSrc,
   modelHref,
   modelSlug,
@@ -71,6 +74,9 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.match(MODELS_HERO, /\/landing\/models-hero\.jpg$/)
   assert.match(modelTileSrc('veo-3.1'), /model-tile-veo-3-1\.jpg$/)
   assert.match(modelCardSrc('seedream-4.5'), /model-card-seedream-4-5\.jpg$/)
+  assert.match(modelCardClipSrc('gemini-omni-flash'), /Gemini%20Omni%20Video_720p\.mp4$/)
+  assert.match(MODELS_HERO_VIDEO, /HERO%20SECTION%20VIDEO_720p\.mp4$/)
+  assert.equal(CATALOG_CLIP_FILES['seedance-2-5'], 'Seedance 2.5_720p.mp4')
   assert.equal(modelHref('kling-3-pro'), '/models#kling-3-pro')
   assert.equal(modelSlug('veo-3.1'), 'veo-3-1')
   const files = placeholderTable().map((p) => p.file)
