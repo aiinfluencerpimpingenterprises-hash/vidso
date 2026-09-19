@@ -10,9 +10,29 @@ mkdirSync(OUT, { recursive: true })
 
 const report = { url: URL, viewports: {}, notes: [] }
 
-async function shot(page, name) {
+async function prepare(page) {
+  await page.evaluate(() => {
+    try { window.ScrollTrigger?.getAll?.().forEach((t) => t.kill()) } catch (_) {}
+    document.querySelectorAll('.rv-copy,.rv-line,.rv-media,.rv-item,.rv-eye,.rv-sub,h1,h2,.hero-copy,.hero-prompt,.hero-marquee,.hero-trust,.sub,.trust-badge').forEach((el) => {
+      el.style.opacity = '1'
+      el.style.transform = 'none'
+      el.style.filter = 'none'
+    })
+  })
+}
+
+async function go(page, sel) {
+  await page.evaluate((selector) => {
+    const el = document.querySelector(selector)
+    if (!el) return
+    window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + window.scrollY - 72))
+  }, sel)
+  await page.waitForTimeout(250)
+}
+
+async function shot(page, name, fullPage = false) {
   const file = path.join(OUT, name)
-  await page.screenshot({ path: file, fullPage: false })
+  await page.screenshot({ path: file, fullPage })
   return file
 }
 
@@ -91,7 +111,11 @@ async function runViewport(browser, width, height, key) {
   })
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 30000 })
   await page.waitForTimeout(900)
+  await prepare(page)
   const top = await measure(page)
+  await shot(page, `${key}-00-full.png`, true)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.waitForTimeout(200)
   await shot(page, `${key}-01-hero.png`)
 
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.15))
@@ -129,44 +153,41 @@ async function runViewport(browser, width, height, key) {
     }
   }
 
-  await page.locator('.showcase').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(400)
-  await shot(page, `${key}-05-longform.png`)
+  await go(page, '#ideas')
+  await shot(page, `${key}-05-formats.png`)
 
-  await page.locator('.shorts').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(400)
-  await shot(page, `${key}-06-shorts.png`)
+  await go(page, '#showcase')
+  await shot(page, `${key}-06-showcase.png`)
 
-  await page.locator('#connect-claude').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(300)
-  await shot(page, `${key}-07-mcp.png`)
+  await go(page, '#why-vidso')
+  await shot(page, `${key}-07-one-platform.png`)
 
-  await page.locator('.comp-cta').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(200)
-  await shot(page, `${key}-08-comp-cta.png`)
+  await go(page, '#connect-claude')
+  await shot(page, `${key}-08-mcp.png`)
 
-  await page.locator('.final-box').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(200)
-  await shot(page, `${key}-09-final.png`)
+  await go(page, '#feat-longform')
+  await shot(page, `${key}-09-longform-feat.png`)
 
-  await page.locator('#feat-longform').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(300)
-  await shot(page, `${key}-10-longform-feat.png`)
+  await go(page, '#feat-thumbs')
+  await shot(page, `${key}-10-thumbs.png`)
 
-  await page.locator('#feat-thumbs').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(300)
-  await shot(page, `${key}-11-thumbs.png`)
+  await go(page, '#how')
+  await shot(page, `${key}-11-faceless.png`)
 
-  const results = page.locator('#results-root, .results')
-  if (await results.count()) {
-    await results.first().scrollIntoViewIfNeeded()
-    await page.waitForTimeout(300)
-    await shot(page, `${key}-12-channels.png`)
-  }
+  await go(page, '#ugc')
+  await shot(page, `${key}-12-ugc.png`)
 
-  await page.locator('.formats-float').scrollIntoViewIfNeeded()
-  await page.waitForTimeout(200)
-  await shot(page, `${key}-13-formats.png`)
+  await go(page, '#top-models')
+  await shot(page, `${key}-13-models.png`)
+
+  await go(page, '#studio-tools')
+  await shot(page, `${key}-14-studio.png`)
+
+  await go(page, '.comp-cta')
+  await shot(page, `${key}-15-comp-cta.png`)
+
+  await go(page, '#final')
+  await shot(page, `${key}-16-final.png`)
 
   if (width >= 1024) {
     await page.evaluate(() => window.scrollTo(0, 0))
@@ -175,15 +196,15 @@ async function runViewport(browser, width, height, key) {
     const box = await btn.boundingBox()
     if (box) {
       await page.screenshot({
-        path: path.join(OUT, `${key}-14-cta-zoom.png`),
+        path: path.join(OUT, `${key}-17-cta-zoom.png`),
         clip: { x: Math.max(0, box.x - 24), y: Math.max(0, box.y - 24), width: box.width + 48, height: box.height + 48 },
       })
     }
-    await page.locator('.final-box .btn-glow, .final-box .btn-primary').first().scrollIntoViewIfNeeded()
+    await go(page, '.final-box .btn-glow, .final-box .btn-primary')
     const fbox = await page.locator('.final-box .btn-glow, .final-box .btn-primary').first().boundingBox()
     if (fbox) {
       await page.screenshot({
-        path: path.join(OUT, `${key}-15-final-cta-zoom.png`),
+        path: path.join(OUT, `${key}-18-final-cta-zoom.png`),
         clip: { x: Math.max(0, fbox.x - 24), y: Math.max(0, fbox.y - 24), width: fbox.width + 48, height: fbox.height + 48 },
       })
     }
@@ -197,6 +218,7 @@ async function runViewport(browser, width, height, key) {
 const browser = await chromium.launch({ headless: true })
 try {
   await runViewport(browser, 1440, 900, 'd1440')
+  await runViewport(browser, 1024, 900, 'd1024')
   await runViewport(browser, 390, 844, 'd390')
 } finally {
   await browser.close()

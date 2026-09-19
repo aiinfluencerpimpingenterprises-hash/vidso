@@ -8,7 +8,7 @@ test('the public homepage is the marketing site', () => {
   assert.equal(home?.destination, '/home')
   assert.equal(existsSync(new URL('../index.html', import.meta.url)), false)
   const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
-  assert.match(html, /Your[\s\S]{0,80}faceless YouTube[\s\S]{0,80}empire[\s\S]{0,40}starts here/)
+  assert.match(html, /Make[\s\S]{0,40}any video[\s\S]{0,40}you can imagine/)
   assert.match(html, /google-site-verification/)
 })
 

@@ -149,6 +149,10 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/models",
+      "destination": "/models/index.html"
+    },
+    {
       "source": "/pricing",
       "destination": "/home/index.html"
     },
@@ -352,6 +356,15 @@
     },
     {
       "source": "/pricing",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/models",
       "headers": [
         {
           "key": "Cache-Control",
