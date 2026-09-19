@@ -3647,7 +3647,7 @@ body.paywalled #studio-topbar,body.paywalled #app-banner,body.paywalled main{poi
   .brand{font-size:1.1rem}
 }
 </style>
-<link rel="stylesheet" href="/dashboard/studio-shell.css?v=s9">
+<link rel="stylesheet" href="/dashboard/studio-shell.css?v=s10">
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
 <script>
@@ -4122,20 +4122,17 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="studio-crumb" id="topbar-title">Home</div>
   </div>
   <div class="studio-topbar-right">
-    <button type="button" class="studio-search-btn" id="studio-search-btn" aria-label="Search">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
-      <span>Search</span>
-      <kbd class="studio-search-kbd">⌘K</kbd>
-    </button>
     <div class="guest-only" id="guest-auth">
       <a class="ghost" href="/login">Sign in</a>
       <a class="btn btn-primary" href="/signup">Sign up</a>
     </div>
-    <div class="topnav-drop" id="nav-help-wrap">
-      <button type="button" class="studio-ico-btn" id="studio-help-btn" aria-label="Help" aria-haspopup="menu" aria-expanded="false" aria-controls="studio-help-menu">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>
+    <div class="topnav-drop studio-help-pop" id="nav-help-wrap">
+      <button type="button" class="studio-help-btn" id="studio-help-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="studio-help-menu">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>
+        <span>Help</span>
+        <svg class="studio-help-chev" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="topnav-menu studio-help-menu" id="studio-help-menu" role="menu" aria-label="Help"></div>
+      <div class="studio-help-menu" id="studio-help-menu" role="menu" aria-label="Help" hidden></div>
     </div>
     <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
@@ -4146,7 +4143,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="studio-ico-btn" id="studio-grid-btn" aria-label="Tools quick switcher"></button>
     <div class="topnav-drop" id="nav-avatar-wrap">
       <button type="button" class="topnav-avatar" id="nav-avatar-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-avatar-menu">
-        <span id="user-avatar">?</span>
+        <span id="user-avatar" class="is-icon" aria-hidden="true"></span>
       </button>
       <div class="topnav-menu" id="nav-avatar-menu" role="menu" aria-label="Account">
         <div class="user-info" style="padding:8px 10px 10px">
@@ -6439,7 +6436,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
-import { initStudioShell } from '/lib/app-studio-shell.js?v=s9'
+import { initStudioShell } from '/lib/app-studio-shell.js?v=s10'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
 import {
   tourById,

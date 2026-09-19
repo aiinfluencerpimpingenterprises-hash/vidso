@@ -171,3 +171,17 @@ test('home is public preview and files stay private', () => {
   assert.match(shell, /getElementById\('studio-prompt'\)/)
   assert.match(shell, /q\.get\('topic'\) \|\| q\.get\('idea'\)/)
 })
+
+test('home top bar drops Search and names the workspace from account data', () => {
+  assert.doesNotMatch(dash, /id="studio-search-btn"/)
+  assert.doesNotMatch(dash, /⌘K/)
+  assert.match(dash, /id="studio-help-btn"/)
+  assert.match(dash, />Help</)
+  assert.match(shell, /My workspace/)
+  assert.match(shell, /'s workspace/)
+  assert.match(css, /top:calc\(100% \+ 8px\)/)
+  assert.match(css, /#1c1c1f/)
+  assert.match(shell, /data-vidso-socials/)
+  assert.doesNotMatch(shell, /discord|youtube\.com|twitter|x\.com/i)
+  assert.match(readFileSync(fileURLToPath(new URL('../brand.js', import.meta.url)), 'utf8'), /VIDSO_INSTAGRAM_URL/)
+})
