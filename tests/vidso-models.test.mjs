@@ -11,6 +11,7 @@ import {
   MODELS_PROMO,
   MODELS_PROMO_COPY,
   MODEL_GROUPS,
+  CATALOG_MODELS,
   VIDSO_MODELS,
   featuredModels,
   modelCardSrc,
@@ -42,6 +43,26 @@ test('public catalog is only wired models with display names', () => {
   assert.equal(MODEL_GROUPS.length, 4)
   assert.ok(VIDSO_MODELS.every((m) => m.blurb && !m.blurb.includes('—') && !m.blurb.includes('–')))
   assert.ok(VIDSO_MODELS.every((m) => m.source))
+})
+
+test('browse catalog lists OpenArt models plus Vidso extras with paraphrased blurbs', () => {
+  const names = CATALOG_MODELS.map((m) => m.name)
+  for (const name of [
+    'Gemini Omni Flash', 'Nano Banana 2.5', 'Kling AI Video Generator', 'GPT Image 2.5',
+    'MiniMax H3', 'Kling 3.0 Motion Control', 'Wan 3.0', 'Nano Banana 2 Lite',
+    'Sora 2 Update', 'Seedance 2.5', 'Seedance 2.0', 'Grok Imagine', 'Qwen Image 3.0',
+    'FLUX 3', 'Seedream 5.0 Pro', 'Veo 3', 'Hailuo', 'Nano Banana 2', 'PixVerse',
+    'HappyHorse', 'SwitchX', 'LTX-2.3', 'GPT Image 2', 'Wan 2.7 Image', 'Recraft V4',
+    'Wan 2.7', 'Kling 3.0 Pro', 'Veo 3.1', 'Hailuo 02', 'Nano Banana Pro', 'ElevenLabs',
+    'AssemblyAI', 'Claude',
+  ]) {
+    assert.ok(names.includes(name), name)
+  }
+  const slugs = CATALOG_MODELS.map((m) => modelSlug(m.id))
+  assert.equal(new Set(slugs).size, slugs.length)
+  assert.ok(CATALOG_MODELS.every((m) => m.blurb && m.blurb.length >= 70))
+  assert.ok(CATALOG_MODELS.every((m) => !m.blurb.includes('—') && !m.blurb.includes('–') && !m.blurb.includes('OpenArt')))
+  assert.ok(placeholderTable().some((p) => p.file === 'model-card-gemini-omni-flash.jpg'))
 })
 
 test('placeholders and featured tiles stay on landing R2', () => {
@@ -88,6 +109,8 @@ test('footer lists start creating, models, features, resources, and company', ()
   assert.match(html, /Video Editor/)
   assert.match(html, /Tutorials/)
   assert.match(html, /Kling 3.0 Pro/)
+  assert.match(html, /Gemini Omni Flash/)
+  assert.match(html, /PixVerse/)
   assert.match(html, /ElevenLabs/)
   assert.match(html, /href="\/models#kling-3-pro"/)
   assert.ok(!html.includes('—'))
