@@ -82,7 +82,8 @@
   var publicTools = {
     '/video-generation':1,'/youtube-generation':1,'/image-generation':1,'/clipping':1,
     '/ranking':1,'/captions':1,'/voiceover':1,'/reframe':1,'/editor':1,'/downloader':1,
-    '/commentary':1,'/tools':1,'/brand-kit':1,'/templates':1,'/tutorials':1,'/dashboard':1
+    '/commentary':1,'/tools':1,'/brand-kit':1,'/templates':1,'/tutorials':1,'/dashboard':1,
+    '/home/quick-start':1,'/home/presets':1,'/home/inspirations':1
   }
   var toolSeo = {
     '/video-generation':['Long Form Generator · Vidso','Turn a topic into a narrated short or long-form YouTube video: script, voice, B-roll, and captions.',1],
@@ -101,6 +102,9 @@
     '/templates':['Templates · Vidso','Start from a Vidso layout.',1],
     '/tutorials':['Tutorials · Vidso','Walkthroughs of Vidso tools.',1],
     '/dashboard':['Home · Vidso','What are we making today?',0],
+    '/home/quick-start':['Quick start · Vidso','Pick a format and start a brief.',0],
+    '/home/presets':['Presets · Vidso','Start from a look.',0],
+    '/home/inspirations':['Inspirations · Vidso','Browse style frames by category.',0],
     '/files':['My Files · Vidso','Every video and thumbnail you generate is kept here.',0]
   }
   var seo = toolSeo[path]
@@ -3643,7 +3647,7 @@ body.paywalled #studio-topbar,body.paywalled #app-banner,body.paywalled main{poi
   .brand{font-size:1.1rem}
 }
 </style>
-<link rel="stylesheet" href="/dashboard/studio-shell.css?v=s7">
+<link rel="stylesheet" href="/dashboard/studio-shell.css?v=s9">
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
 <script>
@@ -4127,17 +4131,19 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <a class="ghost" href="/login">Sign in</a>
       <a class="btn btn-primary" href="/signup">Sign up</a>
     </div>
-    <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
-      <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-      <span class="credits-pill-count" id="credits-count">-</span>
-      <span class="credits-pill-label">videos</span>
-    </span>
     <div class="topnav-drop" id="nav-help-wrap">
       <button type="button" class="studio-ico-btn" id="studio-help-btn" aria-label="Help" aria-haspopup="menu" aria-expanded="false" aria-controls="studio-help-menu">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>
       </button>
       <div class="topnav-menu studio-help-menu" id="studio-help-menu" role="menu" aria-label="Help"></div>
     </div>
+    <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
+      <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+      <span class="credits-pill-count" id="credits-count">-</span>
+      <span class="credits-pill-label">videos</span>
+    </span>
+    <button type="button" class="studio-upgrade" id="studio-upgrade">Upgrade</button>
+    <button type="button" class="studio-ico-btn" id="studio-grid-btn" aria-label="Tools quick switcher"></button>
     <div class="topnav-drop" id="nav-avatar-wrap">
       <button type="button" class="topnav-avatar" id="nav-avatar-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-avatar-menu">
         <span id="user-avatar">?</span>
@@ -6336,6 +6342,15 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="panel" id="panel-tutorials">
       <div id="studio-tutorials-root"></div>
     </div>
+    <div class="panel" id="panel-quickstart">
+      <div id="studio-quickstart-root"></div>
+    </div>
+    <div class="panel" id="panel-homepresets">
+      <div id="studio-homepresets-root"></div>
+    </div>
+    <div class="panel" id="panel-inspirecat">
+      <div id="studio-inspirecat-root"></div>
+    </div>
 
   </div><!-- /content -->
 </main>
@@ -6424,7 +6439,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
-import { initStudioShell } from '/lib/app-studio-shell.js?v=s7'
+import { initStudioShell } from '/lib/app-studio-shell.js?v=s9'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
 import {
   tourById,
@@ -8806,6 +8821,7 @@ function populateUser() {
     const credits = currentUser.studio_credits_remaining
     pill.title = q.longText + (!panelArchived('facelessstudio') && Number.isFinite(Number(credits)) ? ' · ' + credits + ' Faceless credits left' : '')
   }
+  try { window.studioPaintAccount?.() } catch (_) {}
   const welcome = document.getElementById('dash-welcome-name')
   if (welcome) {
     const display = (currentUser.name || '').trim() || String(currentUser.email || '').split('@')[0] || ''
@@ -8828,21 +8844,29 @@ const titles = {
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP',
-  brandkit:'Brand kit', templates:'Templates', tutorials:'Tutorials'
+  brandkit:'Brand kit', templates:'Templates', tutorials:'Tutorials',
+  quickstart:'Quick start', homepresets:'Presets', inspirecat:'Inspirations'
 }
 const PANEL_PATHS = {
   dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors',
-  brandkit:'/brand-kit', templates:'/templates', tutorials:'/tutorials'
+  brandkit:'/brand-kit', templates:'/templates', tutorials:'/tutorials',
+  quickstart:'/home/quick-start', homepresets:'/home/presets', inspirecat:'/home/inspirations'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 function normalizePath(p) {
   if (!p) return '/'
   return ('/' + String(p).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')).replace(/\/+/g, '/')
 }
-function pathForPanel(id) { return PANEL_PATHS[id] || DEFAULT_PATH }
+function pathForPanel(id) {
+  if (id === 'inspirecat') {
+    const cat = document.documentElement.dataset.studioInspirePage || 'marketing'
+    return '/home/inspirations/' + cat
+  }
+  return PANEL_PATHS[id] || DEFAULT_PATH
+}
 function resolvePanel(id) {
   if (id === 'home') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
@@ -8854,6 +8878,13 @@ function resolvePanel(id) {
 function panelFromPath() {
   const path = normalizePath(location.pathname)
   if (path === '/overview' || path === '/analytics' || path === '/upscale') return 'dashboard'
+  if (path === '/home/quick-start') return 'quickstart'
+  if (path === '/home/presets') return 'homepresets'
+  if (path === '/home/inspirations' || path.startsWith('/home/inspirations/')) {
+    const cat = path.split('/')[3] || 'marketing'
+    document.documentElement.dataset.studioInspirePage = cat
+    return 'inspirecat'
+  }
   if (HOME_PATHS.has(path)) return DEFAULT_PANEL
   if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) {
     return panelArchived('facelessstudio') ? DEFAULT_PANEL : 'facelessstudio'
@@ -8922,7 +8953,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','brandkit','templates','tutorials'].includes(id)
+    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','brandkit','templates','tutorials','quickstart','homepresets','inspirecat'].includes(id)
     titleEl.classList.toggle('is-hidden', false)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')

@@ -66,6 +66,7 @@ function resolveRel(urlPath) {
   const clean = cleanPath(urlPath)
   if (REWRITES.has(clean)) return REWRITES.get(clean)
   if (clean.startsWith('/faceless-studio/')) return '/dashboard/index.html'
+  if (clean === '/home/quick-start' || clean === '/home/presets' || clean.startsWith('/home/inspirations')) return '/dashboard/index.html'
   return clean
 }
 

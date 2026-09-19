@@ -7,6 +7,7 @@ import {
   ATTACH_MENU,
   CATALOG_TABS,
   HOME_CHIPS,
+  HOME_CHIPS_MORE,
   HOME_PRESETS,
   HOME_PROMPT_IDEAS,
   HOME_PROMPT_MODES,
@@ -83,7 +84,8 @@ test('home prompt modes and lengths come from the generator', () => {
     'Write a voiceover',
   ])
   assert.deepEqual(ASK_BEHAVIORS.map((b) => b.label), ['Ask first', 'Just make it'])
-  assert.deepEqual(ATTACH_MENU.map((a) => a.id), ['upload', 'url'])
+  assert.deepEqual(ATTACH_MENU.map((a) => a.id), ['local-image', 'local-audio', 'local-video', 'files', 'brandkit'])
+  assert.ok(HOME_CHIPS_MORE.length >= 8)
 })
 
 test('sidebar uses Create because Chat Mode and Director Mode do not exist', () => {
@@ -107,12 +109,18 @@ test('sidebar uses Create because Chat Mode and Director Mode do not exist', () 
 
 test('home rails and inspiration tabs are config-driven', () => {
   assert.deepEqual(START_FORMATS.map((f) => f.label), [
-    'Long-form', 'Short', 'Thumbnail', 'Clip', 'Ranking video', 'UGC', 'Explainer', 'Listicle',
+    'Long-form', 'Short film', 'Thumbnail', 'Clip', 'Ranking video', 'Social content', 'Explainer', 'Listicle',
   ])
-  assert.equal(WHATS_NEW[0].title, 'Seedream 5.0 Pro')
+  assert.ok(START_FORMATS.every((f) => !/16:9|9:16/.test(f.chip || '')))
+  assert.match(WHATS_NEW[0].title, /Seedream 5.0 Pro/)
   assert.match(WHATS_NEW[0].href, /image-generation/)
   assert.equal(WHATS_NEW[0].image, 'home-whatsnew-01.jpg')
-  assert.equal(HOME_PRESETS.length, 12)
+  assert.equal(HOME_PRESETS.length, 24)
+  assert.match(shell, /Latest AI models/)
+  assert.match(shell, /quickstart/)
+  assert.match(dash, /id="panel-quickstart"/)
+  assert.match(dash, /id="panel-homepresets"/)
+  assert.match(dash, /id="panel-inspirecat"/)
   assert.deepEqual(INSPIRE_CATEGORIES.map((c) => c.id), [
     'marketing', 'film', 'music', 'animation', 'ugc', 'micro', 'anime', 'explainer',
   ])
@@ -130,9 +138,9 @@ test('placeholder filenames follow the app R2 scheme', () => {
   assert.equal(appMedia('tool-thumb-long-form-generator.jpg'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/app/tool-thumb-long-form-generator.jpg')
   assert.equal(PLACEHOLDER_FILES.tools.length, allStudioTools().length)
   assert.deepEqual(PLACEHOLDER_FILES.start, START_FORMATS.map((f) => `home-start-${f.slug}.mp4`))
-  assert.equal(PLACEHOLDER_FILES.whatsNew.length, 4)
-  assert.equal(PLACEHOLDER_FILES.presets.length, 12)
-  assert.equal(PLACEHOLDER_FILES.inspire.length, INSPIRE_CATEGORIES.length * 6)
+  assert.equal(PLACEHOLDER_FILES.whatsNew.length, 6)
+  assert.equal(PLACEHOLDER_FILES.presets.length, 24)
+  assert.equal(PLACEHOLDER_FILES.inspire.length, INSPIRE_CATEGORIES.length * 8)
   assert.equal(TEMPLATES.length, 12)
   assert.equal(TUTORIALS.length, 8)
 })
@@ -141,6 +149,8 @@ test('home is public preview and files stay private', () => {
   assert.match(vercel, /"source": "\/brand-kit"/)
   assert.match(vercel, /"source": "\/templates"/)
   assert.match(vercel, /"source": "\/tutorials"/)
+  assert.match(vercel, /"source": "\/home\/quick-start"/)
+  assert.match(vercel, /"source": "\/home\/presets"/)
   assert.match(vercel, /"source": "\/overview"[\s\S]*?"destination": "\/dashboard"/)
   assert.ok(PUBLIC_TOOL_PATHS.includes('/brand-kit'))
   assert.ok(PUBLIC_TOOL_PATHS.includes('/templates'))

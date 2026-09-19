@@ -109,6 +109,22 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/home/quick-start",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/home/presets",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/home/inspirations",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/home/inspirations/:path*",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/captions",
       "destination": "/dashboard/index.html"
     },
