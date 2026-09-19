@@ -1462,11 +1462,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   font-size:16px;font-weight:750;letter-spacing:-.02em;color:#fff
 }
 .model-card-blurb{margin:0;font-size:13px;line-height:1.45;color:rgba(245,245,244,.58);display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.model-card-play{
-  position:absolute;left:16px;top:50%;z-index:2;width:44px;height:44px;border-radius:50%;
-  background:#FE0C30;color:#fff;display:grid;place-items:center;transform:translateY(-50%);
-  box-shadow:0 8px 20px rgba(0,0,0,.35)
-}
 .model-card-go{
   position:absolute;right:16px;bottom:18px;z-index:3;width:44px;height:44px;border-radius:50%;
   background:#FE0C30;color:#fff;display:grid;place-items:center;
