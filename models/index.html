@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f54">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f56">
 </head>
 <body class="lp-red is-models-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -54,8 +54,7 @@
         <div class="nav-links"></div>
       </div>
       <div class="nav-cta">
-        <a href="/login" class="ghost">Sign in</a>
-        <a class="btn btn-primary" href="/signup">Sign up</a>
+        <a class="btn btn-start" href="/signup">Start for Free →</a>
       </div>
       <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navDrawer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -65,8 +64,7 @@
   <div class="nav-drawer" id="navDrawer" hidden>
     <div class="nav-drawer-body"></div>
     <div class="nav-drawer-foot">
-      <a href="/login" class="ghost">Sign in</a>
-      <a class="btn btn-primary" href="/signup">Sign up</a>
+      <a class="btn btn-start" href="/signup">Start for Free →</a>
     </div>
   </div>
 </header>
@@ -76,30 +74,14 @@
   <div class="models-hero-bg" aria-hidden="true"></div>
   <div class="wrap">
     <p class="eyebrow">Vidso Models</p>
-    <h1 class="two-line"><span class="l1">Explore the models</span><span class="l2">behind your videos</span></h1>
-    <p class="lp-sub">Script, footage, voice, and thumbnails, all in one workflow.</p>
+    <h1 class="models-hero-title">Explore the latest<br>AI models</h1>
+    <p class="lp-sub">Image, video, and audio, all in one workflow.</p>
   </div>
 </section>
 
 <section class="models-index" id="models-index">
   <div class="wrap">
-    <div class="models-filters" id="models-filters" role="tablist" aria-label="Filter models"></div>
     <div class="models-grid" id="models-grid"></div>
-  </div>
-</section>
-
-<section class="final">
-  <div class="wrap">
-    <div class="final-box">
-      <h2>Ready to build a YouTube channel that pays?</h2>
-      <p>Generate your first video, from script to upload, and start stacking watch hours toward monetization.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary btn-lg btn-glow" href="/dashboard">
-          <span class="btn-ring" aria-hidden="true"></span>
-          <span class="btn-label">Generate a Video Now</span>
-        </a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -110,7 +92,7 @@
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountModelsPage } from '/lib/models-page.js?v=d1f55'
+import { mountModelsPage } from '/lib/models-page.js?v=d1f56'
 mountModelsPage()
 </script>
 </body>
