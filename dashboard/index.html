@@ -3646,7 +3646,7 @@ body.paywalled #studio-topbar,body.paywalled #app-banner,body.paywalled main{poi
   .brand{font-size:1.1rem}
 }
 </style>
-<link rel="stylesheet" href="/dashboard/studio-shell.css">
+<link rel="stylesheet" href="/dashboard/studio-shell.css?v=s4">
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
 <script>
@@ -4113,7 +4113,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="studio-ico-btn studio-hamburger" id="nav-hamburger" aria-label="Open menu" aria-controls="studio-sidebar" aria-expanded="false">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <button type="button" class="studio-ico-btn studio-collapse-btn" id="studio-collapse" aria-label="Collapse sidebar" aria-expanded="true">
+    <button type="button" class="studio-ico-btn studio-collapse-btn" id="studio-collapse-top" aria-label="Collapse sidebar" aria-expanded="true">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
     </button>
     <a href="/home" class="studio-top-logo" aria-label="Vidso home">
@@ -6429,7 +6429,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
-import { initStudioShell } from '/lib/app-studio-shell.js'
+import { initStudioShell } from '/lib/app-studio-shell.js?v=s3'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
 import {
   tourById,
@@ -6498,9 +6498,9 @@ function paywallDevBypass() {
 const PUBLIC_TOOL_PATHS = new Set([
   '/video-generation','/youtube-generation','/image-generation','/clipping','/ranking',
   '/captions','/voiceover','/reframe','/editor','/downloader','/commentary','/tools',
-  '/brand-kit','/templates','/tutorials'
+  '/brand-kit','/templates','/tutorials','/dashboard'
 ])
-const PRIVATE_TOOL_PATHS = new Set(['/dashboard','/files'])
+const PRIVATE_TOOL_PATHS = new Set(['/files'])
 const PREVIEW_ACTION_SEL = [
   '#fv-gen-script-btn','#fv-to-phase3-btn','#fv-to-phase4-btn','#fv-to-phase5-btn',
   '#fv-export-btn','#fv-export-short-btn','#img-btn','#tts-btn','#clip-url-btn',
@@ -8819,8 +8819,9 @@ function populateUser() {
     welcome.textContent = display ? `, ${display}` : ''
   }
   const first = ((currentUser.name || '').trim().split(/\s+/)[0]) || ''
+  const hello = first && !/^(preview|your|account)$/i.test(first) ? `, ${first}` : ''
   document.querySelectorAll('[data-studio-hello]').forEach((el) => {
-    el.textContent = first ? `, ${first}` : ''
+    el.textContent = hello
   })
   try { fvRenderDurationChips() } catch (_) {}
 }
@@ -8892,7 +8893,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if ((id === 'dashboard' || id === 'files') && isGuestPreview()) {
+  if (id === 'files' && isGuestPreview()) {
     openPreviewGate('auth')
     return
   }

@@ -19,10 +19,11 @@ const landingJs = readFileSync(new URL('../lib/landing-page.js', import.meta.url
 const menuJs = readFileSync(new URL('../lib/landing-tools-menu.js', import.meta.url), 'utf8')
 const dash = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
 
-test('public tools stay public and dashboard/files stay private', () => {
+test('public tools stay public and files stay private', () => {
   assert.equal(isPublicToolPath('/video-generation'), true)
   assert.equal(isPublicToolPath('/image-generation'), true)
-  assert.equal(isPrivateToolPath('/dashboard'), true)
+  assert.equal(isPublicToolPath('/dashboard'), true)
+  assert.equal(isPrivateToolPath('/dashboard'), false)
   assert.equal(isPrivateToolPath('/files'), true)
   assert.ok(PRIVATE_TOOL_PATHS.every((p) => !PUBLIC_TOOL_PATHS.includes(p)))
 })
