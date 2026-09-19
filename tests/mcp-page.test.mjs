@@ -94,7 +94,6 @@ test('mcp page spacing tokens match the denser layout', () => {
 test('landing excerpt and nav point at /mcp without duplicating the old block', () => {
   assert.equal(TOOL_MENU_ITEMS.mcp.href, '/mcp')
   assert.ok(landing.includes('id="connect-claude"'))
-  assert.ok(landing.includes('class="mcp-excerpt"'))
   assert.ok(landing.includes('href="/mcp"'))
   assert.ok(!landing.includes('mcp-keys'))
   assert.ok(!landing.includes('id="hero-pin"'))

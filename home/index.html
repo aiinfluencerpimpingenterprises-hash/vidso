@@ -1065,7 +1065,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f51">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f54">
 </head>
 <body class="lp-red">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -1089,30 +1089,22 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <img data-vidso-logo width="28" height="28" alt="Vidso" decoding="async">
           Vidso
         </a>
-        <div class="nav-links">
-          <a href="#why-vidso">Features</a>
-          <a href="#how">How it works</a>
-          <a href="/mcp">MCP</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#faq">FAQ</a>
-        </div>
+        <div class="nav-links"></div>
       </div>
       <div class="nav-cta">
-<a href="/login" class="ghost">Sign in</a>
-        <button class="btn btn-primary" onclick="location.href='/signup'">Sign up <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:-2px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <a href="/login" class="ghost">Sign in</a>
+        <a class="btn btn-primary" href="/signup">Sign up</a>
       </div>
-      <button class="nav-toggle" type="button" aria-label="Open menu" onclick="document.querySelector('header').classList.toggle('menu-open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navDrawer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </nav>
-    <div class="nav-drawer" id="navDrawer">
-      <a href="#why-vidso" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
-      <a href="#how" onclick="document.querySelector('header').classList.remove('menu-open')">How it works</a>
-      <a href="/mcp" onclick="document.querySelector('header').classList.remove('menu-open')">MCP</a>
-      <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing</a>
-      <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
-      <a href="/login" onclick="document.querySelector('header').classList.remove('menu-open')">Sign in</a>
-      <button class="btn btn-primary" onclick="location.href='/signup'">Get Started</button>
+  </div>
+  <div class="nav-drawer" id="navDrawer" hidden>
+    <div class="nav-drawer-body"></div>
+    <div class="nav-drawer-foot">
+      <a href="/login" class="ghost">Sign in</a>
+      <a class="btn btn-primary" href="/signup">Sign up</a>
     </div>
   </div>
 </header>
@@ -1189,7 +1181,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <!-- WHAT YOU CAN MAKE -->
 <section class="shorts" id="ideas">
-  <span id="formats" hidden></span>
+  <span id="formats"></span>
   <div class="wrap">
     <div class="s-head center shorts-head">
       <div class="eyebrow">Formats</div>
@@ -1869,21 +1861,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </script>
 <script>
 (function(){
-  var header=document.querySelector('header');
-  if(!header) return;
-  document.addEventListener('click',function(e){
-    if(!header.classList.contains('menu-open')) return;
-    if(e.target.closest('nav')||e.target.closest('.nav-drawer')) return;
-    header.classList.remove('menu-open');
-  });
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape') header.classList.remove('menu-open');
-  });
-})();
-</script>
-
-<script>
-(function(){
   var h=document.getElementById('hero-h1');
   if(!h) return;
   setTimeout(function(){ h.classList.add('is-ready'); }, 1200);
@@ -1892,7 +1869,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f51'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f52'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)

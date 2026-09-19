@@ -60,8 +60,8 @@ test('placeholders and featured tiles stay on landing R2', () => {
 
 test('hero modes and models nav are wired', () => {
   assert.deepEqual(HERO_PROMPT_MODES.map((m) => m.label), ['Long-form', 'Shorts', 'Thumbnail'])
-  assert.match(menuJs, /nav-models-btn/)
-  assert.match(menuJs, /MODELS_PROMO_COPY/)
+  assert.match(menuJs, /nav-\$\{item\.id\}-btn/)
+  assert.match(menuJs, /MODELS_NAV_PROMO/)
   assert.equal(MODELS_PROMO_COPY.browse, 'Browse all models')
   assert.equal(MODELS_PROMO_COPY.secondaryLabel, 'Open Thumbnail Generator')
   assert.ok(home.includes('Make any video'))
