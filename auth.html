@@ -207,7 +207,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <p class="auth-lead">Sign in to access your AI content tools.</p>
     <div class="auth-switch" id="auth-switch" hidden>
       <p>This browser is already signed in as <strong id="auth-switch-email">another account</strong>.</p>
-      <a class="btn btn-secondary" id="auth-switch-continue" href="/video-generation">Open the app</a>
+      <a class="btn btn-secondary" id="auth-switch-continue" href="/dashboard">Open the app</a>
       <p class="auth-switch-note">Sign in below to switch accounts. That replaces the session in this browser.</p>
     </div>
     <div class="modal-tabs">
@@ -345,7 +345,7 @@ import { api, setSession, clearSession, getToken, getRefreshToken, restoreSessio
 import { mountPricing } from '/lib/pricing-ui.js'
 import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, pixelIdentify, pixelClickIds } from '/lib/meta-pixel.js'
 
-const APP = '/video-generation'
+const APP = '/dashboard'
 let paywallCycle = 'annual'
 let currentUser = null
 let _planPoll = null

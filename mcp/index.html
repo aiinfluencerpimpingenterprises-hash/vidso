@@ -39,7 +39,7 @@
       <span class="is-desk" data-announce-desk>Seedream 5.0 Pro is now available in the Thumbnail Generator.</span>
       <span class="is-mob" data-announce-mob>Seedream 5.0 Pro now in Thumbnail Generator</span>
     </p>
-    <a class="lp-announce-cta" data-announce-cta href="/image-generation">Try it now ›</a>
+    <a class="lp-announce-cta" data-announce-cta href="/dashboard">Try it now ›</a>
     <button type="button" class="lp-announce-x" data-announce-close aria-label="Dismiss announcement">×</button>
   </div>
 </div>
@@ -393,7 +393,7 @@
       <div class="mcp-feat-copy">
         <h3>Long-form from chat</h3>
         <p>Ask for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for the captioned MP4.</p>
-        <a class="btn btn-primary" href="/video-generation">Try it now</a>
+        <a class="btn btn-primary" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="longform">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -416,7 +416,7 @@
       <div class="mcp-feat-copy">
         <h3>Shorts and clips</h3>
         <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> assemble ranked shorts, vertical crops, or commentary.</p>
-        <a class="btn btn-primary" href="/clipping">Try it now</a>
+        <a class="btn btn-primary" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="clips">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -434,7 +434,7 @@
       <div class="mcp-feat-copy">
         <h3>Thumbnails</h3>
         <p><code>thumbnail_generate</code> starts a YouTube thumbnail from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
-        <a class="btn btn-primary" href="/image-generation">Try it now</a>
+        <a class="btn btn-primary" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="thumbs">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -453,7 +453,7 @@
       <div class="mcp-feat-copy">
         <h3>Voiceover and captions</h3>
         <p><code>voiceover_generate</code> narrates a script with a Vidso voice. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
-        <a class="btn btn-primary" href="/voiceover">Try it now</a>
+        <a class="btn btn-primary" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="audio">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -734,9 +734,9 @@
       </div>
       <div class="fcol">
         <p class="fcol-h">Product</p>
-        <a href="/video-generation">Long Form Generator</a>
-        <a href="/image-generation">Thumbnail Generator</a>
-        <a href="/clipping">Clipping</a>
+        <a href="/dashboard">Long Form Generator</a>
+        <a href="/dashboard">Thumbnail Generator</a>
+        <a href="/dashboard">Clipping</a>
         <a href="/mcp">MCP</a>
         <a href="/home#how">Workflow</a>
         <a href="/home#why-vidso">Product</a>
@@ -747,7 +747,7 @@
         <p class="fcol-h">Account</p>
         <a href="/login">Log in</a>
         <a href="/signup">Sign up</a>
-        <a href="/overview">Dashboard</a>
+        <a href="/dashboard">Dashboard</a>
       </div>
       <div class="fcol">
         <p class="fcol-h">Legal</p>
@@ -767,7 +767,7 @@
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f52'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f55'
 mountMcpPage()
 </script>
 </body>

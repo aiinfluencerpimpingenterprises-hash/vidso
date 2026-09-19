@@ -38,16 +38,16 @@ test('mega menu uses real shipped routes and existing copy', () => {
   assert.ok(EXCLUDED_TOOLS.some((t) => t.name === 'Faceless Studio'))
 })
 
-test('landing points generate CTAs at the long-form tool', () => {
+test('landing points generate CTAs at the in-app home', () => {
   assert.match(landingJs, /mountLandingToolsMenu/)
   assert.match(menuJs, /nav-tools-btn/)
   assert.match(menuJs, /nav-tools-chevron/)
   assert.match(menuJs, /tools-mega-ico/)
-  assert.match(html, /href="\/video-generation"/)
+  assert.match(html, /href="\/dashboard"/)
   assert.match(html, /Long Form Generator/)
   assert.match(html, /Thumbnail Generator/)
   assert.match(html, /Clipping/)
-  assert.match(html, /hero-prompt[\s\S]{0,80}action="\/video-generation"/)
+  assert.match(html, /hero-prompt[\s\S]{0,80}action="\/dashboard"/)
 })
 
 test('dashboard boot allows guest preview on public tools', () => {

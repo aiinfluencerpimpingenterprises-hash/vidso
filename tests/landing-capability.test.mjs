@@ -36,7 +36,7 @@ test('roadmap sections stay off and gated ids exist in the markup', () => {
 test('workflow tiles and studio tools come from live routes', () => {
   assert.equal(WORKFLOW_TILES.length, 8)
   assert.ok(WORKFLOW_TILES.every((t) => t.href.startsWith('/')))
-  assert.ok(STUDIO_TOOLS.some((t) => t.id === 'videogen' && t.href === '/video-generation'))
+  assert.ok(STUDIO_TOOLS.some((t) => t.id === 'videogen' && t.href === '/dashboard'))
   assert.ok(STUDIO_TOOLS.some((t) => t.id === 'mcp' && t.href === '/mcp'))
   assert.ok(!STUDIO_TOOLS.some((t) => t.id === 'facelessstudio'))
 })

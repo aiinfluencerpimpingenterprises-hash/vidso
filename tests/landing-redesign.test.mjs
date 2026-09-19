@@ -8,7 +8,7 @@ const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8'
 test('hero video constant stays on R2', () => {
   assert.equal(HERO_VIDEO_SRC, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4')
   assert.equal(CREATE_HREF, '/signup')
-  assert.equal(GENERATE_HREF, '/video-generation')
+  assert.equal(GENERATE_HREF, '/dashboard')
   assert.equal(THUMBNAIL_DEMO_SRC, '')
 })
 
@@ -76,7 +76,7 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Browse all models'))
   assert.ok(html.includes('class="nav-left"'))
   assert.ok(html.includes('id="hero-prompt"') || html.includes('hero-prompt'))
-  assert.match(html, /action="\/video-generation"/)
+  assert.match(html, /action="\/dashboard"/)
   assert.ok(html.includes('Long Form Generator'))
   assert.ok(html.includes('Thumbnail Generator'))
   assert.ok(html.includes('Clipping'))
@@ -142,7 +142,7 @@ test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserv
 
 test('announcement config and long-form demo start stay in one place', () => {
   assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro_v2')
-  assert.equal(LANDING_ANNOUNCE.href, '/image-generation')
+  assert.equal(LANDING_ANNOUNCE.href, '/dashboard')
   assert.match(LANDING_ANNOUNCE.text, /Seedream 5.0 Pro/)
   assert.match(LANDING_ANNOUNCE.textMobile, /Thumbnail Generator/)
   assert.equal(LANDING_ANNOUNCE.cta, 'Try it now ›')

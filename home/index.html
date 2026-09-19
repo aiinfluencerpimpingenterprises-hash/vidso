@@ -11,7 +11,7 @@
   if (/access_token=/.test(h + s) || /(?:[?&#])(?:code|error)=/.test(h + s)) {
     location.replace('/login' + s + h)
   } else if (/(?:[?&])(?:billing=success|status=success)/.test(s)) {
-    location.replace('/video-generation' + s + h)
+    location.replace('/dashboard' + s + h)
   }
 })()
 </script>
@@ -1077,7 +1077,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <span class="is-desk" data-announce-desk>Seedream 5.0 Pro is now available in the Thumbnail Generator.</span>
       <span class="is-mob" data-announce-mob>Seedream 5.0 Pro now in Thumbnail Generator</span>
     </p>
-    <a class="lp-announce-cta" data-announce-cta href="/image-generation">Try it now ›</a>
+    <a class="lp-announce-cta" data-announce-cta href="/dashboard">Try it now ›</a>
     <button type="button" class="lp-announce-x" data-announce-close aria-label="Dismiss announcement">×</button>
   </div>
 </div>
@@ -1126,12 +1126,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         </div>
         <p class="sub">Long-form, Shorts, ads, UGC, thumbnails, voiceovers, and captions, all in one workspace.</p>
         <div class="hero-cta">
-          <a class="btn btn-primary btn-lg btn-glow" href="/video-generation">
+          <a class="btn btn-primary btn-lg btn-glow" href="/dashboard">
             <span class="btn-ring" aria-hidden="true"></span>
             <span class="btn-label">Generate a Video Now</span>
           </a>
         </div>
-        <form class="hero-prompt" id="hero-prompt" action="/video-generation" method="get">
+        <form class="hero-prompt" id="hero-prompt" action="/dashboard" method="get">
           <label class="sr-only" for="hero-prompt-input">Video idea</label>
           <div class="hero-prompt-field">
             <textarea id="hero-prompt-input" name="idea" rows="2" autocomplete="off"></textarea>
@@ -1211,7 +1211,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
       </button>
     </div>
-    <a class="prompt-box" id="prompt-box" href="/video-generation">
+    <a class="prompt-box" id="prompt-box" href="/dashboard">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
       <span class="typed-wrap"><span class="typed" id="prompt-typed"></span><span class="caret" aria-hidden="true"></span></span>
       <span class="prompt-send" aria-hidden="true">
@@ -1293,7 +1293,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <h2>Turn a topic into a finished video</h2>
         <p>Vidso writes a script, generates narration, pulls matching B-roll, syncs captions, and renders an MP4 you can preview and download.</p>
         <div class="feat-actions">
-          <a class="btn btn-primary" href="/video-generation">Open Long Form</a>
+          <a class="btn btn-primary" href="/dashboard">Open Long Form</a>
           <a class="btn" href="#how">How it works</a>
         </div>
       </div>
@@ -1311,8 +1311,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <h2>Clips and Shorts from a link or an idea</h2>
         <p>Paste a link and Vidso finds the best moments, then reframes them to 9:16. Or generate a Short from the same idea in Long Form.</p>
         <div class="feat-actions">
-          <a class="btn btn-primary" href="/clipping">Open Clipping</a>
-          <a class="btn" href="/video-generation?format=shorts">Generate a Short</a>
+          <a class="btn btn-primary" href="/dashboard">Open Clipping</a>
+          <a class="btn" href="/dashboard?format=shorts">Generate a Short</a>
         </div>
       </div>
     </div>
@@ -1327,7 +1327,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <h2>Generate thumbnails from a prompt</h2>
         <p>Describe a scene, a subject, or a style. Vidso generates stills you can download or recreate, then keep iterating in the same workspace.</p>
         <div class="feat-actions">
-          <a class="btn btn-primary" href="/image-generation">Open Thumbnails</a>
+          <a class="btn btn-primary" href="/dashboard">Open Thumbnails</a>
           <a class="btn" href="/models">See image models</a>
         </div>
       </div>
@@ -1404,7 +1404,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <h2>Faceless Studio</h2>
         <p>This separate studio UI is archived. Long Form is the live path for narrated videos.</p>
         <div class="feat-actions">
-          <a class="btn btn-primary" href="/video-generation">Open Long Form</a>
+          <a class="btn btn-primary" href="/dashboard">Open Long Form</a>
         </div>
       </div>
       <div class="feat-media is-blank" data-feat-media="faceless-studio"></div>
@@ -1540,7 +1540,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="comp-cta">
       <h3>One subscription. The full video workflow.</h3>
       <p>Stop bouncing between script tools, voice generators, stock libraries, caption tools, and editors. Build the video in Vidso.</p>
-      <a class="btn btn-primary btn-lg btn-glow" href="/video-generation"><span class="btn-ring" aria-hidden="true"></span><span class="btn-label">Generate Your First Video →</span></a>
+      <a class="btn btn-primary btn-lg btn-glow" href="/dashboard"><span class="btn-ring" aria-hidden="true"></span><span class="btn-label">Generate Your First Video →</span></a>
     </div>
   </div>
 </section>
@@ -1625,7 +1625,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <h2>Ready to make the next video?</h2>
       <p>Generate from a topic, or open a tool and start from a script, a link, or a still.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg btn-glow" href="/video-generation">
+        <a class="btn btn-primary btn-lg btn-glow" href="/dashboard">
           <span class="btn-ring" aria-hidden="true"></span>
           <span class="btn-label">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z"/></svg>
@@ -1653,9 +1653,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
       <div class="fcol">
         <p class="fcol-h">Product</p>
-        <a href="/video-generation">Long Form Generator</a>
-        <a href="/image-generation">Thumbnail Generator</a>
-        <a href="/clipping">Clipping</a>
+        <a href="/dashboard">Long Form Generator</a>
+        <a href="/dashboard">Thumbnail Generator</a>
+        <a href="/dashboard">Clipping</a>
         <a href="/mcp">MCP</a>
         <a href="#how">Workflow</a>
         <a href="#why-vidso">Product</a>
@@ -1666,7 +1666,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <p class="fcol-h">Account</p>
         <a href="/login">Log in</a>
         <a href="/signup">Sign up</a>
-        <a href="/overview">Dashboard</a>
+        <a href="/dashboard">Dashboard</a>
       </div>
       <div class="fcol">
         <p class="fcol-h">Legal</p>
@@ -1869,7 +1869,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1f52'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1f55'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)

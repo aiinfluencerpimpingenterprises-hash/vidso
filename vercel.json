@@ -235,22 +235,22 @@
     },
     {
       "source": "/overview",
-      "destination": "/video-generation",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
       "source": "/overview/",
-      "destination": "/video-generation",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
       "source": "/analytics",
-      "destination": "/video-generation",
+      "destination": "/dashboard",
       "permanent": false
     },
     {
       "source": "/analytics/",
-      "destination": "/video-generation",
+      "destination": "/dashboard",
       "permanent": false
     }
   ],
