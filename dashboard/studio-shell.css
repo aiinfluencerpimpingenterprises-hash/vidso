@@ -15,7 +15,7 @@ body.studio-shell{
   --studio-shadow:0 12px 32px rgba(0,0,0,.55);
   --studio-inset:inset 0 1px 0 rgba(255,255,255,.06);
   --studio-ease:160ms ease-out;
-  --studio-sidebar:248px;
+  --studio-sidebar:260px;
   --studio-sidebar-sm:64px;
   --studio-topbar:56px;
   --chrome-banner-h:40px;
@@ -64,83 +64,101 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 .studio-sidebar{
   flex:0 0 var(--studio-sidebar);width:var(--studio-sidebar);min-width:0;height:100%;
   overflow:hidden;display:flex;flex-direction:column;background:var(--studio-bg);
-  border-right:1px solid var(--studio-border);z-index:40
+  border-right:1px solid var(--studio-border);z-index:40;padding:10px 12px 16px
 }
-.studio-sidebar-top{display:flex;align-items:center;gap:6px;padding:12px 12px 8px;flex-shrink:0}
+.studio-brand-row{
+  display:flex;align-items:center;gap:8px;min-height:36px;margin:0 0 10px;flex-shrink:0
+}
+.studio-side-logo{
+  flex:1;min-width:0;display:flex;align-items:center;gap:8px;
+  color:#fff;text-decoration:none
+}
+.studio-side-logo img{width:22px;height:22px;flex-shrink:0;border-radius:6px}
+.studio-side-word{font-size:16px;font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+.studio-plan-badge{
+  height:18px;padding:0 7px;border-radius:999px;background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.7);font-size:11px;font-weight:600;line-height:18px;flex-shrink:0
+}
+.studio-sidebar .studio-collapse-btn{display:inline-flex;color:rgba(255,255,255,.7)}
 .studio-project{
-  flex:1;min-width:0;height:40px;padding:0 12px;border:none;border-radius:10px;
-  background:transparent;color:var(--studio-text);font:inherit;font-size:14px;font-weight:500;
-  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;
-  transition:background var(--studio-ease)
+  width:100%;min-width:0;height:40px;margin:0 0 10px;padding:0 10px 0 8px;border:none;border-radius:12px;
+  background:rgba(255,255,255,.04);color:var(--studio-text);font:inherit;font-size:14px;font-weight:500;
+  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;flex-shrink:0
 }
-.studio-project:hover{background:var(--studio-l1)}
+.studio-project:hover{background:rgba(255,255,255,.07)}
 .studio-project:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
 .studio-project-mark{
-  width:28px;height:28px;border-radius:8px;background:var(--studio-l1);border:1px solid var(--studio-border);
-  display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0
+  width:22px;height:22px;border-radius:50%;background:#dbe7ff;color:#1a2744;
+  display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0
 }
 .studio-project-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.studio-project-chev{width:12px;height:12px;opacity:.55;flex-shrink:0}
+.studio-project-chev{width:12px;height:12px;opacity:.45;flex-shrink:0;transform:rotate(-90deg)}
 .studio-project-chev svg{width:12px;height:12px;display:block}
 .studio-project-menu{
-  margin:0 12px 8px;padding:8px;border-radius:12px;border:1px solid var(--studio-border-2);
-  background:var(--studio-l2);box-shadow:var(--studio-shadow),var(--studio-inset)
+  margin:0 0 8px;padding:8px;border-radius:12px;border:1px solid var(--studio-border-2);
+  background:var(--studio-l2);box-shadow:var(--studio-shadow)
 }
 .studio-project-menu[hidden]{display:none!important}
 .studio-project-menu button{
-  width:100%;text-align:left;border:none;background:rgba(254,12,48,.1);color:var(--studio-text);
-  border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;font-weight:600
+  width:100%;text-align:left;border:none;background:transparent;color:var(--studio-text);
+  border-radius:8px;padding:8px 10px;font:inherit;font-size:14px
 }
+.studio-project-menu button:hover{background:rgba(255,255,255,.06)}
 .studio-project-menu p{margin:8px 4px 2px;font-size:13px;color:var(--studio-muted)}
-.studio-sidebar-nav{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:4px 12px 16px;scrollbar-width:thin}
-.studio-nav-sec{min-width:0;margin:0 0 6px}
+.studio-sidebar-nav{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0;scrollbar-width:thin}
+.studio-nav-sec{min-width:0;margin:0 0 4px}
 .studio-nav-sec-body{min-width:0}
 .studio-nav-sec.is-shut .studio-nav-sec-body{display:none}
 .studio-nav-label{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  display:flex;align-items:center;justify-content:flex-start;gap:6px;width:100%;
   margin:14px 0 8px;padding:0 4px;border:none;background:transparent;cursor:pointer;
   font:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--studio-label)
+  color:rgba(255,255,255,.38)
 }
-.studio-nav-label .studio-nav-chev{width:10px;height:10px;opacity:.55;transition:transform var(--studio-ease)}
-.studio-nav-label .studio-nav-chev svg{width:10px;height:10px;display:block}
+.studio-nav-label .studio-nav-chev{width:8px;height:8px;opacity:.7;transition:transform var(--studio-ease)}
+.studio-nav-label .studio-nav-chev svg{width:8px;height:8px;display:block}
 .studio-nav-sec.is-shut .studio-nav-label .studio-nav-chev{transform:rotate(-90deg)}
 .studio-nav-label:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
 .studio-nav-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px}
 .studio-nav-item,.studio-nav-chip{
-  display:flex;align-items:center;gap:10px;width:100%;min-height:40px;height:40px;padding:0 12px;
-  border:1px solid transparent;border-radius:10px;background:transparent;color:var(--studio-muted);
+  display:flex;align-items:center;gap:10px;width:100%;min-height:36px;height:36px;padding:0 10px;
+  border:1px solid transparent;border-radius:12px;background:transparent;color:rgba(255,255,255,.78);
   font:inherit;font-size:14px;font-weight:500;text-align:left;cursor:pointer;
   position:relative;text-decoration:none;box-sizing:border-box;
-  transition:background var(--studio-ease),color var(--studio-ease),transform var(--studio-ease),border-color var(--studio-ease)
+  transition:background var(--studio-ease),color var(--studio-ease),border-color var(--studio-ease)
 }
-.studio-nav-item:hover,.studio-nav-chip:hover{
-  background:var(--studio-l1);color:var(--studio-text);transform:translateY(-2px);border-color:var(--studio-hover-border)
-}
+.studio-nav-item:hover,.studio-nav-chip:hover{background:rgba(255,255,255,.05);color:#fff}
 .studio-nav-item:focus-visible,.studio-nav-chip:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
-.studio-nav-item.active,.studio-nav-chip.active{
-  color:#fff;background:rgba(254,12,48,.12)
+.studio-nav-item.active:not(.is-home),.studio-nav-chip.active{color:#fff;background:rgba(255,255,255,.06)}
+.studio-nav-item.is-home{
+  height:42px;min-height:42px;margin:0 0 8px;border-radius:14px;color:#fff;
+  background:transparent;border-color:rgba(255,255,255,.08)
 }
-.studio-nav-item.active::before{
-  content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;
-  background:var(--studio-accent)
+.studio-nav-item.is-home.active{
+  border-color:#FE0C30;box-shadow:0 0 0 1px rgba(254,12,48,.35)
 }
-.studio-nav-item.is-create{height:56px;min-height:56px;background:var(--studio-l1);margin:0 0 6px}
-.studio-nav-item.is-create .studio-nav-ico{
-  width:36px;height:36px;border-radius:10px;background:var(--studio-l2);display:inline-flex;align-items:center;justify-content:center
+.studio-nav-item.is-create{
+  height:48px;min-height:48px;margin:0 0 8px;padding:0 14px;border-radius:14px;
+  background:#1c1c1f;color:#fff
 }
-.studio-nav-item.is-create .studio-nav-ico svg{width:18px;height:18px}
+.studio-nav-item.is-create:hover{background:#222226}
+.studio-nav-chip{
+  height:40px;min-height:40px;background:#17171a;padding:0 10px
+}
+.studio-nav-chip:hover{background:#1c1c1f}
 .studio-nav-ico{
-  width:28px;height:28px;border-radius:8px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.04)
+  width:18px;height:18px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;color:inherit
 }
-.studio-nav-ico svg{width:16px;height:16px;display:block}
-.studio-nav-chip .studio-nav-ico{width:22px;height:22px;background:transparent}
+.studio-nav-ico svg{width:18px;height:18px;display:block}
+.studio-nav-chip .studio-nav-ico{width:16px;height:16px}
+.studio-nav-chip .studio-nav-ico svg{width:16px;height:16px}
 .studio-nav-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.studio-nav-item.is-all .studio-nav-chev{width:10px;height:10px;opacity:.45;margin-left:auto;transform:rotate(-90deg)}
+.studio-nav-item.is-all .studio-nav-chev svg{width:10px;height:10px}
 .studio-nav-new{
   display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:999px;
-  font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-  color:#fff;background:var(--studio-accent);flex-shrink:0;margin-left:auto
+  font-size:10px;font-weight:700;letter-spacing:.02em;color:#08140c;background:#c8f542;flex-shrink:0
 }
 .studio-nav-empty{margin:4px 10px;font-size:13px;color:var(--studio-faint)}
 .studio-pinned-rail{flex-shrink:0;padding:8px 12px 16px;border-top:1px solid var(--studio-border)}
@@ -156,17 +174,24 @@ body.studio-shell.studio-collapsed .studio-nav-label,
 body.studio-shell.studio-collapsed .studio-nav-new,
 body.studio-shell.studio-collapsed .studio-project-txt,
 body.studio-shell.studio-collapsed .studio-project-chev,
+body.studio-shell.studio-collapsed .studio-side-word,
+body.studio-shell.studio-collapsed .studio-plan-badge,
+body.studio-shell.studio-collapsed .studio-brand-row .studio-collapse-btn,
+body.studio-shell.studio-collapsed .studio-nav-item.is-all .studio-nav-chev,
 body.studio-shell.studio-collapsed .studio-nav-empty{display:none}
 body.studio-shell.studio-collapsed .studio-nav-item,
 body.studio-shell.studio-collapsed .studio-nav-chip{
   justify-content:center;padding:0;width:40px;height:40px;margin:0 auto 6px
 }
-body.studio-shell.studio-collapsed .studio-nav-item.is-create{height:40px;min-height:40px}
+body.studio-shell.studio-collapsed .studio-nav-item.is-create,
+body.studio-shell.studio-collapsed .studio-nav-item.is-home{height:40px;min-height:40px}
 body.studio-shell.studio-collapsed .studio-nav-tools{grid-template-columns:1fr;justify-items:center}
-body.studio-shell.studio-collapsed .studio-nav-item.active{box-shadow:inset 0 0 0 1px rgba(254,12,48,.35)}
-body.studio-shell.studio-collapsed .studio-nav-item.active::before{display:none}
-body.studio-shell.studio-collapsed .studio-sidebar-top{justify-content:center;padding:10px 6px}
-body.studio-shell.studio-collapsed .studio-project{justify-content:center;padding:0;width:40px}
+body.studio-shell.studio-collapsed .studio-nav-item.is-home.active{box-shadow:0 0 0 1px #FE0C30}
+body.studio-shell.studio-collapsed .studio-brand-row,
+body.studio-shell.studio-collapsed .studio-project,
+body.studio-shell.studio-collapsed .studio-project-menu{display:none}
+body.studio-shell:not(.studio-collapsed) .studio-topbar .studio-collapse-btn,
+body.studio-shell:not(.studio-collapsed) .studio-workspace-pop{display:none!important}
 
 .studio-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35;border:none;padding:0;margin:0}
 
@@ -188,7 +213,6 @@ body.studio-shell.studio-collapsed .studio-project{justify-content:center;paddin
 }
 .studio-ico-btn:hover{background:var(--studio-l1)}
 .studio-ico-btn:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
-.studio-sidebar .studio-collapse-btn{display:none}
 .studio-collapse-btn svg{width:18px;height:18px;display:block}
 .studio-crumb{display:none!important}
 .studio-help-btn{
@@ -627,7 +651,7 @@ body.studio-shell .files-tile{
 @media (max-width:1023px){
   body.studio-shell .studio-sidebar{
     position:fixed;top:0;bottom:0;left:0;z-index:45;
-    width:min(248px,86vw);flex:0 0 min(248px,86vw);
+    width:min(260px,86vw);flex:0 0 min(260px,86vw);
     transform:translateX(-105%);transition:transform 180ms ease-out
   }
   body.studio-shell.nav-open .studio-sidebar{transform:translateX(0)}
