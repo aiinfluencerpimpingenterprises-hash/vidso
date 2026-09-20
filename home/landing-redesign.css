@@ -102,9 +102,11 @@ html,.lp-red{overflow-x:visible}
   background:#0a0a0b;backdrop-filter:none;overflow:visible;padding:0;
   border-bottom:1px solid rgba(255,255,255,.08)
 }
+body.is-models-page .lp-sitehead{
+  background:#0a0a0b
+}
 body.is-models-page .lp-sitehead header{
-  background:linear-gradient(180deg,rgba(10,10,11,.78) 0%,rgba(10,10,11,.18) 100%);
-  border-bottom-color:transparent
+  background:#0a0a0b
 }
 .lp-red .lp-sitehead header > .wrap{max-width:none;width:100%;padding-left:32px;padding-right:32px}
 .lp-red .lp-sitehead nav{
@@ -1421,7 +1423,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .models-hero .wrap{position:relative;z-index:1;width:100%}
 .models-hero-bg{
   position:absolute;top:calc(-1 * var(--chrome-h));left:0;right:0;bottom:0;
-  background:#0B0B0C;pointer-events:none
+  z-index:0;background:#0B0B0C;pointer-events:none
 }
 .models-hero-bg img,
 .models-hero-bg video{
