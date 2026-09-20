@@ -71,7 +71,7 @@ test('browse catalog lists OpenArt models plus Vidso extras with paraphrased blu
 test('placeholders and featured tiles stay on landing R2', () => {
   assert.equal(MODELS_HREF, '/models')
   assert.match(MODELS_PROMO, /\/landing\/models-promo\.jpg$/)
-  assert.match(MODELS_HERO, /\/landing\/models-hero\.jpg$/)
+  assert.match(MODELS_HERO, /c6d278eb-f6c7-4ae6-8d46-4e1bb406261a\.png$/)
   assert.match(modelTileSrc('veo-3.1'), /model-tile-veo-3-1\.jpg$/)
   assert.match(modelCardSrc('seedream-4.5'), /model-card-seedream-4-5\.jpg$/)
   assert.match(modelCardClipSrc('gemini-omni-flash'), /geminiomniflash\.mp4$/)
