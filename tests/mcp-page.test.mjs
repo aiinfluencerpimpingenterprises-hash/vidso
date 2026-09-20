@@ -32,7 +32,7 @@ test('mcp marketing page is public, indexable, and has every client tab plus CLI
   assert.ok(html.includes('https://www.vidso.pro/mcp'))
   assert.ok(html.includes('https://claude.ai/settings/connectors'))
   assert.ok(html.includes('aria-selected'))
-  assert.ok(html.includes('Steps vary slightly by app version'))
+  assert.ok(html.includes('If you are using Claude Code or Codex, use the CLI'))
 })
 
 test('mcp page only claims real tools', () => {
@@ -69,7 +69,13 @@ test('placeholder mappings stay honest', () => {
     'agent-logo-other.png',
   ])
   assert.ok(mcpAgentLogo('agent-logo-claude.png').endsWith('/landing/agent-logo-claude.png'))
-  assert.ok(html.includes('agent-logo-claude.png'))
+  assert.ok(html.includes('claude-ai-icon.webp'))
+  assert.ok(html.includes('openai-icon.svg'))
+  assert.ok(html.includes('cursor-ai-code-icon.svg'))
+  assert.ok(html.includes('kimi-ai-icon.svg'))
+  assert.ok(html.includes('vidso-logo.png'))
+  assert.ok((html.match(/<span class="n">1<\/span>/g) || []).length >= 5)
+  assert.ok(html.includes('class="mcp-steps"'))
   assert.ok(html.includes('data-mcp-mock="longform"'))
   assert.ok(html.includes('mcp-feature-longform-01'))
   assert.ok(html.includes('mcp-shorts-01'))
