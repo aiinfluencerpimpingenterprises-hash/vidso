@@ -109,6 +109,8 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.equal(CATALOG_CLIP_FILES['veo-3.1'], 'veo3.mp4')
   assert.equal(CATALOG_CLIP_FILES['hailuo-02'], 'hailuo.mp4')
   assert.equal(CATALOG_CLIP_FILES['pixverse'], 'pixverse.mp4')
+  assert.equal(CATALOG_CLIP_FILES['elevenlabs'], 'elevenlabs.mp4')
+  assert.match(modelCardClipSrc('elevenlabs'), /elevenlabs\.mp4$/)
   assert.equal(CATALOG_CLIP_LOOP_SECONDS['seedream-5-pro'], 5)
   assert.equal(catalogClipLoopSeconds('seedream-5-pro'), 5)
   assert.equal(catalogClipLoopSeconds('gemini-omni-flash'), 0)
