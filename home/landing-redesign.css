@@ -1041,6 +1041,10 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   display:block;width:100%;border:2px solid #FE0C30;box-shadow:0 0 0 1px rgba(254,12,48,.2);
   background:#111113
 }
+.mcp-ask-media .mcp-blank.is-v{
+  width:min(220px,46%);margin:4px auto 0
+}
+.mcp-ask-media:has(.mcp-blank.is-v) .mcp-mock{min-height:560px}
 .mcp-ask-media .mcp-blank[hidden]{display:block}
 
 .mcp-models-grid{

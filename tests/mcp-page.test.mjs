@@ -162,13 +162,18 @@ test('placeholder mappings stay honest', () => {
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.file), [
     'mcplongformchatplaceholder',
     '01-thumbnail-generation-airport-secrets',
-    'mcp-chat-clips-01',
+    'Secrets Airlines Don’t Want You To Know!',
     '02-narrator-voiceover-output',
     '03-recent-files-render-status',
     '04-plan-quota-plus-yearly',
   ])
   assert.ok(html.includes('01-thumbnail-generation-airport-secrets'))
   assert.ok(html.includes('04-plan-quota-plus-yearly'))
+  assert.ok(html.includes('data-mcp-ask-ratio="9:16"'))
+  assert.ok(html.includes('Secrets Airlines Don’t Want You To Know!'))
+  assert.ok(page.includes("data-mcp-ask-ratio") && page.includes("is-v"))
+  assert.ok(mocks.includes('encodeURIComponent(withExt)'))
+  assert.ok(css.includes('.mcp-ask-media .mcp-blank.is-v'))
 })
 
 test('cli command constant matches the tab copy', () => {
