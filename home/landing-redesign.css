@@ -687,7 +687,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   background:linear-gradient(90deg,#fff 8%,#d8d8d8 58%,#9a9a9a 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent
 }
-.mcp-sub{margin:0 auto 40px;font-size:clamp(16px,2vw,22px);color:rgba(245,245,244,.72);max-width:28em}
+.mcp-sub{margin:0 auto 22px;font-size:clamp(16px,2vw,22px);color:rgba(245,245,244,.72);max-width:28em}
 .mcp-keys{
   position:relative;display:flex;align-items:flex-end;justify-content:center;
   width:min(960px,100%);height:300px;margin:0 auto 24px;padding:0 8px 36px;
@@ -892,7 +892,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   position:relative;width:100%;margin-top:4px;padding:14px 44px 14px 14px;
   border-radius:14px;background:#0a0a0c;border:1px solid rgba(255,255,255,.1)
 }
-.mcp-prompt pre{margin:0;white-space:pre-wrap;color:#d4f07a;font:600 12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+.mcp-prompt pre{margin:0;white-space:pre-wrap;color:#FE0C30;font:600 12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
 .mcp-prompt .mcp-copy{position:absolute;top:10px;right:10px}
 @media(max-width:900px){
   .mcp-title{white-space:normal;text-wrap:balance}
@@ -929,11 +929,8 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .mcp-chip.is-logo{padding:8px;min-width:36px;justify-content:center}
 .mcp-chip.is-ink img,.mcp-client.is-ink img{filter:none}
 .mcp-client.is-mark img{filter:brightness(0) invert(1)}
-.mcp-client.is-chatgpt .mcp-client-logo{
-  background:transparent;border-color:transparent
-}
 .mcp-client.is-chatgpt svg{
-  width:28px;height:28px;display:block;fill:#fff;color:#fff
+  width:20px;height:20px;display:block;fill:#fff;color:#fff
 }
 .mcp-client.is-chatgpt svg path{fill:#fff}
 .mcp-excerpt .mcp-urlbar{margin-bottom:16px}
@@ -1056,10 +1053,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   position:relative;border-radius:28px;padding:36px 24px;overflow:hidden;
   background:#121214;border:1px solid var(--line)
 }
-.mcp-clients-wash{
-  position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 70% 80% at 50% 0%,rgba(254,12,48,.22),transparent 70%)
-}
+.mcp-clients-wash{display:none}
 .mcp-clients-card::before{
   content:'';position:absolute;inset:0;pointer-events:none;opacity:.04;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
