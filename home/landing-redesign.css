@@ -1032,7 +1032,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .mcp-ask-title{margin:0 auto 12px;font-size:clamp(28px,4vw,52px);letter-spacing:-.04em;max-width:18em;color:#fff}
 .mcp-ask .two-line .l1,.mcp-ask .two-line .l2{color:#fff}
 .mcp-ask-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:36px;align-items:center;text-align:left}
-.mcp-ask-list{display:flex;flex-direction:column;gap:6px}
+.mcp-ask-list{display:flex;flex-direction:column;gap:6px;position:relative;z-index:2}
 .mcp-ask-item{
   display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px;align-items:start;
   border-radius:18px;padding:8px 6px;color:rgba(245,245,244,.42);border:1px solid transparent;
@@ -1062,7 +1062,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .mcp-ask-prompt .mcp-copy{position:absolute;top:8px;right:8px;background:transparent;color:rgba(245,245,244,.7);padding:8px}
 .mcp-ask-prompt .mcp-copy [data-mcp-copy-label]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 .mcp-ask-note{margin:0;color:rgba(245,245,244,.62);font-size:14px;line-height:1.55}
-.mcp-ask-media{position:relative;min-height:0}
+.mcp-ask-media{position:relative;z-index:0;min-height:0;overflow:hidden}
 .mcp-ask-media .mcp-mock{
   min-height:420px;background:#161618;border:1px solid rgba(255,255,255,.08);border-radius:22px
 }

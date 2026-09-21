@@ -11,6 +11,7 @@ const landing = readFileSync(new URL('../home/index.html', import.meta.url), 'ut
 const vercel = readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
 const mocks = readFileSync(new URL('../lib/mcp-mocks.js', import.meta.url), 'utf8')
+const page = readFileSync(new URL('../lib/mcp-page.js', import.meta.url), 'utf8')
 const names = new Set([...mcpTools(), ...vidsoMcpTools()].map((t) => t.name))
 
 test('mcp marketing page is public, indexable, and has every client tab plus CLI', () => {
@@ -146,6 +147,12 @@ test('placeholder mappings stay honest', () => {
   assert.ok(mocks.includes('data-mcp-hover-audio'))
   assert.ok(mocks.includes('data-mcp-loop-seconds'))
   assert.ok(mocks.includes('bindHoverAudio'))
+  assert.ok(mocks.includes('unbindHoverAudio'))
+  assert.ok(mocks.includes('stopSlotVideo'))
+  assert.ok(mocks.includes("video.addEventListener('pointerenter'"))
+  assert.ok(page.includes('muteAskPreview'))
+  assert.ok(page.includes("file === 'mcplongformchatplaceholder'"))
+  assert.ok(css.includes('.mcp-ask-list{display:flex;flex-direction:column;gap:6px;position:relative;z-index:2}'))
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.item), ['longform', 'thumbs', 'clips', 'voice', 'files', 'account'])
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.file), [
     'mcplongformchatplaceholder',
