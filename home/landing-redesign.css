@@ -1394,22 +1394,8 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 
 .lp-red .lp-sitehead .models-mega-inner{padding:24px 32px 22px}
 .lp-red .lp-sitehead .models-mega-grid{
-  display:grid;grid-template-columns:220px 1fr 1fr 1fr .75fr;gap:22px 24px;align-items:start
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;align-items:start
 }
-.lp-red .lp-sitehead .models-mega-promo{
-  background:#141416;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:12px;overflow:hidden
-}
-.lp-red .lp-sitehead .models-mega-shot{
-  position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
-  background:linear-gradient(160deg,#2c1c1e,#141416)
-}
-.lp-red .lp-sitehead .models-mega-shot img{width:100%;height:100%;object-fit:cover;display:block}
-.lp-red .lp-sitehead .models-mega-cap{margin:12px 4px 10px;color:#fff;font-size:14px;font-weight:650;line-height:1.35}
-.lp-red .lp-sitehead .models-mega-browse{width:100%;min-height:40px;border-radius:999px;justify-content:center}
-.lp-red .lp-sitehead .models-mega-more{
-  display:block;margin:10px 4px 4px;color:rgba(245,245,244,.64);font-size:13px;font-weight:600
-}
-.lp-red .lp-sitehead .models-mega-more:hover{color:#FE0C30}
 .models-mega-new{
   display:inline-flex;align-items:center;margin-left:6px;padding:1px 6px;border-radius:999px;
   border:1px solid rgba(254,12,48,.5);color:#FE0C30;font-size:9px;font-weight:800;letter-spacing:.08em
@@ -1417,9 +1403,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .lp-red .lp-sitehead .tools-acc-more{
   display:block;padding:12px 0;color:rgba(245,245,244,.64);font-weight:600
 }
-.lp-red .lp-sitehead .features-mega-grid{
-  display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:start
-}
+.lp-red .lp-sitehead .features-mega-inner{padding:24px 32px 22px}
 .lp-red .lp-sitehead .features-mega-list{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 20px
 }
@@ -1427,8 +1411,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px
 }
 @media(max-width:1100px){
-  .lp-red .lp-sitehead .models-mega-grid{grid-template-columns:200px 1fr 1fr}
-  .lp-red .lp-sitehead .features-mega-grid{grid-template-columns:200px 1fr}
+  .lp-red .lp-sitehead .models-mega-grid{grid-template-columns:1fr 1fr}
   .lp-red .lp-sitehead .features-mega-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
@@ -1533,8 +1516,7 @@ body.is-models-page .models-hero .lp-sub{
 }
 .model-card.is-target .model-card-shot{outline:2px solid #FE0C30}
 .model-card.is-blank .model-card-shot.is-blank{background:#17171a}
-.top-models-shot.is-blank::after,
-.models-mega-shot.is-blank::after{
+.top-models-shot.is-blank::after{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(115deg,transparent 18%,rgba(255,255,255,.04) 48%,transparent 72%);
   background-size:220% 220%;animation:lp-blank-shimmer 6s linear infinite
@@ -1611,7 +1593,7 @@ body.is-models-page .models-hero .lp-sub{
 }
 
 @media (prefers-reduced-motion:reduce){
-  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.demo-cursor,.demo-cursor::before,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank.is-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.models-mega-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
+  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.demo-cursor,.demo-cursor::before,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank.is-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
   .mcp-client-pane,.mcp-ask-item,.mcp-ask-body,.mcp-model-tile{transition:none!important}
   .mcp-model-tile,.mcp-models.is-in .mcp-model-tile,.mcp-model-tile:hover,.mcp-models.is-in .mcp-model-tile:hover{opacity:1!important;transform:none!important}
   .mcp-caret,.mcp-mock-dots i,.mcp-wave i{animation:none!important}
