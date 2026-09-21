@@ -12,10 +12,12 @@ import {
   MODELS_PROMO_COPY,
   MODEL_GROUPS,
   CATALOG_CLIP_FILES,
+  CATALOG_CLIP_LOOP_SECONDS,
   CATALOG_MODELS,
   MCP_LATEST_MODEL_IDS,
   MODELS_HERO_VIDEO,
   VIDSO_MODELS,
+  catalogClipLoopSeconds,
   featuredModels,
   mcpLatestModels,
   modelCardClipSrc,
@@ -29,6 +31,7 @@ import { footerInnerHtml } from '../lib/landing-footer.js'
 
 const home = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 const modelsPage = readFileSync(new URL('../models/index.html', import.meta.url), 'utf8')
+const modelsPageJs = readFileSync(new URL('../lib/models-page.js', import.meta.url), 'utf8')
 const menuJs = readFileSync(new URL('../lib/landing-tools-menu.js', import.meta.url), 'utf8')
 const vercel = readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')
 const preview = readFileSync(new URL('../scripts/local-preview.mjs', import.meta.url), 'utf8')
@@ -106,6 +109,11 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.equal(CATALOG_CLIP_FILES['veo-3.1'], 'veo3.mp4')
   assert.equal(CATALOG_CLIP_FILES['hailuo-02'], 'hailuo.mp4')
   assert.equal(CATALOG_CLIP_FILES['pixverse'], 'pixverse.mp4')
+  assert.equal(CATALOG_CLIP_LOOP_SECONDS['seedream-5-pro'], 5)
+  assert.equal(catalogClipLoopSeconds('seedream-5-pro'), 5)
+  assert.equal(catalogClipLoopSeconds('gemini-omni-flash'), 0)
+  assert.ok(modelsPageJs.includes('catalogClipLoopSeconds'))
+  assert.ok(modelsPageJs.includes('bindCatalogClipLoop'))
   assert.equal(modelHref('kling-3-pro'), '/models#kling-3-pro')
   assert.equal(modelSlug('veo-3.1'), 'veo-3-1')
   const files = placeholderTable().map((p) => p.file)
