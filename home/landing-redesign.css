@@ -22,9 +22,9 @@
 }
 html,.lp-red{overflow-x:visible}
 @media(max-width:900px){html,.lp-red{overflow-x:hidden}}
-.hero-lp,.demo-hero,.ideas,.shorts,.showcase,.workflow-tiles,.top-models,.models-hero,.models-index,.lp-feat,.mcp-hero,.mcp-excerpt,.mcp-setup,.mcp-ask,.mcp-models,.mcp-clients,.formats-float,.why-stack,.faq,.final,.lp-int,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,.yt-compact,.ugc-row,.studio-tools{background:var(--bg)}
+.hero-lp,.demo-hero,.ideas,.shorts,.showcase,.workflow-tiles,.top-models,.models-hero,.models-index,.lp-feat,.mcp-hero,.mcp-excerpt,.mcp-setup,.mcp-ask,.mcp-models,.formats-float,.why-stack,.faq,.final,.lp-int,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,.yt-compact,.ugc-row,.studio-tools{background:var(--bg)}
 .lp-red .wrap{position:relative;z-index:1;max-width:var(--wrap);margin-left:auto;margin-right:auto;padding-left:32px;padding-right:32px}
-#why-vidso,#how,#connect-claude,#pricing,#faq,#ideas,#formats,#setup,#just-ask,#mcp-models,#clients,#top-models,#models-hero,#models-index{scroll-margin-top:var(--anchor-offset)}
+#why-vidso,#how,#connect-claude,#pricing,#faq,#ideas,#formats,#setup,#just-ask,#mcp-models,#top-models,#models-hero,#models-index{scroll-margin-top:var(--anchor-offset)}
 #formats{display:block;height:0;overflow:hidden}
 
 .lp-red h1,.lp-red h2,.lp-red h3{text-wrap:balance}
@@ -261,7 +261,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .lp-red .lp-sitehead .nav-tools-chevron,
   .lp-red .lp-sitehead .tools-acc-btn .nav-tools-chevron{transition:none}
 }
-.ideas,.shorts,.showcase,.workflow-tiles,.top-models,.models-hero,.models-index,.lp-feat,.mcp-hero,.mcp-excerpt,.mcp-setup,.mcp-ask,.mcp-models,.mcp-clients,.formats-float,.why-stack,.faq,.final,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,.yt-compact,.ugc-row,.studio-tools,footer{isolation:isolate}
+.ideas,.shorts,.showcase,.workflow-tiles,.top-models,.models-hero,.models-index,.lp-feat,.mcp-hero,.mcp-excerpt,.mcp-setup,.mcp-ask,.mcp-models,.formats-float,.why-stack,.faq,.final,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,.yt-compact,.ugc-row,.studio-tools,footer{isolation:isolate}
 .lp-red a:focus-visible,.lp-red button:focus-visible,.lp-red [tabindex]:focus-visible,.lp-red input:focus-visible{
   outline:2px solid var(--a1);outline-offset:3px
 }
@@ -924,12 +924,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .mcp-chip img{width:16px;height:16px;object-fit:contain;display:block}
 .mcp-chip.is-logo{padding:8px;min-width:36px;justify-content:center}
-.mcp-chip.is-ink img,.mcp-client.is-ink img{filter:none}
-.mcp-client.is-mark img{filter:brightness(0) invert(1)}
-.mcp-client.is-chatgpt svg{
-  width:20px;height:20px;display:block;fill:#fff;color:#fff
-}
-.mcp-client.is-chatgpt svg path{fill:#fff}
+.mcp-chip.is-ink img{filter:none}
 .mcp-excerpt .mcp-urlbar{margin-bottom:16px}
 .mcp-more{
   display:inline-flex;align-items:center;gap:6px;color:#fff;font-size:14px;font-weight:650
@@ -942,7 +937,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .is-mcp-page .mcp-title{font-size:clamp(56px,7vw,108px)}
 .is-mcp-page .faq,.is-mcp-page .final{padding:var(--sec-y) 0}
 
-.mcp-ask,.mcp-models,.mcp-clients{padding:var(--sec-y) 0;text-align:center}
+.mcp-ask,.mcp-models{padding:var(--sec-y) 0;text-align:center}
 .mcp-ask .lp-sub{margin:0 auto 28px;max-width:42em}
 .mcp-models .two-line{margin:0 auto 40px}
 .mcp-models .two-line .l1,.mcp-models .two-line .l2{color:#fff}
@@ -1075,22 +1070,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .mcp-model-pill svg{width:14px;height:14px;flex:0 0 14px}
 
-.mcp-clients-card{
-  position:relative;border-radius:28px;padding:36px 24px;overflow:hidden;
-  background:#121214;border:1px solid var(--line)
-}
-.mcp-clients-wash{display:none}
-.mcp-clients-card::before{
-  content:'';position:absolute;inset:0;pointer-events:none;opacity:.04;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
-}
-.mcp-clients-k{position:relative;margin:0 0 16px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,245,244,.62)}
-.mcp-clients-row{position:relative;display:flex;justify-content:center;align-items:center;gap:16px 28px;flex-wrap:wrap}
-.mcp-client{display:inline-flex;align-items:center;gap:10px;font-weight:750;color:#fff}
-.mcp-client-logo{
-  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#0e0e10;border:1px solid var(--line)
-}
-.mcp-client-logo img,.mcp-client-logo svg{width:20px;height:20px;object-fit:contain;color:#fff}
 .mcp-final{position:relative;overflow:hidden}
 .mcp-final-wash{
   position:absolute;left:0;right:0;top:0;height:55%;pointer-events:none;
@@ -1098,14 +1077,11 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 @media(max-width:860px){
   .mcp-ask-grid{grid-template-columns:1fr}
-  .mcp-clients-row{flex-wrap:wrap;justify-content:center;row-gap:18px}
 }
 @media(max-width:1024px){
   .mcp-model-tile{width:calc((100% - 36px) / 4)}
 }
 @media(max-width:520px){
-  .mcp-clients-row{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:4px}
-  .mcp-client{flex:0 0 auto}
   .mcp-model-tile{width:calc((100% - 12px) / 2)}
 }
 
@@ -1364,7 +1340,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 
 @media (max-width:760px){
   .lp-red{--sec-y:var(--sec-y-m)}
-  .ideas,.shorts,.showcase,.workflow-tiles,.lp-feat,.mcp-hero,.mcp-setup,.mcp-ask,.mcp-models,.mcp-clients,.formats-float,.why-stack,.faq,.final,.format-econ,.pricing,.results{
+  .ideas,.shorts,.showcase,.workflow-tiles,.lp-feat,.mcp-hero,.mcp-setup,.mcp-ask,.mcp-models,.formats-float,.why-stack,.faq,.final,.format-econ,.pricing,.results{
     padding-top:var(--sec-y-m);padding-bottom:var(--sec-y-m)
   }
   .is-mcp-page .mcp-hero{padding:calc(var(--chrome-h) + 16px) 0 0}
