@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f91">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f92">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -525,7 +525,6 @@ Once that's done, let me know it's ready.</pre>
     <h2 class="two-line"><span class="l1">What Vidso MCP brings</span><span class="l2">to your AI agent</span></h2>
     <p class="lp-sub">Connect Vidso with Claude, ChatGPT, Cursor, and more to run long-form, thumbnails, clips, and My Files from one agent conversation.</p>
     <div class="mcp-feat-tabs" role="tablist" aria-label="Vidso MCP capabilities">
-      <span class="mcp-feat-ink" data-mcp-feat-ink aria-hidden="true"></span>
       <button type="button" class="mcp-feat-tab is-on" role="tab" aria-selected="true" data-mcp-feat="longform">Long-form from chat</button>
       <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="clips">Shorts and clips</button>
       <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="thumbs">Thumbnails</button>
@@ -534,10 +533,9 @@ Once that's done, let me know it's ready.</pre>
       <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="connect">One connection</button>
     </div>
 
-    <div class="mcp-feat-stage">
     <div class="mcp-feat-pane is-on" data-mcp-feat-pane="longform">
       <div class="mcp-feat-copy">
-        <h3><span>Create Long-Form</span><span>From Chat</span></h3>
+        <h3>Create Long-Form From Chat</h3>
         <p>Ask for a topic and length. Your agent writes the narration, adds voice plus stock B-roll, and renders a <span class="mcp-u">captioned long-form video</span> from the same conversation.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -558,9 +556,9 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    <div class="mcp-feat-pane" data-mcp-feat-pane="clips">
+    <div class="mcp-feat-pane" data-mcp-feat-pane="clips" hidden>
       <div class="mcp-feat-copy">
-        <h3><span>Clip, Rank, and</span><span>Reframe Shorts</span></h3>
+        <h3>Clip, Rank, and Reframe Shorts</h3>
         <p>Point the agent at a public video URL. It finds the moments worth clipping, then can rank, reframe, or add commentary to turn them into <span class="mcp-u">shorts and vertical clips</span>.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -576,9 +574,9 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs">
+    <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs" hidden>
       <div class="mcp-feat-copy">
-        <h3><span>Generate YouTube</span><span>Thumbnails</span></h3>
+        <h3>Generate YouTube Thumbnails</h3>
         <p>Ask for a <span class="mcp-u">YouTube thumbnail</span> from a prompt. The agent starts the image and brings the results back in the same thread.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -595,9 +593,9 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    <div class="mcp-feat-pane" data-mcp-feat-pane="audio">
+    <div class="mcp-feat-pane" data-mcp-feat-pane="audio" hidden>
       <div class="mcp-feat-copy">
-        <h3><span>Voiceover and Captions</span><span>in Chat</span></h3>
+        <h3>Voiceover and Captions in Chat</h3>
         <p>Ask the agent to narrate a script with a <span class="mcp-u">Vidso voice</span>, or to transcribe a public video or audio URL.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -613,9 +611,9 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    <div class="mcp-feat-pane" data-mcp-feat-pane="files">
+    <div class="mcp-feat-pane" data-mcp-feat-pane="files" hidden>
       <div class="mcp-feat-copy">
-        <h3><span>Reuse What Is Already</span><span>in My Files</span></h3>
+        <h3>Reuse What Is Already in My Files</h3>
         <p>Your agent can list recent generated videos, thumbnails, and uploads so it can reuse <span class="mcp-u">what is already in My Files</span>.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -634,9 +632,9 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    <div class="mcp-feat-pane" data-mcp-feat-pane="connect">
+    <div class="mcp-feat-pane" data-mcp-feat-pane="connect" hidden>
       <div class="mcp-feat-copy">
-        <h3><span>One Connection,</span><span>Every Vidso Tool</span></h3>
+        <h3>One Connection, Every Vidso Tool</h3>
         <p>Paste https://www.vidso.pro/mcp once. One connection gives the agent <span class="mcp-u">every Vidso tool</span> on that account, including YouTube status, upload, and plan quota.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
@@ -647,13 +645,12 @@ Once that's done, let me know it's ready.</pre>
         </div>
       </div>
     </div>
-    </div>
   </div>
 </section>
 
 <section class="mcp-ask" id="just-ask">
   <div class="wrap">
-    <h2 class="two-line"><span class="l1">Just ask. Here is what</span><span class="l2">Vidso MCP does through <em>chat</em></span></h2>
+    <h2 class="two-line"><span class="l1">Just ask. Here is what Vidso MCP</span><span class="l2">does through chat</span></h2>
     <p class="lp-sub">See what becomes possible when Vidso is connected to your AI agent. Ask for a long-form video, a thumbnail, or a clip.</p>
     <div class="mcp-ask-grid">
       <div class="mcp-ask-list">
@@ -844,68 +841,60 @@ Once that's done, let me know it's ready.</pre>
   </div>
 </section>
 
-<section class="faq" id="faq" data-faq-single>
+<section class="faq" id="faq">
   <div class="wrap">
     <h2 class="two-line"><span class="l1">Frequently asked</span><span class="l2">questions</span></h2>
-    <div class="faq-grid" data-faq-single>
+    <div class="faq-grid">
       <div class="faq-col">
-        <details open data-faq-id="what">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>What is Vidso MCP?</summary>
+        <details open>
+          <summary>What is Vidso MCP?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>Vidso MCP is a Streamable HTTP server at https://www.vidso.pro/mcp. Add that URL in your agent, sign in with your Vidso account over OAuth, and the agent can call Vidso tools from chat.</p>
         </details>
-        <details data-faq-id="claude">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>How do I add Vidso as a Claude connector?</summary>
+        <details>
+          <summary>How do I add Vidso as a Claude connector?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>Open Claude settings, go to Settings → Connectors, add a custom connector named Vidso, and paste https://www.vidso.pro/mcp. Click Add, then Connect, and sign in with your Vidso account.</p>
         </details>
-        <details data-faq-id="chatgpt">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>How do I connect Vidso to ChatGPT?</summary>
+        <details>
+          <summary>How do I connect Vidso to ChatGPT?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>In ChatGPT, go to Settings → Connectors. Enable developer mode if your plan requires it. Add a custom connector named Vidso, paste https://www.vidso.pro/mcp, then connect and sign in with your Vidso account.</p>
         </details>
-        <details data-faq-id="cursor">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Can I use Vidso MCP in Cursor?</summary>
+        <details>
+          <summary>Can I use Vidso MCP in Cursor?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>Yes. In Cursor, open Settings → MCP &amp; Integrations → New MCP server, paste the Vidso block into mcp.json, save, then approve the sign-in prompt with your Vidso account.</p>
         </details>
-        <details data-faq-id="agents">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>How do I connect Kimi, Grok Bot, or other agents?</summary>
-          <p>Kimi and ChatGPT use a plugin plus sign-in. Grok Bot, Claude Code, OpenClaw, and Hermes use the same connector URL or the Vidso CLI prompt on this page. Other MCP agents add a Streamable HTTP server at https://www.vidso.pro/mcp and sign in with OAuth.</p>
-        </details>
-        <details data-faq-id="cli">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>How do I install the Vidso CLI?</summary>
-          <p>Open the CLI tab and copy the macOS and Linux command or the Windows command. After it runs, use <code>vidso login</code> to sign in with your Vidso account in the browser. The CLI tab lists install commands for macOS, Linux, and Windows.</p>
-        </details>
-        <details data-faq-id="apikey">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Do I need an API key?</summary>
+        <details>
+          <summary>Do I need an API key?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>No. The connector uses OAuth. When you connect, you sign in with your Vidso account. There is no separate Vidso API key product for this server.</p>
+        </details>
+        <details>
+          <summary>Can I connect more than one agent?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Yes. The same URL works in any client that can add a Streamable HTTP MCP server and complete OAuth. Each connection signs in with your Vidso account, and credits and files stay on that account.</p>
         </details>
       </div>
       <div class="faq-col">
-        <details data-faq-id="tools">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Which Vidso tools can my agent use?</summary>
+        <details>
+          <summary>Which Vidso tools can my agent use?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>The agent can run long-form script and render, thumbnails, clipping, ranking, commentary, reframe, voiceover, captions, video download lookup, stock B-roll search, My Files listing, account quota, and YouTube connect, list, update, and upload. Video Editor and Faceless Studio are not exposed over MCP.</p>
         </details>
-        <details data-faq-id="models">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Which models can the agent use?</summary>
-          <p>The /models catalog lists the image, video, voice, and script models Vidso uses in the app. Through MCP the agent starts those workflows with the signed-in account: thumbnails, long-form footage, voiceover, captions, clips, and My Files. Video Editor and Faceless Studio stay in the app only.</p>
-        </details>
-        <details data-faq-id="limits">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Does it use my plan's limits?</summary>
+        <details>
+          <summary>Does it use my plan's limits?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>Yes. Generation tools require an active Vidso plan and use the same long-form, short-form, and Faceless Studio credit limits as the app. Your agent can show what is left. Account and catalog checks work without a paid-plan check at the MCP layer.</p>
         </details>
-        <details data-faq-id="files">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Where do my generated videos go?</summary>
+        <details>
+          <summary>Where do my generated videos go?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>Finished outputs land in My Files on the signed-in account. Your agent can list them from there. If YouTube is connected, it can publish a finished render to that channel.</p>
         </details>
-        <details data-faq-id="session">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>What if my session expires?</summary>
+        <details>
+          <summary>What if my session expires?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
           <p>The connector issues a short-lived access token (about 55 minutes) and a refresh token that lasts 30 days. When the session is no longer valid, the agent will ask you to connect and sign in again.</p>
         </details>
-        <details data-faq-id="multi">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Can I connect more than one agent?</summary>
-          <p>Yes. The same URL works in any client that can add a Streamable HTTP MCP server and complete OAuth. Each connection signs in with your Vidso account, and credits and files stay on that account.</p>
+        <details>
+          <summary>How do I install the Vidso CLI?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>Open the CLI tab and copy the macOS and Linux command or the Windows command. After it runs, use <code>vidso login</code> to sign in with your Vidso account in the browser.</p>
         </details>
-        <details data-faq-id="cli-platforms">
-          <summary><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Which platforms does the CLI support?</summary>
-          <p>The CLI tab lists install commands for macOS, Linux, and Windows. After install, <code>vidso login</code> uses the same Vidso account in the browser.</p>
+        <details>
+          <summary>Which platforms does the CLI support?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <p>The CLI tab lists install commands for macOS, Linux, and Windows. The same Vidso account is used after <code>vidso login</code>.</p>
         </details>
       </div>
     </div>
@@ -971,7 +960,7 @@ Once that's done, let me know it's ready.</pre>
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f91'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f92'
 mountMcpPage()
 </script>
 </body>

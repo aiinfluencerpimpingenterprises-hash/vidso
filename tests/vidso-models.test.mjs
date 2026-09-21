@@ -13,9 +13,11 @@ import {
   MODEL_GROUPS,
   CATALOG_CLIP_FILES,
   CATALOG_MODELS,
+  MCP_LATEST_MODEL_IDS,
   MODELS_HERO_VIDEO,
   VIDSO_MODELS,
   featuredModels,
+  mcpLatestModels,
   modelCardClipSrc,
   modelCardSrc,
   modelHref,
@@ -66,6 +68,26 @@ test('browse catalog lists OpenArt models plus Vidso extras with paraphrased blu
   assert.ok(CATALOG_MODELS.every((m) => m.blurb && m.blurb.length >= 70))
   assert.ok(CATALOG_MODELS.every((m) => !m.blurb.includes('—') && !m.blurb.includes('–') && !m.blurb.includes('OpenArt')))
   assert.ok(placeholderTable().some((p) => p.file === 'model-card-gemini-omni-flash.jpg'))
+  assert.ok(placeholderTable().some((p) => p.file === 'mcp-model-seedance-2-5.jpg'))
+  const latest = mcpLatestModels()
+  assert.equal(latest.length, 13)
+  assert.equal(latest.length, MCP_LATEST_MODEL_IDS.length)
+  assert.deepEqual(latest.map((m) => m.id), MCP_LATEST_MODEL_IDS)
+  assert.deepEqual(latest.map((m) => m.name), [
+    'Seedance 2.5',
+    'Seedance 2.0',
+    'MiniMax H3',
+    'Gemini Omni Flash',
+    'Wan 3.0',
+    'Veo 3.1',
+    'PixVerse',
+    'Kling 3.0 Pro',
+    'GPT Image 2.5',
+    'Nano Banana 2 Lite',
+    'Seedream 5.0 Pro',
+    'Wan 2.7 Image',
+    'Grok Imagine',
+  ])
 })
 
 test('placeholders and featured tiles stay on landing R2', () => {
