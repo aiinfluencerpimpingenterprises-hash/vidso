@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_CONNECT_TOOLS, MCP_FEATURE_MEDIA, VIDSO_CLI, mcpAgentLogo } from '../lib/landing-media.js'
+import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_CONNECT_TOOLS, MCP_FEATURE_MEDIA, VIDSO_AGENT_SETUP_PROMPT, VIDSO_CLI, mcpAgentLogo } from '../lib/landing-media.js'
 import { TOOL_MENU_ITEMS } from '../lib/public-tools.js'
 import { vidsoMcpTools } from '../lib/vidso-mcp.js'
 import { mcpTools } from '../lib/youtube.js'
@@ -16,7 +16,7 @@ test('mcp marketing page is public, indexable, and has every client tab plus CLI
   assert.match(html, /<title>Vidso MCP/)
   assert.match(html, /<meta name="description"/)
   assert.match(html, /name="robots" content="index,follow"/)
-  for (const id of ['claude', 'chatgpt', 'cursor', 'kimi', 'other']) {
+  for (const id of ['claude', 'chatgpt', 'cursor', 'kimi', 'grok', 'claude-code', 'openclaw', 'hermes', 'other']) {
     assert.ok(html.includes(`data-mcp-client="${id}"`), id)
     assert.ok(html.includes(`data-mcp-client-pane="${id}"`), id + ' pane')
   }
@@ -32,7 +32,7 @@ test('mcp marketing page is public, indexable, and has every client tab plus CLI
   assert.ok(html.includes('https://www.vidso.pro/mcp'))
   assert.ok(html.includes('https://claude.ai/settings/connectors'))
   assert.ok(html.includes('aria-selected'))
-  assert.ok(html.includes('If you are using Claude Code or Codex, use the CLI'))
+  assert.ok(html.includes('If you are using Claude Code or Codex, it\'s better to'))
 })
 
 test('mcp page only claims real tools', () => {
@@ -66,15 +66,28 @@ test('placeholder mappings stay honest', () => {
     'agent-logo-chatgpt.png',
     'agent-logo-cursor.png',
     'agent-logo-kimi.png',
+    'agent-logo-grok-bot.png',
+    'agent-logo-claude-code.png',
+    'agent-logo-openclaw.png',
+    'agent-logo-hermes.png',
     'agent-logo-other.png',
   ])
   assert.ok(mcpAgentLogo('agent-logo-claude.png').endsWith('/landing/agent-logo-claude.png'))
   assert.ok(html.includes('claude-ai-icon.webp'))
   assert.ok(html.includes('openai-icon.svg'))
+  assert.ok(html.includes('is-chatgpt'))
+  assert.ok(css.includes('.mcp-client.is-chatgpt svg'))
   assert.ok(html.includes('cursor-ai-code-icon.svg'))
   assert.ok(html.includes('kimi-ai-icon.svg'))
+  assert.ok(html.includes('grokbotlogo.jpg'))
+  assert.ok(html.includes('claude-code-icon.png'))
+  assert.ok(html.includes('OpenClaw%20Logo%20-%20Colored%20-%20zonalogo.com.png'))
+  assert.ok(html.includes('Hermes%20Agent%20Logo%20-%20Black%20-%20zonalogo.com.svg'))
   assert.ok(html.includes('vidso-logo.png'))
-  assert.ok((html.match(/<span class="n">1<\/span>/g) || []).length >= 5)
+  assert.ok(html.includes('mcp-chatgpt-plugin-01'))
+  assert.ok(html.includes('mcp-kimi-plugin-01'))
+  assert.ok(html.includes('data-mcp-agent-prompt'))
+  assert.ok((html.match(/<span class="n">1<\/span>/g) || []).length >= 9)
   assert.ok(html.includes('class="mcp-steps"'))
   assert.ok(html.includes('data-mcp-mock="longform"'))
   assert.ok(html.includes('mcp-feature-longform-01'))
@@ -88,6 +101,8 @@ test('cli command constant matches the tab copy', () => {
   assert.equal(VIDSO_CLI.windows, 'irm https://www.vidso.pro/install.ps1 | iex')
   assert.equal(VIDSO_CLI.login, 'vidso login')
   assert.match(VIDSO_CLI.generate, /vidso video/)
+  assert.match(VIDSO_AGENT_SETUP_PROMPT, /vidso login/)
+  assert.ok(!VIDSO_AGENT_SETUP_PROMPT.includes('higgsfield'))
 })
 
 test('mcp page spacing tokens match the denser layout', () => {

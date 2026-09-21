@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f68">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f72">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -152,7 +152,7 @@
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-ai-icon.webp" alt="">
             Claude
           </button>
-          <button type="button" class="mcp-client-tab is-ink" role="tab" id="tab-chatgpt" aria-selected="false" aria-controls="pane-chatgpt" data-mcp-client="chatgpt">
+          <button type="button" class="mcp-client-tab is-mark" role="tab" id="tab-chatgpt" aria-selected="false" aria-controls="pane-chatgpt" data-mcp-client="chatgpt">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/openai-icon.svg" alt="">
             ChatGPT
           </button>
@@ -160,9 +160,25 @@
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/cursor-ai-code-icon.svg" alt="">
             Cursor
           </button>
-          <button type="button" class="mcp-client-tab is-ink" role="tab" id="tab-kimi" aria-selected="false" aria-controls="pane-kimi" data-mcp-client="kimi">
+          <button type="button" class="mcp-client-tab is-mark" role="tab" id="tab-kimi" aria-selected="false" aria-controls="pane-kimi" data-mcp-client="kimi">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
             Kimi
+          </button>
+          <button type="button" class="mcp-client-tab" role="tab" id="tab-grok" aria-selected="false" aria-controls="pane-grok" data-mcp-client="grok">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/grokbotlogo.jpg" alt="">
+            Grok Bot
+          </button>
+          <button type="button" class="mcp-client-tab" role="tab" id="tab-claude-code" aria-selected="false" aria-controls="pane-claude-code" data-mcp-client="claude-code">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-code-icon.png" alt="">
+            Claude Code
+          </button>
+          <button type="button" class="mcp-client-tab" role="tab" id="tab-openclaw" aria-selected="false" aria-controls="pane-openclaw" data-mcp-client="openclaw">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/OpenClaw%20Logo%20-%20Colored%20-%20zonalogo.com.png" alt="">
+            OpenClaw
+          </button>
+          <button type="button" class="mcp-client-tab is-mark" role="tab" id="tab-hermes" aria-selected="false" aria-controls="pane-hermes" data-mcp-client="hermes">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Hermes%20Agent%20Logo%20-%20Black%20-%20zonalogo.com.svg" alt="">
+            Hermes
           </button>
           <button type="button" class="mcp-client-tab" role="tab" id="tab-other" aria-selected="false" aria-controls="pane-other" data-mcp-client="other">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 007.07 0l1.41-1.41a5 5 0 00-7.07-7.07L10 5.93"/><path d="M14 11a5 5 0 00-7.07 0L5.52 12.41a5 5 0 007.07 7.07L14 18.07"/></svg>
@@ -179,16 +195,8 @@
         <div class="mcp-client-pane is-on" id="pane-claude" role="tabpanel" data-mcp-client-pane="claude" aria-labelledby="tab-claude">
           <div class="mcp-steps">
             <article class="mcp-step">
-              <h3><span class="n">1</span> Open Claude settings</h3>
-              <p>Launch the app or open claude.ai and go to <strong>Settings → Connectors</strong>.</p>
-              <a class="btn mcp-out" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">
-                Open Claude settings
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
-              </a>
-            </article>
-            <article class="mcp-step">
-              <h3><span class="n">2</span> Add a custom connector</h3>
-              <p>Name it <strong>Vidso</strong> and paste the URL:</p>
+              <h3><span class="n">1</span> Copy the Vidso Connector URL</h3>
+              <p>You'll paste this URL into Claude in the next step.</p>
               <div class="mcp-miniurl">
                 <code aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
                 <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy connector URL">
@@ -199,8 +207,16 @@
               </div>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">3</span> Connect and sign in</h3>
-              <p>Click <strong>Add</strong>, then <strong>Connect</strong>, and sign in with your <strong>Vidso</strong> account.</p>
+              <h3><span class="n">2</span> Open Connector Settings</h3>
+              <p>In the Claude app or on <strong>claude.ai</strong>, go to <strong>Settings → Connectors</strong> and choose <strong>Add custom connector</strong>.</p>
+              <a class="btn mcp-out" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener noreferrer">
+                Open Claude settings
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">3</span> Connect and Allow Access</h3>
+              <p>Click <strong>Add → Connect</strong> and sign in to Vidso. Set permissions to <strong>Always Allow</strong>. Once connected, you can ask Claude to generate videos or thumbnails using Vidso.</p>
             </article>
           </div>
         </div>
@@ -208,28 +224,24 @@
         <div class="mcp-client-pane" id="pane-chatgpt" role="tabpanel" hidden data-mcp-client-pane="chatgpt" aria-labelledby="tab-chatgpt">
           <div class="mcp-steps">
             <article class="mcp-step">
-              <h3><span class="n">1</span> Open connector settings</h3>
-              <p>In ChatGPT, go to <strong>Settings → Connectors</strong>. Enable developer mode if your plan requires it.</p>
+              <h3><span class="n">1</span> Install the Plugin</h3>
+              <p>Find the Vidso plugin here, then click <strong>Install Plugin</strong>.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-plugin-01" data-mcp-ext="jpg"></div>
+              <a class="btn mcp-out" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
+                Add Vidso plugin
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">2</span> Add a custom connector</h3>
-              <p>Name it <strong>Vidso</strong> and paste the URL:</p>
-              <div class="mcp-miniurl">
-                <code aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
-                <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy connector URL">
-                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                  <span class="sr-only" data-mcp-copy-label>Copy</span>
-                </button>
-              </div>
+              <h3><span class="n">2</span> Authorize</h3>
+              <p>Sign in with your <strong>Vidso</strong> account to connect. It only takes a few seconds, and no API keys are needed.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-auth-01" data-mcp-ext="jpg"></div>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">3</span> Authorize</h3>
-              <p>Connect and sign in with your <strong>Vidso</strong> account, then ask ChatGPT to make a video.</p>
-              <div class="mcp-illus" aria-hidden="true">
-                <span class="mcp-illus-deny">Deny</span>
-                <span class="mcp-illus-ring"><span class="mcp-illus-allow">Allow access</span></span>
-              </div>
+              <h3><span class="n">3</span> Activate &amp; Generate</h3>
+              <p>Type <strong>@Vidso</strong> in the message box to enable it, then ask ChatGPT to generate videos or thumbnails.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-chat-01" data-mcp-ext="jpg"></div>
+              <a class="btn mcp-out is-solid" href="/dashboard">Start creating</a>
             </article>
           </div>
         </div>
@@ -237,8 +249,8 @@
         <div class="mcp-client-pane" id="pane-cursor" role="tabpanel" hidden data-mcp-client-pane="cursor" aria-labelledby="tab-cursor">
           <div class="mcp-steps">
             <article class="mcp-step">
-              <h3><span class="n">1</span> Open MCP settings</h3>
-              <p>Go to <strong>Settings → MCP &amp; Integrations → New MCP server</strong>.</p>
+              <h3><span class="n">1</span> Open MCP Settings</h3>
+              <p>Go to <strong>Settings → MCP &amp; Integrations → New MCP server</strong> (opens mcp.json).</p>
             </article>
             <article class="mcp-step">
               <h3><span class="n">2</span> Add the Vidso server</h3>
@@ -259,8 +271,8 @@
               </div>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">3</span> Sign in once</h3>
-              <p>Cursor prompts you to authorize. Approve and sign in with your <strong>Vidso</strong> account.</p>
+              <h3><span class="n">3</span> Sign In Once</h3>
+              <p>Click the <strong>Needs login</strong> prompt next to the server and approve in the browser. Vidso tools then show up in Agent chats.</p>
             </article>
           </div>
         </div>
@@ -268,12 +280,36 @@
         <div class="mcp-client-pane" id="pane-kimi" role="tabpanel" hidden data-mcp-client-pane="kimi" aria-labelledby="tab-kimi">
           <div class="mcp-steps">
             <article class="mcp-step">
-              <h3><span class="n">1</span> Open MCP settings</h3>
-              <p>Find <strong>Connectors</strong>, <strong>Integrations</strong>, or <strong>MCP servers</strong> in Kimi.</p>
+              <h3><span class="n">1</span> Install the Plugin</h3>
+              <p>Find <strong>Vidso</strong> in Kimi plugins and install.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-kimi-plugin-01" data-mcp-ext="jpg"></div>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">2</span> Add the Vidso server</h3>
-              <p>Paste the URL with <strong>Streamable HTTP</strong> transport:</p>
+              <h3><span class="n">2</span> Authorize</h3>
+              <p>Sign in with your <strong>Vidso</strong> account to connect. It only takes a few seconds, and no API keys are needed.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-kimi-auth-01" data-mcp-ext="jpg"></div>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">3</span> Activate &amp; Generate</h3>
+              <p>Type <strong>/Vidso</strong> in the message box to enable it, then ask Kimi to generate videos or thumbnails.</p>
+              <div class="mcp-shot" data-mcp-file="mcp-kimi-chat-01" data-mcp-ext="jpg"></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="mcp-client-pane" id="pane-grok" role="tabpanel" hidden data-mcp-client-pane="grok" aria-labelledby="tab-grok">
+          <div class="mcp-steps">
+            <article class="mcp-step">
+              <h3><span class="n">1</span> Install Grok Bot</h3>
+              <p>Download and install Grok Bot before adding the Vidso connector.</p>
+              <a class="btn mcp-out" href="https://grok.com" target="_blank" rel="noopener noreferrer">
+                Install Grok Bot
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">2</span> Add Vidso to Grok Bot</h3>
+              <p>Add the Vidso connector, then sign in to connect your account.</p>
               <div class="mcp-miniurl">
                 <code aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
                 <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy connector URL">
@@ -284,12 +320,77 @@
               </div>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">3</span> Authenticate</h3>
-              <p>Sign in with your <strong>Vidso</strong> account when prompted.</p>
-              <div class="mcp-illus" aria-hidden="true">
-                <span class="mcp-illus-deny">Deny</span>
-                <span class="mcp-illus-ring"><span class="mcp-illus-allow">Allow access</span></span>
+              <h3><span class="n">3</span> Connect and start creating</h3>
+              <p>After signing in, ask Grok Bot to generate a YouTube video or thumbnail.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="mcp-client-pane" id="pane-claude-code" role="tabpanel" hidden data-mcp-client-pane="claude-code" aria-labelledby="tab-claude-code">
+          <div class="mcp-steps is-two">
+            <article class="mcp-step">
+              <h3><span class="n">1</span> Copy and send this to Claude Code</h3>
+              <div class="mcp-prompt">
+                <pre data-mcp-agent-prompt>Set up Vidso for me so I can generate YouTube videos from here.
+1. Install the CLI: run `curl -fsSL https://www.vidso.pro/install.sh | sh`.
+2. Authenticate: run `vidso login` and complete the sign-in in the browser it opens.
+Once that's done, let me know it's ready.</pre>
+                <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-copy-text="Set up Vidso for me so I can generate YouTube videos from here.&#10;1. Install the CLI: run `curl -fsSL https://www.vidso.pro/install.sh | sh`.&#10;2. Authenticate: run `vidso login` and complete the sign-in in the browser it opens.&#10;Once that's done, let me know it's ready." data-mcp-idle="Copy" aria-label="Copy Claude Code setup prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span class="sr-only" data-mcp-copy-label>Copy</span>
+                </button>
               </div>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">2</span> Connect and start creating</h3>
+              <p>Sign in, then ask Claude Code to generate a YouTube video or thumbnail.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="mcp-client-pane" id="pane-openclaw" role="tabpanel" hidden data-mcp-client-pane="openclaw" aria-labelledby="tab-openclaw">
+          <div class="mcp-steps is-two">
+            <article class="mcp-step">
+              <h3><span class="n">1</span> Copy and send this to OpenClaw</h3>
+              <div class="mcp-prompt">
+                <pre data-mcp-agent-prompt>Set up Vidso for me so I can generate YouTube videos from here.
+1. Install the CLI: run `curl -fsSL https://www.vidso.pro/install.sh | sh`.
+2. Authenticate: run `vidso login` and complete the sign-in in the browser it opens.
+Once that's done, let me know it's ready.</pre>
+                <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy OpenClaw setup prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span class="sr-only" data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">2</span> Connect and start creating</h3>
+              <p>Sign in, then ask OpenClaw to generate a YouTube video or thumbnail.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="mcp-client-pane" id="pane-hermes" role="tabpanel" hidden data-mcp-client-pane="hermes" aria-labelledby="tab-hermes">
+          <div class="mcp-steps is-two">
+            <article class="mcp-step">
+              <h3><span class="n">1</span> Copy and send this to Hermes</h3>
+              <div class="mcp-prompt">
+                <pre data-mcp-agent-prompt>Set up Vidso for me so I can generate YouTube videos from here.
+1. Install the CLI: run `curl -fsSL https://www.vidso.pro/install.sh | sh`.
+2. Authenticate: run `vidso login` and complete the sign-in in the browser it opens.
+Once that's done, let me know it's ready.</pre>
+                <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy Hermes setup prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span class="sr-only" data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+            </article>
+            <article class="mcp-step">
+              <h3><span class="n">2</span> Connect and start creating</h3>
+              <p>Sign in, then ask Hermes to generate a YouTube video or thumbnail.</p>
             </article>
           </div>
         </div>
@@ -297,12 +398,12 @@
         <div class="mcp-client-pane" id="pane-other" role="tabpanel" hidden data-mcp-client-pane="other" aria-labelledby="tab-other">
           <div class="mcp-steps">
             <article class="mcp-step">
-              <h3><span class="n">1</span> Find the MCP settings</h3>
-              <p>Look for <strong>Connectors</strong>, <strong>Integrations</strong>, or <strong>MCP servers</strong> in your agent.</p>
+              <h3><span class="n">1</span> Find the MCP Settings</h3>
+              <p>Look for Connectors, Integrations, or MCP servers.</p>
             </article>
             <article class="mcp-step">
-              <h3><span class="n">2</span> Point it at Vidso</h3>
-              <p>Add a server with transport <strong>Streamable HTTP</strong> and the URL above. No API key needed.</p>
+              <h3><span class="n">2</span> Point It at Vidso</h3>
+              <p>Add a server with transport <strong>Streamable HTTP</strong> and the URL above. No API key, no extra config.</p>
               <div class="mcp-miniurl">
                 <code aria-label="https://www.vidso.pro/mcp"><span class="dim">https://</span>www.vidso.pro/mcp</code>
                 <button type="button" class="mcp-copy is-icon" data-mcp-copy data-mcp-idle="Copy" aria-label="Copy connector URL">
@@ -314,7 +415,7 @@
             </article>
             <article class="mcp-step">
               <h3><span class="n">3</span> Authenticate via OAuth</h3>
-              <p>Sign in with your <strong>Vidso</strong> account. Credits and results stay tied to it.</p>
+              <p>Sign in with your <strong>Vidso</strong> account on first use. Credits and results stay tied to your account.</p>
             </article>
           </div>
         </div>
@@ -370,7 +471,7 @@
         </div>
       </div>
     </div>
-    <p class="mcp-panel-note">If you are using Claude Code or Codex, use the CLI. The connector URL stays the same in every app.</p>
+    <p class="mcp-panel-note">If you are using Claude Code or Codex, it's better to <button type="button" class="mcp-note-link" data-mcp-mode="cli">use the CLI</button>. The connector URL stays the same in every app.</p>
   </div>
 </section>
 
@@ -617,9 +718,9 @@
           </span>
           Claude
         </span>
-        <span class="mcp-client is-ink">
+        <span class="mcp-client is-chatgpt">
           <span class="mcp-client-logo">
-            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/openai-icon.svg" alt="">
+            <svg viewBox="0 0 512 512" width="22" height="22" aria-hidden="true"><path fill="#fff" fill-rule="nonzero" d="M474.123 209.81c11.525-34.577 7.569-72.423-10.838-103.904-27.696-48.168-83.433-72.94-137.794-61.414a127.14 127.14 0 00-95.475-42.49c-55.564 0-104.936 35.781-122.139 88.593-35.781 7.397-66.574 29.76-84.637 61.414-27.868 48.167-21.503 108.72 15.826 150.007-11.525 34.578-7.569 72.424 10.838 103.733 27.696 48.34 83.433 73.111 137.966 61.585 24.084 27.18 58.833 42.835 95.303 42.663 55.564 0 104.936-35.782 122.139-88.594 35.782-7.397 66.574-29.76 84.465-61.413 28.04-48.168 21.676-108.722-15.654-150.008v-.172zm-39.567-87.218c11.01 19.267 15.139 41.803 11.354 63.65-.688-.516-2.064-1.204-2.924-1.72l-101.152-58.49a16.965 16.965 0 00-16.687 0L206.621 194.5v-50.232l97.883-56.597c45.587-26.32 103.732-10.666 130.052 34.921zm-227.935 104.42l49.888-28.9 49.887 28.9v57.63l-49.887 28.9-49.888-28.9v-57.63zm23.223-191.81c22.364 0 43.867 7.742 61.07 22.02-.688.344-2.064 1.204-3.097 1.72L186.666 117.26c-5.161 2.925-8.258 8.43-8.258 14.45v136.934l-43.523-25.116V130.333c0-52.64 42.491-95.13 95.131-95.302l-.172.172zM52.14 168.697c11.182-19.268 28.557-34.062 49.544-41.803V247.14c0 6.02 3.097 11.354 8.258 14.45l118.354 68.295-43.695 25.288-97.711-56.425c-45.415-26.32-61.07-84.465-34.75-130.052zm26.665 220.71c-11.182-19.095-15.139-41.802-11.354-63.65.688.516 2.064 1.204 2.924 1.72l101.152 58.49a16.965 16.965 0 0016.687 0l118.354-68.467v50.232l-97.883 56.425c-45.587 26.148-103.732 10.665-130.052-34.75h.172zm204.54 87.39c-22.192 0-43.867-7.741-60.898-22.02a62.439 62.439 0 003.097-1.72l101.152-58.317c5.16-2.924 8.429-8.43 8.257-14.45V243.527l43.523 25.116v113.022c0 52.64-42.663 95.303-95.131 95.303v-.172zM461.22 343.303c-11.182 19.267-28.729 34.061-49.544 41.63V264.687c0-6.021-3.097-11.526-8.257-14.45L284.893 181.77l43.523-25.116 97.883 56.424c45.587 26.32 61.07 84.466 34.75 130.053l.172.172z"/></svg>
           </span>
           ChatGPT
         </span>
@@ -629,11 +730,35 @@
           </span>
           Cursor
         </span>
-        <span class="mcp-client is-ink">
+        <span class="mcp-client is-mark">
           <span class="mcp-client-logo">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
           </span>
           Kimi
+        </span>
+        <span class="mcp-client">
+          <span class="mcp-client-logo">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/grokbotlogo.jpg" alt="">
+          </span>
+          Grok Bot
+        </span>
+        <span class="mcp-client">
+          <span class="mcp-client-logo">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-code-icon.png" alt="">
+          </span>
+          Claude Code
+        </span>
+        <span class="mcp-client">
+          <span class="mcp-client-logo">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/OpenClaw%20Logo%20-%20Colored%20-%20zonalogo.com.png" alt="">
+          </span>
+          OpenClaw
+        </span>
+        <span class="mcp-client is-mark">
+          <span class="mcp-client-logo">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Hermes%20Agent%20Logo%20-%20Black%20-%20zonalogo.com.svg" alt="">
+          </span>
+          Hermes
         </span>
         <span class="mcp-client">
           <span class="mcp-client-logo">
@@ -765,7 +890,7 @@
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f68'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f69'
 mountMcpPage()
 </script>
 </body>
