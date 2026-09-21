@@ -974,12 +974,14 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   position:relative;aspect-ratio:16/9;border-radius:22px;overflow:hidden;
   background:linear-gradient(135deg,#17171a,#111113);border:1px solid rgba(255,255,255,.10)
 }
-.mcp-blank::after{
+.mcp-blank.is-blank::after{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(115deg,transparent 18%,rgba(255,255,255,.04) 48%,transparent 72%);
   background-size:220% 220%;animation:lp-blank-shimmer 6s linear infinite
 }
 .mcp-blank img,.mcp-blank video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mcp-blank.is-hover-audio{cursor:pointer}
+.mcp-blank.is-hover-audio video{pointer-events:auto}
 .mcp-blank.is-v{aspect-ratio:9/16}
 .mcp-blank.is-sq{aspect-ratio:1}
 .mcp-mock{
@@ -1608,7 +1610,7 @@ body.is-models-page .models-hero .lp-sub{
 }
 
 @media (prefers-reduced-motion:reduce){
-  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.demo-cursor,.demo-cursor::before,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.models-mega-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
+  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.demo-cursor,.demo-cursor::before,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank.is-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.models-mega-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
   .mcp-client-pane,.mcp-ask-item,.mcp-ask-body{transition:none!important}
   .mcp-caret,.mcp-mock-dots i,.mcp-wave i{animation:none!important}
   .hero-marquee{overflow-x:auto}
