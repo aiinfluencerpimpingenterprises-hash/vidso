@@ -1008,7 +1008,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .mcp-mock-shorts,.mcp-mock-files{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .mcp-mock-thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .mcp-mock figure{margin:0}
-.mcp-mock figcaption{margin-top:6px;font-size:11px;color:rgba(245,245,244,.55);line-height:1.35}
+.mcp-mock figcaption{margin-top:6px;font-size:11px;color:rgba(245,245,244,.55);line-height:1.35;overflow-wrap:anywhere}
 .mcp-wave{display:flex;align-items:flex-end;gap:3px;height:56px;padding:0 4px}
 .mcp-wave i{flex:1;height:20%;border-radius:99px;background:#FE0C30;opacity:.35;transform-origin:bottom}
 .mcp-mock.is-done .mcp-wave i{animation:mcp-wave .9s ease-in-out both}
