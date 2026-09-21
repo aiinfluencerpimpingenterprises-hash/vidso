@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f76">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f79">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -523,7 +523,7 @@ Once that's done, let me know it's ready.</pre>
 <section class="mcp-bring" id="capabilities">
   <div class="wrap">
     <h2 class="two-line"><span class="l1">What Vidso MCP brings</span><span class="l2">to your AI agent</span></h2>
-    <p class="lp-sub">One connector URL exposes the Vidso tools below. Each tab maps to a real MCP function.</p>
+    <p class="lp-sub">Connect Vidso with Claude, ChatGPT, Cursor, and more to run long-form, thumbnails, clips, and My Files from one agent conversation.</p>
     <div class="mcp-feat-tabs" role="tablist" aria-label="Vidso MCP capabilities">
       <button type="button" class="mcp-feat-tab is-on" role="tab" aria-selected="true" data-mcp-feat="longform">Long-form from chat</button>
       <button type="button" class="mcp-feat-tab" role="tab" aria-selected="false" data-mcp-feat="clips">Shorts and clips</button>
@@ -535,9 +535,9 @@ Once that's done, let me know it's ready.</pre>
 
     <div class="mcp-feat-pane is-on" data-mcp-feat-pane="longform">
       <div class="mcp-feat-copy">
-        <h3>Long-form from chat</h3>
-        <p>Ask for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for the captioned MP4.</p>
-        <a class="btn btn-primary" href="/dashboard">Try it now</a>
+        <h3>Create Long-Form From Chat</h3>
+        <p>Ask for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for a <span class="mcp-u">captioned long-form video</span> from the same conversation.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="longform">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -558,9 +558,9 @@ Once that's done, let me know it's ready.</pre>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="clips" hidden>
       <div class="mcp-feat-copy">
-        <h3>Shorts and clips</h3>
-        <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> assemble ranked shorts, vertical crops, or commentary.</p>
-        <a class="btn btn-primary" href="/dashboard">Try it now</a>
+        <h3>Clip, Rank, and Reframe Shorts</h3>
+        <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> turn them into <span class="mcp-u">shorts and vertical clips</span>.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="clips">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -576,9 +576,9 @@ Once that's done, let me know it's ready.</pre>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs" hidden>
       <div class="mcp-feat-copy">
-        <h3>Thumbnails</h3>
-        <p><code>thumbnail_generate</code> starts a YouTube thumbnail from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
-        <a class="btn btn-primary" href="/dashboard">Try it now</a>
+        <h3>Generate YouTube Thumbnails</h3>
+        <p><code>thumbnail_generate</code> starts a <span class="mcp-u">YouTube thumbnail</span> from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="thumbs">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -595,9 +595,9 @@ Once that's done, let me know it's ready.</pre>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="audio" hidden>
       <div class="mcp-feat-copy">
-        <h3>Voiceover and captions</h3>
-        <p><code>voiceover_generate</code> narrates a script with a Vidso voice. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
-        <a class="btn btn-primary" href="/dashboard">Try it now</a>
+        <h3>Voiceover and Captions in Chat</h3>
+        <p><code>voiceover_generate</code> narrates a script with a <span class="mcp-u">Vidso voice</span>. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="audio">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -613,9 +613,9 @@ Once that's done, let me know it's ready.</pre>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="files" hidden>
       <div class="mcp-feat-copy">
-        <h3>Use your files</h3>
-        <p><code>files_list</code> lists recent generated videos, thumbnails, and uploads on the signed-in account so your agent can reuse what is already in My Files.</p>
-        <a class="btn btn-primary" href="/signup">Try it now</a>
+        <h3>Reuse What Is Already in My Files</h3>
+        <p><code>files_list</code> lists recent generated videos, thumbnails, and uploads on the signed-in account so your agent can reuse <span class="mcp-u">what is already in My Files</span>.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="files">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -634,9 +634,9 @@ Once that's done, let me know it's ready.</pre>
     </div>
     <div class="mcp-feat-pane" data-mcp-feat-pane="connect" hidden>
       <div class="mcp-feat-copy">
-        <h3>One connection</h3>
-        <p>Paste https://www.vidso.pro/mcp once. <code>vidso_catalog</code> lists every tool the agent can call on that connection, including YouTube status, upload, and account quota.</p>
-        <a class="btn btn-primary" href="/signup">Try it now</a>
+        <h3>One Connection, Every Vidso Tool</h3>
+        <p>Paste https://www.vidso.pro/mcp once. <code>vidso_catalog</code> lists <span class="mcp-u">every tool the agent can call</span> on that connection, including YouTube status, <code>youtube_upload</code>, and account quota.</p>
+        <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="connect">
         <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -650,91 +650,109 @@ Once that's done, let me know it's ready.</pre>
 
 <section class="mcp-ask" id="just-ask">
   <div class="wrap">
-    <h2 class="mcp-ask-title">Just ask. Here is what Vidso MCP does through <em>chat.</em></h2>
-    <p class="lp-sub">Example prompts that only use tools the connector actually exposes.</p>
+    <h2 class="two-line"><span class="l1">Just ask. Here is what Vidso MCP</span><span class="l2">does through chat</span></h2>
+    <p class="lp-sub">See what becomes possible when Vidso is connected to your AI agent. Ask for a long-form video, a thumbnail, or a clip.</p>
     <div class="mcp-ask-grid">
       <div class="mcp-ask-list">
         <article class="mcp-ask-item is-on" data-mcp-ask="longform" data-mcp-ask-file="mcp-chat-longform-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">Make a long-form YouTube video</button>
+            <button type="button" class="mcp-ask-h">Make long-form without leaving chat</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>Make a 12 minute faceless YouTube video on airport secrets airlines hide from travelers. 16:9, B-roll and captions.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>Make a 12 minute faceless YouTube video on airport secrets airlines hide from travelers. 16:9, B-roll and captions.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">Ask for a topic and length. The agent writes narration, starts voice plus B-roll, and can render a captioned MP4.</p>
             </div>
           </div>
         </article>
         <article class="mcp-ask-item" data-mcp-ask="thumbs" data-mcp-ask-file="mcp-chat-thumbs-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">Generate a thumbnail</button>
+            <button type="button" class="mcp-ask-h">Generate thumbnails without leaving chat</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>Generate a YouTube thumbnail for a video about airport secrets. High contrast, shocked face energy, readable title text.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>Generate a YouTube thumbnail for a video about airport secrets. High contrast, shocked face energy, readable title text.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">Start a YouTube thumbnail from a prompt. The agent returns image URLs in the same thread.</p>
             </div>
           </div>
         </article>
         <article class="mcp-ask-item" data-mcp-ask="clips" data-mcp-ask-file="mcp-chat-clips-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">Clip a public video</button>
+            <button type="button" class="mcp-ask-h">Clip videos without leaving chat</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>Analyze this public video URL for viral moments and start autoclip. Then reframe the best clip to 9:16.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>Analyze this public video URL for viral moments and start autoclip. Then reframe the best clip to 9:16.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">Point the agent at a public URL. It can find moments, start autoclip, then reframe to 9:16.</p>
             </div>
           </div>
         </article>
         <article class="mcp-ask-item" data-mcp-ask="voice" data-mcp-ask-file="mcp-chat-voice-01" data-mcp-ask-ext="mp4">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">Narrate a script</button>
+            <button type="button" class="mcp-ask-h">Narrate scripts without leaving chat</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>List narrator voices, then generate a voiceover for this script about airport boarding groups.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>List narrator voices, then generate a voiceover for this script about airport boarding groups.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">List narrator voices, then generate a voiceover from a script in the same conversation.</p>
             </div>
           </div>
         </article>
         <article class="mcp-ask-item" data-mcp-ask="files" data-mcp-ask-file="mcp-chat-files-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">List my recent files</button>
+            <button type="button" class="mcp-ask-h">Reuse renders from My Files</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>List my recent Vidso files and tell me which long-form renders are ready.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>List my recent Vidso files and tell me which long-form renders are ready.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">List recent Vidso files so the agent can reuse renders already sitting in My Files.</p>
             </div>
           </div>
         </article>
         <article class="mcp-ask-item" data-mcp-ask="account" data-mcp-ask-file="mcp-chat-account-01" data-mcp-ask-ext="jpg">
           <span class="mcp-ask-dot" aria-hidden="true"></span>
           <div class="mcp-ask-main">
-            <button type="button" class="mcp-ask-h">Check my plan and quota</button>
+            <button type="button" class="mcp-ask-h">Check plan and quota from chat</button>
             <div class="mcp-ask-body" data-mcp-ask-body>
-              <p data-mcp-prompt>Show my Vidso plan and how many long-form and short-form videos I have left this month.</p>
-              <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
-                <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
-                <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-                <span data-mcp-copy-label>Copy</span>
-              </button>
+              <div class="mcp-ask-prompt">
+                <p data-mcp-prompt>Show my Vidso plan and how many long-form and short-form videos I have left this month.</p>
+                <button type="button" class="mcp-copy is-icon" data-mcp-ask-copy aria-label="Copy prompt">
+                  <svg class="ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></svg>
+                  <svg class="ico-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+                  <span data-mcp-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="mcp-ask-note">Check the signed-in plan and how many long-form and short-form videos are left this month.</p>
             </div>
           </div>
         </article>
@@ -744,7 +762,7 @@ Once that's done, let me know it's ready.</pre>
           <div class="mcp-mock-bar" aria-hidden="true"><span></span><span></span><span></span></div>
           <div class="mcp-mock-body">
             <div class="mcp-mock-bubble is-user"><span data-mcp-type data-mcp-full=""></span><span class="mcp-caret"></span></div>
-            <div class="mcp-blank is-blank" hidden data-mcp-reveal data-mcp-ask-slot data-mcp-file="mcp-chat-longform-01" data-mcp-ext="mp4"></div>
+            <div class="mcp-blank is-blank" data-mcp-reveal data-mcp-ask-slot data-mcp-file="mcp-chat-longform-01" data-mcp-ext="mp4"></div>
           </div>
         </div>
       </div>
@@ -935,7 +953,7 @@ Once that's done, let me know it's ready.</pre>
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f77'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f78'
 mountMcpPage()
 </script>
 </body>
