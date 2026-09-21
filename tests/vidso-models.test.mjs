@@ -68,10 +68,11 @@ test('browse catalog lists OpenArt models plus Vidso extras with paraphrased blu
   assert.ok(CATALOG_MODELS.every((m) => m.blurb && m.blurb.length >= 70))
   assert.ok(CATALOG_MODELS.every((m) => !m.blurb.includes('—') && !m.blurb.includes('–') && !m.blurb.includes('OpenArt')))
   assert.ok(placeholderTable().some((p) => p.file === 'model-card-gemini-omni-flash.jpg'))
-  assert.ok(placeholderTable().some((p) => p.file === 'mcp-model-seedance-2-5.jpg'))
+  assert.ok(!placeholderTable().some((p) => p.file.startsWith('mcp-model-')))
   const latest = mcpLatestModels()
   assert.equal(latest.length, 13)
   assert.equal(latest.length, MCP_LATEST_MODEL_IDS.length)
+  assert.ok(latest.every((m) => CATALOG_CLIP_FILES[m.id] || CATALOG_CLIP_FILES[modelSlug(m.id)]))
   assert.deepEqual(latest.map((m) => m.id), MCP_LATEST_MODEL_IDS)
   assert.deepEqual(latest.map((m) => m.name), [
     'Seedance 2.5',
