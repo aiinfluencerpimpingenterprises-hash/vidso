@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f79">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f80">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -536,7 +536,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane is-on" data-mcp-feat-pane="longform">
       <div class="mcp-feat-copy">
         <h3>Create Long-Form From Chat</h3>
-        <p>Ask for a topic and length. <code>longform_make_video</code> writes the narration and starts voice plus stock B-roll. Then poll and call <code>longform_render_start</code> for a <span class="mcp-u">captioned long-form video</span> from the same conversation.</p>
+        <p>Ask for a topic and length. Your agent writes the narration, adds voice plus stock B-roll, and renders a <span class="mcp-u">captioned long-form video</span> from the same conversation.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="longform">
@@ -559,7 +559,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane" data-mcp-feat-pane="clips" hidden>
       <div class="mcp-feat-copy">
         <h3>Clip, Rank, and Reframe Shorts</h3>
-        <p><code>clip_analyze</code> and <code>clip_start</code> find moments in a public URL. <code>ranking_start</code>, <code>reframe_start</code>, and <code>commentary_start</code> turn them into <span class="mcp-u">shorts and vertical clips</span>.</p>
+        <p>Point the agent at a public video URL. It finds the moments worth clipping, then can rank, reframe, or add commentary to turn them into <span class="mcp-u">shorts and vertical clips</span>.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="clips">
@@ -577,7 +577,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane" data-mcp-feat-pane="thumbs" hidden>
       <div class="mcp-feat-copy">
         <h3>Generate YouTube Thumbnails</h3>
-        <p><code>thumbnail_generate</code> starts a <span class="mcp-u">YouTube thumbnail</span> from a prompt. Poll with <code>vidso_poll</code> kind=thumbnail until the image URLs are ready.</p>
+        <p>Ask for a <span class="mcp-u">YouTube thumbnail</span> from a prompt. The agent starts the image and brings the results back in the same thread.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="thumbs">
@@ -596,7 +596,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane" data-mcp-feat-pane="audio" hidden>
       <div class="mcp-feat-copy">
         <h3>Voiceover and Captions in Chat</h3>
-        <p><code>voiceover_generate</code> narrates a script with a <span class="mcp-u">Vidso voice</span>. <code>captions_transcribe</code> starts transcription of a public video or audio URL.</p>
+        <p>Ask the agent to narrate a script with a <span class="mcp-u">Vidso voice</span>, or to transcribe a public video or audio URL.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="audio">
@@ -614,7 +614,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane" data-mcp-feat-pane="files" hidden>
       <div class="mcp-feat-copy">
         <h3>Reuse What Is Already in My Files</h3>
-        <p><code>files_list</code> lists recent generated videos, thumbnails, and uploads on the signed-in account so your agent can reuse <span class="mcp-u">what is already in My Files</span>.</p>
+        <p>Your agent can list recent generated videos, thumbnails, and uploads so it can reuse <span class="mcp-u">what is already in My Files</span>.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="files">
@@ -635,7 +635,7 @@ Once that's done, let me know it's ready.</pre>
     <div class="mcp-feat-pane" data-mcp-feat-pane="connect" hidden>
       <div class="mcp-feat-copy">
         <h3>One Connection, Every Vidso Tool</h3>
-        <p>Paste https://www.vidso.pro/mcp once. <code>vidso_catalog</code> lists <span class="mcp-u">every tool the agent can call</span> on that connection, including YouTube status, <code>youtube_upload</code>, and account quota.</p>
+        <p>Paste https://www.vidso.pro/mcp once. One connection gives the agent <span class="mcp-u">every Vidso tool</span> on that account, including YouTube status, upload, and plan quota.</p>
         <a class="mcp-feat-cta" href="/dashboard">Try it now</a>
       </div>
       <div class="mcp-mock" data-mcp-mock="connect">
@@ -871,11 +871,11 @@ Once that's done, let me know it's ready.</pre>
         </details>
         <details>
           <summary>Does it use my plan's limits?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-          <p>Yes. Generation tools require an active Vidso plan and use the same long-form, short-form, and Faceless Studio credit limits as the app. <code>vidso_account</code> can show what is left. Account and catalog tools work without a paid-plan check at the MCP layer.</p>
+          <p>Yes. Generation tools require an active Vidso plan and use the same long-form, short-form, and Faceless Studio credit limits as the app. Your agent can show what is left. Account and catalog checks work without a paid-plan check at the MCP layer.</p>
         </details>
         <details>
           <summary>Where do my generated videos go?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-          <p>Finished outputs land in My Files on the signed-in account. Your agent can list them with <code>files_list</code>. If YouTube is connected, <code>youtube_upload</code> can publish a finished render to that channel.</p>
+          <p>Finished outputs land in My Files on the signed-in account. Your agent can list them from there. If YouTube is connected, it can publish a finished render to that channel.</p>
         </details>
         <details>
           <summary>What if my session expires?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
@@ -953,7 +953,7 @@ Once that's done, let me know it's ready.</pre>
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f78'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f80'
 mountMcpPage()
 </script>
 </body>

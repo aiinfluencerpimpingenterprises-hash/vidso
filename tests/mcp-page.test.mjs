@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_CONNECT_TOOLS, MCP_FEATURE_MEDIA, VIDSO_AGENT_SETUP_PROMPT, VIDSO_CLI, mcpAgentLogo } from '../lib/landing-media.js'
+import { MCP_AGENT_LOGOS, MCP_CHAT_MEDIA, MCP_CONNECT_LABELS, MCP_CONNECT_TOOLS, MCP_FEATURE_MEDIA, VIDSO_AGENT_SETUP_PROMPT, VIDSO_CLI, mcpAgentLogo } from '../lib/landing-media.js'
 import { TOOL_MENU_ITEMS } from '../lib/public-tools.js'
 import { vidsoMcpTools } from '../lib/vidso-mcp.js'
 import { mcpTools } from '../lib/youtube.js'
@@ -53,9 +53,15 @@ test('mcp page only claims real tools', () => {
     'youtube_upload',
   ]) {
     assert.ok(names.has(name), name)
-    assert.ok(html.includes(name), name)
   }
-  for (const name of MCP_CONNECT_TOOLS) assert.ok(names.has(name), name)
+  for (const name of MCP_CONNECT_TOOLS) {
+    assert.ok(names.has(name), name)
+    assert.equal(typeof MCP_CONNECT_LABELS[name], 'string', name)
+  }
+  const bring = html.slice(html.indexOf('id="capabilities"'), html.indexOf('id="just-ask"'))
+  assert.ok(!bring.includes('longform_make_video'))
+  assert.ok(!bring.includes('clip_analyze'))
+  assert.ok(!bring.includes('vidso_catalog'))
   assert.ok(!html.includes('studio_generate'))
   assert.ok(html.includes('Video Editor and Faceless Studio are not exposed'))
 })
