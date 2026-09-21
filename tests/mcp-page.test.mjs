@@ -147,6 +147,16 @@ test('placeholder mappings stay honest', () => {
   assert.ok(mocks.includes('data-mcp-loop-seconds'))
   assert.ok(mocks.includes('bindHoverAudio'))
   assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.item), ['longform', 'thumbs', 'clips', 'voice', 'files', 'account'])
+  assert.deepEqual(MCP_CHAT_MEDIA.map((r) => r.file), [
+    'mcplongformchatplaceholder',
+    '01-thumbnail-generation-airport-secrets',
+    'mcp-chat-clips-01',
+    '02-narrator-voiceover-output',
+    '03-recent-files-render-status',
+    '04-plan-quota-plus-yearly',
+  ])
+  assert.ok(html.includes('01-thumbnail-generation-airport-secrets'))
+  assert.ok(html.includes('04-plan-quota-plus-yearly'))
 })
 
 test('cli command constant matches the tab copy', () => {
