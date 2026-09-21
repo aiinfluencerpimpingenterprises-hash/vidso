@@ -130,8 +130,18 @@ test('placeholder mappings stay honest', () => {
   assert.ok(html.includes('Boarding Groups.mp3'))
   assert.ok(html.includes('Free Upgrade.jpg'))
   assert.ok(html.includes('Airport Secrets 9-16.mp4'))
+  assert.ok(html.includes('01-airport-secrets-video-preview'))
+  assert.ok(html.includes('06-reframe-9x16-video-preview'))
   assert.equal(MCP_FEATURE_MEDIA[0].file, 'mcplongformchatplaceholder')
   assert.equal(MCP_FEATURE_MEDIA[4].file, 'mcpthumbnailplaceholder1')
+  assert.deepEqual(MCP_FEATURE_MEDIA.filter((r) => r.tab === 'files').map((r) => r.file), [
+    '01-airport-secrets-video-preview',
+    '02-airport-secrets-thumbnail-a',
+    '03-airport-short-clip-preview',
+    '04-voice-board-audio-cover',
+    '05-free-upgrade-thumbnail-b',
+    '06-reframe-9x16-video-preview',
+  ])
   assert.deepEqual(MCP_FEATURE_MEDIA[0].tab, 'longform')
   assert.ok(mocks.includes('data-mcp-hover-audio'))
   assert.ok(mocks.includes('data-mcp-loop-seconds'))
