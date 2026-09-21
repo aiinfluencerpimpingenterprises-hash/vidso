@@ -787,10 +787,10 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   content:'';position:absolute;inset:0;pointer-events:none;opacity:.07;border-radius:inherit;z-index:1;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
 }
-.mcp-panel-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:18px}
+.mcp-panel-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
 .mcp-client-tabs{
-  display:flex;flex-wrap:wrap;align-items:center;gap:2px;flex:1 1 auto;min-width:0;max-width:none;
-  overflow:visible;padding:4px;border-radius:22px;background:rgba(0,0,0,.32)
+  display:flex;flex-wrap:wrap;align-items:center;gap:2px;flex:0 1 auto;width:fit-content;max-width:calc(100% - 118px);
+  overflow:visible;padding:4px;border-radius:999px;background:rgba(0,0,0,.32)
 }
 .mcp-client-tab{
   display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:7px 10px;
@@ -858,6 +858,12 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   margin-top:auto;background:transparent;border:1px solid rgba(255,255,255,.22);color:#fff;padding:8px 14px;font-size:13px
 }
 .mcp-out.is-solid{background:#fff;color:#111;border:0}
+.mcp-steps.is-shots .mcp-step{
+  display:grid;grid-template-rows:auto auto 1fr auto auto;align-items:start;min-height:0
+}
+.mcp-steps.is-shots .mcp-shot{margin-top:0;grid-row:4;align-self:stretch}
+.mcp-step-foot{grid-row:5;min-height:40px;display:flex;align-items:center;width:100%}
+.mcp-step-foot .mcp-out{margin-top:0}
 .mcp-illus{
   width:100%;margin-top:auto;padding:18px 16px;border-radius:14px;background:#101012;
   border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;gap:14px
@@ -878,10 +884,10 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .mcp-miniurl code{flex:1;min-width:0;font:600 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff}
 .mcp-copy.is-icon{padding:8px;background:rgba(254,12,48,.16);color:#fff}
 .mcp-shot{
-  position:relative;width:100%;margin-top:auto;aspect-ratio:16/10;border-radius:14px;overflow:hidden;
-  background:linear-gradient(135deg,#17171a,#111113);border:1px solid rgba(255,255,255,.08)
+  position:relative;width:100%;margin-top:auto;aspect-ratio:21/9;border-radius:14px;overflow:hidden;
+  background:#0a0a0c;border:1px solid rgba(255,255,255,.08)
 }
-.mcp-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mcp-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0a0c}
 .mcp-prompt{
   position:relative;width:100%;margin-top:4px;padding:14px 44px 14px 14px;
   border-radius:14px;background:#0a0a0c;border:1px solid rgba(255,255,255,.1)
@@ -894,7 +900,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .mcp-key{width:78px;margin:0 -16px}
   .mcp-key.is-center{width:112px;translate:0 -14px}
   .mcp-steps{grid-template-columns:1fr}
-  .mcp-client-tabs{max-width:none}
+  .mcp-client-tabs{max-width:100%}
   .mcp-panel-top{flex-wrap:wrap}
   .mcp-mode{margin-left:auto}
   .mcp-steps.is-two{grid-template-columns:1fr}

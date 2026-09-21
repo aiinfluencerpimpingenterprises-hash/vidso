@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f73">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f75">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -262,26 +262,31 @@
         </div>
 
         <div class="mcp-client-pane" id="pane-chatgpt" role="tabpanel" hidden data-mcp-client-pane="chatgpt" aria-labelledby="tab-chatgpt">
-          <div class="mcp-steps">
+          <div class="mcp-steps is-shots">
             <article class="mcp-step">
               <h3><span class="n">1</span> Install the Plugin</h3>
               <p>Find the Vidso plugin here, then click <strong>Install Plugin</strong>.</p>
-              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-plugin-01" data-mcp-ext="jpg"></div>
-              <a class="btn mcp-out" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
-                Add Vidso plugin
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
-              </a>
+              <div class="mcp-shot" data-mcp-file="Chatgptmcp1" data-mcp-ext="png"></div>
+              <div class="mcp-step-foot">
+                <a class="btn mcp-out" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
+                  Add Vidso plugin
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                </a>
+              </div>
             </article>
             <article class="mcp-step">
               <h3><span class="n">2</span> Authorize</h3>
               <p>Sign in with your <strong>Vidso</strong> account to connect. It only takes a few seconds, and no API keys are needed.</p>
-              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-auth-01" data-mcp-ext="jpg"></div>
+              <div class="mcp-shot" data-mcp-file="Chatgptmcp2" data-mcp-ext="png"></div>
+              <div class="mcp-step-foot"></div>
             </article>
             <article class="mcp-step">
               <h3><span class="n">3</span> Activate &amp; Generate</h3>
               <p>Type <strong>@Vidso</strong> in the message box to enable it, then ask ChatGPT to generate videos or thumbnails.</p>
-              <div class="mcp-shot" data-mcp-file="mcp-chatgpt-chat-01" data-mcp-ext="jpg"></div>
-              <a class="btn mcp-out is-solid" href="/dashboard">Start creating</a>
+              <div class="mcp-shot" data-mcp-file="Chatgptmcp3" data-mcp-ext="png"></div>
+              <div class="mcp-step-foot">
+                <a class="btn mcp-out is-solid" href="/dashboard">Start creating</a>
+              </div>
             </article>
           </div>
         </div>
@@ -318,7 +323,7 @@
         </div>
 
         <div class="mcp-client-pane" id="pane-kimi" role="tabpanel" hidden data-mcp-client-pane="kimi" aria-labelledby="tab-kimi">
-          <div class="mcp-steps">
+          <div class="mcp-steps is-shots">
             <article class="mcp-step">
               <h3><span class="n">1</span> Install the Plugin</h3>
               <p>Find <strong>Vidso</strong> in Kimi plugins and install.</p>
@@ -930,7 +935,7 @@ Once that's done, let me know it's ready.</pre>
 <script src="/vendor/gsap/gsap.min.js"></script>
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script type="module">
-import { mountMcpPage } from '/lib/mcp-page.js?v=d1f69'
+import { mountMcpPage } from '/lib/mcp-page.js?v=d1f74'
 mountMcpPage()
 </script>
 </body>
