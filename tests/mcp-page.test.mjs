@@ -74,9 +74,12 @@ test('placeholder mappings stay honest', () => {
   ])
   assert.ok(mcpAgentLogo('agent-logo-claude.png').endsWith('/landing/agent-logo-claude.png'))
   assert.ok(html.includes('claude-ai-icon.webp'))
+  assert.ok((html.match(/class="mcp-key /g) || []).length >= 9)
   assert.ok(html.includes('openai-icon.svg'))
   assert.ok(html.includes('is-chatgpt'))
   assert.ok(css.includes('.mcp-client.is-chatgpt svg'))
+  assert.ok(css.includes('flex-wrap:wrap'))
+  assert.ok(!html.includes('class="mcp-client-tab is-mark" role="tab" id="tab-kimi"'))
   assert.ok(html.includes('cursor-ai-code-icon.svg'))
   assert.ok(html.includes('kimi-ai-icon.svg'))
   assert.ok(html.includes('grokbotlogo.jpg'))
@@ -108,7 +111,7 @@ test('cli command constant matches the tab copy', () => {
 test('mcp page spacing tokens match the denser layout', () => {
   assert.ok(css.includes('clamp(56px,7vw,108px)'))
   assert.ok(css.includes('.lp-red.is-mcp-page{--sec-y:96px}'))
-  assert.ok(css.includes('width:min(600px,100%)'))
+  assert.ok(css.includes('width:min(960px,100%)'))
   assert.ok(css.includes('perspective:1200px'))
 })
 

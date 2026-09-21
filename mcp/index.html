@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="/brand.js"></script>
 <link rel="stylesheet" href="/home/lp-base.css?v=d1f52">
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f72">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1f73">
 </head>
 <body class="lp-red is-mcp-page">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -77,7 +77,7 @@
 
     <div class="mcp-keys" aria-hidden="true">
       <span class="mcp-key-glow"></span>
-      <div class="mcp-key is-peach" style="--rot:-18deg;--bob:-10px;--delay:-.4s">
+      <div class="mcp-key is-peach" style="--rot:-32deg;--bob:-10px;--delay:-.4s;--z:3">
         <div class="mcp-key-bob">
           <span class="mcp-key-shadow"></span>
           <span class="mcp-key-side"></span>
@@ -87,7 +87,7 @@
           </span>
         </div>
       </div>
-      <div class="mcp-key is-white" style="--rot:-8deg;--bob:-5px;--delay:-1.1s">
+      <div class="mcp-key is-white" style="--rot:-22deg;--bob:-5px;--delay:-1.1s;--z:4">
         <div class="mcp-key-bob">
           <span class="mcp-key-shadow"></span>
           <span class="mcp-key-side"></span>
@@ -97,7 +97,27 @@
           </span>
         </div>
       </div>
-      <div class="mcp-key is-vidso is-center" style="--rot:0deg;--bob:-14px;--delay:0s">
+      <div class="mcp-key is-black is-fill" style="--rot:-13deg;--bob:-8px;--delay:-.9s;--z:5">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/grokbotlogo.jpg" alt="">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-peach" style="--rot:-6deg;--bob:-4px;--delay:-1.4s;--z:6">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/claude-code-icon.png" alt="">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-vidso is-center" style="--rot:0deg;--bob:-14px;--delay:0s;--z:10">
         <div class="mcp-key-bob">
           <span class="mcp-key-shadow"></span>
           <span class="mcp-key-side"></span>
@@ -107,7 +127,7 @@
           </span>
         </div>
       </div>
-      <div class="mcp-key is-black" style="--rot:9deg;--bob:-6px;--delay:-.7s">
+      <div class="mcp-key is-black" style="--rot:6deg;--bob:-6px;--delay:-.7s;--z:7">
         <div class="mcp-key-bob">
           <span class="mcp-key-shadow"></span>
           <span class="mcp-key-side"></span>
@@ -117,13 +137,33 @@
           </span>
         </div>
       </div>
-      <div class="mcp-key is-white" style="--rot:17deg;--bob:-11px;--delay:-1.6s">
+      <div class="mcp-key is-white" style="--rot:13deg;--bob:-11px;--delay:-1.6s;--z:6">
         <div class="mcp-key-bob">
           <span class="mcp-key-shadow"></span>
           <span class="mcp-key-side"></span>
           <span class="mcp-key-skirt"></span>
           <span class="mcp-key-face">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-white is-fill" style="--rot:22deg;--bob:-7px;--delay:-.2s;--z:4">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/OpenClaw%20Logo%20-%20Colored%20-%20zonalogo.com.png" alt="">
+          </span>
+        </div>
+      </div>
+      <div class="mcp-key is-white" style="--rot:32deg;--bob:-12px;--delay:-1.8s;--z:3">
+        <div class="mcp-key-bob">
+          <span class="mcp-key-shadow"></span>
+          <span class="mcp-key-side"></span>
+          <span class="mcp-key-skirt"></span>
+          <span class="mcp-key-face">
+            <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Hermes%20Agent%20Logo%20-%20Black%20-%20zonalogo.com.svg" alt="">
           </span>
         </div>
       </div>
@@ -160,7 +200,7 @@
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/cursor-ai-code-icon.svg" alt="">
             Cursor
           </button>
-          <button type="button" class="mcp-client-tab is-mark" role="tab" id="tab-kimi" aria-selected="false" aria-controls="pane-kimi" data-mcp-client="kimi">
+          <button type="button" class="mcp-client-tab" role="tab" id="tab-kimi" aria-selected="false" aria-controls="pane-kimi" data-mcp-client="kimi">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
             Kimi
           </button>
@@ -730,7 +770,7 @@ Once that's done, let me know it's ready.</pre>
           </span>
           Cursor
         </span>
-        <span class="mcp-client is-mark">
+        <span class="mcp-client">
           <span class="mcp-client-logo">
             <img data-mcp-logo src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/kimi-ai-icon.svg" alt="">
           </span>
