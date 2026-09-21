@@ -120,6 +120,7 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.ok(!modelsPageJs.includes('model-card-go'))
   assert.ok(!modelsPageJs.includes('pointerenter'))
   assert.ok(modelsPageJs.includes("v.setAttribute('autoplay'"))
+  assert.ok(!modelsPageJs.includes('is-target'))
   assert.equal(modelHref('kling-3-pro'), '/models#kling-3-pro')
   assert.equal(modelSlug('veo-3.1'), 'veo-3-1')
   const files = placeholderTable().map((p) => p.file)

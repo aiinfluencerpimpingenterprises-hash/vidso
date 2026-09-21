@@ -102,10 +102,12 @@ html,.lp-red{overflow-x:visible}
   background:#0a0a0b;backdrop-filter:none;overflow:visible;padding:0;
   border-bottom:1px solid rgba(255,255,255,.08)
 }
-body.is-models-page .lp-sitehead{
+body.is-models-page .lp-sitehead,
+body.is-legal-page .lp-sitehead{
   background:#0a0a0b
 }
-body.is-models-page .lp-sitehead header{
+body.is-models-page .lp-sitehead header,
+body.is-legal-page .lp-sitehead header{
   background:#0a0a0b
 }
 .lp-red .lp-sitehead header > .wrap{max-width:none;width:100%;padding-left:32px;padding-right:32px}
@@ -1514,13 +1516,34 @@ body.is-models-page .models-hero .lp-sub{
   margin:0;font-size:13px;line-height:1.4;color:rgba(245,245,244,.58);
   min-height:calc(1.4em * 3)
 }
-.model-card.is-target .model-card-shot{outline:2px solid #FE0C30}
 .model-card.is-blank .model-card-shot.is-blank{background:#17171a}
 .top-models-shot.is-blank::after{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(115deg,transparent 18%,rgba(255,255,255,.04) 48%,transparent 72%);
   background-size:220% 220%;animation:lp-blank-shimmer 6s linear infinite
 }
+.legal-page{padding:calc(var(--chrome-h) + 36px) 0 88px;background:var(--bg)}
+.legal-shell{max-width:760px;margin:0 auto}
+.legal .eyebrow{
+  font-size:.75rem;font-weight:700;color:#FE0C30;letter-spacing:.08em;text-transform:uppercase;margin:0 0 14px
+}
+.legal h1{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,4.2vw,2.8rem);font-weight:800;
+  letter-spacing:-.035em;line-height:1.1;margin:0 0 12px;color:#fff
+}
+.legal .effective{
+  color:rgba(245,245,244,.45);font-size:.9rem;margin:0 0 36px;padding-bottom:28px;
+  border-bottom:1px solid rgba(245,245,244,.09)
+}
+.legal h2{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:1.12rem;font-weight:700;
+  margin:34px 0 10px;letter-spacing:-.02em;color:#fff;line-height:1.25
+}
+.legal h2:first-of-type{margin-top:8px}
+.legal p{color:rgba(245,245,244,.70);font-size:.98rem;margin:0 0 14px;max-width:680px;line-height:1.7}
+.legal a{color:#FE0C30;font-weight:500}
+.legal a:hover{color:#ff2444;text-decoration:underline;text-underline-offset:2px}
+.legal a:visited{color:#FE0C30}
 @media(max-width:1024px){
   .models-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -1529,6 +1552,10 @@ body.is-models-page .models-hero .lp-sub{
   .models-index{padding:16px 0 72px}
   .models-hero-bg img,
   .models-hero-bg video{object-position:12% 28%}
+  .legal-page{padding:calc(var(--chrome-h) + 24px) 0 64px}
+  .legal .effective{margin-bottom:28px;padding-bottom:22px}
+  .legal h2{margin-top:28px;font-size:1.05rem}
+  .legal p{font-size:.94rem}
 }
 @media(max-width:390px){
   .models-grid{grid-template-columns:1fr}
