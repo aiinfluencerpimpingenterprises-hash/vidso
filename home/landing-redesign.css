@@ -303,9 +303,10 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .lp-red.is-home .lp-sitehead .nav-links,
 .lp-red.is-home .lp-sitehead .nav-toggle,
 .lp-red.is-home .lp-sitehead .nav-drawer{display:none!important}
+.lp-red.is-home .lp-sitehead .nav-cta{display:flex;align-items:center;gap:14px}
 .lp-red.is-home .lp-sitehead .nav-tools-btn,
 .lp-red.is-home .lp-sitehead .nav-plain{
-  padding:7px 10px;border-radius:999px;font-size:14px;font-weight:500;color:inherit
+  padding:7px 10px;border-radius:999px;font-size:14px;font-weight:500;color:rgba(245,245,244,.82);text-decoration:none
 }
 .lp-red.is-home .lp-sitehead .nav-tools-btn:hover,
 .lp-red.is-home .lp-sitehead .nav-plain:hover,
