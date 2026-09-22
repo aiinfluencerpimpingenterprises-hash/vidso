@@ -599,10 +599,12 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .cover-card{
   position:absolute;left:50%;top:12px;width:min(72vw,960px);aspect-ratio:16/9;border-radius:18px;overflow:hidden;
-  background:#161618;border:1px solid var(--line);transform:translateX(-50%);
-  transition:transform .45s,opacity .45s;cursor:pointer;pointer-events:auto;
+  background:#161618;border:1px solid var(--line);transform:translate3d(-50%,0,0);
+  transition:transform .65s cubic-bezier(.22,.61,.36,1),opacity .45s ease;
+  cursor:pointer;pointer-events:auto;will-change:transform,opacity;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d
 }
+.cover-card.is-warp{transition:none!important}
 .cover-short{position:absolute;inset:0;background:#0c0c0e}
 .cover-short .cover-blur{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(22px) brightness(.45);transform:none}
 .cover-short video:not(.cover-blur){
