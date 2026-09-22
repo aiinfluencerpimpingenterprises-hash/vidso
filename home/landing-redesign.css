@@ -334,7 +334,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 /* Scrolled: centered frosted pill */
 .lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:14px}
 .lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
-  width:fit-content;max-width:740px;padding:0 12px;border-radius:9999px;
+  width:100%;max-width:740px;padding:0 12px;border-radius:9999px;
   background:rgba(255,255,255,.76);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   border-color:rgba(0,0,0,.06);
