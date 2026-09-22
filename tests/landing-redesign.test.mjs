@@ -64,7 +64,7 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Choose the plan for you.'))
   assert.ok(html.includes('What is Vidso?'))
   assert.ok(html.includes('Generate a Video Now'))
-  assert.match(html, /hero-cta[\s\S]{0,180}btn-glow/)
+  assert.match(html, /hero-cta[\s\S]{0,180}btn-start/)
   assert.ok(!html.includes('hero-pill'))
   assert.match(html, /See what a single prompt[\s\S]{0,80}can make/)
   assert.ok(html.includes('Make '))
