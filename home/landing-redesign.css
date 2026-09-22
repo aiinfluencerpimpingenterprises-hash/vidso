@@ -334,8 +334,8 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .hero-lp h1 .h1-l{white-space:nowrap}
 }
 .hero-lp .sub{
-  max-width:620px;margin:0 auto 12px;font-size:16px;line-height:1.45;font-weight:400;
-  color:var(--muted)
+  max-width:28em;margin:0 auto 8px;font-size:13px;line-height:1.3;font-weight:400;
+  letter-spacing:-.01em;color:var(--muted)
 }
 .hero-lp .hero-cta{display:flex;justify-content:center;margin:0 0 16px}
 .hero-lp .hero-cta .btn-glow{
@@ -423,7 +423,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .hero-lp{padding:calc(var(--chrome-h) + 8px) 0 12px}
   .hero-lp h1{font-size:clamp(26px,6.8vw,34px);max-width:12em}
   .hero-lp h1 .h1-l{white-space:normal}
-  .hero-lp .sub{font-size:14px;padding:0 16px}
+  .hero-lp .sub{font-size:12px;padding:0 16px}
   .hero-marquee{margin-top:18px;height:168px}
   .hero-mq-card{height:168px}
   .hero-mq-card.is-long{width:calc(168px * 16 / 9)}
