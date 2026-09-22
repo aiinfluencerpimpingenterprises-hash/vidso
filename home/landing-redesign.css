@@ -448,30 +448,10 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .demo-frame{
   position:relative;width:min(880px,calc(100% - 80px));max-width:880px;margin:0 auto;border-radius:20px;overflow:hidden;
-  background:#111;border:1px solid var(--line);aspect-ratio:16/9;height:auto;cursor:none;
+  background:#111;border:1px solid var(--line);aspect-ratio:16/9;height:auto;cursor:auto;
   transform-origin:center center;filter:none!important
 }
-.demo-frame.is-touch,.demo-frame.is-over-ctrl{cursor:auto}
 .demo-frame video{width:100%;height:100%;object-fit:cover;display:block;filter:none!important}
-.demo-cursor{
-  position:fixed;z-index:40;pointer-events:none;transform:translate(-50%,-50%);
-  display:none;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;
-  isolation:isolate;
-  background:linear-gradient(110deg,#fff 0%,#fff 46%,#FE0C30 78%,#ff6b7a 100%);
-  color:#111;font-weight:800;font-size:15px;
-  box-shadow:0 0 0 1px rgba(254,12,48,.35),0 0 32px rgba(254,12,48,.6),0 10px 28px rgba(0,0,0,.35);
-  animation:lp-pulse 2.2s ease-in-out infinite
-}
-.demo-cursor::before{
-  content:'';position:absolute;inset:-2px;border-radius:inherit;z-index:-1;padding:2px;
-  background:conic-gradient(from var(--angle),transparent 0deg,transparent 280deg,#FE0C30 320deg,#ffd1d8 345deg,transparent 360deg);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
-  animation:lp-angle 3.4s linear infinite
-}
-.demo-cursor span{color:#fff;font-weight:800}
-.demo-cursor.is-on{display:inline-flex}
 .demo-ctrl{
   position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:center;gap:8px;
   padding:16px;border-radius:0;border:0;
@@ -1389,8 +1369,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .lp-red .h1-swoosh{filter:none}
 .lp-red .bill-thumb{box-shadow:none}
 .lp-red .lp-win{box-shadow:0 18px 50px rgba(0,0,0,.38)!important}
-.lp-red .demo-cursor{box-shadow:0 10px 28px rgba(0,0,0,.35)!important;overflow:hidden}
-.lp-red .demo-cursor::before{display:none}
 .lp-red .shorts-arc-glow{display:none}
 .mcp-title,.mcp-sub,.final-box h2,.final-box p,.formats-float .two-line,.formats-float .lp-sub{text-align:center;margin-left:auto;margin-right:auto}
 
@@ -1620,14 +1598,13 @@ body.is-models-page .models-hero .lp-sub{
 }
 
 @media (prefers-reduced-motion:reduce){
-  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.demo-cursor,.demo-cursor::before,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank.is-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
+  .btn-glow,.btn-glow::before,.btn-glow .btn-ring,.hero-marquee-track,.fmt-float,.prompt-box .caret,.feat-mock-bar,.mcp-key-bob,.shorts-arc [data-arc],.hero-mq-card.is-blank::after,.shorts-shot.is-blank::after,.mcp-blank.is-blank::after,.model-card.is-blank .model-card-shot.is-blank::after,.top-models-shot.is-blank::after,.ugc-shot.is-blank::after,.studio-shot.is-blank::after,.top-models-tile{animation:none!important}
   .mcp-client-pane,.mcp-ask-item,.mcp-ask-body,.mcp-model-tile{transition:none!important}
   .mcp-model-tile,.mcp-models.is-in .mcp-model-tile,.mcp-model-tile:hover,.mcp-models.is-in .mcp-model-tile:hover{opacity:1!important;transform:none!important}
   .mcp-caret,.mcp-mock-dots i,.mcp-wave i{animation:none!important}
   .hero-marquee{overflow-x:auto}
   .lp-red .btn-glow{box-shadow:0 0 18px rgba(254,12,48,.35)!important}
   .shorts-arc [data-arc]{stroke-dashoffset:0!important}
-  .demo-cursor{display:none!important}
   .model-card,.model-card:hover,.model-card:focus-visible{transform:none!important;transition:none!important}
   .models-hero-bg.has-still img{filter:none}
   .hero-lp,.demo-hero{position:relative!important;inset:auto;opacity:1!important;transform:none!important;pointer-events:auto}
@@ -1635,6 +1612,5 @@ body.is-models-page .models-hero .lp-sub{
   html{scroll-behavior:auto}
 }
 @media (hover:none){
-  .demo-cursor{display:none!important}
   .demo-frame{cursor:auto}
 }
