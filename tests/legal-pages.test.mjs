@@ -17,9 +17,11 @@ test('legal pages use landing chrome and drop the topo SVG', () => {
     assert.match(page.html, /id="navDrawer"/)
     assert.match(page.html, /mountLegalPage/)
     assert.match(page.html, /<footer>/)
+    assert.match(page.html, /nav-plain[\s\S]*Pricing/)
+    assert.match(page.html, /satoshi@400/)
     assert.doesNotMatch(page.html, /class="site-header"|class="site-footer"|class="nav-back"/)
   }
-  assert.match(js, /mountLandingToolsMenu/)
+  assert.match(js, /mountNavShrink/)
   assert.match(js, /mountLandingFooter/)
   assert.doesNotMatch(js, /topo-bg/)
   assert.doesNotMatch(css, /model-card\.is-target/)

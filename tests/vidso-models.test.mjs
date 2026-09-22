@@ -149,6 +149,8 @@ test('hero modes and models nav are wired', () => {
   assert.ok(modelsPage.includes('Vidso Models'))
   assert.ok(modelsPage.includes('Explore the latest'))
   assert.ok(modelsPage.includes('Start for Free'))
+  assert.ok(modelsPage.includes('Pricing'))
+  assert.ok(modelsPage.includes('satoshi@400'))
   assert.ok(modelsPage.includes('id="models-grid"'))
   assert.ok(!modelsPage.includes('final-box'))
   assert.match(vercel, /"source": "\/models"/)

@@ -39,7 +39,7 @@ test('mega menu uses real shipped routes and existing copy', () => {
 })
 
 test('landing points generate CTAs at the in-app home', () => {
-  assert.match(landingJs, /mountLandingToolsMenu/)
+  assert.match(landingJs, /mountNavShrink/)
   assert.match(menuJs, /nav-tools-btn/)
   assert.match(menuJs, /nav-tools-chevron/)
   assert.match(menuJs, /tools-mega-ico/)
