@@ -503,10 +503,14 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .shorts-card{
   position:absolute;left:50%;top:28px;width:240px;margin-left:-120px;
   display:flex;flex-direction:column;align-items:center;transform-origin:center center;
-  transform-style:preserve-3d;
+  transform-style:preserve-3d;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   transition:transform .5s ease,opacity .4s ease;cursor:pointer;outline:none
 }
-.shorts-3d{width:100%;transform-style:preserve-3d;transform-origin:center center}
+.shorts-3d{
+  width:100%;transform-style:preserve-3d;transform-origin:center center;
+  transition:transform .5s ease;backface-visibility:hidden;-webkit-backface-visibility:hidden
+}
+.shorts-card.is-warp,.shorts-card.is-warp .shorts-3d{transition:none!important}
 .shorts-meta{display:flex;flex-direction:column;align-items:center;width:100%;transform:none!important}
 .shorts-shot{
   position:relative;width:100%;aspect-ratio:9/16;border-radius:18px;overflow:hidden;
