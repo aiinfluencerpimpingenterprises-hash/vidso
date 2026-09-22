@@ -144,6 +144,12 @@ test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserv
   assert.ok(!css.includes('margin-top:-18px'))
 })
 
+test('FAQ accordion closes the open item across both columns', () => {
+  const js = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
+  assert.match(js, /if \(single\) bindFaqSingle\(grid\)\s+else bindFaqGroup\(grid\)/)
+  assert.ok(!js.includes("grid.querySelectorAll('.faq-col').forEach((col) => bindFaqGroup(col))"))
+})
+
 test('announcement config and long-form demo start stay in one place', () => {
   assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro_v2')
   assert.equal(LANDING_ANNOUNCE.href, '/dashboard')
