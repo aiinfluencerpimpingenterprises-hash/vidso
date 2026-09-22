@@ -325,7 +325,8 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .hero-lp h1{
   font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;
   font-size:clamp(32px,3.8vw,52px);line-height:1.08;letter-spacing:-.04em;
-  margin:0 auto 10px;max-width:16em;width:100%;text-align:center
+  margin:0 auto 10px;max-width:16em;width:100%;text-align:center;
+  text-transform:uppercase
 }
 .hero-lp h1 .h1-l,.hero-lp h1 .h1-mark{font-weight:800}
 .hero-lp h1 .h1-l{display:block;text-align:center;white-space:normal}
