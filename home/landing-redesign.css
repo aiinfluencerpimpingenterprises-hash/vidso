@@ -28,6 +28,24 @@ html,.lp-red{overflow-x:visible}
 #formats{display:block;height:0;overflow:hidden}
 
 .lp-red h1,.lp-red h2,.lp-red h3{text-wrap:balance}
+.lp-red.is-home h1,
+.lp-red.is-home h2,
+.lp-red.is-home h3,
+.lp-red.is-home h1 .h1-l,
+.lp-red.is-home h1 .h1-mark,
+.lp-red.is-home h2 .l1,
+.lp-red.is-home h2 .l2,
+.lp-red.is-home h2 .accent,
+.lp-red.is-home h3 .l1,
+.lp-red.is-home h3 .l2,
+.lp-red.is-home .two-line .l1,
+.lp-red.is-home .two-line .l2,
+.lp-red.is-home .h-split .l1,
+.lp-red.is-home .h-split .l2{
+  font-family:Satoshi,Inter,sans-serif;
+  font-weight:400;
+  text-transform:none
+}
 .lp-red p{text-wrap:pretty}
 .lp-red .eyebrow{color:rgba(245,245,244,.82);letter-spacing:.16em;text-align:center}
 
