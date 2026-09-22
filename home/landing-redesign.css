@@ -263,6 +263,134 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .lp-red .lp-sitehead .nav-tools-chevron,
   .lp-red .lp-sitehead .tools-acc-btn .nav-tools-chevron{transition:none}
 }
+
+/* Home: shrink-to-floating-pill nav */
+.lp-red.is-home .lp-sitehead{
+  position:fixed;top:0;left:0;right:0;z-index:240;
+  pointer-events:none
+}
+.lp-red.is-home .lp-sitehead .lp-announce,
+.lp-red.is-home .lp-sitehead header{
+  pointer-events:auto
+}
+.lp-red.is-home .lp-sitehead header{
+  position:relative!important;top:auto!important;left:auto;right:auto;z-index:2;width:100%;
+  display:flex;justify-content:center;background:transparent;border-bottom:0;
+  overflow:visible;padding:0;
+  transition:padding .45s cubic-bezier(.22,1,.36,1)
+}
+.lp-red.is-home .lp-sitehead header > .wrap{
+  max-width:var(--wrap);width:100%;margin:0 auto;padding:0 32px;height:56px;
+  display:flex;align-items:center;
+  background:transparent;border:1px solid transparent;border-radius:0;
+  box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
+  transition:
+    max-width .45s cubic-bezier(.22,1,.36,1),
+    width .45s cubic-bezier(.22,1,.36,1),
+    margin .45s cubic-bezier(.22,1,.36,1),
+    padding .45s cubic-bezier(.22,1,.36,1),
+    background-color .45s cubic-bezier(.22,1,.36,1),
+    box-shadow .45s cubic-bezier(.22,1,.36,1),
+    border-color .45s cubic-bezier(.22,1,.36,1),
+    border-radius .45s cubic-bezier(.22,1,.36,1)
+}
+.lp-red.is-home .lp-sitehead nav{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  width:100%;height:56px;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;backdrop-filter:none
+}
+.lp-red.is-home .lp-sitehead .logo{color:#fff}
+.lp-red.is-home .lp-sitehead .nav-links{
+  gap:2px;font-size:14px;font-weight:500;color:rgba(245,245,244,.82)
+}
+.lp-red.is-home .lp-sitehead .nav-tools-btn,
+.lp-red.is-home .lp-sitehead .nav-plain{
+  padding:7px 10px;border-radius:999px;font-size:14px;font-weight:500;color:inherit
+}
+.lp-red.is-home .lp-sitehead .nav-tools-btn:hover,
+.lp-red.is-home .lp-sitehead .nav-plain:hover,
+.lp-red.is-home .lp-sitehead .nav-tools.is-on .nav-tools-btn,
+.lp-red.is-home .lp-sitehead .nav-tools-btn[aria-expanded="true"]{
+  background:rgba(255,255,255,.1);color:#fff
+}
+.lp-red.is-home .lp-sitehead .nav-cta .btn-start,
+.lp-red.is-home .lp-sitehead .nav-drawer-foot .btn-start{
+  min-height:36px;padding:8px 16px;font-size:13px;font-weight:650;border-radius:999px;
+  color:#fff!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 46%),linear-gradient(135deg,#FE0C30,#C40A26)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.22) inset,0 6px 16px rgba(254,12,48,.28)!important
+}
+.lp-red.is-home .lp-sitehead .nav-cta .btn-start:hover,
+.lp-red.is-home .lp-sitehead .nav-drawer-foot .btn-start:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,0) 46%),linear-gradient(135deg,#ff2444,#FE0C30)!important;
+  color:#fff!important;transform:translateY(-1px);
+  box-shadow:0 1px 0 rgba(255,255,255,.28) inset,0 8px 20px rgba(254,12,48,.34)!important
+}
+.lp-red.is-home .lp-sitehead .nav-toggle{
+  width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);color:#fff
+}
+
+/* Scrolled: centered frosted pill */
+.lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:14px}
+.lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
+  max-width:740px;padding:0 12px;border-radius:9999px;
+  background:rgba(255,255,255,.76);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-color:rgba(0,0,0,.06);
+  box-shadow:0 8px 30px rgba(0,0,0,.08)
+}
+.lp-red.is-home .lp-sitehead.is-scrolled .logo{color:#111}
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-links{color:#333}
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-tools-btn,
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-plain{color:#333}
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-tools-btn:hover,
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-plain:hover,
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-tools.is-on .nav-tools-btn,
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-tools-btn[aria-expanded="true"]{
+  background:rgba(0,0,0,.06);color:#111
+}
+.lp-red.is-home .lp-sitehead.is-scrolled .nav-toggle{
+  border-color:rgba(0,0,0,.08);background:rgba(0,0,0,.04);color:#111
+}
+
+@media(max-width:900px){
+  .lp-red.is-home .lp-sitehead .nav-links{display:none}
+  .lp-red.is-home .lp-sitehead .nav-cta{display:flex!important;margin-left:auto}
+  .lp-red.is-home .lp-sitehead .nav-toggle{display:inline-flex}
+  .lp-red.is-home .lp-sitehead header.menu-open .nav-drawer,
+  .lp-red.is-home .lp-sitehead .nav-drawer:not([hidden]){
+    display:flex!important;flex-direction:column;
+    position:absolute;left:12px;right:12px;top:calc(100% + 8px);bottom:auto;
+    z-index:230;max-height:min(70vh,560px);padding:0;overflow:hidden;
+    border-radius:22px;border:1px solid rgba(0,0,0,.06);
+    background:rgba(255,255,255,.78);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    box-shadow:0 8px 30px rgba(0,0,0,.08)
+  }
+  .lp-red.is-home .lp-sitehead .nav-drawer-body{
+    padding:10px 16px 12px;color:#333
+  }
+  .lp-red.is-home .lp-sitehead .nav-drawer-foot{
+    border-top:1px solid rgba(0,0,0,.06);background:transparent;padding:12px 16px 14px
+  }
+  .lp-red.is-home .lp-sitehead .tools-acc-link,
+  .lp-red.is-home .lp-sitehead .tools-acc-btn,
+  .lp-red.is-home .lp-sitehead .tools-acc-name{color:#111}
+  .lp-red.is-home .lp-sitehead .tools-acc-h,
+  .lp-red.is-home .lp-sitehead .tools-acc-desc{color:rgba(17,17,17,.55)}
+}
+@media(max-width:768px){
+  .lp-red.is-home .lp-sitehead header > .wrap{padding:0 12px}
+  .lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:12px}
+  .lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
+    max-width:none;width:calc(100% - 24px);margin-left:12px;margin-right:12px
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .lp-red.is-home .lp-sitehead header,
+  .lp-red.is-home .lp-sitehead header > .wrap{transition:none}
+}
 .ideas,.shorts,.showcase,.workflow-tiles,.top-models,.models-hero,.models-index,.lp-feat,.mcp-hero,.mcp-excerpt,.mcp-setup,.mcp-ask,.mcp-models,.formats-float,.why-stack,.faq,.final,.format-econ,.flow,.compare,.comp-compare,.pricing,.results,.yt-compact,.ugc-row,.studio-tools,footer{isolation:isolate}
 .lp-red a:focus-visible,.lp-red button:focus-visible,.lp-red [tabindex]:focus-visible,.lp-red input:focus-visible{
   outline:2px solid var(--a1);outline-offset:3px

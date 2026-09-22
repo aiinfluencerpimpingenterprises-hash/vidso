@@ -1065,9 +1065,9 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1fa4">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1fa5">
 </head>
-<body class="lp-red">
+<body class="lp-red is-home">
 <div class="scroll-prog" id="scrollProg"></div>
 
 <div class="lp-sitehead" id="lp-sitehead">
@@ -1838,10 +1838,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   gsap.to('#scrollProg',{scaleX:1,ease:'none',
     scrollTrigger:{trigger:document.body, start:'top top', end:'bottom bottom', scrub:.3}});
 
-  // ---------- nav condenses after scrolling past hero top ----------
-  ScrollTrigger.create({start:'top -60', end:99999,
-    onUpdate:function(self){document.querySelector('nav').classList.toggle('scrolled', self.scroll()>60);}});
-
   // ---------- feature card click pop ----------
   document.querySelectorAll('.bento .card').forEach(function(card){
     card.addEventListener('click',function(){
@@ -1862,7 +1858,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module">
 import { mountPricing, bindLandingToggle } from '/lib/pricing-ui.js'
-import { mountLandingPage } from '/lib/landing-page.js?v=d1fa2'
+import { mountLandingPage } from '/lib/landing-page.js?v=d1fa5'
 const plans = document.getElementById('pricingPlans')
 mountPricing(plans, { variant: 'landing', cycle: 'annual' })
 bindLandingToggle(document.getElementById('billToggle'), plans)
