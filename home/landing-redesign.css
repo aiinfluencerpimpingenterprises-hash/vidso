@@ -339,7 +339,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .hero-lp .hero-copy .hero-cta{display:flex;justify-content:center;align-items:center;margin:0 0 12px;min-height:0}
 .hero-lp .hero-cta .btn-glow{
-  min-height:0;height:auto;padding:6px 14px;font-size:12px;line-height:1.2;gap:6px;
+  min-height:0;height:auto;padding:8px 18px;font-size:13px;line-height:1.2;gap:6px;
   width:auto;max-width:none;align-self:center;
   animation:lp-hero-pulse 2.4s ease-in-out infinite
 }
