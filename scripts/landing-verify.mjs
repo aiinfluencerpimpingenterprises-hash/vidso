@@ -51,14 +51,6 @@ async function measure(page) {
         gap: Math.round((b.top + scroll) - (a.bottom + scroll)),
       })
     }
-    const video = document.getElementById('demo-frame')
-    const loved = document.querySelector('.loved')
-    let lovedGap = null
-    if (video && loved) {
-      const vr = video.getBoundingClientRect()
-      const lr = loved.getBoundingClientRect()
-      lovedGap = Math.round((lr.top + window.scrollY) - (vr.bottom + window.scrollY))
-    }
     const heroCards = [...document.querySelectorAll('.hero-card')].map((el) => {
       const r = el.getBoundingClientRect()
       return {
@@ -87,7 +79,6 @@ async function measure(page) {
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
       gaps,
-      lovedGap,
       heroCards,
       overlayPresent: !!overlay,
       pinVh,
@@ -121,37 +112,6 @@ async function runViewport(browser, width, height, key) {
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.15))
   await page.waitForTimeout(400)
   await shot(page, `${key}-02-dark-or-pin.png`)
-
-  await page.evaluate(() => {
-    const demo = document.getElementById('demo-hero')
-    if (demo) demo.scrollIntoView({ block: 'center' })
-  })
-  await page.waitForTimeout(700)
-  await shot(page, `${key}-03-settled-loved.png`)
-
-  let pause = null
-  if (width >= 1024) {
-    await page.locator('#demo-frame').click({ position: { x: 40, y: 40 }, force: true }).catch(() => {})
-    const pauseBtn = page.locator('#demo-pause')
-    await page.locator('#demo-frame').hover()
-    await page.waitForTimeout(200)
-    if (await pauseBtn.count()) {
-      await pauseBtn.click({ force: true })
-      await page.waitForTimeout(200)
-      const before = await page.evaluate(() => {
-        const v = document.getElementById('demo-video')
-        return { paused: v?.paused, t: v?.currentTime || 0, href: location.href, label: document.getElementById('demo-pause')?.getAttribute('aria-label') }
-      })
-      await page.evaluate(() => window.scrollBy(0, 80))
-      await page.waitForTimeout(5200)
-      const after = await page.evaluate(() => {
-        const v = document.getElementById('demo-video')
-        return { paused: v?.paused, t: v?.currentTime || 0, href: location.href, label: document.getElementById('demo-pause')?.getAttribute('aria-label') }
-      })
-      pause = { before, after, stayed: after.paused === true && Math.abs(after.t - before.t) < 0.35 && !after.href.includes('/signup') }
-      await shot(page, `${key}-04-paused.png`)
-    }
-  }
 
   await go(page, '#ideas')
   await shot(page, `${key}-05-formats.png`)
@@ -211,7 +171,7 @@ async function runViewport(browser, width, height, key) {
   }
 
   const mid = await measure(page)
-  report.viewports[key] = { width, height, top, mid, pause, errors }
+  report.viewports[key] = { width, height, top, mid, errors }
   await page.close()
 }
 

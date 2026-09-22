@@ -49,7 +49,8 @@ test('hero pin transition is gone', () => {
   assert.ok(!html.includes('id="hero-pin"'))
   assert.ok(!html.includes('hero-dark-beat'))
   assert.ok(!html.includes('hero-pin-stage'))
-  assert.ok(html.includes('id="demo-hero"'))
+  assert.ok(!html.includes('id="demo-hero"'))
+  assert.ok(!html.includes('id="demo-video"'))
   const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
   assert.ok(!css.includes('--hero-pin-vh'))
   assert.ok(!css.includes('hero-pin-stage'))
@@ -118,8 +119,6 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('class="js-reveal"') || html.includes("classList.add('js-reveal')"))
   assert.ok(!html.includes('hero-ghost-cta'))
   assert.ok(html.includes('btn-label'))
-  assert.ok(html.includes('transform="translate(1 0)"'))
-  assert.ok(html.includes('class="ico-play"'))
 })
 
 test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserver', () => {
