@@ -514,7 +514,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 @keyframes lp-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .hero-trust{
   display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
-  margin:28px auto 8px;padding:0 20px;max-width:720px
+  margin:18px auto 0;padding:0 20px;max-width:720px
 }
 .hero-trust p{margin:0;font-size:14px;line-height:1.4;color:var(--muted)}
 .hero-trust-avs{display:flex;align-items:center}
@@ -541,7 +541,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .hero-mq-card{height:168px}
   .hero-mq-card.is-long{width:calc(168px * 16 / 9)}
   .hero-mq-card.is-short{width:calc(168px * 9 / 16)}
-  .hero-trust{margin:22px auto 8px}
+  .hero-trust{margin:16px auto 0}
   .lp-red .wrap{padding-left:16px;padding-right:16px}
 }
 .hero-marquee.is-static,.hero-marquee.is-static .hero-marquee-track{animation:none}

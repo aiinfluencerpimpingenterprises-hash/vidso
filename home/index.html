@@ -1065,7 +1065,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="stylesheet" href="/home/landing-redesign.css?v=d1fab">
+<link rel="stylesheet" href="/home/landing-redesign.css?v=d1fac">
 </head>
 <body class="lp-red is-home">
 <div class="scroll-prog" id="scrollProg"></div>
@@ -1137,12 +1137,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             </button>
           </div>
         </form>
+        <div class="hero-marquee" id="hero-marquee">
+          <div class="hero-marquee-track" id="hero-marquee-track"></div>
+        </div>
         <div class="hero-trust" id="hero-trust">
           <div class="hero-trust-avs" id="hero-trust-avs" aria-hidden="true"></div>
           <p>Trusted by creators shipping videos from one workspace</p>
-        </div>
-        <div class="hero-marquee" id="hero-marquee">
-          <div class="hero-marquee-track" id="hero-marquee-track"></div>
         </div>
       </div>
     </section>
@@ -1767,8 +1767,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     .from('.hero-lp .sub',{y:20,opacity:0,duration:.65},'-=.35')
     .from('.hero-cta',{y:12,opacity:0,duration:.45},'-=.35')
     .from('.hero-prompt',{y:16,opacity:0,duration:.5},'-=.25')
-    .from('.hero-trust',{y:12,opacity:0,duration:.4},'-=.3')
-    .from('.hero-marquee',{y:18,opacity:0,duration:.55},'-=.3');
+    .from('.hero-marquee',{y:18,opacity:0,duration:.55},'-=.3')
+    .from('.hero-trust',{y:12,opacity:0,duration:.4},'-=.3');
   try { document.getElementById('hero-h1') && document.getElementById('hero-h1').classList.add('is-ready'); } catch(e) {}
 
   // ---------- DrawSVG: line art draws itself on ----------
