@@ -194,7 +194,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.lp-red.is-home #top-models h2 .accent{display:block}'))
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
-  assert.ok(html.includes('landing-redesign.css?v=d1fbb'))
+  assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
   assert.ok(html.includes('landing-page.js?v=d1fae'))
 })
 
