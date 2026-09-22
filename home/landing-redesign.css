@@ -325,7 +325,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .hero-lp .trust-badge{justify-content:center;margin:0 auto 10px;font-size:12px;padding:6px 14px}
 .hero-lp h1{
   font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;
-  font-size:clamp(40px,5.2vw,76px);line-height:1.02;letter-spacing:-.045em;
+  font-size:clamp(32px,3.8vw,52px);line-height:1.08;letter-spacing:-.04em;
   margin:0 auto 10px;max-width:16em;width:100%;text-align:center
 }
 .hero-lp h1 .h1-l{display:block;text-align:center;white-space:normal}
@@ -412,7 +412,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 .hero-trust-avs img:first-child{margin-left:0}
 @media(max-width:1024px){
-  .hero-lp h1{font-size:clamp(36px,5vw,58px)}
+  .hero-lp h1{font-size:clamp(30px,4vw,42px)}
   .hero-marquee{height:220px}
   .hero-mq-card{height:220px}
   .hero-mq-card.is-long{width:calc(220px * 16 / 9)}
@@ -420,7 +420,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 @media(max-width:760px){
   .hero-lp{padding:calc(var(--chrome-h) + 8px) 0 12px}
-  .hero-lp h1{font-size:clamp(32px,8.4vw,44px);max-width:12em}
+  .hero-lp h1{font-size:clamp(26px,6.8vw,34px);max-width:12em}
   .hero-lp h1 .h1-l{white-space:normal}
   .hero-lp .sub{font-size:14px;padding:0 16px}
   .hero-marquee{margin-top:18px;height:168px}
