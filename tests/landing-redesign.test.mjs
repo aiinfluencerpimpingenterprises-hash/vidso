@@ -62,7 +62,8 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   for (const id of ['why-vidso', 'how', 'connect-claude', 'pricing', 'faq', 'ideas']) {
     assert.ok(html.includes(`id="${id}"`), id)
   }
-  assert.ok(html.includes('Choose the plan for you.'))
+  assert.ok(html.includes('Choose the plan'))
+  assert.ok(html.includes('for you.'))
   assert.ok(html.includes('What is Vidso?'))
   assert.ok(html.includes('Generate a Video Now'))
   assert.match(html, /hero-cta[\s\S]{0,180}btn-start/)
@@ -99,7 +100,9 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Run Vidso from'))
   assert.ok(html.includes('See how it works'))
   assert.ok(html.includes('https://www.vidso.pro/mcp'))
-  assert.ok(!html.includes('mcp-keys'))
+  assert.ok(html.includes('mcp-keys'))
+  assert.ok(html.includes('mcp-panel'))
+  assert.ok(html.includes('Copy the Vidso Connector URL'))
   assert.ok(!html.includes('mcp-chat'))
   assert.ok(!html.includes('Connect Claude'))
   assert.ok(!html.includes('Claude AI video generator'))
@@ -150,6 +153,27 @@ test('FAQ accordion closes the open item across both columns', () => {
   const js = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
   assert.match(js, /if \(single\) bindFaqSingle\(grid\)\s+else bindFaqGroup\(grid\)/)
   assert.ok(!js.includes("grid.querySelectorAll('.faq-col').forEach((col) => bindFaqGroup(col))"))
+})
+
+test('feature headings mark the important phrase in red', () => {
+  assert.ok(html.includes('Run Vidso from your <span class="accent">AI agent</span>'))
+  assert.ok(html.includes('Turn a topic into a <span class="accent">finished video</span>'))
+  assert.ok(html.includes('Clips and Shorts from a <span class="accent">link or an idea</span>'))
+  assert.ok(html.includes('Generate thumbnails from a <span class="accent">prompt</span>'))
+  assert.ok(html.includes('Voiceover and captions in the <span class="accent">same pass</span>'))
+  assert.ok(html.includes('Finish on a <span class="accent">multi-track timeline</span>'))
+  assert.ok(html.includes('Choose the plan <span class="accent">for you.</span>'))
+})
+
+test('formats carousel only advances from arrows', () => {
+  const js = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  const shorts = js.slice(js.indexOf('function mountShorts'), js.indexOf('function mountShowcase'))
+  assert.ok(!shorts.includes('pointerenter'))
+  assert.ok(!shorts.includes('setInterval'))
+  assert.ok(shorts.includes("querySelector('[data-short-prev]')"))
+  assert.ok(css.includes('.shorts-nav:hover{background:#FE0C30'))
+  assert.ok(css.includes('.shorts-nav{'))
 })
 
 test('UGC row plays looping ugcad clips in the vertical cards', () => {
