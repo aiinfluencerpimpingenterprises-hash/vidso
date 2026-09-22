@@ -1112,9 +1112,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <section class="hero-lp" id="hero-lp">
       <div class="hero-wash" aria-hidden="true"></div>
       <div class="hero-copy" id="hero-copy">
-        <div class="trust-badge">
-          <span>AI video and creative <b>workspace</b></span>
-        </div>
         <h1 id="hero-h1">
           <span class="h1-l">Make <span class="h1-mark">any video</span> you can imagine</span>
         </h1>
@@ -1769,8 +1766,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   gsap.set('.hero-cta .btn', {opacity:1, visibility:'visible'});
   var heroTl = gsap.timeline({defaults:{ease:'power3.out'}});
   heroTl
-    .from('.hero-lp .trust-badge',{y:18,opacity:0,duration:.55})
-    .from(heroLines,{y:28,opacity:0,duration:.75,stagger:.08,ease:'power4.out'},'-=.25')
+    .from(heroLines,{y:28,opacity:0,duration:.75,stagger:.08,ease:'power4.out'})
     .from('.hero-lp .sub',{y:20,opacity:0,duration:.65},'-=.35')
     .from('.hero-cta',{y:12,opacity:0,duration:.45},'-=.35')
     .from('.hero-prompt',{y:16,opacity:0,duration:.5},'-=.25')

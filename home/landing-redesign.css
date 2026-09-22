@@ -322,12 +322,12 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   position:relative;z-index:6;text-align:center;width:100%;max-width:none;margin:0 auto;
   padding:0;background:none;display:flex;flex-direction:column;align-items:center
 }
-.hero-lp .trust-badge{justify-content:center;margin:0 auto 10px;font-size:12px;padding:6px 14px}
 .hero-lp h1{
   font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;
   font-size:clamp(32px,3.8vw,52px);line-height:1.08;letter-spacing:-.04em;
   margin:0 auto 10px;max-width:16em;width:100%;text-align:center
 }
+.hero-lp h1 .h1-l,.hero-lp h1 .h1-mark{font-weight:800}
 .hero-lp h1 .h1-l{display:block;text-align:center;white-space:normal}
 @media(min-width:1024px){
   .hero-lp h1 .h1-l{white-space:nowrap}
