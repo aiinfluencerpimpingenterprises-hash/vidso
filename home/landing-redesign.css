@@ -276,7 +276,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .lp-red.is-home .lp-sitehead header{
   position:relative!important;top:auto!important;left:auto;right:auto;z-index:2;width:100%;
   display:flex;justify-content:center;background:transparent;border-bottom:0;
-  overflow:visible;padding:0;
+  overflow:visible;padding:10px 0 0;
   transition:padding .45s cubic-bezier(.22,1,.36,1)
 }
 .lp-red.is-home .lp-sitehead header > .wrap{
@@ -332,7 +332,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 
 /* Scrolled: centered frosted pill */
-.lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:14px}
+.lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:18px}
 .lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
   width:100%;max-width:740px;padding:0 12px;border-radius:9999px;
   background:rgba(12,12,14,.72);
@@ -369,7 +369,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 }
 @media(max-width:768px){
   .lp-red.is-home .lp-sitehead header > .wrap{padding:0 12px}
-  .lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:12px}
+  .lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:16px}
   .lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
     max-width:none;width:calc(100% - 24px);margin-left:12px;margin-right:12px
   }
