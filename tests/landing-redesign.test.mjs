@@ -152,6 +152,17 @@ test('FAQ accordion closes the open item across both columns', () => {
   assert.ok(!js.includes("grid.querySelectorAll('.faq-col').forEach((col) => bindFaqGroup(col))"))
 })
 
+test('UGC row plays looping ugcad clips in the vertical cards', () => {
+  const js = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  const attach = js.slice(js.indexOf('function attachUgcClip'), js.indexOf('function mountUgc'))
+  assert.ok(attach.includes('v.loop = true'))
+  assert.ok(attach.includes('v.autoplay = true'))
+  assert.ok(attach.includes("v.setAttribute('muted', '')"))
+  assert.ok(css.includes('object-fit:cover'))
+  assert.ok(css.includes('.ugc-shot{') || css.includes('aspect-ratio:9/16'))
+})
+
 test('announcement config and long-form demo start stay in one place', () => {
   assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro_v2')
   assert.equal(LANDING_ANNOUNCE.href, '/dashboard')

@@ -1693,7 +1693,7 @@ body.is-models-page .models-hero .lp-sub{
   position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;
   background:linear-gradient(160deg,#2c1c1e,#141416);border:1px solid var(--line)
 }
-.ugc-shot img,.ugc-shot video{width:100%;height:100%;object-fit:cover;display:block}
+.ugc-shot img,.ugc-shot video{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .lp-feat .mcp-chips{justify-content:flex-start;margin:0 0 14px}
 .lp-feat .mcp-urlline{margin:0 0 16px;color:var(--muted);font-size:13px}
 .lp-feat .mcp-urlline code{color:#fff}

@@ -49,6 +49,13 @@ test('format and ugc placeholders use slug filenames', () => {
   assert.ok(FORMAT_CARDS.every((c) => c.src.endsWith('/format-card-' + c.slug + '.mp4')))
   assert.equal(SHORTS_CARDS, FORMAT_CARDS)
   assert.equal(UGC_CARDS.length, 4)
+  assert.deepEqual(UGC_CARDS.map((c) => c.src), [
+    'https://pub-f40c956471ff49feab622906892ec527.r2.dev/ugcad1.mp4',
+    'https://pub-f40c956471ff49feab622906892ec527.r2.dev/ugcad2.mp4',
+    'https://pub-f40c956471ff49feab622906892ec527.r2.dev/ugcad3.mp4',
+    'https://pub-f40c956471ff49feab622906892ec527.r2.dev/ugcad4.mp4',
+  ])
+  assert.deepEqual(PLACEHOLDER_FILES.ugc, ['ugcad1.mp4', 'ugcad2.mp4', 'ugcad3.mp4', 'ugcad4.mp4'])
   assert.ok(PLACEHOLDER_FILES.studio.includes('studio-tool-videogen.jpg'))
   assert.ok(PLACEHOLDER_FILES.feats.includes('feat-longform.jpg'))
 })
