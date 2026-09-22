@@ -300,9 +300,9 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   background:transparent;box-shadow:none;backdrop-filter:none
 }
 .lp-red.is-home .lp-sitehead .logo{color:#fff}
-.lp-red.is-home .lp-sitehead .nav-links{
-  gap:2px;font-size:14px;font-weight:500;color:rgba(245,245,244,.82)
-}
+.lp-red.is-home .lp-sitehead .nav-links,
+.lp-red.is-home .lp-sitehead .nav-toggle,
+.lp-red.is-home .lp-sitehead .nav-drawer{display:none!important}
 .lp-red.is-home .lp-sitehead .nav-tools-btn,
 .lp-red.is-home .lp-sitehead .nav-plain{
   padding:7px 10px;border-radius:999px;font-size:14px;font-weight:500;color:inherit
@@ -334,7 +334,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 /* Scrolled: centered frosted pill */
 .lp-red.is-home .lp-sitehead.is-scrolled header{padding-top:14px}
 .lp-red.is-home .lp-sitehead.is-scrolled header > .wrap{
-  max-width:740px;padding:0 12px;border-radius:9999px;
+  width:fit-content;max-width:740px;padding:0 12px;border-radius:9999px;
   background:rgba(255,255,255,.76);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   border-color:rgba(0,0,0,.06);
