@@ -140,9 +140,6 @@ async function runViewport(browser, width, height, key) {
   await go(page, '#top-models')
   await shot(page, `${key}-13-models.png`)
 
-  await go(page, '#studio-tools')
-  await shot(page, `${key}-14-studio.png`)
-
   await go(page, '.comp-cta')
   await shot(page, `${key}-15-comp-cta.png`)
 
