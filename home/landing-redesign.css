@@ -421,7 +421,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 /* ----- Hero ----- */
 .hero-lp{
   position:relative;z-index:3;display:flex;align-items:flex-start;justify-content:center;
-  padding:calc(var(--chrome-h) + 36px) 0 44px;overflow:hidden;background:transparent
+  padding:calc(var(--chrome-h) + 8px) 0 44px;overflow:hidden;background:transparent
 }
 .hero-wash{
   position:absolute;left:50%;top:62%;width:90vw;height:60%;transform:translate(-50%,-50%);
@@ -536,7 +536,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   .hero-mq-card.is-short{width:calc(220px * 9 / 16)}
 }
 @media(max-width:760px){
-  .hero-lp{padding:calc(var(--chrome-h) + 22px) 0 28px}
+  .hero-lp{padding:calc(var(--chrome-h) + 6px) 0 28px}
   .hero-lp .hero-copy{padding:0 16px}
   .hero-lp h1{font-size:clamp(26px,6.8vw,34px);max-width:12em;margin-bottom:14px}
   .hero-lp h1 .h1-l{white-space:normal}
