@@ -1226,6 +1226,20 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .lp-feat.is-flip .feat-media{order:2}
 .lp-feat .feat-copy,.lp-feat .feat-copy .eyebrow,.lp-feat .feat-copy h2,.lp-feat .feat-copy p{text-align:left;margin-left:0;margin-right:0}
 .lp-feat .feat-copy h2{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.04em;line-height:1.1;margin:0 0 12px;text-wrap:balance}
+.lp-red.is-home #connect-claude h2,
+.lp-red.is-home #connect-claude ~ section h2,
+.lp-red.is-home #connect-claude ~ section h3,
+.lp-red.is-home #connect-claude ~ #results-root h2,
+.lp-red.is-home .lp-feat .feat-copy h2{
+  white-space:nowrap;text-wrap:nowrap
+}
+@media(max-width:760px){
+  .lp-red.is-home #connect-claude h2,
+  .lp-red.is-home #connect-claude ~ section h2,
+  .lp-red.is-home #connect-claude ~ section h3,
+  .lp-red.is-home #connect-claude ~ #results-root h2,
+  .lp-red.is-home .lp-feat .feat-copy h2{white-space:normal;text-wrap:pretty}
+}
 .lp-feat .feat-copy p{color:var(--muted);font-size:16px;line-height:1.55;margin:0 0 20px}
 .feat-actions{display:flex;flex-wrap:wrap;gap:10px}
 .feat-actions .btn:not(.btn-primary){
