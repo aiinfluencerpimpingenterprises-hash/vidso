@@ -64,6 +64,22 @@ html,.lp-red{overflow-x:visible}
 .h-split .l2{color:var(--a1)}
 .nowrap{white-space:nowrap}
 .lp-sub{text-align:center;color:var(--muted);max-width:640px;margin:0 auto 28px;font-size:16px;line-height:1.6;text-wrap:pretty}
+.lp-red.is-home .lp-sub,
+.lp-red.is-home .s-head p,
+.lp-red.is-home .lp-feat .feat-copy > p:not(.mcp-urlline),
+.lp-red.is-home .wf-punch,
+.lp-red.is-home .final-box > p,
+.lp-red.is-home .comp-cta p{
+  font-size:13px;line-height:1.3;letter-spacing:-.01em
+}
+@media(max-width:760px){
+  .lp-red.is-home .lp-sub,
+  .lp-red.is-home .s-head p,
+  .lp-red.is-home .lp-feat .feat-copy > p:not(.mcp-urlline),
+  .lp-red.is-home .wf-punch,
+  .lp-red.is-home .final-box > p,
+  .lp-red.is-home .comp-cta p{font-size:12px}
+}
 .lp-red .s-head,.lp-red .s-head.center,.lp-red .shorts-head{
   display:flex;flex-direction:column;align-items:stretch;width:100%;
   max-width:none;margin:0 auto 32px;text-align:center
