@@ -19,7 +19,9 @@ import {
   VIDSO_MODELS,
   catalogClipLoopSeconds,
   catalogHasClip,
+  featuredMediaId,
   featuredModels,
+  landingFeaturedModels,
   mcpLatestModels,
   modelCardClipSrc,
   modelCardSrc,
@@ -31,6 +33,7 @@ import {
 import { footerInnerHtml } from '../lib/landing-footer.js'
 
 const home = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
+const landingJs = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
 const modelsPage = readFileSync(new URL('../models/index.html', import.meta.url), 'utf8')
 const modelsPageJs = readFileSync(new URL('../lib/models-page.js', import.meta.url), 'utf8')
 const menuJs = readFileSync(new URL('../lib/landing-tools-menu.js', import.meta.url), 'utf8')
@@ -135,6 +138,17 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.ok(files.includes('models-promo.jpg'))
   assert.ok(files.includes('model-tile-nano-banana-pro.jpg'))
   assert.ok(featuredModels().length >= 8)
+  assert.equal(featuredMediaId('kling-3-pro'), 'kling-3-pro')
+  assert.equal(featuredMediaId('nano-banana-pro'), 'nano-banana-2-5')
+  assert.equal(featuredMediaId('flux-2-pro'), 'flux-3')
+  assert.ok(landingFeaturedModels().every((m) => m.id !== 'claude'))
+  assert.ok(landingFeaturedModels().some((m) => m.id === 'kling-3-pro'))
+  assert.match(modelCardClipSrc(featuredMediaId('kling-3-pro')), /klingaivideo\.mp4$/)
+  assert.match(modelCardClipSrc(featuredMediaId('nano-banana-pro')), /nanobanan2\.5$/)
+  assert.match(modelCardClipSrc(featuredMediaId('flux-2-pro')), /flux3\.mp4$/)
+  assert.ok(landingJs.includes('landingFeaturedModels'))
+  assert.ok(landingJs.includes('modelCardClipSrc'))
+  assert.ok(landingJs.includes('attachTopModelClip'))
 })
 
 test('hero modes and models nav are wired', () => {
