@@ -1536,42 +1536,55 @@ a.mcp-client-tab,a.mcp-mode-btn{text-decoration:none}
 }
 
 .top-models{padding:var(--sec-y) 0;overflow:hidden}
-.top-models-stage{position:relative;max-width:var(--wrap);margin:0 auto;min-height:640px}
+.top-models-stage{position:relative;max-width:var(--wrap);margin:0 auto;min-height:720px}
 .top-models-copy{
-  position:relative;z-index:2;max-width:22em;margin:0 auto;padding:170px 24px 150px;text-align:center
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+  width:min(440px,42%);text-align:center;padding:0
 }
+.lp-red.is-home #top-models h2,
+.lp-red.is-home #connect-claude ~ #top-models h2{
+  white-space:normal;text-wrap:balance;text-align:center
+}
+.lp-red.is-home #top-models h2 .accent{display:block}
+.top-models-copy h2{margin:0 0 12px}
+.top-models-copy .lp-sub{margin:0 0 18px}
 .top-models-copy .two-line{margin-bottom:16px}
 .top-models-cta{min-height:44px;padding:10px 22px;border-radius:999px;background:#FE0C30;color:#fff}
 .top-models-orbit{position:absolute;inset:0;pointer-events:none}
+@keyframes lp-float-tile{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .top-models-tile{
-  position:absolute;width:168px;pointer-events:auto;border-radius:16px;overflow:hidden;
+  position:absolute;width:200px;pointer-events:auto;border-radius:18px;overflow:hidden;
   border:1px solid rgba(255,255,255,.10);background:#141416;
-  animation:lp-float 6.4s ease-in-out infinite
+  animation:lp-float-tile 8s ease-in-out infinite
 }
 .top-models-shot{position:relative;aspect-ratio:16/9;background:linear-gradient(160deg,#2c1c1e,#141416)}
 .top-models-shot img,.top-models-shot video{width:100%;height:100%;object-fit:cover;display:block}
 .top-models-name{
-  position:absolute;left:10px;right:10px;bottom:10px;z-index:2;color:#fff;
-  font-size:13px;font-weight:750;letter-spacing:-.02em;text-shadow:0 1px 8px rgba(0,0,0,.55)
+  position:absolute;left:0;right:0;bottom:0;z-index:2;color:#fff;
+  font-size:13px;font-weight:750;letter-spacing:-.02em;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:28px 12px 10px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.72))
 }
-.top-models-tile[data-slot="1"]{left:3%;top:8%;animation-delay:0s}
-.top-models-tile[data-slot="2"]{left:7%;top:40%;animation-delay:.4s}
-.top-models-tile[data-slot="3"]{left:4%;bottom:8%;animation-delay:.8s}
-.top-models-tile[data-slot="4"]{left:20%;top:18%;animation-delay:1.1s}
-.top-models-tile[data-slot="5"]{right:4%;top:10%;animation-delay:.2s}
-.top-models-tile[data-slot="6"]{right:6%;top:42%;animation-delay:.7s}
-.top-models-tile[data-slot="7"]{right:3%;bottom:10%;animation-delay:1.3s}
-.top-models-tile[data-slot="8"]{right:21%;bottom:8%;animation-delay:.5s}
-.top-models-tile[data-slot="9"]{left:21%;bottom:6%;animation-delay:1.6s}
-.top-models-tile[data-slot="10"]{right:20%;top:6%;animation-delay:.9s}
-.top-models-tile[data-slot="11"]{left:22%;top:58%;animation-delay:1.8s}
+.top-models-tile[data-slot="1"]{left:2%;top:6%;animation-delay:0s}
+.top-models-tile[data-slot="2"]{left:12%;top:36%;animation-delay:.4s}
+.top-models-tile[data-slot="3"]{left:3%;top:66%;animation-delay:.8s}
+.top-models-tile[data-slot="4"]{left:16%;top:16%;animation-delay:1.1s}
+.top-models-tile[data-slot="5"]{left:14%;top:74%;animation-delay:1.5s}
+.top-models-tile[data-slot="6"]{right:2%;top:8%;animation-delay:.2s}
+.top-models-tile[data-slot="7"]{right:10%;top:34%;animation-delay:.7s}
+.top-models-tile[data-slot="8"]{right:3%;top:64%;animation-delay:1.3s}
+.top-models-tile[data-slot="9"]{right:16%;top:16%;animation-delay:.5s}
+.top-models-tile[data-slot="10"]{right:12%;top:72%;animation-delay:.9s}
 @media(max-width:1100px){
-  .top-models-tile{width:148px}
-  .top-models-copy{padding:150px 20px 130px}
+  .top-models-tile{width:168px}
 }
 @media(max-width:760px){
-  .top-models-stage{min-height:0}
-  .top-models-copy{padding:8px 16px 20px;max-width:28em}
+  .top-models-stage{min-height:0;display:flex;flex-direction:column}
+  .top-models-copy{
+    position:relative;left:auto;top:auto;transform:none;width:auto;
+    max-width:28em;margin:0 auto;padding:8px 16px 20px;order:-1
+  }
   .top-models-orbit{
     position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px
   }

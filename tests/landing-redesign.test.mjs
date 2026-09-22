@@ -187,6 +187,17 @@ test('UGC row plays looping ugcad clips in the vertical cards', () => {
   assert.ok(css.includes('.ugc-shot{') || css.includes('aspect-ratio:9/16'))
 })
 
+test('top-models copy is centered, heading wraps, and landing uses slots 1-10', () => {
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  assert.match(css, /\.top-models-copy\{[\s\S]*?position:absolute[\s\S]*?left:50%[\s\S]*?top:50%[\s\S]*?transform:translate\(-50%,-50%\)/)
+  assert.match(css, /\.lp-red\.is-home #connect-claude ~ #top-models h2\{[\s\S]*?white-space:normal;text-wrap:balance;text-align:center/)
+  assert.ok(css.includes('.lp-red.is-home #top-models h2 .accent{display:block}'))
+  assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
+  assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
+  assert.ok(html.includes('landing-redesign.css?v=d1fbb'))
+  assert.ok(html.includes('landing-page.js?v=d1fae'))
+})
+
 test('announcement config and long-form demo start stay in one place', () => {
   assert.equal(LANDING_ANNOUNCE.key, 'announce_seedream5pro_v2')
   assert.equal(LANDING_ANNOUNCE.href, '/dashboard')
