@@ -14,7 +14,7 @@ test('hero video constant stays on R2', () => {
 
 test('hero cards use landing placeholder URLs and keep a long/short mix', () => {
   assert.ok(HERO_CARDS.length >= 8)
-  assert.ok(HERO_CARDS.every((c) => c.src && c.poster && c.file))
+  assert.ok(HERO_CARDS.every((c) => c.src && c.file))
   const longs = HERO_CARDS.filter((c) => c.type === 'long')
   const shorts = HERO_CARDS.filter((c) => c.type === 'short')
   assert.ok(longs.length >= 5)
@@ -23,10 +23,16 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
   assert.deepEqual(HERO_CARDS.map((c) => c.label), ['Long-form', 'Short', 'Ad', 'UGC', 'Explainer', 'Product', 'Thumbnail', 'Voiceover'])
   assert.equal(HERO_PROMPTS.length, 8)
   assert.match(HERO_PROMPTS[0], /airport secrets/)
-  assert.ok(HERO_CARDS.every((c) => /\/landing\/hero-card-\d\d\.mp4$/.test(c.src)))
-  assert.ok(HERO_CARDS.every((c) => /\/landing\/hero-card-\d\d\.jpg$/.test(c.poster)))
-  assert.equal(landingVideo('hero-card', 1), HERO_CARDS[0].src)
-  assert.equal(landingPoster('hero-card', 1), HERO_CARDS[0].poster)
+  const filled = Object.fromEntries(HERO_CARDS.map((c) => [c.label, c]))
+  assert.equal(filled['Long-form'].src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpagelongform.mp4')
+  assert.equal(filled.Product.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageproduct.mp4')
+  assert.equal(filled.Thumbnail.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/thumbnail.png')
+  assert.equal(filled.Thumbnail.poster, filled.Thumbnail.src)
+  const open = HERO_CARDS.filter((c) => !['Long-form', 'Product', 'Thumbnail'].includes(c.label))
+  assert.ok(open.every((c) => /\/landing\/hero-card-\d\d\.mp4$/.test(c.src)))
+  assert.ok(open.every((c) => /\/landing\/hero-card-\d\d\.jpg$/.test(c.poster)))
+  assert.equal(landingVideo('hero-card', 2), HERO_CARDS[1].src)
+  assert.equal(landingPoster('hero-card', 2), HERO_CARDS[1].poster)
 })
 
 test('showcase mixes formats and format cards stay blank-ready', () => {
@@ -195,7 +201,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fae'))
+  assert.ok(html.includes('landing-page.js?v=d1faf'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
