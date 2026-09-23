@@ -30,7 +30,7 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
   assert.equal(filled.Product.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageproduct.mp4')
   assert.equal(filled.Thumbnail.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/thumbnail.png')
   assert.equal(filled.Thumbnail.poster, filled.Thumbnail.src)
-  assert.equal(filled.Ad.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel4.mp4')
+  assert.equal(filled.Ad.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpagead.mp4')
   assert.equal(filled.Explainer.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio1.mp4')
   assert.equal(filled.Voiceover.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio.mp4')
 })
@@ -201,7 +201,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fb1'))
+  assert.ok(html.includes('landing-page.js?v=d1fb2'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
