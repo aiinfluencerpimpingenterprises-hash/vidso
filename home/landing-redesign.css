@@ -479,14 +479,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   text-transform:none
 }
 .hero-lp h1 .h1-l,.hero-lp h1 .h1-mark{font-weight:400}
-.hero-lp h1 .h1-mark{
-  position:relative;display:inline-block;padding-bottom:.08em
-}
-.hero-lp h1 .h1-mark::after{
-  content:'';position:absolute;left:2%;right:2%;bottom:0;height:.11em;
-  border-radius:999px;pointer-events:none;
-  background:linear-gradient(90deg,#FE0C30 0%,#ff3b56 52%,#B31D2C 100%)
-}
 .hero-lp h1 .h1-l{display:block;text-align:center;white-space:normal}
 @media(min-width:1024px){
   .hero-lp h1 .h1-l{white-space:nowrap}
