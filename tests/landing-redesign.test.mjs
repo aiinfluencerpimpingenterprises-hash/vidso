@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC, landingPoster, landingVideo } from '../lib/landing-media.js'
+import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_VIDEO_SRC, HOW_PANEL_SRC, LANDING_ANNOUNCE, LONGFORM_DEMO_START, SHORTS_CARDS, SHORTS_PROMPTS, SHOWCASE_CARDS, THUMBNAIL_DEMO_SRC } from '../lib/landing-media.js'
 
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
@@ -30,11 +30,9 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
   assert.equal(filled.Product.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageproduct.mp4')
   assert.equal(filled.Thumbnail.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/thumbnail.png')
   assert.equal(filled.Thumbnail.poster, filled.Thumbnail.src)
-  const open = HERO_CARDS.filter((c) => !['Long-form', 'Short', 'UGC', 'Product', 'Thumbnail'].includes(c.label))
-  assert.ok(open.every((c) => /\/landing\/hero-card-\d\d\.mp4$/.test(c.src)))
-  assert.ok(open.every((c) => /\/landing\/hero-card-\d\d\.jpg$/.test(c.poster)))
-  assert.equal(landingVideo('hero-card', 3), HERO_CARDS[2].src)
-  assert.equal(landingPoster('hero-card', 3), HERO_CARDS[2].poster)
+  assert.equal(filled.Ad.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/videocarousel4.mp4')
+  assert.equal(filled.Explainer.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio1.mp4')
+  assert.equal(filled.Voiceover.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio.mp4')
 })
 
 test('showcase mixes formats and format cards stay blank-ready', () => {
@@ -203,7 +201,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fb0'))
+  assert.ok(html.includes('landing-page.js?v=d1fb1'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
