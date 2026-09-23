@@ -46,7 +46,10 @@ test('format and ugc placeholders use slug filenames', () => {
   assert.deepEqual(FORMAT_CARDS.map((c) => c.category), [
     'Long-form', 'Shorts', 'Ads', 'UGC', 'Explainers', 'Product videos', 'Talking head', 'Listicles', 'Documentary',
   ])
-  assert.ok(FORMAT_CARDS.every((c) => c.src.endsWith('/format-card-' + c.slug + '.mp4')))
+  assert.equal(FORMAT_CARDS.find((c) => c.slug === 'long-form').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatslongform.mp4')
+  assert.equal(FORMAT_CARDS.find((c) => c.slug === 'shorts').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsshort.mp4')
+  assert.ok(FORMAT_CARDS.filter((c) => c.slug !== 'long-form' && c.slug !== 'shorts').every((c) => c.src.endsWith('/format-card-' + c.slug + '.mp4')))
+  assert.deepEqual(PLACEHOLDER_FILES.formats.slice(0, 2), ['landingpageformatslongform.mp4', 'landingpageformatsshort.mp4'])
   assert.equal(SHORTS_CARDS, FORMAT_CARDS)
   assert.equal(UGC_CARDS.length, 4)
   assert.deepEqual(UGC_CARDS.map((c) => c.src), [
