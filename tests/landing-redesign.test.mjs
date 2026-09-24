@@ -81,7 +81,8 @@ test('landing keeps SEO, one H1, and nav anchors', () => {
   assert.ok(html.includes('Generate a Video Now'))
   assert.match(html, /hero-cta[\s\S]{0,180}btn-start/)
   assert.ok(!html.includes('hero-pill'))
-  assert.match(html, /See what a single prompt[\s\S]{0,80}can make/)
+  assert.ok(!html.includes('id="showcase"'))
+  assert.ok(!html.includes('See what a single prompt'))
   assert.ok(html.includes('Make '))
   assert.ok(html.includes('any video'))
   assert.ok(html.includes('you can imagine'))
@@ -208,7 +209,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fb6'))
+  assert.ok(html.includes('landing-page.js?v=d1fb7'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
