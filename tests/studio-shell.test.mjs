@@ -173,7 +173,20 @@ test('home rails and inspiration tabs are config-driven', () => {
     'nQm3rImMePl95E44v1ly.mp4',
     'gouYzB3HE1g1I0T8Nw7j.mp4',
   ])
-  assert.equal(inspireItems('music').length, 12)
+  assert.deepEqual(inspireItems('music').map((it) => it.file), [
+    'cgt-20260807135044-jl4cb.mp4',
+    'cgt-20260808042429-r42dr.mp4',
+    'cgt-20260808064211-8r9lh.mp4',
+    'sample_0.mp4',
+    'ssDblxbgz5C1wS4VRC6y.mp4',
+    '0217765651118490000000000000000000ffffc0a885857ca316.mp4',
+    '0217765666267790000000000000000000ffffc0a8792eb88c96.mp4',
+    '0217786676548480000000000000000000ffffc0a87c69b5c956.mp4',
+    '0217815485626240000000000000000000ffffc0a88fa1c0f922.mp4',
+    '0217815502532680000000000000000000ffffc0a87ff35d31df.mp4',
+    '0217815502730530000000000000000000ffffc0a8712a8e8ac3.mp4',
+    '0217815527401250000000000000000000ffffc0a88c3c7c3b9a.mp4',
+  ])
   assert.equal(inspireItems('animation').length, 50)
   assert.ok(inspireItems('animation').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
   assert.equal(inspireItems('ugc').length, 8)
