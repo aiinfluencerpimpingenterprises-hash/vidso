@@ -25,6 +25,7 @@ import {
   appMedia,
   catalogTools,
   inspireItems,
+  startMedia,
 } from '../lib/studio-nav.js'
 import { DURATION_PRESETS } from '../lib/entitlements.js'
 import { PUBLIC_TOOL_PATHS } from '../lib/public-tools.js'
@@ -147,6 +148,15 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.ok(!shell.includes('is-slot'))
   assert.match(css, /\.studio-inspire-grid\{[^}]*align-items:start/)
   assert.match(shell, /Start creating/)
+  assert.ok(!shell.includes("railHead('Start creating', 'More"))
+  assert.equal(startMedia('long-form'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpagelongform.mp4')
+  assert.equal(startMedia('short'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageshort.mp4')
+  assert.equal(startMedia('thumbnail'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/thumbnail.png')
+  assert.equal(startMedia('clip'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsshort.mp4')
+  assert.equal(startMedia('ugc'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageugc.mp4')
+  assert.equal(startMedia('explainer'), 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio1.mp4')
+  assert.equal(startMedia('ranking'), '')
+  assert.equal(startMedia('listicle'), '')
   assert.match(shell, /Your recent renders/)
   assert.ok(!shell.includes('id="rail-news"'))
   assert.ok(!shell.includes("What's new"))

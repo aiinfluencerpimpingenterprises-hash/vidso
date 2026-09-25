@@ -838,7 +838,12 @@ body.studio-shell #nav-avatar-menu [hidden],
 .studio-pin-thumb:hover{background:var(--studio-l1);color:#fff}
 .studio-page-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px}
 .studio-page-bar h1{margin:0;font-size:32px}
-.studio-qs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.studio-qs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start}
+.studio-qs-grid .studio-tile{width:100%;min-width:0}
+.studio-qs-grid .studio-tile-shot{width:100%}
+.studio-qs-grid .studio-tile-shot .studio-ph,
+.studio-qs-grid .studio-tile-shot .studio-ph.is-wide,
+.studio-qs-grid .studio-tile-shot .studio-ph.is-portrait{width:100%;height:auto;max-width:none}
 .studio-masonry.is-dense{column-count:5;column-gap:16px}
 .studio-masonry.is-dense .studio-preset{margin-bottom:16px}
 .studio-masonry.is-dense .studio-preset .studio-ph.is-wide{aspect-ratio:16/10}
