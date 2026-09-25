@@ -147,6 +147,7 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.equal(landingFeaturedModels().length, 10)
   assert.ok(!landingFeaturedModels().some((m) => m.slot === 11))
   assert.ok(featuredModels().some((m) => m.id === 'claude' && m.slot === 10))
+  assert.equal(featuredModels().find((m) => m.id === 'seedance-2').isNew, false)
   assert.match(modelCardClipSrc(featuredMediaId('kling-3-pro')), /klingaivideo\.mp4$/)
   assert.match(modelCardClipSrc(featuredMediaId('nano-banana-pro')), /nanobanan2\.5$/)
   assert.match(modelCardClipSrc(featuredMediaId('flux-2-pro')), /flux3\.mp4$/)
