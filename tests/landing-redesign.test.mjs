@@ -36,16 +36,17 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
 })
 
 test('showcase mixes formats and format cards stay blank-ready', () => {
-  assert.ok(SHORTS_CARDS.length >= 9)
+  assert.equal(SHORTS_CARDS.length, 7)
   assert.ok(SHORTS_CARDS.every((c) => c.src && c.poster && c.category))
-  assert.equal(SHORTS_CARDS.find((c) => c.slug === 'long-form').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatslongform.mp4')
+  assert.ok(!SHORTS_CARDS.some((c) => c.slug === 'listicles' || c.slug === 'documentary'))
+  assert.equal(SHORTS_CARDS.find((c) => c.slug === 'long-form').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpagelongform.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'shorts').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsshort.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'ads').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsad.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'ugc').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsugc.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'explainers').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio3.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'product-videos').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatsproduct.mp4')
   assert.equal(SHORTS_CARDS.find((c) => c.slug === 'talking-head').src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpageformatstalkinghead.mp4')
-  assert.ok(SHORTS_CARDS.filter((c) => !['long-form', 'shorts', 'ads', 'ugc', 'explainers', 'product-videos', 'talking-head'].includes(c.slug)).every((c) => /\/landing\/format-card-[a-z0-9-]+\.mp4$/.test(c.src)))
+  assert.equal(SHORTS_CARDS.filter((c) => !['long-form', 'shorts', 'ads', 'ugc', 'explainers', 'product-videos', 'talking-head'].includes(c.slug)).length, 0)
   assert.ok(SHOWCASE_CARDS.length >= 4)
   assert.ok(SHOWCASE_CARDS.every((c) => /videocarousel\d+\.mp4$/.test(c.src)))
   assert.ok(SHOWCASE_CARDS.every((c) => c.prompt && c.prompt.length > 12))
@@ -172,7 +173,8 @@ test('FAQ accordion closes the open item across both columns', () => {
 test('feature headings mark the important phrase in red', () => {
   assert.ok(html.includes('Run Vidso from your <span class="accent">AI agent</span>'))
   assert.ok(html.includes('Turn a topic into a <span class="accent">finished video</span>'))
-  assert.ok(html.includes('Clips and Shorts from a <span class="accent">link or an idea</span>'))
+  assert.ok(!html.includes('id="feat-shorts"'))
+  assert.ok(!html.includes('Clips and Shorts from a'))
   assert.ok(html.includes('Generate thumbnails from a <span class="accent">prompt</span>'))
   assert.ok(html.includes('Voiceover and captions in the <span class="accent">same pass</span>'))
   assert.ok(html.includes('Finish on a <span class="accent">multi-track timeline</span>'))
@@ -209,7 +211,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fb7'))
+  assert.ok(html.includes('landing-page.js?v=d1fb8'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {
