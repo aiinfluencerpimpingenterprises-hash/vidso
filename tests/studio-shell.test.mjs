@@ -289,6 +289,8 @@ test('home top bar drops Search and names the workspace from account data', () =
   assert.match(css, /studio-collapsed \.studio-top-logo\{display:none\}/)
   assert.match(css, /is-home-mark/)
   assert.match(shell, /is-home-mark/)
+  assert.match(shell, /studio-nav-item.is-home/)
+  assert.match(css, /studio-collapsed \.studio-topbar \.studio-collapse-btn/)
   assert.match(shell, /data-vidso-socials/)
   assert.match(shell, /studio-account-head/)
   assert.doesNotMatch(shell, /discord|youtube\.com|twitter|x\.com/i)

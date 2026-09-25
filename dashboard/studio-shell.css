@@ -109,7 +109,7 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 }
 .studio-project-menu button:hover{background:rgba(255,255,255,.06)}
 .studio-project-menu p{margin:8px 4px 2px;font-size:13px;color:var(--studio-muted)}
-.studio-sidebar-nav{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0;scrollbar-width:thin}
+.studio-sidebar-nav{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:2px 0 0;scrollbar-width:thin}
 .studio-nav-sec{min-width:0;margin:0 0 4px}
 .studio-nav-sec-body{min-width:0}
 .studio-nav-sec.is-shut .studio-nav-sec-body{display:none}
@@ -191,7 +191,7 @@ body.studio-shell.studio-collapsed .studio-nav-empty{
 }
 body.studio-shell.studio-collapsed .studio-nav-item,
 body.studio-shell.studio-collapsed .studio-nav-chip{
-  justify-content:center;align-items:center;gap:0;padding:0;width:40px;height:40px;margin:0 auto 6px
+  justify-content:center;align-items:center;gap:0;padding:0;width:40px;height:40px;margin:2px auto 6px
 }
 body.studio-shell.studio-collapsed .studio-nav-item .studio-nav-txt,
 body.studio-shell.studio-collapsed .studio-nav-chip .studio-nav-txt,
@@ -210,6 +210,7 @@ body.studio-shell.studio-collapsed .studio-nav-item.is-home .studio-nav-ico.is-h
 body.studio-shell.studio-collapsed .studio-nav-item.is-home .studio-nav-ico.is-home-mark img{width:18px;height:18px;display:block}
 body.studio-shell.studio-collapsed .studio-nav-tools{grid-template-columns:1fr;justify-items:center}
 body.studio-shell.studio-collapsed .studio-nav-item.is-home.active{box-shadow:0 0 0 1px #FE0C30}
+body.studio-shell.studio-collapsed .studio-topbar .studio-collapse-btn{display:none!important}
 body.studio-shell.studio-collapsed .studio-brand-row{min-height:0;margin:0;opacity:0;pointer-events:none}
 body.studio-shell.studio-collapsed .studio-project{height:0;min-height:0;margin:0;padding:0;opacity:0;pointer-events:none}
 body.studio-shell.studio-collapsed .studio-project-menu{display:none}
