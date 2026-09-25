@@ -160,7 +160,7 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.match(shell, /Your recent renders/)
   assert.ok(!shell.includes('id="rail-news"'))
   assert.ok(!shell.includes("What's new"))
-  assert.match(shell, /Presets/)
+  assert.ok(!shell.includes('id="rail-presets"'))
   assert.match(shell, /Inspirations/)
   assert.match(shell, /Get started with tools/)
   assert.match(shell, /studio-home-rails/)
