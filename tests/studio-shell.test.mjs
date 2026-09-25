@@ -314,5 +314,6 @@ test('faceless studio uses the studio shell type and chrome', () => {
   assert.match(css, /body\.studio-shell #panel-facelessstudio/)
   assert.match(css, /body\.studio-shell \.fs-rail,/)
   assert.match(css, /flex-direction:row/)
-  assert.match(dash, /studio-shell\.css\?v=s26/)
+  assert.match(dash, /studio-shell\.css\?v=s27/)
+  assert.match(css, /studio-nav-tools \.studio-nav-chip:last-child\{grid-column:1 \/ -1\}/)
 })
