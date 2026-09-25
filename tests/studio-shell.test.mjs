@@ -130,9 +130,49 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.deepEqual(INSPIRE_CATEGORIES.map((c) => c.id), [
     'marketing', 'film', 'music', 'animation', 'ugc', 'explainer',
   ])
-  assert.equal(inspireItems('marketing').length, 32)
-  assert.ok(inspireItems('marketing').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
+  assert.deepEqual(inspireItems('marketing').map((it) => it.file), [
+    'marketing&advertising1.mp4',
+    'marketing&advertising2.mp4',
+    'enhanced.mp4',
+    'cgt-20260807111954-75dbb.mp4',
+    'cgt-20260807151156-nb9g9.mp4',
+    'DTyNeUYoyWApxM8kcE2-l_sEctF05h.mp4',
+    'QUGZkmX1peda29ttJc9V.mp4',
+    'WKW9nnh62A7d4fF8vaMr.mp4',
+    '0 (1).mp4',
+    '0 (2).mp4',
+    '0 (3).mp4',
+    '0.mp4',
+    '0217758004894090000000000000000000ffffc0a88f20abbd19.mp4',
+    '0217759311483810000000000000000000ffffc0a88f207d8f97.mp4',
+    '0217759729565820000000000000000000ffffc0a88f205ef6eb.mp4',
+    '0217762723194640000000000000000000ffffc0a85601533128.mp4',
+    '0217764234263770000000000000000000ffffc0a87c2bba90ea.mp4',
+    '0217769016813690000000000000000000ffffc0a878ec749fec.mp4',
+    '0217769037193710000000000000000000ffffc0a8b0d38ab6a2.mp4',
+    '0217786308711890000000000000000000ffffc0a884a94805a9.mp4',
+    '0217798786332840000000000000000000ffffc0a8871cc3f4d7.mp4',
+    '0217803136432900000000000000000000ffffc0a8baf8f13b06.mp4',
+    '0217810292584330000000000000000000ffffc0a87bec6e8848.mp4',
+    '0217810303282970000000000000000000ffffc0a89a6520c641.mp4',
+    '0217810642229740000000000000000000ffffc0a8871c36aaa5.mp4',
+    '0217811218617590000000000000000000ffffc0a899c5ea48c3.mp4',
+    '0217811221135330000000000000000000ffffc0a87bec8bff9f.mp4',
+    '0217811224136330000000000000000000ffffc0a87bec371464.mp4',
+    '0217811225298560000000000000000000ffffc0a8bb20ce46cb.mp4',
+    '0217811230939430000000000000000000ffffc0a87c204b5097.mp4',
+    '0217815481326720000000000000000000ffffc0a87852537a61.mp4',
+    '4d29747fb33fbafcce8a4e88b1f72ecc-ea9ef434-5cf9-455e-ae59-54fdaf75869f.mp4',
+  ])
+  assert.ok(inspireItems('marketing').every((it) => it.src && it.src.endsWith(encodeURIComponent(it.file))))
   assert.equal(inspireItems('film').length, 47)
+  assert.ok(inspireItems('film').every((it) => it.src && it.src.endsWith(encodeURIComponent(it.file))))
+  assert.deepEqual(inspireItems('film').map((it) => it.file).slice(0, 4), [
+    'enhanced (1).mp4',
+    'enhanced.mp4',
+    'nQm3rImMePl95E44v1ly.mp4',
+    'gouYzB3HE1g1I0T8Nw7j.mp4',
+  ])
   assert.equal(inspireItems('music').length, 12)
   assert.equal(inspireItems('animation').length, 50)
   assert.ok(inspireItems('animation').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
