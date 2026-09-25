@@ -263,6 +263,7 @@ test('home is public preview and files stay private', () => {
   assert.match(css, /#FE0C30/)
   assert.match(css, /prefers-reduced-motion/)
   assert.match(css, /studio-prompt:focus-within/)
+  assert.match(css, /studio-prompt textarea:focus-visible/)
   assert.doesNotMatch(dash, /id="topo-bg"/)
   assert.doesNotMatch(dash, /topo-bg\.js/)
   assert.doesNotMatch(css, /#F3C4C8/)

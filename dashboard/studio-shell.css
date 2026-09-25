@@ -403,13 +403,15 @@ body.studio-shell select{
   border-color:rgba(254,12,48,.55);box-shadow:0 14px 36px rgba(0,0,0,.6),var(--studio-inset)
 }
 body.studio-shell .studio-prompt textarea,
-.studio-prompt textarea{
-  width:100%;min-height:72px;resize:none;border:none;background:transparent;
+.studio-prompt textarea,
+body.studio-shell .studio-prompt textarea:hover,
+body.studio-shell .studio-prompt textarea:focus,
+body.studio-shell .studio-prompt textarea:focus-visible{
+  width:100%;min-height:72px;resize:none;border:none!important;background:transparent!important;
   color:var(--studio-text);font:inherit;font-size:15px;line-height:1.5;
-  padding:16px 18px 0;outline:none;box-shadow:none
+  padding:16px 18px 0;outline:none!important;box-shadow:none!important;border-radius:0
 }
 .studio-prompt textarea::placeholder{color:var(--studio-faint)}
-.studio-prompt textarea:focus{outline:none;border:none;box-shadow:none}
 .studio-attach-chips{padding:12px 18px 0}
 .studio-prompt-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding:0 16px}
 .studio-prompt-left,.studio-prompt-right{display:flex;align-items:center;gap:8px;min-width:0}
