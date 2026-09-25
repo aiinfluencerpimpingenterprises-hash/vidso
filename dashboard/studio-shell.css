@@ -204,6 +204,10 @@ body.studio-shell.studio-collapsed .studio-nav-ico{
 }
 body.studio-shell.studio-collapsed .studio-nav-item.is-create,
 body.studio-shell.studio-collapsed .studio-nav-item.is-home{height:40px;min-height:40px}
+.studio-nav-item.is-home .studio-nav-ico.is-home-mark{display:none}
+body.studio-shell.studio-collapsed .studio-nav-item.is-home .studio-nav-ico.is-home-house{display:none}
+body.studio-shell.studio-collapsed .studio-nav-item.is-home .studio-nav-ico.is-home-mark{display:inline-flex}
+body.studio-shell.studio-collapsed .studio-nav-item.is-home .studio-nav-ico.is-home-mark img{width:18px;height:18px;display:block}
 body.studio-shell.studio-collapsed .studio-nav-tools{grid-template-columns:1fr;justify-items:center}
 body.studio-shell.studio-collapsed .studio-nav-item.is-home.active{box-shadow:0 0 0 1px #FE0C30}
 body.studio-shell.studio-collapsed .studio-brand-row{min-height:0;margin:0;opacity:0;pointer-events:none}
@@ -280,7 +284,8 @@ body.studio-shell:not(.studio-collapsed) .studio-workspace-pop{display:none!impo
 .studio-help-socials svg{width:18px;height:18px;display:block}
 .studio-top-logo{display:none;align-items:center;gap:8px;color:inherit;text-decoration:none}
 .studio-top-logo img{width:24px;height:24px}
-body.studio-shell.studio-collapsed .studio-top-logo{display:inline-flex}
+body.studio-shell.studio-collapsed .studio-top-logo{display:none}
+body.studio-shell.studio-collapsed .studio-top-logo .brand{display:none}
 body.studio-shell.studio-collapsed .studio-workspace-pop{display:none}
 body.studio-shell .credits-pill{
   height:32px;padding:0 10px;border-radius:999px;border:1px solid rgba(254,12,48,.45);
@@ -701,6 +706,7 @@ body.studio-shell .files-tile{
 @media (max-width:767px){
   .studio-help-btn span,.studio-crumb{display:none!important}
   .studio-top-logo{display:inline-flex}
+  body.studio-shell.studio-collapsed .studio-top-logo .brand{display:none}
   .studio-hero h1,.studio-catalog h1,.studio-page h1{font-size:28px}
   .studio-rail-scroller > *,.studio-rail-scroller.is-wide > *{width:72vw}
   .studio-rail-scroller.is-portrait > *{width:42vw}
