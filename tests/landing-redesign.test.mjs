@@ -172,7 +172,8 @@ test('FAQ accordion closes the open item across both columns', () => {
 
 test('feature headings mark the important phrase in red', () => {
   assert.ok(html.includes('Run Vidso from your <span class="accent">AI agent</span>'))
-  assert.ok(html.includes('Turn a topic into a <span class="accent">finished video</span>'))
+  assert.ok(html.includes('Turn an idea into <span class="accent">any video</span>'))
+  assert.ok(html.includes('Long-form, Shorts, ads, and product clips.'))
   assert.ok(!html.includes('id="feat-shorts"'))
   assert.ok(!html.includes('Clips and Shorts from a'))
   assert.ok(html.includes('Generate thumbnails from a <span class="accent">prompt</span>'))
@@ -211,7 +212,9 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
   assert.ok(html.includes('landing-redesign.css?v=d1fbc'))
-  assert.ok(html.includes('landing-page.js?v=d1fb8'))
+  assert.ok(html.includes('landing-page.js?v=d1fb9'))
+  assert.ok(!css.includes('.hero-marquee:hover .hero-marquee-track'))
+  assert.ok(!css.includes('.hero-marquee:focus-within .hero-marquee-track'))
 })
 
 test('announcement config and long-form demo start stay in one place', () => {

@@ -522,7 +522,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)
 }
 .hero-marquee-track{position:absolute;left:0;top:0;display:flex;align-items:stretch;gap:14px;width:max-content;height:100%;animation:hero-marquee 46s linear infinite}
-.hero-marquee:hover .hero-marquee-track,.hero-marquee:focus-within .hero-marquee-track{animation-play-state:paused}
 .hero-mq-card{
   position:relative;height:260px;flex:0 0 auto;border-radius:14px;overflow:hidden;
   background:linear-gradient(135deg,#17171a,#111113);border:1px solid rgba(255,255,255,.10)
