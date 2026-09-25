@@ -121,6 +121,7 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.equal(HOME_PRESETS.length, 24)
   assert.match(shell, /Latest AI models/)
   assert.match(shell, /m\.id !== 'claude'/)
+  assert.match(shell, /'gpt-image-2': 'gpt-image-2-5'/)
   assert.match(shell, /modelCardClipSrc/)
   assert.match(shell, /catalogHasClip\(mediaId\)/)
   assert.match(shell, /quickstart/)
