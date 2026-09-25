@@ -188,7 +188,14 @@ test('home rails and inspiration tabs are config-driven', () => {
     '0217815527401250000000000000000000ffffc0a88c3c7c3b9a.mp4',
   ])
   assert.equal(inspireItems('animation').length, 50)
-  assert.ok(inspireItems('animation').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
+  assert.ok(inspireItems('animation').every((it) => it.src && it.src.endsWith(encodeURIComponent(it.file))))
+  assert.deepEqual(inspireItems('animation').map((it) => it.file).slice(0, 5), [
+    'cgt-20260808190147-fjj55.mp4',
+    'enhanced (1).mp4',
+    'enhanced.mp4',
+    'PuPae-05Sv0ym3inyCwbW_5otT4my4.mp4',
+    'xai-video-3da86be6-1f9f-4333-bd56-4abd9c820aed.mp4',
+  ])
   assert.equal(inspireItems('ugc').length, 8)
   assert.equal(inspireItems('ugc')[0].file, 'landingpageugc.mp4')
   assert.ok(inspireItems('ugc').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
