@@ -15,6 +15,7 @@ body.studio-shell{
   --studio-shadow:0 12px 32px rgba(0,0,0,.55);
   --studio-inset:inset 0 1px 0 rgba(255,255,255,.06);
   --studio-ease:160ms ease-out;
+  --studio-sidebar-ease:280ms cubic-bezier(.22,1,.36,1);
   --studio-sidebar:260px;
   --studio-sidebar-sm:64px;
   --studio-topbar:56px;
@@ -64,10 +65,12 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 .studio-sidebar{
   flex:0 0 var(--studio-sidebar);width:var(--studio-sidebar);min-width:0;height:100%;
   overflow:hidden;display:flex;flex-direction:column;background:var(--studio-bg);
-  border-right:1px solid var(--studio-border);z-index:40;padding:10px 12px 16px
+  border-right:1px solid var(--studio-border);z-index:40;padding:10px 8px 16px;
+  transition:flex-basis var(--studio-sidebar-ease),width var(--studio-sidebar-ease)
 }
 .studio-brand-row{
-  display:flex;align-items:center;gap:8px;min-height:36px;margin:0 0 10px;flex-shrink:0
+  display:flex;align-items:center;gap:8px;min-height:36px;margin:0 0 10px;flex-shrink:0;
+  overflow:hidden;transition:min-height var(--studio-sidebar-ease),margin var(--studio-sidebar-ease),opacity 180ms ease
 }
 .studio-side-logo{
   flex:1;min-width:0;display:flex;align-items:center;gap:8px;
@@ -83,7 +86,8 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 .studio-project{
   width:100%;min-width:0;height:40px;margin:0 0 10px;padding:0 10px 0 8px;border:none;border-radius:12px;
   background:rgba(255,255,255,.04);color:var(--studio-text);font:inherit;font-size:14px;font-weight:500;
-  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;flex-shrink:0
+  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;flex-shrink:0;
+  overflow:hidden;transition:height var(--studio-sidebar-ease),margin var(--studio-sidebar-ease),opacity 180ms ease
 }
 .studio-project:hover{background:rgba(255,255,255,.07)}
 .studio-project:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
@@ -119,9 +123,9 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 .studio-nav-label .studio-nav-chev svg{width:8px;height:8px;display:block}
 .studio-nav-sec.is-shut .studio-nav-label .studio-nav-chev{transform:rotate(-90deg)}
 .studio-nav-label:focus-visible{outline:2px solid var(--studio-accent);outline-offset:2px}
-.studio-nav-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px}
+.studio-nav-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;margin:0 0 4px}
 .studio-nav-item,.studio-nav-chip{
-  display:flex;align-items:center;gap:10px;width:100%;min-height:36px;height:36px;padding:0 10px;
+  display:flex;align-items:center;gap:8px;width:100%;min-width:0;min-height:36px;height:36px;padding:0 8px;
   border:1px solid transparent;border-radius:12px;background:transparent;color:rgba(255,255,255,.78);
   font:inherit;font-size:14px;font-weight:500;text-align:left;cursor:pointer;
   position:relative;text-decoration:none;box-sizing:border-box;
@@ -143,7 +147,7 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 }
 .studio-nav-item.is-create:hover{background:#222226}
 .studio-nav-chip{
-  height:40px;min-height:40px;background:#17171a;padding:0 10px
+  height:40px;min-height:40px;background:#17171a;padding:0 8px
 }
 .studio-nav-chip:hover{background:#1c1c1f}
 .studio-nav-ico{
@@ -169,6 +173,10 @@ body.studio-shell .app-banner-x:focus-visible{outline:2px solid var(--studio-acc
 .studio-pin-thumb .studio-ph{aspect-ratio:16/10;border-radius:10px}
 
 body.studio-shell.studio-collapsed{--studio-sidebar:var(--studio-sidebar-sm)}
+.studio-nav-txt,.studio-nav-label,.studio-nav-new,.studio-project-txt,.studio-project-chev,.studio-side-word,.studio-plan-badge,.studio-nav-empty{
+  opacity:1;max-width:180px;overflow:hidden;white-space:nowrap;
+  transition:opacity 180ms ease,max-width 280ms cubic-bezier(.22,1,.36,1)
+}
 body.studio-shell.studio-collapsed .studio-nav-txt,
 body.studio-shell.studio-collapsed .studio-nav-label,
 body.studio-shell.studio-collapsed .studio-nav-new,
@@ -178,7 +186,9 @@ body.studio-shell.studio-collapsed .studio-side-word,
 body.studio-shell.studio-collapsed .studio-plan-badge,
 body.studio-shell.studio-collapsed .studio-brand-row .studio-collapse-btn,
 body.studio-shell.studio-collapsed .studio-nav-item.is-all .studio-nav-chev,
-body.studio-shell.studio-collapsed .studio-nav-empty{display:none}
+body.studio-shell.studio-collapsed .studio-nav-empty{
+  opacity:0;max-width:0;margin:0;padding:0;pointer-events:none
+}
 body.studio-shell.studio-collapsed .studio-nav-item,
 body.studio-shell.studio-collapsed .studio-nav-chip{
   justify-content:center;padding:0;width:40px;height:40px;margin:0 auto 6px
@@ -187,8 +197,8 @@ body.studio-shell.studio-collapsed .studio-nav-item.is-create,
 body.studio-shell.studio-collapsed .studio-nav-item.is-home{height:40px;min-height:40px}
 body.studio-shell.studio-collapsed .studio-nav-tools{grid-template-columns:1fr;justify-items:center}
 body.studio-shell.studio-collapsed .studio-nav-item.is-home.active{box-shadow:0 0 0 1px #FE0C30}
-body.studio-shell.studio-collapsed .studio-brand-row,
-body.studio-shell.studio-collapsed .studio-project,
+body.studio-shell.studio-collapsed .studio-brand-row{min-height:0;margin:0;opacity:0;pointer-events:none}
+body.studio-shell.studio-collapsed .studio-project{height:0;min-height:0;margin:0;padding:0;opacity:0;pointer-events:none}
 body.studio-shell.studio-collapsed .studio-project-menu{display:none}
 body.studio-shell:not(.studio-collapsed) .studio-topbar .studio-collapse-btn,
 body.studio-shell:not(.studio-collapsed) .studio-workspace-pop{display:none!important}
@@ -659,7 +669,7 @@ body.studio-shell .files-tile{
   body.studio-shell .studio-sidebar{
     position:fixed;top:0;bottom:0;left:0;z-index:45;
     width:min(260px,86vw);flex:0 0 min(260px,86vw);
-    transform:translateX(-105%);transition:transform 180ms ease-out
+    transform:translateX(-105%);transition:transform var(--studio-sidebar-ease)
   }
   body.studio-shell.nav-open .studio-sidebar{transform:translateX(0)}
   body.studio-shell.nav-open .studio-scrim{display:block}
