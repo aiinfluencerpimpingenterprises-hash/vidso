@@ -27,27 +27,18 @@ function stubBrowser({ search = '', store = {} } = {}) {
   }
 }
 
-test('faceless studio stays archived until it is public', () => {
+test('faceless studio is a live app panel', () => {
   const restore = stubBrowser()
   try {
-    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), true)
-    assert.equal(panelArchived('facelessstudio'), true)
+    assert.equal(ARCHIVED_PANELS.includes('facelessstudio'), false)
+    assert.equal(panelArchived('facelessstudio'), false)
     assert.equal(HIDDEN_CHROME_PANELS.includes('facelessstudio'), false)
     const searchable = NAV_SEARCH_ITEMS
       .filter((it) => !panelArchived(it.id) && !panelHiddenFromChrome(it.id))
       .map((it) => it.id)
-    assert.equal(searchable.includes('facelessstudio'), false)
+    assert.equal(searchable.includes('facelessstudio'), true)
     const cards = TOOL_GALLERY.filter((t) => !panelArchived(t.id) && !panelHiddenFromChrome(t.id)).map((t) => t.id)
-    assert.equal(cards.includes('facelessstudio'), false)
-  } finally {
-    restore()
-  }
-})
-
-test('?studio=1 preview unlocks Faceless Studio for the tab', () => {
-  const restore = stubBrowser({ search: '?studio=1' })
-  try {
-    assert.equal(panelArchived('facelessstudio'), false)
+    assert.equal(cards.includes('videogen'), true)
   } finally {
     restore()
   }
@@ -59,10 +50,12 @@ test('dashboard home uses the studio shell root', () => {
   assert.doesNotMatch(dashboard, /id="panel-dashboard"[^>]*\bhidden\b/)
 })
 
-test('the top nav, profile dropdown, and settings keep Faceless Studio hidden', () => {
-  assert.match(dashboard, /id="nav-facelessstudio"[^>]*\bdata-archived\b/)
-  assert.match(dashboard, /id="user-studio-btn"[^>]*\bdata-archived\b/)
-  assert.match(dashboard, /id="settings-studio"[^>]*\bdata-archived\b/)
+test('settings and the account menu keep Faceless Studio reachable', () => {
+  assert.match(dashboard, /id="user-studio-btn"/)
+  assert.match(dashboard, /id="settings-studio"/)
+  assert.doesNotMatch(dashboard, /id="nav-facelessstudio"/)
+  assert.doesNotMatch(dashboard, /id="user-studio-btn"[^>]*\bdata-archived\b/)
+  assert.doesNotMatch(dashboard, /id="settings-studio"[^>]*\bdata-archived\b/)
 })
 
 test('archived entries still drop out of the nav when something is archived', () => {

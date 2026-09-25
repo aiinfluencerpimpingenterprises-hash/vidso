@@ -4008,9 +4008,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Getting started</span>
         <span class="settings-row-value">Tours →</span>
       </button>
-      <button type="button" class="settings-row-btn" id="settings-studio" data-archived hidden aria-label="Open Faceless Studio">
+      <button type="button" class="settings-row-btn" id="settings-studio" aria-label="Open Faceless Studio">
         <span class="settings-row-label">Faceless Studio</span>
-        <span class="settings-row-value">Test →</span>
+        <span class="settings-row-value">Open →</span>
       </button>
       <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
         <span class="settings-row-label">Billing</span>
@@ -4105,7 +4105,6 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <button type="button" class="studio-scrim" id="studio-scrim" hidden aria-label="Close menu"></button>
 <div class="studio-frame">
 <aside class="studio-sidebar" id="studio-sidebar" aria-label="Studio"></aside>
-<button type="button" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
 <div class="studio-col">
 <header class="studio-topbar" id="studio-topbar">
   <div class="studio-topbar-left">
@@ -4151,7 +4150,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
         <button type="button" role="menuitem" id="nav-yt-mcp-btn">YouTube</button>
-        <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
+        <button type="button" role="menuitem" id="user-studio-btn">Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
       </div>
@@ -6435,7 +6434,7 @@ import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
-import { initStudioShell } from '/lib/app-studio-shell.js?v=s35'
+import { initStudioShell } from '/lib/app-studio-shell.js?v=s36'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
 import {
   tourById,

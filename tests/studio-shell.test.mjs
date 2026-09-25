@@ -62,9 +62,9 @@ test('studio copy has no em dashes', () => {
 
 test('catalog categories and tools match the shipped list', () => {
   assert.deepEqual(CATALOG_TABS.map((t) => t.id), ['popular', 'long-form', 'shorts', 'thumbnails', 'audio', 'editing'])
-  assert.deepEqual(catalogTools('long-form').map((t) => t.id), ['videogen'])
+  assert.deepEqual(catalogTools('long-form').map((t) => t.id), ['videogen', 'facelessstudio'])
   assert.deepEqual(catalogTools('thumbnails').map((t) => t.id), ['imagegen'])
-  assert.deepEqual(catalogTools('popular').map((t) => t.id), ['videogen', 'imagegen', 'clipper', 'voiceover', 'mcp'])
+  assert.deepEqual(catalogTools('popular').map((t) => t.id), ['videogen', 'imagegen', 'facelessstudio', 'clipper', 'voiceover', 'mcp'])
   assert.ok(catalogTools('shorts').map((t) => t.id).includes('clipper'))
   assert.ok(catalogTools('audio').map((t) => t.id).includes('voiceover'))
   assert.ok(catalogTools('editing').map((t) => t.id).includes('editor'))
@@ -103,9 +103,10 @@ test('sidebar uses Create because Chat Mode and Director Mode do not exist', () 
   assert.ok(hrefs.includes('/tutorials'))
   assert.ok(hrefs.includes('/files'))
   assert.ok(hrefs.includes('/mcp'))
-  assert.equal(hrefs.includes('/faceless-studio'), false)
+  assert.ok(hrefs.includes('/faceless-studio'))
   const tools = SIDEBAR_SECTIONS.find((s) => s.id === 'tools')
   assert.ok(tools.chips)
+  assert.deepEqual(tools.items.slice(-2).map((i) => i.id), ['mcp', 'commentary'])
   assert.ok(tools.items.some((i) => i.id === 'mcp' && i.badge === 'NEW'))
 })
 
@@ -226,6 +227,8 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.ok(!shell.includes('id="rail-tools"'))
   assert.ok(!shell.includes('Get started with tools'))
   assert.match(shell, /studio-home-rails/)
+  assert.ok(!shell.includes('id="studio-mode-agents"'))
+  assert.ok(!shell.includes('id="studio-chips"'))
   assert.match(shell, /paintHomeMode/)
 })
 
