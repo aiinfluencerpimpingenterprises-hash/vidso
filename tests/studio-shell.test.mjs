@@ -127,12 +127,20 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.match(dash, /id="panel-homepresets"/)
   assert.match(dash, /id="panel-inspirecat"/)
   assert.deepEqual(INSPIRE_CATEGORIES.map((c) => c.id), [
-    'marketing', 'film', 'music', 'animation', 'ugc', 'micro', 'anime', 'explainer',
+    'marketing', 'film', 'music', 'animation', 'ugc', 'explainer',
   ])
   assert.equal(inspireItems('marketing').length, 32)
   assert.ok(inspireItems('marketing').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
   assert.equal(inspireItems('film').length, 47)
   assert.equal(inspireItems('music').length, 12)
+  assert.equal(inspireItems('animation').length, 50)
+  assert.ok(inspireItems('animation').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
+  assert.equal(inspireItems('ugc').length, 8)
+  assert.equal(inspireItems('ugc')[0].file, 'landingpageugc.mp4')
+  assert.ok(inspireItems('ugc').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
+  assert.equal(inspireItems('explainer').length, 10)
+  assert.equal(inspireItems('explainer')[0].file, 'facelessstudio.mp4')
+  assert.ok(inspireItems('explainer').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
   assert.ok(inspireItems('music').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
   assert.match(shell, /Start creating/)
   assert.match(shell, /Your recent renders/)
