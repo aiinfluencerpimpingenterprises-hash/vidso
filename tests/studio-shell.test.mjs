@@ -254,6 +254,7 @@ test('home is public preview and files stay private', () => {
   assert.match(css, /--studio-sidebar:260px/)
   assert.match(css, /--studio-sidebar-ease/)
   assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/)
+  assert.match(css, /studio-collapsed \.studio-nav-ico/)
   assert.match(shell, /studio-brand-row/)
   assert.match(shell, /All tools/)
   assert.match(css, /--studio-sidebar-sm:64px/)

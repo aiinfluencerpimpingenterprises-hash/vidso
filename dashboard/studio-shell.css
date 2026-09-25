@@ -191,7 +191,16 @@ body.studio-shell.studio-collapsed .studio-nav-empty{
 }
 body.studio-shell.studio-collapsed .studio-nav-item,
 body.studio-shell.studio-collapsed .studio-nav-chip{
-  justify-content:center;padding:0;width:40px;height:40px;margin:0 auto 6px
+  justify-content:center;align-items:center;gap:0;padding:0;width:40px;height:40px;margin:0 auto 6px
+}
+body.studio-shell.studio-collapsed .studio-nav-item .studio-nav-txt,
+body.studio-shell.studio-collapsed .studio-nav-chip .studio-nav-txt,
+body.studio-shell.studio-collapsed .studio-nav-item .studio-nav-new,
+body.studio-shell.studio-collapsed .studio-nav-chip .studio-nav-new{
+  position:absolute;width:0;height:0;overflow:hidden
+}
+body.studio-shell.studio-collapsed .studio-nav-ico{
+  margin:0;flex:0 0 auto
 }
 body.studio-shell.studio-collapsed .studio-nav-item.is-create,
 body.studio-shell.studio-collapsed .studio-nav-item.is-home{height:40px;min-height:40px}
