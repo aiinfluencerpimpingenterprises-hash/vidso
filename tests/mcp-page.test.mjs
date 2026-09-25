@@ -117,7 +117,7 @@ test('placeholder mappings stay honest', () => {
   assert.ok(page.includes('function attachMcpClip'))
   assert.ok(page.includes('v.autoplay = true'))
   assert.ok(page.includes("v.setAttribute('muted', '')"))
-  assert.ok(page.includes('catalogClipLoopSeconds'))
+  assert.ok(page.includes('catalogClipWindow'))
   assert.ok(page.includes('bindCatalogClipLoop'))
   assert.ok(!page.includes('mcpModelClipSrc'))
   const clipFn = page.slice(page.indexOf('function attachMcpClip'), page.indexOf('function bindMcpModelTile'))

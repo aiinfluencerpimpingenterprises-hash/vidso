@@ -12,12 +12,13 @@ import {
   MODELS_PROMO_COPY,
   MODEL_GROUPS,
   CATALOG_CLIP_FILES,
-  CATALOG_CLIP_LOOP_SECONDS,
+  CATALOG_CLIP_WINDOWS,
   CATALOG_MODELS,
   MCP_LATEST_MODEL_IDS,
   MODELS_HERO_VIDEO,
   VIDSO_MODELS,
   catalogClipLoopSeconds,
+  catalogClipWindow,
   catalogHasClip,
   featuredMediaId,
   featuredModels,
@@ -121,10 +122,12 @@ test('placeholders and featured tiles stay on landing R2', () => {
   assert.equal(CATALOG_CLIP_FILES['pixverse'], 'pixverse.mp4')
   assert.equal(CATALOG_CLIP_FILES['elevenlabs'], 'elevenlabs.mp4')
   assert.match(modelCardClipSrc('elevenlabs'), /elevenlabs\.mp4$/)
-  assert.equal(CATALOG_CLIP_LOOP_SECONDS['seedream-5-pro'], 5)
+  assert.equal(CATALOG_CLIP_WINDOWS['seedream-5-pro'].end, 5)
   assert.equal(catalogClipLoopSeconds('seedream-5-pro'), 5)
   assert.equal(catalogClipLoopSeconds('gemini-omni-flash'), 0)
-  assert.ok(modelsPageJs.includes('catalogClipLoopSeconds'))
+  assert.equal(catalogClipWindow('nano-banana-2-5').start, 2.05)
+  assert.equal(catalogClipWindow('nano-banana-pro'), null)
+  assert.ok(modelsPageJs.includes('catalogClipWindow'))
   assert.ok(modelsPageJs.includes('bindCatalogClipLoop'))
   assert.ok(!modelsPageJs.includes('models-mega-new'))
   assert.ok(!modelsPageJs.includes('model-card-go'))
