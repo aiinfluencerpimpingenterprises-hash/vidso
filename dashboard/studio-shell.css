@@ -946,3 +946,160 @@ body.studio-shell #nav-avatar-menu [hidden],
   body.studio-shell .content.is-enter{animation:none}
   .studio-tile:hover,.studio-preset:hover,.studio-inspire-card:hover,.studio-tool-row:hover,.studio-nav-item:hover,.studio-nav-chip:hover{transform:none}
 }
+
+/* Faceless Studio uses the same chrome as Home */
+body.studio-shell #panel-facelessstudio,
+body.studio-shell #panel-facelessstudio button,
+body.studio-shell #panel-facelessstudio input,
+body.studio-shell #panel-facelessstudio textarea,
+body.studio-shell #panel-facelessstudio select,
+body.studio-shell .fs-show,
+body.studio-shell .fs-show button{
+  font-family:'SF Pro Display','Inter',-apple-system,BlinkMacSystemFont,sans-serif
+}
+body.studio-shell .fs-shell,
+body.studio-shell .fs-main,
+body.studio-shell .fs-stage{
+  background:var(--studio-bg)
+}
+body.studio-shell .fs-shell{
+  flex-direction:column;min-height:0;height:100%
+}
+body.studio-shell .fs-rail,
+body.studio-shell.fs-rail-collapsed .fs-rail{
+  width:100%;flex:0 0 auto;flex-direction:row;align-items:center;gap:6px;
+  min-height:56px;padding:8px 16px;overflow-x:auto;overflow-y:hidden;
+  border-right:none;border-bottom:1px solid var(--studio-border);background:var(--studio-bg)
+}
+body.studio-shell .fs-rail-head,
+body.studio-shell .fs-rail-brand,
+body.studio-shell .fs-rail-label,
+body.studio-shell .fs-rail-foot,
+body.studio-shell .fs-rail-price,
+body.studio-shell .fs-rail-toggle,
+body.studio-shell .fs-rail-ico,
+body.studio-shell .fs-rail-projects,
+body.studio-shell .fs-rail-list,
+body.studio-shell .fs-rail-chats-empty,
+body.studio-shell.fs-rail-collapsed .fs-rail-head,
+body.studio-shell.fs-rail-collapsed .fs-rail-brand,
+body.studio-shell.fs-rail-collapsed .fs-rail-label,
+body.studio-shell.fs-rail-collapsed .fs-rail-foot,
+body.studio-shell.fs-rail-collapsed .fs-rail-item,
+body.studio-shell.fs-rail-collapsed .fs-rail-chats-empty{
+  display:none!important
+}
+body.studio-shell .fs-rail-nav{
+  flex-direction:row;align-items:center;gap:6px;flex:1;min-width:0
+}
+body.studio-shell.fs-rail-collapsed .fs-rail-nav{
+  width:auto;align-items:center
+}
+body.studio-shell .fs-rail-link,
+body.studio-shell.fs-rail-collapsed .fs-rail-link{
+  width:auto;height:36px;min-height:36px;padding:0 12px;border-radius:12px;
+  font-size:14px;font-weight:500;color:rgba(255,255,255,.78);justify-content:center;gap:0
+}
+body.studio-shell .fs-rail-link:hover{background:rgba(255,255,255,.05);color:#fff}
+body.studio-shell .fs-rail-link.is-on,
+body.studio-shell .fs-rail-item.is-on{
+  color:#fff;background:rgba(255,255,255,.06)
+}
+body.studio-shell .fs-rail-newchat,
+body.studio-shell.fs-rail-collapsed .fs-rail-newchat{
+  width:auto;height:36px;min-height:36px;margin:0;padding:0 14px;border-radius:12px;
+  background:#1c1c1f;font-size:14px;font-weight:500
+}
+body.studio-shell .fs-rail-newchat:hover{background:#222226}
+body.studio-shell .fs-temp-btn{
+  height:36px;margin-left:auto;padding:0 12px;border-radius:12px;flex-shrink:0;
+  border:1px solid var(--studio-border);background:transparent;font-size:13px;font-weight:500
+}
+body.studio-shell .fs-temp-btn.is-on,
+body.studio-shell .fs-temp-btn[aria-pressed="true"],
+body.studio-shell.fs-temp-on .fs-temp-btn{
+  border-color:rgba(254,12,48,.55);background:rgba(254,12,48,.12);color:#fff
+}
+body.studio-shell .fs-stage-tools{display:none}
+body.studio-shell .fs-hero-title,
+body.studio-shell #panel-facelessstudio .fs-page-head h1,
+body.studio-shell #panel-facelessstudio .fs-board-head h1,
+body.studio-shell #panel-facelessstudio .fs-templates .fs-page-head h1,
+body.studio-shell #panel-facelessstudio .fs-g-h,
+body.studio-shell #panel-facelessstudio .fs-proj-empty h2,
+body.studio-shell .fs-show-titles h2{
+  font-family:'SF Pro Display','Inter',-apple-system,sans-serif;font-weight:600;
+  letter-spacing:-.04em;text-transform:none
+}
+body.studio-shell .fs-hero-title{
+  font-size:40px;line-height:1.1;color:var(--studio-text)
+}
+body.studio-shell .fs-hero-sub{
+  color:var(--studio-muted);font-size:15px
+}
+body.studio-shell .fs-proj-empty h2{font-size:22px}
+body.studio-shell .fs-temp-mark{
+  letter-spacing:0;text-transform:none;font-weight:600;font-size:12px
+}
+body.studio-shell .fs-main{background:var(--studio-bg);padding:20px 28px 40px}
+body.studio-shell .fs-home.has-composer .fs-composer,
+body.studio-shell .fs-composer-sc{
+  max-width:820px;padding:0 0 14px;border-radius:18px;
+  background:var(--studio-l2);border:1px solid var(--studio-border-2);
+  box-shadow:var(--studio-shadow),var(--studio-inset);backdrop-filter:none
+}
+body.studio-shell .fs-composer-sc .fs-topic,
+body.studio-shell .fs-topic{
+  min-height:72px;padding:16px 18px 0;border:none!important;background:transparent!important;
+  color:var(--studio-text);font:inherit;font-size:15px;line-height:1.5;outline:none!important;box-shadow:none!important
+}
+body.studio-shell .fs-composer-bar{padding:0 16px;margin-top:12px}
+body.studio-shell .fs-bar-chip,
+body.studio-shell .fs-bar-btn,
+body.studio-shell .fs-count{
+  height:32px;border-radius:999px;border:1px solid var(--studio-border);
+  background:var(--studio-l1);font-size:13px;font-weight:500
+}
+body.studio-shell .fs-bar-btn[aria-pressed="true"]{
+  border-color:rgba(254,12,48,.55);background:rgba(254,12,48,.12)
+}
+body.studio-shell .fs-ref-add,
+body.studio-shell .fs-composer-sc .fs-ref-add{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--studio-border-2);background:transparent
+}
+body.studio-shell .fs-auto-btn,
+body.studio-shell .fs-ask-btn{
+  height:32px;padding:0 10px;border-radius:999px;font-size:13px;color:var(--studio-muted)
+}
+body.studio-shell .fs-send{
+  width:32px;height:32px;background:var(--studio-accent)
+}
+body.studio-shell .fs-tool{font-size:13px;color:var(--studio-muted)}
+body.studio-shell .fs-menu{
+  background:#1c1c1f;border:1px solid rgba(255,255,255,.08);border-radius:14px
+}
+body.studio-shell .fs-menu.fs-model-menu{background:#1c1c1f}
+body.studio-shell .fs-menu.fs-model-menu button.fs-model-card{
+  background:var(--studio-l2);color:var(--studio-text);border:1px solid var(--studio-border-2);
+  border-radius:14px;box-shadow:none;min-height:132px
+}
+body.studio-shell .fs-menu.fs-model-menu button.fs-model-card:hover{
+  background:#1c1c1f;border-color:var(--studio-hover-border);transform:none;
+  box-shadow:none
+}
+body.studio-shell .fs-menu.fs-model-menu button.fs-model-card.is-on{
+  border-color:rgba(254,12,48,.55);box-shadow:none
+}
+body.studio-shell .fs-menu.fs-model-menu button.fs-model-card strong{color:#fff}
+body.studio-shell .fs-menu.fs-model-menu button.fs-model-card small{color:var(--studio-muted)}
+body.studio-shell .fs-model-card-badge{background:rgba(255,255,255,.08);color:var(--studio-muted)}
+body.studio-shell .fs-model-menu .fs-menu-search{
+  border:1px solid var(--studio-border);background:var(--studio-l1);border-radius:12px
+}
+body.studio-shell .fs-board-tab.is-on{box-shadow:inset 0 -2px 0 var(--studio-accent)}
+body.studio-shell .fs-modal,
+body.studio-shell .fs-search-card,
+body.studio-shell .fs-board-card,
+body.studio-shell .fs-conn-card{
+  background:var(--studio-l1);border-color:var(--studio-border)
+}

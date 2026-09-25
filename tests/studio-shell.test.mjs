@@ -300,3 +300,17 @@ test('home top bar drops Search and names the workspace from account data', () =
   assert.doesNotMatch(shell, /discord|youtube\.com|twitter|x\.com/i)
   assert.match(readFileSync(fileURLToPath(new URL('../brand.js', import.meta.url)), 'utf8'), /VIDSO_INSTAGRAM_URL/)
 })
+
+test('faceless studio uses the studio shell type and chrome', () => {
+  const fs = readFileSync(fileURLToPath(new URL('../lib/studio-shell.js', import.meta.url)), 'utf8')
+  assert.match(dash, /Start a faceless video/)
+  assert.doesNotMatch(dash, /class="fs-rail-price"/)
+  assert.doesNotMatch(dash, /id="panel-facelessstudio"[\s\S]*Clash Grotesk/)
+  assert.match(fs, /Start a faceless video/)
+  assert.match(fs, /Start a temporary chat/)
+  assert.doesNotMatch(fs, /START A TEMPORARY CHAT/)
+  assert.match(css, /body\.studio-shell #panel-facelessstudio/)
+  assert.match(css, /body\.studio-shell \.fs-rail,/)
+  assert.match(css, /flex-direction:row/)
+  assert.match(dash, /studio-shell\.css\?v=s26/)
+})
