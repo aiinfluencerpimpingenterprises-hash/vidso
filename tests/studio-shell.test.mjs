@@ -24,6 +24,7 @@ import {
   allStudioTools,
   appMedia,
   catalogTools,
+  inspireItems,
 } from '../lib/studio-nav.js'
 import { DURATION_PRESETS } from '../lib/entitlements.js'
 import { PUBLIC_TOOL_PATHS } from '../lib/public-tools.js'
@@ -128,6 +129,9 @@ test('home rails and inspiration tabs are config-driven', () => {
   assert.deepEqual(INSPIRE_CATEGORIES.map((c) => c.id), [
     'marketing', 'film', 'music', 'animation', 'ugc', 'micro', 'anime', 'explainer',
   ])
+  assert.equal(inspireItems('marketing').length, 32)
+  assert.ok(inspireItems('marketing').every((it) => it.src.endsWith(encodeURIComponent(it.file))))
+  assert.equal(inspireItems('film').length, 8)
   assert.match(shell, /Start creating/)
   assert.match(shell, /Your recent renders/)
   assert.ok(!shell.includes('id="rail-news"'))
