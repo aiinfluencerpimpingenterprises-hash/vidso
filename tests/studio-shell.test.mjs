@@ -112,6 +112,7 @@ test('home rails and inspiration tabs are config-driven', () => {
     'Long-form', 'Short film', 'Thumbnail', 'Clip', 'Ranking video', 'Social content', 'Explainer', 'Listicle',
   ])
   assert.ok(START_FORMATS.every((f) => !/16:9|9:16/.test(f.chip || '')))
+  assert.equal(START_FORMATS.find((f) => f.id === 'thumbnail').badge, '')
   assert.match(WHATS_NEW[0].title, /Seedream 5.0 Pro/)
   assert.match(WHATS_NEW[0].href, /image-generation/)
   assert.equal(WHATS_NEW[0].image, 'home-whatsnew-01.jpg')
