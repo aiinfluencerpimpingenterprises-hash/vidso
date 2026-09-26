@@ -526,6 +526,11 @@ select option{background:var(--card)}
 .fv-dur-dd .clip-dd-menu{left:0;right:auto;transform:none;min-width:100%;width:max(100%,200px);z-index:12}
 .fv-dur-dd.is-open{z-index:24}
 .fv-dur-dd.is-open .clip-dd-menu{display:block}
+#panel-videogen > .tool-card{overflow:visible}
+#panel-videogen > .tool-card:has(.fv-dur-dd.is-open){
+  position:relative;z-index:40;
+  backdrop-filter:none;-webkit-backdrop-filter:none
+}
 .fv-length-row .fv-chip-row{margin:0;flex:0 0 auto}
 .fv-custom-dur{
   display:none;align-items:center;gap:6px;height:44px;padding:0 12px 0 14px;flex-shrink:0;
