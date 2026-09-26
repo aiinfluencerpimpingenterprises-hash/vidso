@@ -2411,12 +2411,12 @@ body.img-detail-open{overflow:hidden}
 /* Video gen V2 */
 #panel-videogen{max-width:760px;margin:0 auto;width:100%}
 #panel-videogen > .tool-card{padding:24px;margin-bottom:20px}
-.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
-.fv-how-item{padding:0 0 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-card);text-align:left;overflow:hidden}
-.fv-how-item .media-ph,.fv-how-shot{border-radius:0;border:none;border-bottom:1px solid var(--border)}
-.fv-how-n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,244,.4);margin:14px 16px 8px}
-.fv-how-t{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 16px 4px}
-.fv-how-d{font-size:13px;color:rgba(255,255,255,.45);margin:0 16px;line-height:1.4}
+.fv-how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.fv-how-item{padding:0 0 8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;text-align:left;overflow:hidden}
+.fv-how-item .media-ph,.fv-how-shot{border-radius:0;border:none;border-bottom:1px solid var(--border);aspect-ratio:2.4 / 1}
+.fv-how-n{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,244,.4);margin:8px 10px 2px}
+.fv-how-t{font-family:var(--font-heading);font-size:13px;font-weight:600;letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);margin:0 10px 2px}
+.fv-how-d{font-size:11px;color:rgba(255,255,255,.45);margin:0 10px;line-height:1.3}
 @media (max-width:1023px){.fv-how{display:none}}
 
 .media-ph{
@@ -5937,7 +5937,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
       <div class="fv-how" id="fv-how" aria-label="How it works">
         <div class="fv-how-item">
-          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+          <div class="media-ph fv-how-shot" data-media-ph>
             <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Script.png" alt="" loading="lazy" decoding="async">
           </div>
           <div class="fv-how-n">Step 1</div>
@@ -5945,7 +5945,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <p class="fv-how-d">Generate and edit the narration for your topic.</p>
         </div>
         <div class="fv-how-item">
-          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+          <div class="media-ph fv-how-shot" data-media-ph>
             <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Media.png" alt="" loading="lazy" decoding="async">
           </div>
           <div class="fv-how-n">Step 2</div>
@@ -5953,7 +5953,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <p class="fv-how-d" id="fv-how-media-d">Cinematic B-roll, cut to every line of the voiceover.</p>
         </div>
         <div class="fv-how-item">
-          <div class="media-ph fv-how-shot" data-media-ph style="aspect-ratio:16 / 9">
+          <div class="media-ph fv-how-shot" data-media-ph>
             <img src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Export.png" alt="" loading="lazy" decoding="async">
           </div>
           <div class="fv-how-n">Step 3</div>
