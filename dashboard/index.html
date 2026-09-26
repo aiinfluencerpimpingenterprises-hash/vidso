@@ -508,9 +508,11 @@ select option{background:var(--card)}
 .fv-regen-btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.38)}
 .fv-regen-btn.is-ai{border-color:rgba(var(--glow),.55);background:rgba(var(--glow),.18)}
 .fv-regen-btn.is-ai:hover{background:rgba(var(--glow),.28);border-color:rgba(var(--glow),.75)}
+.fv-duration-dd{display:flex;align-items:center;gap:8px}
+.fv-duration-dd select{width:auto;flex:1;min-width:0;height:44px}
 .fv-custom-dur{
-  display:none;align-items:center;gap:6px;height:36px;padding:0 12px 0 14px;
-  border:1px solid rgba(var(--glow),.5);background:rgba(var(--glow),.12);border-radius:999px
+  display:none;align-items:center;gap:6px;height:44px;padding:0 12px 0 14px;flex-shrink:0;
+  border:1px solid rgba(var(--glow),.5);background:rgba(var(--glow),.12);border-radius:12px
 }
 .fv-custom-dur.is-on{display:inline-flex}
 .fv-custom-dur input{
@@ -5967,12 +5969,15 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
                 <button type="button" class="fv-seg-btn" data-format="shorts" onclick="fvSetFormat('shorts')">Shorts · 30-60s</button>
                 <button type="button" class="fv-seg-btn active" data-format="long" onclick="fvSetFormat('long')">Long-form · up to 30 min</button>
               </div>
-              <div class="fv-chip-row" id="fv-duration-chips" style="margin-top:12px">
-                <button type="button" class="fv-chip active" data-dur="long_180" onclick="fvSetDuration('long_180')">3 min</button>
-                <button type="button" class="fv-chip" data-dur="long_300" onclick="fvSetDuration('long_300')">5 min</button>
-                <button type="button" class="fv-chip" data-dur="long_600" onclick="fvSetDuration('long_600')">10 min</button>
-                <button type="button" class="fv-chip" data-dur="long_900" onclick="fvSetDuration('long_900')">15 min</button>
-                <button type="button" class="fv-chip" data-dur="long_1800" onclick="fvSetDuration('long_1800')">30 min</button>
+              <div class="fv-duration-dd" id="fv-duration-chips" style="margin-top:12px">
+                <select id="fv-duration" aria-label="Video length" onchange="fvDurationMenu(this.value)">
+                  <option value="long_180" selected>3 min</option>
+                  <option value="long_300">5 min</option>
+                  <option value="long_600">10 min</option>
+                  <option value="long_900">15 min</option>
+                  <option value="long_1800">30 min</option>
+                  <option value="custom">Custom</option>
+                </select>
               </div>
             </div>
 
@@ -9488,10 +9493,11 @@ function fvRenderDurationChips() {
   const inputVal = custom
     ? (shorts ? picked.seconds : Math.round((picked.seconds / 60) * 10) / 10)
     : ''
-  row.innerHTML = chips.map(d =>
-    `<button type="button" class="fv-chip${d.id === fvState.durationId ? ' active' : ''}" data-dur="${d.id}" onclick="fvSetDuration('${d.id}')">${d.label}</button>`
-  ).join('') +
-    `<button type="button" class="fv-chip${custom ? ' active' : ''}" data-dur="custom" onclick="fvOpenCustomDuration()">${custom ? picked.label : 'Custom'}</button>` +
+  row.innerHTML = `<select id="fv-duration" aria-label="Video length" onchange="fvDurationMenu(this.value)">` +
+    chips.map(d =>
+      `<option value="${d.id}"${d.id === fvState.durationId ? ' selected' : ''}>${d.label}</option>`
+    ).join('') +
+    `<option value="custom"${custom ? ' selected' : ''}>Custom</option></select>` +
     `<label class="fv-custom-dur${custom ? ' is-on' : ''}">
       <input type="number" id="fv-custom-dur" min="${shorts ? min : min / 60}" max="${shorts ? max : max / 60}" step="${shorts ? 1 : 1}" value="${inputVal}" inputmode="numeric" aria-label="Custom duration" onchange="fvApplyCustomDuration(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();fvApplyCustomDuration(this.value)}"/>
       <span>${shorts ? 'sec' : 'min'}</span>
@@ -9510,6 +9516,11 @@ window.fvSetFormat = (format) => {
     : list[0]
   if (pick) fvState.durationId = pick.id
   fvRenderDurationChips()
+}
+
+window.fvDurationMenu = (id) => {
+  if (id === 'custom') fvOpenCustomDuration()
+  else fvSetDuration(id)
 }
 
 window.fvSetDuration = (id) => {
