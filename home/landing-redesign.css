@@ -530,11 +530,6 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .hero-mq-card.is-short{width:calc(260px * 9 / 16)}
 .hero-mq-shot,.hero-mq-shot img,.hero-mq-shot video{width:100%;height:100%;object-fit:cover;display:block}
 .hero-mq-shot{position:absolute;inset:0}
-.hero-mq-lab{
-  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;
-  padding:5px 10px;border-radius:999px;background:rgba(12,12,14,.58);color:#fff;
-  font-size:12px;font-weight:650;white-space:nowrap;backdrop-filter:blur(10px)
-}
 .hero-card.is-blank::after,.shorts-shot.is-blank::after,.hero-mq-card.is-blank::after,.hero-mq-shot.is-blank::after{
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
   background:linear-gradient(115deg,transparent 18%,rgba(255,255,255,.04) 48%,transparent 72%);

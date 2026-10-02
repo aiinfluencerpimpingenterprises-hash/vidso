@@ -33,6 +33,10 @@ test('hero cards use landing placeholder URLs and keep a long/short mix', () => 
   assert.equal(filled.Ad.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/landingpagead.mp4')
   assert.equal(filled.Explainer.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio1.mp4')
   assert.equal(filled.Voiceover.src, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/facelessstudio.mp4')
+  const js = readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8')
+  const css = readFileSync(new URL('../home/landing-redesign.css', import.meta.url), 'utf8')
+  assert.ok(!js.includes('hero-mq-lab'))
+  assert.ok(!css.includes('.hero-mq-lab'))
 })
 
 test('showcase mixes formats and format cards stay blank-ready', () => {
@@ -212,8 +216,8 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.lp-red.is-home #top-models h2 .accent{display:block}'))
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
-  assert.ok(html.includes('landing-redesign.css?v=d1fbe'))
-  assert.ok(html.includes('landing-page.js?v=d1fbb'))
+  assert.ok(html.includes('landing-redesign.css?v=d1fbf'))
+  assert.ok(html.includes('landing-page.js?v=d1fbc'))
   assert.ok(!readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8').includes('videoeditor.png'))
   assert.ok(!css.includes('.hero-marquee:hover .hero-marquee-track'))
   assert.ok(!css.includes('.hero-marquee:focus-within .hero-marquee-track'))
