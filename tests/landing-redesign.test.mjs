@@ -164,7 +164,8 @@ test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserv
   assert.ok(css.includes('.mcp-panel::after{display:none}'))
   assert.ok(css.includes('.lp-red .comp-cta::before{display:none}'))
   assert.ok(css.includes('.final-box::before{display:none}'))
-  assert.ok(css.includes('.shorts-ico'))
+  assert.ok(!css.includes('.shorts-ico'))
+  assert.ok(!css.includes('.shorts-lab'))
   assert.ok(!css.includes('margin-top:-18px'))
 })
 
@@ -196,6 +197,8 @@ test('formats carousel only advances from arrows', () => {
   assert.ok(shorts.includes("querySelector('[data-short-prev]')"))
   assert.ok(css.includes('.shorts-nav:hover{background:#FE0C30'))
   assert.ok(css.includes('.shorts-nav{'))
+  assert.ok(!shorts.includes('shorts-meta'))
+  assert.ok(!shorts.includes('shorts-lab'))
 })
 
 test('UGC row plays looping ugcad clips in the vertical cards', () => {
@@ -216,8 +219,8 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.lp-red.is-home #top-models h2 .accent{display:block}'))
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
-  assert.ok(html.includes('landing-redesign.css?v=d1fbf'))
-  assert.ok(html.includes('landing-page.js?v=d1fbc'))
+  assert.ok(html.includes('landing-redesign.css?v=d1fc0'))
+  assert.ok(html.includes('landing-page.js?v=d1fbd'))
   assert.ok(!readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8').includes('videoeditor.png'))
   assert.ok(!css.includes('.hero-marquee:hover .hero-marquee-track'))
   assert.ok(!css.includes('.hero-marquee:focus-within .hero-marquee-track'))

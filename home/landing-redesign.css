@@ -597,7 +597,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)
 }
 .shorts-row{
-  position:relative;height:560px;display:flex;align-items:flex-start;justify-content:center;
+  position:relative;height:480px;display:flex;align-items:flex-start;justify-content:center;
   perspective:1400px;transform-style:preserve-3d;overflow:visible
 }
 .shorts-card{
@@ -611,20 +611,12 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
   transition:transform .5s ease;backface-visibility:hidden;-webkit-backface-visibility:hidden
 }
 .shorts-card.is-warp,.shorts-card.is-warp .shorts-3d{transition:none!important}
-.shorts-meta{display:flex;flex-direction:column;align-items:center;width:100%;transform:none!important}
 .shorts-shot{
   position:relative;width:100%;aspect-ratio:9/16;border-radius:18px;overflow:hidden;
   background:linear-gradient(135deg,#17171a,#111113);border:1px solid rgba(255,255,255,.10);
   box-shadow:0 16px 28px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.06)
 }
 .shorts-shot img,.shorts-shot video{width:100%;height:100%;object-fit:cover;display:block}
-.shorts-ico{
-  width:36px;height:36px;margin-top:12px;border-radius:50%;flex:0 0 36px;
-  display:grid;place-items:center;background:#161618;border:1px solid rgba(255,255,255,.12);color:#fff
-}
-.shorts-ico svg{width:16px;height:16px}
-.shorts-lab{margin-top:8px;font-size:13px;font-weight:650;color:rgba(245,245,244,.7);transform:none;text-align:center;white-space:nowrap}
-.shorts-card.is-on .shorts-lab,.shorts-card:hover .shorts-lab{color:#FE0C30}
 .shorts-nav{
   position:absolute;top:42%;width:52px;height:52px;border-radius:50%;border:0;
   background:#fff;color:#111;cursor:pointer;z-index:5;transform:translateY(-50%);
@@ -635,7 +627,7 @@ html.nav-drawer-lock,body.nav-drawer-lock{overflow:hidden}
 .shorts-nav.prev{left:4px}
 .shorts-nav.next{right:4px}
 @media(max-width:760px){
-  .shorts-row{height:440px}
+  .shorts-row{height:310px}
   .shorts-card{width:150px;margin-left:-75px;top:20px}
   .shorts-stage{padding:4px 52px}
 }

@@ -67,7 +67,7 @@ async function measure(page) {
     const pin = document.getElementById('hero-pin')
     const pinVh = ''
     const shorts = [...document.querySelectorAll('.shorts-card')].map((el) => ({
-      label: el.querySelector('.shorts-lab')?.textContent || '',
+      label: el.getAttribute('aria-label') || '',
       blank: !el.querySelector('.shorts-shot img, .shorts-shot video'),
       cardText: (el.querySelector('.shorts-shot')?.textContent || '').trim(),
     }))
