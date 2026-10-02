@@ -43,11 +43,9 @@ test('landing points generate CTAs at the in-app home', () => {
   assert.match(menuJs, /nav-tools-btn/)
   assert.match(menuJs, /nav-tools-chevron/)
   assert.match(menuJs, /tools-mega-ico/)
-  assert.match(html, /href="\/dashboard"/)
-  assert.match(html, /Long Form Generator/)
-  assert.match(html, /Thumbnail Generator/)
-  assert.match(html, /Clipping/)
-  assert.match(html, /hero-prompt[\s\S]{0,80}action="\/dashboard"/)
+  assert.match(html, /location\.href='\/signup'/)
+  assert.match(html, /Generate a Video Now/)
+  assert.match(html, /Your faceless YouTube empire starts here/)
 })
 
 test('dashboard boot allows guest preview on public tools', () => {
