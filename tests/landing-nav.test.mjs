@@ -80,7 +80,7 @@ test('menu mounter and bar CSS match the full-width OpenArt pattern', () => {
   assert.match(css, /nav-drawer-lock/)
   assert.match(home, /id="navDrawer"/)
   assert.match(home, /href="\/signup"/)
-  assert.match(home, /font-family:'Satoshi','Inter'/)
+  assert.match(home, /font-family:'Bricolage Grotesque','Inter'/)
   assert.doesNotMatch(menuJs, /models-mega-promo|data-nav-promo|models-mega-shot|promoHtml/)
   assert.doesNotMatch(css, /models-mega-grid\{[^}]*220px/)
   assert.doesNotMatch(css, /features-mega-grid/)

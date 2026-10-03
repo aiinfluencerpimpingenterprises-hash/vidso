@@ -166,7 +166,7 @@ test('hero modes and models nav are wired', () => {
   assert.equal(MODELS_PROMO_COPY.browse, 'Browse all models')
   assert.equal(MODELS_PROMO_COPY.secondaryLabel, 'Open Thumbnail Generator')
   assert.ok(home.includes('Your faceless YouTube empire starts here'))
-  assert.ok(home.includes("font-family:'Satoshi','Inter'"))
+  assert.ok(home.includes("font-family:'Bricolage Grotesque','Inter'"))
   assert.ok(home.includes('id="connect-claude"'))
   assert.ok(modelsPage.includes('Vidso Models'))
   assert.ok(modelsPage.includes('Explore the latest'))

@@ -74,7 +74,7 @@ test('hero pin transition is gone', () => {
   assert.ok(!css.includes('hero-pin-stage'))
 })
 
-test('landing keeps SEO, one H1, and the live page in Satoshi', () => {
+test('landing keeps SEO, one H1, and the live page font', () => {
   assert.match(html, /<meta name="description"/)
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1)
   for (const id of ['how', 'connect-claude', 'pricing', 'faq']) {
@@ -84,9 +84,9 @@ test('landing keeps SEO, one H1, and the live page in Satoshi', () => {
   assert.ok(html.includes('Choose the plan'))
   assert.ok(html.includes('for you.'))
   assert.ok(html.includes('Generate a Video Now'))
-  assert.ok(html.includes("font-family:'Satoshi','Inter'"))
-  assert.ok(html.includes('satoshi@400,500,700,900'))
-  assert.ok(!html.includes('Bricolage Grotesque'))
+  assert.ok(html.includes("font-family:'Bricolage Grotesque','Inter'"))
+  assert.ok(html.includes('Bricolage+Grotesque'))
+  assert.ok(html.includes('font-weight:800'))
 })
 
 test('landing reveal uses GSAP ScrollTrigger scrub instead of IntersectionObserver', () => {
@@ -155,7 +155,7 @@ test('top-models copy is centered, heading wraps, and landing uses slots 1-10', 
   assert.ok(css.includes('.lp-red.is-home #top-models h2 .accent{display:block}'))
   assert.ok(css.includes('.top-models-tile[data-slot="10"]'))
   assert.ok(!css.includes('.top-models-tile[data-slot="11"]'))
-  assert.ok(html.includes("font-family:'Satoshi','Inter'"))
+  assert.ok(html.includes("font-family:'Bricolage Grotesque','Inter'"))
   assert.ok(!readFileSync(new URL('../lib/landing-page.js', import.meta.url), 'utf8').includes('videoeditor.png'))
   assert.ok(!css.includes('.hero-marquee:hover .hero-marquee-track'))
   assert.ok(!css.includes('.hero-marquee:focus-within .hero-marquee-track'))
