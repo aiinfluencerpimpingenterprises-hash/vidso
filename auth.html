@@ -353,11 +353,16 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
   variant: 'paywall',
   cycle: 'annual',
   onCta: async (tier) => {
+    // Open the tab while the click still counts as a user gesture. Safari (and
+    // Chrome after ~5s) blocks a window.open that waits on these requests.
+    const tab = window.open('', '_blank')
+    const closeTab = () => { try { tab?.close() } catch (_) {} }
     if (!currentUser) {
       try { currentUser = await api.user.me() } catch (_) {}
     }
     const email = String(currentUser?.email || '').trim()
     if (!email || !email.includes('@')) {
+      closeTab()
       setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
       return
     }
@@ -369,8 +374,14 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
       email,
       userId: currentUser?.id || currentUser?.user_id,
     })
-    if (!url) { setPaywallStatus('Checkout link missing for this plan', 'err'); return }
-    window.open(url, '_blank', 'noopener,noreferrer')
+    if (!url) { closeTab(); setPaywallStatus('Checkout link missing for this plan', 'err'); return }
+    if (!tab || tab.closed) {
+      // Blocked anyway: check out in this tab. Whop returns to ?billing=success.
+      window.location.assign(url)
+      return
+    }
+    try { tab.opener = null } catch (_) {}
+    tab.location.href = url
     setTimeout(() => {
       setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)
       watchForPurchase(tier)

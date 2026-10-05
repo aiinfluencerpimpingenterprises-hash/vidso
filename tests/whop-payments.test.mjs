@@ -128,9 +128,9 @@ import {
   threeDsLevel,
 } from '../lib/whop-checkout.js'
 
-test('checkout forces the 3DS challenge unless asked otherwise', () => {
-  // An authenticated charge is what gets past a high_risk / suspected_fraud block.
-  assert.equal(threeDsLevel({}), 'mandate_challenge')
+test('checkout lets the issuer decide on 3DS unless asked to force it', () => {
+  // A forced challenge on every card turned abandoned 3DS flows into declines.
+  assert.equal(threeDsLevel({}), 'frictionless')
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'mandate_challenge' }), 'mandate_challenge')
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'frictionless' }), 'frictionless')
   assert.equal(threeDsLevel({ WHOP_THREE_DS_LEVEL: 'MANDATE_CHALLENGE' }), 'mandate_challenge')
@@ -144,29 +144,37 @@ test('an unusable 3DS setting is dropped rather than sent to Whop', () => {
 })
 
 test('orchestration turns on adaptive pricing and 3DS without rewriting the price', () => {
-  const patch = orchestrationPatch()
+  const patch = orchestrationPatch({})
   assert.equal(patch.adaptive_pricing_enabled, true)
-  assert.equal(patch.three_ds_level, 'mandate_challenge')
+  assert.equal(patch.three_ds_level, 'frictionless')
   assert.equal(patch.payment_method_configuration.include_platform_defaults, true)
   assert.equal(patch.initial_price, undefined)
   assert.equal(patch.renewal_price, undefined)
   assert.equal(patch.billing_period, undefined)
 })
 
+test('the plan patch follows WHOP_THREE_DS_LEVEL so the plan never overrides checkout', () => {
+  assert.equal(orchestrationPatch({ WHOP_THREE_DS_LEVEL: 'mandate_challenge' }).three_ds_level, 'mandate_challenge')
+  assert.equal('three_ds_level' in orchestrationPatch({ WHOP_THREE_DS_LEVEL: 'off' }), false)
+})
+
 test('a plan is only done once adaptive pricing, 3DS, and platform methods are all on', () => {
   const ready = {
     adaptive_pricing_enabled: true,
-    three_ds_level: 'mandate_challenge',
+    three_ds_level: 'frictionless',
     payment_method_configuration: null,
   }
-  assert.equal(planHasOrchestration(ready), true)
-  assert.equal(planHasOrchestration({ ...ready, payment_method_configuration: { include_platform_defaults: true } }), true)
-  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: true, payment_method_configuration: null }), false)
-  assert.equal(planHasOrchestration({ ...ready, adaptive_pricing_enabled: false }), false)
+  assert.equal(planHasOrchestration(ready, {}), true)
+  assert.equal(planHasOrchestration({ ...ready, payment_method_configuration: { include_platform_defaults: true } }, {}), true)
+  assert.equal(planHasOrchestration({ adaptive_pricing_enabled: true, payment_method_configuration: null }, {}), false)
+  assert.equal(planHasOrchestration({ ...ready, adaptive_pricing_enabled: false }, {}), false)
   assert.equal(planHasOrchestration({
     ...ready,
     payment_method_configuration: { include_platform_defaults: false, enabled: ['card'] },
-  }), false)
+  }, {}), false)
+  // A plan still forcing the challenge must be rewritten to the configured level.
+  assert.equal(planHasOrchestration({ ...ready, three_ds_level: 'mandate_challenge' }, {}), false)
+  assert.equal(planHasOrchestration({ ...ready, three_ds_level: 'mandate_challenge' }, { WHOP_THREE_DS_LEVEL: 'off' }), true)
 })
 
 test('enabling orchestration patches every mapped Vidso plan once', async () => {

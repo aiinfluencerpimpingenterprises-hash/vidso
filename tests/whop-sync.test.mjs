@@ -294,6 +294,30 @@ test('membership.activated with checkout metadata grants the Vidso account', asy
   _resetGrantsForTests()
 })
 
+test('payment.succeeded grants from the membership it paid for, not the payment', async () => {
+  _resetGrantsForTests()
+  const real = globalThis.fetch
+  globalThis.fetch = async () => { throw new Error('no Whop call expected') }
+  try {
+    const result = await fulfillWhopEvent({
+      type: 'payment.succeeded',
+      data: {
+        id: 'pay_1',
+        status: 'paid',
+        plan: { id: PRO_MONTHLY },
+        membership: { id: 'mem_paid', status: 'active' },
+        metadata: { user_id: 'u-pay', email: 'payer@gmail.com' },
+      },
+    })
+    assert.equal(result.ok, true)
+    assert.equal(result.tier, 'pro')
+    assert.equal(result.membershipId, 'mem_paid')
+  } finally {
+    globalThis.fetch = real
+    _resetGrantsForTests()
+  }
+})
+
 // --- Whop paging: a page budget must never be read as "this buyer never paid".
 
 const WHOP_ENV = { WHOP_API_KEY: 'test-key', WHOP_COMPANY_ID: 'biz_test' }

@@ -183,9 +183,9 @@ export default async function handler(req, res) {
 
   const { apiKey, companyId } = whopConfig()
 
-  // ?orchestration=1 writes adaptive pricing + platform payment methods onto
-  // every mapped Vidso plan. Checkout also does this lazily; this is the
-  // explicit "turn it on now" path.
+  // ?orchestration=1 writes adaptive pricing, platform payment methods, and the
+  // WHOP_THREE_DS_LEVEL setting onto every mapped Vidso plan. Checkout also does
+  // this lazily; this is the explicit "turn it on now" path.
   if (req.query?.orchestration) {
     if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
     const plans = await enableVidsoOrchestration()
@@ -202,7 +202,7 @@ export default async function handler(req, res) {
           ? 'The API key cannot update plans. Grant plan:update and plan:basic:read in Whop under Developer, Company API Keys.'
           : failed.length
             ? 'Some plans did not take the checkout patch. See plans[].message.'
-            : '3D Secure, adaptive pricing, and Whop platform payment methods are on for every Vidso plan. Hosted checkout already collects billing address; declined cards are retried by Whop for five days.',
+            : 'Adaptive pricing, Whop platform payment methods, and the configured 3D Secure level are on for every Vidso plan. Hosted checkout already collects billing address; declined cards are retried by Whop for five days.',
       },
     })
   }
