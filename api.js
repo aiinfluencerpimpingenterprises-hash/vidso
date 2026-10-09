@@ -315,13 +315,13 @@ function syncProblem(sync) {
     return 'We could not read your payment from Whop because of a billing configuration problem on our side, not yours. Contact support and we will unlock it right away.'
   }
   if (s.reason === 'whop_error' || s.reason === 'sync_failed') {
-    return 'Whop did not answer when we checked your payment. Wait a moment and tap I already paid again.'
+    return 'Whop did not answer when we checked your payment. Wait a moment and try checkout again, or contact support.'
   }
   if (s.reason === 'missing_identity') {
     return 'This account has no email, so there is nothing to match against Whop. Contact support.'
   }
   if (s.reason === 'need_checkout') {
-    return 'Start checkout from this signed-in account first, then enter the email on your Whop receipt (Apple Hide My Email is a different address).'
+    return 'Start checkout from this signed-in account first. Apple Hide My Email is a different address than your Vidso login.'
   }
   if (s.reason === 'membership_taken') {
     return 'That payment is already attached to another Vidso account. Sign in there, or contact support.'
