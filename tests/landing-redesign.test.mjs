@@ -6,7 +6,7 @@ import { CREATE_HREF, GENERATE_HREF, HERO_CARDS, HERO_PROMPTS, HERO_VIDEO_SRC, H
 const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
 
 test('hero video constant stays on R2', () => {
-  assert.equal(HERO_VIDEO_SRC, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/VidsoHeroVideo.mp4')
+  assert.equal(HERO_VIDEO_SRC, 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso_explainer_25s_v2.mp4')
   assert.equal(CREATE_HREF, '/signup')
   assert.equal(GENERATE_HREF, '/dashboard')
   assert.equal(THUMBNAIL_DEMO_SRC, '')
