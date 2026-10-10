@@ -282,9 +282,12 @@
   }
   .hero-btn:hover{background:rgba(233,75,88,.92);border-color:rgba(255,255,255,.35)}
   .hero-btn svg{width:18px;height:18px;display:block}
-  .hero-btn .ico-play,.hero-btn .ico-exit{display:none}
+  .hero-btn .ico-play,.hero-btn .ico-exit,.hero-btn .ico-on{display:none}
   .hero-btn.is-paused .ico-pause,.hero-btn.is-fs .ico-enter{display:none}
   .hero-btn.is-paused .ico-play,.hero-btn.is-fs .ico-exit{display:block}
+  #hero-mute.is-muted .ico-off{display:block}
+  #hero-mute:not(.is-muted) .ico-off{display:none}
+  #hero-mute:not(.is-muted) .ico-on{display:block}
   .hero-seek{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
   .hero-time{
     font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
@@ -1185,6 +1188,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <button type="button" class="hero-btn" id="hero-fwd" aria-label="Forward 10 seconds">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 6l6 6-6 6"/><path d="M5 6l6 6-6 6"/></svg>
             </button>
+            <button type="button" class="hero-btn is-muted" id="hero-mute" aria-label="Unmute video" aria-pressed="true">
+              <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
+              <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>
+            </button>
             <div class="hero-seek">
               <span class="hero-time" id="hero-cur">0:00</span>
               <input class="hero-range" id="hero-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Video timeline">
@@ -1993,7 +2000,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </footer>
 
 <script>
-/* Hero reel: click to pause/play, seek, skip, and fullscreen. */
+/* Hero reel: click to pause/play, seek, skip, mute, and fullscreen. */
 (function(){
   var reel = document.getElementById('mockup-clips');
   if (!reel) return;
@@ -2001,6 +2008,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   var pauseBtn = document.getElementById('hero-pause');
   var backBtn = document.getElementById('hero-back');
   var fwdBtn = document.getElementById('hero-fwd');
+  var muteBtn = document.getElementById('hero-mute');
   var fsBtn = document.getElementById('hero-fs');
   var range = document.getElementById('hero-range');
   var curEl = document.getElementById('hero-cur');
@@ -2061,7 +2069,22 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       fsBtn.classList.toggle('is-fs', fs);
       fsBtn.setAttribute('aria-label', fs ? 'Exit full screen' : 'Full screen');
     }
+    if (muteBtn) {
+      var muted = !!video.muted;
+      muteBtn.classList.toggle('is-muted', muted);
+      muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+      muteBtn.setAttribute('aria-label', muted ? 'Unmute video' : 'Mute video');
+    }
     syncSeek();
+  }
+  function toggleMute(){
+    var nextMuted = !video.muted;
+    try {
+      if (!nextMuted) video.volume = 1;
+      video.muted = nextMuted;
+    } catch (err) {}
+    if (!nextMuted) safePlay();
+    syncUi();
   }
   function togglePause(){
     if (video.paused) {
@@ -2115,6 +2138,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   video.setAttribute('webkit-playsinline', '');
   video.addEventListener('play', syncUi);
   video.addEventListener('pause', syncUi);
+  video.addEventListener('volumechange', syncUi);
   video.addEventListener('timeupdate', syncSeek);
   video.addEventListener('loadedmetadata', syncSeek);
   video.addEventListener('durationchange', syncSeek);
@@ -2140,6 +2164,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     e.stopPropagation();
     skip(1);
   });
+  if (muteBtn) muteBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    toggleMute();
+  });
   if (fsBtn) fsBtn.addEventListener('click', function(e){
     e.stopPropagation();
     toggleFs();
@@ -2156,6 +2184,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   reel.addEventListener('keydown', function(e){
     if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePause(); }
     if (e.key === 'f') { e.preventDefault(); toggleFs(); }
+    if (e.key === 'm') { e.preventDefault(); toggleMute(); }
     if (e.key === 'ArrowLeft' || e.key === 'j') { e.preventDefault(); skip(-1); }
     if (e.key === 'ArrowRight' || e.key === 'l') { e.preventDefault(); skip(1); }
   });
