@@ -10,6 +10,7 @@ import {
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
+  isMateriallyShortWords,
   listCountFromTopic,
   mergeMediaJobs,
   mergeNewSections,
@@ -195,6 +196,29 @@ test('script request keeps topic under the Railway 500 cap', () => {
   const short = packScriptRequest({ topic: '15 biggest tigers', brief })
   assert.equal(short.topic, '15 biggest tigers')
   assert.equal(short.brief, brief)
+})
+
+test('a 380 word draft is short of 450, but cap must not shrink it further', () => {
+  assert.equal(isMateriallyShortWords(380, 450), true)
+  assert.equal(isMateriallyShortWords(450, 450), false)
+  assert.equal(isMateriallyShortWords(383, 450), false)
+  const script = {
+    sections: [
+      { id: 's1', heading: 'Hook', text: Array.from({ length: 140 }, () => 'word').join(' ') },
+      { id: 's2', heading: 'Bengal', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+      { id: 's3', heading: 'Siberian', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+      { id: 's4', heading: 'Sumatran', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+      { id: 's5', heading: 'South China', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+      { id: 's6', heading: 'Amur', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+      { id: 's7', heading: 'Close', text: Array.from({ length: 40 }, () => 'word').join(' ') },
+    ],
+  }
+  rebuildFullScript(script)
+  assert.equal(scriptWordCount(script), 380)
+  capScriptToTarget(script, 450)
+  assert.equal(scriptWordCount(script), 380)
+  const kept = padListSections(script.sections, 5)
+  assert.equal(kept.length, 7)
 })
 
 test('capScriptToTarget trims a 30 min overshoot back to 4500 words', () => {

@@ -6350,6 +6350,7 @@ import {
   formatDurationSeconds,
   impliedSecondsFromWords,
   isMateriallyShort,
+  isMateriallyShortWords,
   mergeNewSections,
   needsMoreSections,
   padListSections,
@@ -9311,7 +9312,8 @@ function fvScriptSpokenSeconds(script) {
 }
 
 function fvScriptIsShort(script, targetSeconds) {
-  return isMateriallyShort(fvScriptSpokenSeconds(script), targetSeconds)
+  const targetWords = targetWordsFromSeconds(targetSeconds)
+  return isMateriallyShortWords(scriptWordCount(script), targetWords)
 }
 
 function fvShowShortScriptAction(show) {
@@ -9790,15 +9792,20 @@ window.fvContinueToMedia = (allowShort) => {
   const words = scriptWordCount(fvState.script)
   const implied = impliedSecondsFromWords(words)
   fvLengthTrace('continue-media', { seconds: picked.seconds, words, implied })
-  if (!allowShort && fvScriptIsShort(fvState.script, picked.seconds) && !fvState.allowShortScript) {
+  const targetWords = targetWordsFromSeconds(picked.seconds)
+  const tooThin = words < Math.ceil(targetWords * 0.5)
+  if (!allowShort && tooThin && !fvState.allowShortScript) {
     fvShowShortScriptAction(true)
     return fvSetStatus(
       'Script is ' + words + ' words (~' + formatDurationSeconds(implied) + '), short of the ' +
-      formatDurationSeconds(picked.seconds) + ' target (~' + targetWordsFromSeconds(picked.seconds) +
+      formatDurationSeconds(picked.seconds) + ' target (~' + targetWords +
       ' words). Edit it longer, or continue with this shorter script.',
       'err',
       2,
     )
+  }
+  if (!allowShort && fvScriptIsShort(fvState.script, picked.seconds)) {
+    fvState.allowShortScript = true
   }
   if (allowShort) fvState.allowShortScript = true
   fvShowShortScriptAction(false)
@@ -11858,6 +11865,19 @@ async function fvExpandThinSections(script, topic, perWords, payload, picked, ti
   return rebuildFullScript(script)
 }
 
+async function fvAppendLengthCloser(script, topic, payload, picked, timeoutMs, needWords) {
+  const sections = Array.isArray(script.sections) ? script.sections : []
+  const covered = fvCoveredHeadings(sections).join(', ')
+  const want = Math.max(sections.length + 1, payload.target_sections || 1)
+  const per = Math.max(80, Math.round(Number(needWords) || 80))
+  const one = await fvWriteOneSection(
+    topic, 'Closing', sections.length, want, per, payload, picked, timeoutMs, covered,
+  )
+  if (!one?.text) return script
+  script.sections = sections.concat([one])
+  return rebuildFullScript(script)
+}
+
 async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs) {
   let data = script
   const targetWords = payload.final_target_words || payload.target_words
@@ -11868,28 +11888,30 @@ async function fvExpandScriptToLength(script, topic, payload, picked, timeoutMs)
     data.sections = padListSections(data.sections || [], wantSections)
     data = rebuildFullScript(data)
   }
-  const per = wordsPerSection(targetWords, wantSections)
+  const per = wordsPerSection(targetWords, Math.max((data.sections || []).length, wantSections))
   if (scriptWordCount(data) >= targetWords) return capScriptToTarget(data, targetWords)
-  for (let pass = 1; pass <= 6; pass++) {
-    if (scriptWordCount(data) >= targetWords) return capScriptToTarget(data, targetWords)
-    if (!fvScriptIsShort(data, picked.seconds) && !needsMoreSections(data, wantSections)) {
-      return capScriptToTarget(data, targetWords)
-    }
+  for (let pass = 1; pass <= 8; pass++) {
     const have = scriptWordCount(data)
+    if (have >= targetWords) return capScriptToTarget(data, targetWords)
     fvLengthTrace('script-expand-pass', {
       pass, have, targetWords, sections: (data.sections || []).length, per, wantSections,
     })
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading')
     fvSetStatus('Script is ' + have + ' words. Expanding toward ' + targetWords + '…', 'loading', 2)
     if (!(data.sections || []).length) break
-    const before = have
     data = await fvExpandThinSections(
-      data, topic, per, payload, picked, timeoutMs, wantSections, pass >= 2,
+      data, topic, per, payload, picked, timeoutMs, Math.max((data.sections || []).length, wantSections), pass >= 2,
     )
-    data = capScriptToTarget(data, targetWords)
-    if (scriptWordCount(data) <= before && pass >= 5) break
+    const grew = scriptWordCount(data)
+    if (grew >= targetWords) return capScriptToTarget(data, targetWords)
+    if (grew <= have) {
+      const need = targetWords - grew
+      fvSetStatus('Adding spoken length to reach ' + targetWords + ' words…', 'loading', 2)
+      data = await fvAppendLengthCloser(data, topic, payload, picked, timeoutMs, need)
+      if (scriptWordCount(data) <= have && pass >= 3) break
+    }
   }
-  return capScriptToTarget(data, targetWords)
+  return scriptWordCount(data) > targetWords ? capScriptToTarget(data, targetWords) : data
 }
 
 window.fvGenerateScript = async () => {
