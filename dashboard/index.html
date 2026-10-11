@@ -3014,6 +3014,7 @@ body.fs-show-open{overflow:hidden}
 #panel-imagegen > .page-shell-wide,
 #panel-ranking > .page-header,
 #panel-ranking > .page-shell-wide,
+#panel-youtube,
 #panel-videogen{
   margin-left:auto!important;margin-right:auto!important
 }
@@ -3139,6 +3140,67 @@ body.fs-show-open{overflow:hidden}
 .settings-yt-msg.is-ok{color:#7dce8a}
 #fv-yt-upload[hidden]{display:none!important}
 #fv-yt-status{display:none;margin-top:10px}
+
+#panel-youtube{max-width:760px;margin:0 auto;width:100%}
+#panel-youtube .page-header{margin-bottom:16px;text-align:center}
+#panel-youtube > .tool-card{padding:24px;margin-bottom:20px}
+.yt-ch-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:12px 8px 4px}
+.yt-ch-logo{width:56px;height:56px;object-fit:contain;border-radius:14px;background:#111;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+.yt-ch-hero .ui-card-title{margin:6px 0 0}
+.yt-ch-hero .ui-card-desc{margin:0 0 8px;max-width:36em}
+.yt-ch-msg{min-height:1.2em;margin:0;font-size:.82rem;color:rgba(255,255,255,.5)}
+.yt-ch-msg.is-err{color:#ff8a94}
+.yt-ch-msg.is-ok{color:#7dce8a}
+.yt-ch-connected{
+  display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:16px;
+  border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--border)
+}
+.yt-ch-thumb{
+  width:56px;height:56px;border-radius:99px;object-fit:cover;background:#111;flex-shrink:0;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08)
+}
+.yt-ch-meta{min-width:0;flex:1}
+.yt-ch-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px}
+.yt-ch-name{font-size:1.05rem;font-weight:650;color:var(--ink);letter-spacing:-.02em;line-height:1.25}
+.yt-ch-id{font-size:.75rem;color:rgba(255,255,255,.42);margin-top:3px;word-break:break-all}
+.yt-ch-badge{
+  flex-shrink:0;font-size:.72rem;font-weight:700;padding:5px 9px;border-radius:999px;
+  background:rgba(125,206,138,.12);color:#7dce8a;border:1px solid rgba(125,206,138,.28)
+}
+.yt-ch-badge.is-off{background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);border-color:var(--border)}
+.yt-ch-row{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 0;border-top:1px solid var(--border)
+}
+.yt-ch-row strong{display:block;font-size:.88rem;font-weight:650;color:var(--ink)}
+.yt-ch-row span.yt-ch-hint{display:block;font-size:.75rem;color:rgba(255,255,255,.45);margin-top:3px;line-height:1.4}
+.yt-ch-vis{padding:14px 0 4px;border-top:1px solid var(--border)}
+.yt-ch-vis-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.yt-ch-vis-head strong{font-size:.88rem;font-weight:650;color:var(--ink)}
+.yt-ch-vis-head span{font-size:.72rem;color:rgba(255,255,255,.42)}
+.yt-ch-vis-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.yt-ch-vis-opt{
+  appearance:none;-webkit-appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  min-height:78px;padding:12px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer;
+  transition:border-color .15s ease,background .15s ease,box-shadow .15s ease
+}
+.yt-ch-vis-opt:hover{border-color:rgba(255,255,255,.22)}
+.yt-ch-vis-opt:focus-visible{outline:2px solid rgba(var(--glow),.75);outline-offset:2px}
+.yt-ch-vis-opt.is-on{
+  border-color:rgba(var(--glow),.55);
+  background:rgba(var(--glow),.12);
+  box-shadow:0 0 0 3px rgba(var(--glow),.12)
+}
+.yt-ch-vis-opt b{font-size:.85rem;font-weight:700;letter-spacing:-.02em}
+.yt-ch-vis-opt span{font-size:.72rem;line-height:1.35;color:rgba(255,255,255,.55)}
+.yt-ch-vis-opt.is-on span{color:rgba(245,245,244,.8)}
+.yt-ch-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+@media (max-width:560px){
+  .yt-ch-vis-opts{grid-template-columns:1fr}
+  .yt-ch-vis-opt{min-height:0;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .yt-ch-connected{flex-wrap:wrap}
+}
 
 /* ── Onboarding (full-page setup) ─────────────────────────────────────── */
 #onboarding-modal{
@@ -3928,10 +3990,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Billing</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <a class="settings-row-btn" id="settings-yt-link" href="/youtube?yt=1">
-        <span class="settings-row-label">YouTube</span>
+      <button type="button" class="settings-row-btn" id="settings-yt-link">
+        <span class="settings-row-label">My YouTube Channel</span>
         <span class="settings-row-value" id="settings-yt-state">Connect →</span>
-      </a>
+      </button>
       <div class="settings-row is-soon" aria-disabled="true">
         <span class="settings-row-label">Change email</span>
         <span class="badge-soon">Coming soon</span>
@@ -4037,6 +4099,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </div>
     </div>
     <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <button type="button" class="topnav-item" id="nav-youtube" data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
   </nav>
   <div class="topnav-right">
     <div class="topnav-drop" id="nav-search-wrap">
@@ -4064,7 +4127,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-email" id="user-email">...</div>
         </div>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" id="nav-yt-mcp-btn">YouTube</button>
+        <button type="button" role="menuitem" id="nav-yt-mcp-btn">My YouTube Channel</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
@@ -4100,6 +4163,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Library</span>
   <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
   <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <button type="button" class="topnav-item" data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
@@ -5805,6 +5869,85 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div class="files-grid" id="files-list"><div class="files-empty"><div class="files-empty-title">Loading library…</div></div></div>
       </div>
     </div>
+    <div class="panel content-glow" id="panel-youtube">
+      <div class="page-header">
+        <h2>My YouTube Channel</h2>
+        <p>Connect a channel to upload finished videos from Vidso.</p>
+      </div>
+      <div class="tool-card" id="yt-ch-card">
+        <div id="yt-ch-gate" hidden>
+          <div class="yt-ch-hero">
+            <img class="yt-ch-logo" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="56" height="56">
+            <h3 class="ui-card-title">Sign in first</h3>
+            <p class="ui-card-desc">Sign in to Vidso, then connect the Google account that owns your channel.</p>
+            <a class="btn btn-primary" href="/login">Sign in</a>
+          </div>
+        </div>
+        <div id="yt-ch-body">
+          <p class="yt-ch-msg" id="yt-ch-msg"></p>
+          <div id="yt-ch-off">
+            <div class="yt-ch-hero">
+              <img class="yt-ch-logo" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="56" height="56">
+              <h3 class="ui-card-title">No channel connected</h3>
+              <p class="ui-card-desc">Link the YouTube channel you publish to. After that, long-form exports and My Files can upload in one click.</p>
+              <button type="button" class="btn btn-primary" id="yt-ch-connect">Connect YouTube</button>
+            </div>
+          </div>
+          <div id="yt-ch-on" hidden>
+            <div class="yt-ch-connected">
+              <img class="yt-ch-thumb" id="yt-ch-thumb" alt="" hidden>
+              <div class="yt-ch-meta">
+                <div class="yt-ch-kicker">Connected channel</div>
+                <div class="yt-ch-name" id="yt-ch-title">YouTube channel</div>
+                <div class="yt-ch-id" id="yt-ch-cid"></div>
+              </div>
+              <span class="yt-ch-badge" id="yt-ch-state">Connected</span>
+            </div>
+            <div class="yt-ch-row">
+              <div>
+                <strong>Upload after export</strong>
+                <span class="yt-ch-hint">Send finished long-form renders to this channel automatically.</span>
+              </div>
+              <label class="vr-toggle">
+                <input type="checkbox" id="yt-ch-auto" checked>
+                <span class="sw" aria-hidden="true"></span>
+              </label>
+            </div>
+            <div class="yt-ch-vis">
+              <div class="yt-ch-vis-head">
+                <strong>Visibility</strong>
+                <span>For new uploads</span>
+              </div>
+              <input type="hidden" id="privacy" value="public">
+              <div class="yt-ch-vis-opts" role="radiogroup" aria-label="YouTube visibility">
+                <button type="button" class="yt-ch-vis-opt" role="radio" data-privacy="unlisted" aria-checked="false">
+                  <b>Unlisted</b>
+                  <span>Anyone with the link</span>
+                </button>
+                <button type="button" class="yt-ch-vis-opt" role="radio" data-privacy="private" aria-checked="false">
+                  <b>Private</b>
+                  <span>Only you can watch</span>
+                </button>
+                <button type="button" class="yt-ch-vis-opt is-on" role="radio" data-privacy="public" aria-checked="true">
+                  <b>Public</b>
+                  <span>Live on your channel</span>
+                </button>
+              </div>
+            </div>
+            <div class="yt-ch-actions">
+              <button type="button" class="btn btn-ghost" id="yt-ch-disconnect">Disconnect</button>
+            </div>
+          </div>
+        </div>
+        <div id="yt-mcp-card" data-archived hidden>
+          <strong>Claude / Cursor MCP</strong>
+          <p class="ui-card-desc">Optional. Paste this as a custom connector. You still connect the channel on this page.</p>
+          <pre id="yt-ch-mcp"></pre>
+          <button type="button" class="btn btn-ghost" id="yt-ch-copy">Copy MCP URL</button>
+        </div>
+      </div>
+    </div>
+
     <div class="files-lb" id="files-lightbox" hidden>
       <button type="button" class="btn btn-ghost btn-sm files-lb-x" onclick="closeFilesLightbox()">Close</button>
       <div class="files-lb-stage" id="files-lb-stage"></div>
@@ -6409,6 +6552,9 @@ import {
 } from '/lib/files-gallery.js'
 import {
   youtubeStatus,
+  youtubeConnect,
+  youtubeDisconnect,
+  youtubeSaveSettings,
   youtubeAccessToken,
   uploadBlobToYoutube,
   uploadViaServer,
@@ -6921,10 +7067,69 @@ function fvSyncYoutubeUploadBtn(st) {
   btn.hidden = !fvExportResultOpen()
   btn.textContent = 'Upload to YouTube'
 }
+function ytChSetMsg(text, kind) {
+  const el = document.getElementById('yt-ch-msg')
+  if (!el) return
+  el.textContent = text || ''
+  el.className = 'yt-ch-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
+}
+function ytChSetPrivacy(value) {
+  const val = value === 'private' || value === 'unlisted' ? value : 'public'
+  const input = document.getElementById('privacy')
+  if (input) input.value = val
+  document.querySelectorAll('#panel-youtube [data-privacy]').forEach((btn) => {
+    const on = btn.getAttribute('data-privacy') === val
+    btn.classList.toggle('is-on', on)
+    btn.setAttribute('aria-checked', on ? 'true' : 'false')
+  })
+}
+function renderYoutubeChannel(st) {
+  const gate = document.getElementById('yt-ch-gate')
+  const body = document.getElementById('yt-ch-body')
+  const off = document.getElementById('yt-ch-off')
+  const onEl = document.getElementById('yt-ch-on')
+  const state = document.getElementById('yt-ch-state')
+  const connected = !!st?.connected
+  if (!getToken() && !(typeof uiPreviewMode === 'function' && uiPreviewMode())) {
+    if (gate) gate.hidden = false
+    if (body) body.hidden = true
+    return
+  }
+  if (gate) gate.hidden = true
+  if (body) body.hidden = false
+  if (off) off.hidden = connected || st?.configured === false
+  if (onEl) onEl.hidden = !connected
+  if (st?.configured === false) ytChSetMsg('YouTube publishing is not configured on this deployment yet.', 'err')
+  if (state) {
+    state.textContent = connected ? 'Connected' : (st?.configured === false ? 'Not set up' : 'Not connected')
+    state.className = 'yt-ch-badge' + (connected ? '' : ' is-off')
+  }
+  const mcp = document.getElementById('yt-ch-mcp')
+  if (mcp) mcp.textContent = st?.mcpUrl || (location.origin.replace(/\/+$/, '') + '/mcp')
+  if (!connected) return
+  const title = document.getElementById('yt-ch-title')
+  const cid = document.getElementById('yt-ch-cid')
+  if (title) title.textContent = st.channel?.title || 'YouTube channel'
+  if (cid) cid.textContent = st.channel?.id || ''
+  const thumb = document.getElementById('yt-ch-thumb')
+  if (thumb) {
+    if (st.channel?.thumb) {
+      thumb.src = st.channel.thumb
+      thumb.hidden = false
+    } else {
+      thumb.removeAttribute('src')
+      thumb.hidden = true
+    }
+  }
+  const auto = document.getElementById('yt-ch-auto')
+  if (auto) auto.checked = st.autoUpload !== false
+  ytChSetPrivacy(st.privacy || 'public')
+}
 async function refreshYoutubeSettings() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
     _ytStatus = { configured: true, connected: false }
     fvSyncYoutubeUploadBtn(_ytStatus)
+    renderYoutubeChannel(_ytStatus)
     return
   }
   try {
@@ -6933,22 +7138,78 @@ async function refreshYoutubeSettings() {
     _ytStatus = { configured: false, connected: false }
   }
   fvSyncYoutubeUploadBtn(_ytStatus)
+  renderYoutubeChannel(_ytStatus)
 }
-
-window.connectYoutubeChannel = () => { location.href = '/youtube?yt=1' }
-window.startYoutubeMcp = () => { location.href = '/youtube?yt=1' }
+async function ytChSavePrefs() {
+  try {
+    _ytStatus = await youtubeSaveSettings({
+      autoUpload: !!document.getElementById('yt-ch-auto')?.checked,
+      privacy: document.getElementById('privacy')?.value || 'public',
+    })
+    fvSyncYoutubeUploadBtn(_ytStatus)
+    renderYoutubeChannel(_ytStatus)
+    ytChSetMsg('Saved', 'ok')
+  } catch (e) {
+    ytChSetMsg(e.message || 'Could not save', 'err')
+  }
+}
+window.connectYoutubeChannel = () => { window.switchPanel('youtube') }
+window.startYoutubeMcp = () => { window.switchPanel('youtube') }
 
 document.getElementById('nav-yt-mcp-btn')?.addEventListener('click', () => window.startYoutubeMcp())
+document.getElementById('settings-yt-link')?.addEventListener('click', () => {
+  window.closeAccountSettings?.()
+  window.switchPanel('youtube')
+})
+document.getElementById('yt-ch-connect')?.addEventListener('click', async () => {
+  ytChSetMsg('Waiting for Google…')
+  try {
+    const st = await youtubeConnect('/youtube')
+    if (!st) return
+    _ytStatus = st
+    fvSyncYoutubeUploadBtn(st)
+    renderYoutubeChannel(st)
+    ytChSetMsg('Channel connected. New exports can upload automatically.', 'ok')
+  } catch (e) {
+    ytChSetMsg(e.message || 'Could not connect YouTube', 'err')
+  }
+})
+document.getElementById('yt-ch-disconnect')?.addEventListener('click', async () => {
+  try {
+    _ytStatus = await youtubeDisconnect()
+    fvSyncYoutubeUploadBtn(_ytStatus)
+    renderYoutubeChannel(_ytStatus)
+    ytChSetMsg('YouTube disconnected', 'ok')
+  } catch (e) {
+    ytChSetMsg(e.message || 'Could not disconnect', 'err')
+  }
+})
+document.getElementById('yt-ch-auto')?.addEventListener('change', ytChSavePrefs)
+document.querySelectorAll('#panel-youtube [data-privacy]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ytChSetPrivacy(btn.getAttribute('data-privacy'))
+    ytChSavePrefs()
+  })
+})
 function consumeYoutubeQuery() {
   const q = new URLSearchParams(location.search)
   const yt = q.get('youtube')
-  if (!yt) return
+  const err = q.get('youtube_error')
+  const wantPage = q.get('yt') === '1'
+  if (!yt && !wantPage) return
   q.delete('youtube')
   q.delete('youtube_error')
+  q.delete('yt')
   const next = location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash
   history.replaceState(null, '', next)
-  if (yt === 'connect' || yt === 'import' || yt === 'connected' || yt === 'error') {
-    location.href = '/youtube?yt=1'
+  if (yt === 'connect' || yt === 'import' || yt === 'connected' || yt === 'error' || wantPage) {
+    window.switchPanel('youtube')
+    if (err) ytChSetMsg(err === 'not_configured' ? 'YouTube is not configured on this deployment yet.' : err, 'err')
+    else if (yt === 'connected') ytChSetMsg('Channel connected. New exports can upload automatically.', 'ok')
+    if (yt === 'connect') {
+      const off = document.getElementById('yt-ch-off')
+      if (off && !off.hidden) document.getElementById('yt-ch-connect')?.click()
+    }
   }
 }
 document.addEventListener('keydown', (e) => {
@@ -8715,13 +8976,13 @@ const titles = {
   home:'Long Form Generator', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
-  downloader:'Video Downloader',   files:'My Files', commentary:'Video Commentary', mcp:'MCP'
+  downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
   dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
-  downloader:'/downloader', files:'/files', commentary:'/commentary', mcp:'/connectors'
+  downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
 }
 const PATH_TO_PANEL = Object.fromEntries(Object.entries(PANEL_PATHS).map(([k,v]) => [v,k]))
 function normalizePath(p) {
@@ -8743,6 +9004,7 @@ function panelFromPath() {
   if (path === '/faceless-studio' || path.startsWith('/faceless-studio/')) {
     return panelArchived('facelessstudio') ? DEFAULT_PANEL : 'facelessstudio'
   }
+  if (path === '/connections') return 'youtube'
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
@@ -8802,7 +9064,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files'].includes(id)
+    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -8811,6 +9073,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   window.closeMobileNav?.()
   if (id === 'voiceover') { try { loadVoiceLibrary() } catch (_) {} }
   if (id === 'files') { try { loadFiles() } catch (_) {} }
+  if (id === 'youtube') { try { refreshYoutubeSettings() } catch (_) {} }
   if (id === 'videogen' || id === 'ytvideogen') {
     try { fvApplyFacelessMode(id === 'ytvideogen') } catch (_) {}
     try { fvInit() } catch (_) {}
@@ -11538,7 +11801,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
     if (!st?.connected) {
       fvSetYoutubeStatus('Connect a YouTube channel first', 'err')
       fvSyncYoutubeUploadBtn(st)
-      if (!opts.auto) location.href = '/youtube?yt=1'
+      if (!opts.auto) window.switchPanel('youtube')
       return
     }
     fvSyncYoutubeUploadBtn(st)
@@ -12333,7 +12596,7 @@ window.filesUploadToYoutube = async () => {
     if (!st?.configured) throw new Error('YouTube publishing is not configured on this deployment yet.')
     if (!st?.connected) {
       filesSetYtStatus('Connect a YouTube channel first', 'err')
-      location.href = '/youtube?yt=1'
+      window.switchPanel('youtube')
       return
     }
     const title = youtubeTitleFromFileName(f.original_name || f.name)

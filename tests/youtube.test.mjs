@@ -320,8 +320,17 @@ test('MCP initialize accepts Claude protocol versions', () => {
 })
 
 test('YouTube settings uses visibility cards instead of a native select', () => {
+  const dash = readFileSync(new URL('../dashboard/index.html', import.meta.url), 'utf8')
   const page = readFileSync(new URL('../youtube/index.html', import.meta.url), 'utf8')
   const js = readFileSync(new URL('../youtube/page.js', import.meta.url), 'utf8')
+  assert.match(dash, /id="panel-youtube"/)
+  assert.match(dash, /My YouTube Channel/)
+  assert.match(dash, /data-privacy="unlisted"/)
+  assert.match(dash, /data-privacy="private"/)
+  assert.match(dash, /id="privacy" value="public"/)
+  assert.match(dash, /data-privacy="public" aria-checked="true"/)
+  assert.doesNotMatch(dash, /<select id="privacy"/)
+  assert.match(dash, /function ytChSetPrivacy/)
   assert.match(page, /data-privacy="unlisted"/)
   assert.match(page, /data-privacy="private"/)
   assert.match(page, /id="privacy" value="public"/)

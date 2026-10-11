@@ -11,15 +11,15 @@
     },
     {
       "source": "/youtube",
-      "destination": "/youtube/index.html"
+      "destination": "/dashboard/index.html"
     },
     {
       "source": "/youtube/",
-      "destination": "/youtube/index.html"
+      "destination": "/dashboard/index.html"
     },
     {
       "source": "/connections",
-      "destination": "/youtube/index.html"
+      "destination": "/dashboard/index.html"
     },
     {
       "source": "/oauth/:path*",

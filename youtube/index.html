@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>YouTube · Vidso</title>
+<title>My YouTube Channel · Vidso</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -12,30 +12,37 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#E94B58;text-decoration:none}
-.wrap{width:min(720px,100%);margin:0 auto;padding:20px 20px 56px}
-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
+.wrap{width:min(760px,100%);margin:0 auto;padding:28px 20px 72px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px}
 .logo{display:inline-flex;align-items:center;gap:10px;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-weight:800}
 .logo img{width:26px;height:26px;object-fit:contain}
 .back{color:var(--muted);font-size:.88rem}
 .back:hover{color:var(--ink)}
-h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.4rem);letter-spacing:-.04em;line-height:1.1;margin:0 0 8px}
-.lead{color:var(--muted);margin:0 0 22px}
-.card{background:#141416;border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.page-header{margin:0 0 16px;text-align:center}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.7rem,4vw,2.1rem);letter-spacing:-.04em;line-height:1.1;margin:0 0 8px;text-transform:uppercase}
+.lead{color:var(--muted);margin:0;font-size:.9rem}
+.card{background:#141416;border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:8px 4px 0}
+.hero img.mark{width:56px;height:56px;object-fit:contain;border-radius:14px;background:#111;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+.hero h2{font-size:1.05rem;font-weight:650;letter-spacing:-.02em}
+.hero p{font-size:.85rem;color:var(--muted);max-width:36em;margin:0}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.state{font-size:.78rem;font-weight:700}
-.state.on{color:var(--ok)}
-.state.off{color:var(--faint)}
-.channel{display:flex;align-items:center;gap:12px}
-.channel img{width:44px;height:44px;border-radius:99px;object-fit:cover;background:#111}
-.title{font-weight:700}
+.state{font-size:.72rem;font-weight:700;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.04);color:var(--faint);border:1px solid var(--line)}
+.state.on{color:var(--ok);background:rgba(125,206,138,.12);border-color:rgba(125,206,138,.28)}
+.channel{
+  display:flex;align-items:center;gap:14px;padding:16px;
+  border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)
+}
+.channel img{width:56px;height:56px;border-radius:99px;object-fit:cover;background:#111}
+.title{font-weight:700;letter-spacing:-.02em}
 .id{font-size:.78rem;color:var(--faint);margin-top:2px}
-#on{display:flex;flex-direction:column;gap:20px}
+#on{display:flex;flex-direction:column;gap:4px}
 .row{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  margin-top:4px;padding-top:16px;border-top:1px solid var(--line);
+  margin-top:4px;padding:14px 0;border-top:1px solid var(--line);
   font-size:.9rem;color:var(--muted)
 }
-.vis{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;background:#0d0d0e;border:1px solid var(--line)}
+.vis{display:flex;flex-direction:column;gap:10px;padding:14px 0 4px;border-top:1px solid var(--line)}
 .vis-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .vis-label{font-size:.9rem;font-weight:650;color:var(--ink)}
 .vis-hint{font-size:.75rem;color:var(--faint)}
@@ -77,22 +84,29 @@ pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink)
     <a class="logo" href="/home"><img data-vidso-logo width="26" height="26" alt=""> Vidso</a>
     <a class="back" href="/video-generation">Back to the app</a>
   </nav>
-  <h1>YouTube</h1>
-  <p class="lead">Connect a channel to upload finished videos from Vidso. The same channel is what Claude or Cursor uses if you paste the MCP URL.</p>
+  <div class="page-header">
+    <h1>My YouTube Channel</h1>
+    <p class="lead">Connect a channel to upload finished videos from Vidso.</p>
+  </div>
 
   <div class="card" id="gate" hidden>
-    <p>Sign in to Vidso first, then connect the Google account that owns the channel.</p>
-    <a class="btn btn-primary" href="/login" style="display:inline-flex;align-items:center;justify-content:center">Sign in</a>
+    <div class="hero">
+      <img class="mark" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="56" height="56">
+      <h2>Sign in first</h2>
+      <p>Sign in to Vidso, then connect the Google account that owns the channel.</p>
+      <a class="btn btn-primary" href="/login" style="display:inline-flex;align-items:center;justify-content:center">Sign in</a>
+    </div>
   </div>
 
   <div class="card" id="panel" hidden>
-    <div class="head">
-      <strong>Channel</strong>
-      <span class="state off" id="state">Checking…</span>
-    </div>
     <p class="msg" id="msg"></p>
     <div id="off">
-      <button type="button" class="btn btn-primary" id="connect">Connect YouTube</button>
+      <div class="hero">
+        <img class="mark" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="56" height="56">
+        <h2>No channel connected</h2>
+        <p>Link the YouTube channel you publish to. After that, long-form exports and My Files can upload in one click.</p>
+        <button type="button" class="btn btn-primary" id="connect">Connect YouTube</button>
+      </div>
     </div>
     <div id="on" class="hidden">
       <div class="channel">
@@ -101,6 +115,7 @@ pre{margin:0;padding:12px;border-radius:10px;background:#0d0d0e;color:var(--ink)
           <div class="title" id="title">YouTube channel</div>
           <div class="id" id="cid"></div>
         </div>
+        <span class="state off" id="state">Checking…</span>
       </div>
       <label class="row">Upload after export
         <input type="checkbox" id="auto" checked>

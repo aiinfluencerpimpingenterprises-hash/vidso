@@ -29,8 +29,8 @@ const REWRITES = new Map([
   ['/tools', '/dashboard/index.html'],
   ['/overview', '/dashboard/index.html'],
   ['/faceless-studio', '/dashboard/index.html'],
-  ['/youtube', '/youtube/index.html'],
-  ['/connections', '/youtube/index.html'],
+  ['/youtube', '/dashboard/index.html'],
+  ['/connections', '/dashboard/index.html'],
   ['/home', '/home/index.html'],
   ['/pricing', '/home/index.html'],
 ])
