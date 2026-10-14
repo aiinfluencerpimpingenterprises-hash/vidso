@@ -32,6 +32,18 @@ test('timed Studio comp expires after a month', () => {
   assert.equal(compedTierForEmail(email, new Date('2026-10-01T00:00:00Z')), null)
 })
 
+test('ghadnijyimbere356 gets an active Studio plan', () => {
+  assert.equal(compedTierForEmail('ghadnijyimbere356@gmail.com'), 'studio')
+  const user = withCompedPlan({
+    email: 'ghadnijyimbere356@gmail.com',
+    plan: 'free',
+    plan_status: 'inactive',
+  })
+  assert.equal(user.plan, 'studio')
+  assert.equal(user.plan_status, 'active')
+  assert.equal(user.plan_interval, 'monthly')
+})
+
 test('work.krishlulla gets the $150 Studio plan', () => {
   assert.equal(compedTierForEmail('work.krishlulla@gmail.com'), 'studio')
   const user = withCompedPlan({
