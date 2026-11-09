@@ -55,6 +55,18 @@ test('work.krishlulla gets the $150 Studio plan', () => {
   assert.equal(user.plan_status, 'active')
 })
 
+test('beyondtheframe856 gets an active monthly Pro plan', () => {
+  assert.equal(compedTierForEmail('beyondtheframe856@gmail.com'), 'pro')
+  const user = withCompedPlan({
+    email: 'beyondtheframe856@gmail.com',
+    plan: 'free',
+    plan_status: 'inactive',
+  })
+  assert.equal(user.plan, 'pro')
+  assert.equal(user.plan_status, 'active')
+  assert.equal(user.plan_interval, 'monthly')
+})
+
 test('login with dotted Gmail still gets the Pro grant', () => {
   assert.equal(compedTierForEmail('subramaniam.vishwak@gmail.com'), 'pro')
   const user = withCompedPlan({
