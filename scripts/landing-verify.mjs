@@ -119,7 +119,7 @@ async function runViewport(browser, width, height, key) {
   await go(page, '#showcase')
   await shot(page, `${key}-06-showcase.png`)
 
-  await go(page, '#why-vidso')
+  await go(page, '#pricing')
   await shot(page, `${key}-07-one-platform.png`)
 
   await go(page, '#connect-claude')

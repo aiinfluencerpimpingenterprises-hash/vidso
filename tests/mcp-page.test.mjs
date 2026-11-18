@@ -197,9 +197,8 @@ test('mcp page spacing tokens match the denser layout', () => {
 
 test('landing excerpt and nav point at /mcp without duplicating the old block', () => {
   assert.equal(TOOL_MENU_ITEMS.mcp.href, '/mcp')
-  assert.ok(landing.includes('id="connect-claude"'))
-  assert.ok(landing.includes('https://www.vidso.pro/mcp'))
-  assert.ok(landing.includes('Connect Claude to Vidso MCP'))
+  assert.ok(landing.includes('href="/mcp"'))
+  assert.ok(landing.includes('Or connect Claude to Vidso'))
   assert.ok(vercel.includes('"/mcp/index.html"'))
   assert.ok(vercel.includes('"/api/youtube/mcp"'))
 })

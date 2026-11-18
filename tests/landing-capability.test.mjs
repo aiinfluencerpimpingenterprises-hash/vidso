@@ -67,6 +67,6 @@ test('hero and showcase labels are no longer YouTube-only', () => {
   ])
   assert.deepEqual(SHOWCASE_CARDS.map((c) => c.category), ['DOCUMENTARY', 'AD', 'UGC', 'PRODUCT'])
   assert.ok(html.includes('Your faceless YouTube empire starts here'))
-  assert.ok(html.includes('id="how"'))
-  assert.ok(html.includes('id="results-root"'))
+  assert.ok(html.includes('id="pricing"'))
+  assert.ok(html.includes('id="faq"'))
 })

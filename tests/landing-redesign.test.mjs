@@ -77,7 +77,7 @@ test('hero pin transition is gone', () => {
 test('landing keeps SEO, one H1, and the live page font', () => {
   assert.match(html, /<meta name="description"/)
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1)
-  for (const id of ['how', 'connect-claude', 'pricing', 'faq']) {
+  for (const id of ['pricing', 'faq']) {
     assert.ok(html.includes(`id="${id}"`), id)
   }
   assert.ok(html.includes('Your faceless YouTube empire starts here'))
@@ -119,7 +119,6 @@ test('FAQ accordion closes the open item across both columns', () => {
 
 test('live landing headings stay on the YouTube page', () => {
   assert.ok(html.includes('Your faceless YouTube empire starts here'))
-  assert.ok(html.includes('AI long-form built for retention'))
   assert.ok(html.includes('Choose the plan <span class="accent">for you.</span>') || html.includes('Choose the plan'))
   assert.ok(html.includes('Claude AI video generator'))
 })
