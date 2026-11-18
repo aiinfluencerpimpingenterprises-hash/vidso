@@ -3,7 +3,7 @@
   var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
 
   global.VIDSO_R2_BASE = R2_BASE;
-  global.VIDSO_LOGO_URL = R2_BASE + '/vidso-logo.png';
+  global.VIDSO_LOGO_URL = '/vidso-logo.png';
   global.VIDSO_SUPPORT_EMAIL = 'support@vidso.pro';
   global.VIDSO_INSTAGRAM_URL = 'https://www.instagram.com/vidso.pro/';
 
