@@ -453,11 +453,11 @@ select option{background:var(--card)}
 .fv-dl-title{font-size:1rem;font-weight:650;color:var(--ink);overflow-wrap:anywhere}
 .fv-dl-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .fv-dl-chip{font:inherit;font-size:.74rem;text-align:left;padding:5px 9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-body);cursor:pointer;max-width:100%;overflow-wrap:anywhere}
-.fv-dl-chip:hover{border-color:#14b8a6;color:var(--ink)}
+.fv-dl-chip:hover{border-color:#0ea5e9;color:var(--ink)}
 a.fv-dl-chip{text-decoration:none;display:inline-flex;align-items:center}
 .fv-dl-chip[disabled]{opacity:.5;cursor:default}
 .fv-dl-sub{margin-top:10px;font-size:.72rem;color:var(--text-label)}
-.fv-dl-chip:focus-visible{outline:2px solid #14b8a6;outline-offset:2px}
+.fv-dl-chip:focus-visible{outline:2px solid #0ea5e9;outline-offset:2px}
 .fv-dl-thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
 .fv-dl-thumb-wait{display:flex;align-items:center;justify-content:center;gap:8px;aspect-ratio:16/9;border-radius:10px;border:1px dashed var(--border);font-size:.8rem;color:var(--text-label);text-align:center;padding:10px}
 .fv-dl-actions{display:flex;flex-wrap:wrap;gap:8px}
@@ -3029,7 +3029,7 @@ body.fs-show-open{overflow:hidden}
 .tool-shot-media.media-ph,.tool-shot-media .media-ph{border:none;border-radius:0;height:100%}
 .fs-title-stage{margin:0 0 22px;padding:16px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.02);min-width:0}
 .fs-title-head{display:flex;align-items:center;gap:12px;min-width:0}
-.fs-title-ava{flex-shrink:0;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(20,184,166,.14)}
+.fs-title-ava{flex-shrink:0;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(14,165,233,.14)}
 .fs-title-ava svg{width:30px;height:30px}
 .fs-title-headtxt{flex:1;min-width:0}
 .fs-title-headtxt h2{margin:0}
@@ -3039,13 +3039,13 @@ body.fs-show-open{overflow:hidden}
 .fs-title-list{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .fs-title-opt{display:flex;align-items:stretch;gap:6px;min-width:0}
 .fs-title-pick{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;transition:border-color .15s,background .15s}
-.fs-title-pick:hover{border-color:rgba(20,184,166,.55)}
-.fs-title-pick:focus-visible,.fs-title-copy:focus-visible{outline:2px solid #14b8a6;outline-offset:2px}
-.fs-title-opt.is-on .fs-title-pick{border-color:#14b8a6;background:rgba(20,184,166,.1)}
+.fs-title-pick:hover{border-color:rgba(14,165,233,.55)}
+.fs-title-pick:focus-visible,.fs-title-copy:focus-visible{outline:2px solid #0ea5e9;outline-offset:2px}
+.fs-title-opt.is-on .fs-title-pick{border-color:#0ea5e9;background:rgba(14,165,233,.1)}
 .fs-title-text{font-size:.95rem;font-weight:600;color:var(--ink);overflow-wrap:anywhere}
 .fs-title-angle{font-size:.76rem;color:var(--text-label);overflow-wrap:anywhere}
 .fs-title-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.7rem;color:var(--text-label);font-variant-numeric:tabular-nums}
-.fs-title-meta b{color:#14b8a6;font-weight:650}
+.fs-title-meta b{color:#0ea5e9;font-weight:650}
 .fs-title-meta .is-long,.fs-title-hint.is-long{color:#f5a524}
 .fs-title-copy{flex:0 0 auto;font:inherit;font-size:.75rem;padding:0 12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text-body);cursor:pointer}
 .fs-title-copy:hover{color:var(--ink)}
@@ -4192,6 +4192,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
+    <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
     <button type="button" class="topnav-item" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
@@ -4260,6 +4261,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </button>
   </div>
   <span class="nav-drawer-label">Workspace</span>
+  <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
   <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label">Generate</span>
   <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
@@ -6123,6 +6125,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div id="fs-pop" hidden></div>
     </div>
 
+    <div class="panel content-glow" id="panel-agents"><div id="agents-root"></div></div>
+
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
         <h2 id="fv-page-title">Long Form Generator</h2>
@@ -6161,7 +6165,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div id="fv-wizard-home">
         <div class="fv-wizard" id="fv-wizard">
           <div class="fv-crew" id="fv-crew" hidden>
-            <ol class="fv-crew-row" aria-label="Agents working on this video"><li class="fv-crew-m" data-agent="manager" data-state="idle" data-idle="Plans the video" style="--c:#7c5cff"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#7c5cff" stroke="#7c5cff"><circle cx="14" cy="15" r="9"/><circle cx="26" cy="14" r="9"/><circle cx="13" cy="26" r="9"/><circle cx="27" cy="26" r="9"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Manager</b><em>Plans the video</em></span></li><li class="fv-crew-m" data-agent="script" data-state="idle" data-idle="Writes the script" style="--c:#22b864"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#22b864" stroke="#22b864"><rect x="7" y="7" width="26" height="26" rx="8" transform="rotate(-12 20 20)"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Script</b><em>Writes the script</em></span></li><li class="fv-crew-m" data-agent="title" data-state="idle" data-idle="Writes title options" style="--c:#14b8a6"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#14b8a6" stroke="#14b8a6"><path d="M10 9h20a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H20l-7 5v-5h-3a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4Z" stroke-width="4" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="14.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="14.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Title</b><em>Writes title options</em></span></li><li class="fv-crew-m" data-agent="thumbnail" data-state="idle" data-idle="Designs the thumbnail" style="--c:#84cc16"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#84cc16" stroke="#84cc16"><rect x="5" y="9" width="30" height="22" rx="7" transform="rotate(6 20 20)"/></g><g class="eyes"><rect x="15.6" y="16.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Thumbnail</b><em>Designs the thumbnail</em></span></li><li class="fv-crew-m" data-agent="voice" data-state="idle" data-idle="Records the narration" style="--c:#ff6a4d"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#ff6a4d" stroke="#ff6a4d"><path d="M20 8L34 31H6Z" stroke-width="7" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="20.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="20.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Voice</b><em>Records the narration</em></span></li><li class="fv-crew-m" data-agent="agent" data-state="idle" data-idle="Finds the B-roll" style="--c:#ff4fa3"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#ff4fa3" stroke="#ff4fa3"><circle cx="20.00" cy="11.00" r="7"/><circle cx="27.79" cy="15.50" r="7"/><circle cx="27.79" cy="24.50" r="7"/><circle cx="20.00" cy="29.00" r="7"/><circle cx="12.21" cy="24.50" r="7"/><circle cx="12.21" cy="15.50" r="7"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Agent</b><em>Finds the B-roll</em></span></li><li class="fv-crew-m" data-agent="editor" data-state="idle" data-idle="Renders the video" style="--c:#3b82f6"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#3b82f6" stroke="#3b82f6"><rect x="4" y="11" width="32" height="20" rx="10" transform="rotate(-8 20 20)"/></g><g class="eyes"><rect x="15.6" y="17.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="17.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Editor</b><em>Renders the video</em></span></li></ol>
+            <ol class="fv-crew-row" aria-label="Agents working on this video"><li class="fv-crew-m" data-agent="manager" data-state="idle" data-idle="Plans the video" style="--c:#7c5cff"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#7c5cff" stroke="#7c5cff"><circle cx="14" cy="15" r="9"/><circle cx="26" cy="14" r="9"/><circle cx="13" cy="26" r="9"/><circle cx="27" cy="26" r="9"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Manager</b><em>Plans the video</em></span></li><li class="fv-crew-m" data-agent="script" data-state="idle" data-idle="Writes the script" style="--c:#22b864"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#22b864" stroke="#22b864"><rect x="7" y="7" width="26" height="26" rx="8" transform="rotate(-12 20 20)"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Script</b><em>Writes the script</em></span></li><li class="fv-crew-m" data-agent="title" data-state="idle" data-idle="Writes title options" style="--c:#0ea5e9"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#0ea5e9" stroke="#0ea5e9"><path d="M10 9h20a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H20l-7 5v-5h-3a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4Z" stroke-width="4" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="14.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="14.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Title</b><em>Writes title options</em></span></li><li class="fv-crew-m" data-agent="thumbnail" data-state="idle" data-idle="Designs the thumbnail" style="--c:#e2b100"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#e2b100" stroke="#e2b100"><circle cx="20.00" cy="10.00" r="6.5"/><circle cx="29.51" cy="16.91" r="6.5"/><circle cx="25.88" cy="28.09" r="6.5"/><circle cx="14.12" cy="28.09" r="6.5"/><circle cx="10.49" cy="16.91" r="6.5"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Thumbnail</b><em>Designs the thumbnail</em></span></li><li class="fv-crew-m" data-agent="voice" data-state="idle" data-idle="Records the narration" style="--c:#ff6a4d"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#ff6a4d" stroke="#ff6a4d"><path d="M20 8L34 31H6Z" stroke-width="7" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="20.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="20.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Voice</b><em>Records the narration</em></span></li><li class="fv-crew-m" data-agent="agent" data-state="idle" data-idle="Finds the B-roll" style="--c:#ff4fa3"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#ff4fa3" stroke="#ff4fa3"><circle cx="20.00" cy="11.00" r="7"/><circle cx="27.79" cy="15.50" r="7"/><circle cx="27.79" cy="24.50" r="7"/><circle cx="20.00" cy="29.00" r="7"/><circle cx="12.21" cy="24.50" r="7"/><circle cx="12.21" cy="15.50" r="7"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Agent</b><em>Finds the B-roll</em></span></li><li class="fv-crew-m" data-agent="editor" data-state="idle" data-idle="Renders the video" style="--c:#3b82f6"><span class="fv-crew-ava"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="body" fill="#3b82f6" stroke="#3b82f6"><rect x="4" y="11" width="32" height="20" rx="10" transform="rotate(-8 20 20)"/></g><g class="eyes"><rect x="15.6" y="17.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="17.5" width="3.6" height="7.2" rx="1.8"/></g></svg><i class="fv-crew-badge" aria-hidden="true"></i></span><span class="fv-crew-txt"><b>Editor</b><em>Renders the video</em></span></li></ol>
             <div class="fv-crew-foot"><span class="fv-crew-bar"><span id="fv-crew-fill"></span></span><span class="fv-crew-pct" id="fv-crew-pct">0%</span></div>
             <details class="fv-crew-log" id="fv-crew-log" hidden><summary>What the agents did</summary><ol id="fv-crew-log-list"></ol></details>
           </div>
@@ -6687,6 +6691,7 @@ import {
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
+import { initAgentsChat } from '/lib/agents-chat.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
@@ -6990,7 +6995,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/video-generation'
+  if (path === '/login' || path === '/signup') return location.origin + '/agents'
   return location.origin + location.pathname + location.search
 }
 
@@ -7828,7 +7833,7 @@ window.finishOnboarding = (dest) => {
   obFinishStep()
   closeOnboarding()
   try { switchPanel('videogen', null, { allowLocked: true }) } catch (_) {
-    location.href = '/video-generation'
+    location.href = '/agents'
   }
   requestAnimationFrame(() => {
     const topic = document.getElementById('fv-topic')
@@ -8786,6 +8791,8 @@ window.maybeStartUiTour = () => {
     const ob = document.getElementById('onboarding-modal')
     if (ob && !ob.classList.contains('hidden')) return
     if (tourResumePlayAll()) return
+    // The Agents home explains itself; the Long Form tour waits until the user opens that page.
+    if (document.getElementById('panel-agents')?.classList.contains('active')) return
     openUiTour({ auto: true, tourId: 'core' })
   }
   if (funnelLocked()) run()
@@ -9040,6 +9047,8 @@ window.requireActivePlan = (opts = {}) => {
 
 document.addEventListener('keydown', (e) => {
   if (!_tourActive) return
+  // Typing in a field (the Agents chat, a topic box) must never drive the tour.
+  if (e.target && e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) return
   if (e.key === 'Escape') {
     e.preventDefault()
     dismissUiTour()
@@ -9096,17 +9105,17 @@ function populateUser() {
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
-const DEFAULT_PANEL = 'videogen'
-const DEFAULT_PATH = '/video-generation'
+const DEFAULT_PANEL = 'agents'
+const DEFAULT_PATH = '/agents'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Long Form Generator', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Agents', agents:'Agents', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  agents:'/agents', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
@@ -9191,7 +9200,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
+    const hasPageHeader = ['agents','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -9206,6 +9215,10 @@ window.switchPanel = (id, btn, opts = {}) => {
     try { fvInit() } catch (_) {}
   }
   if (id === 'imagegen') { try { window.imgWorkspaceShow?.() } catch (_) {} }
+  if (id === 'agents') {
+    try { fvInit() } catch (_) {}
+    try { window.agentsChat?.render() } catch (_) {}
+  }
   if (id === 'facelessstudio') { try { window.fsStudioShow?.() } catch (_) {} }
   if (id === 'editor') {
     try { edFillVoices?.() } catch (_) {}
@@ -9678,6 +9691,7 @@ function fvCrewSet(agent, state, text) {
   if (fvState.logOn && text && state && state !== 'idle' && (state !== 'working' || agent === 'manager' || agent === 'thumbnail')) {
     fvAgentLog(agent, String(text).replace(/<[^>]*>/g, ''), state)
   }
+  fvAgentsChanged()
   // On narrow screens the row scrolls sideways: bring whoever just started working into view.
   const row = el.parentElement
   if (state === 'working' && agent !== 'manager' && row && row.scrollWidth > row.clientWidth + 4) {
@@ -9827,6 +9841,12 @@ function fvCrewMediaDone() {
     try { window.fvContinueToPreview() } catch (_) {}
     try { window.fvContinueToExport() } catch (_) {}
     try { window.fvStartExport() } catch (_) {}
+    // Agent mode: a voiceover shorter than the target is still a finished video; render it and say so.
+    if ((!fvState.crew || fvState.crew.stage !== 'render') && !document.getElementById('fv-export-short-btn')?.hidden) {
+      const why = (document.getElementById('fv-export-status')?.textContent || '').trim()
+      fvCrewSet('manager', 'working', 'Rendering the shorter cut' + (why ? ': ' + why : ''))
+      try { window.fvStartExport({ allowShort: true }) } catch (_) {}
+    }
     // fvStartExport sets the render stage before its first await; anything else means it stopped for the user.
     if (!fvState.crew || fvState.crew.stage !== 'render') {
       const why = (document.getElementById('fv-export-status')?.textContent || 'Needs you before rendering').trim()
@@ -9884,7 +9904,7 @@ function fvCrewHydrate(phase, hasScript, hasMedia) {
 // ── Agent mode: the crew runs every step and hands back the finished video ──
 const FV_AGENT_MODE_KEY = 'vidso_agent_mode'
 const FV_AGENT_NAME = { manager: 'Manager', script: 'Script', title: 'Title', thumbnail: 'Thumbnail', voice: 'Voice', agent: 'Agent', editor: 'Editor' }
-const FV_AGENT_COLOR = { manager: '#7c5cff', script: '#22b864', title: '#14b8a6', thumbnail: '#84cc16', voice: '#ff6a4d', agent: '#ff4fa3', editor: '#3b82f6' }
+const FV_AGENT_COLOR = { manager: '#7c5cff', script: '#22b864', title: '#0ea5e9', thumbnail: '#e2b100', voice: '#ff6a4d', agent: '#ff4fa3', editor: '#3b82f6' }
 function fvAgentMode() { return !!document.getElementById('fv-agent-mode')?.checked }
 function fvSyncAgentModeLabel() {
   const lab = document.getElementById('fv-gen-label')
@@ -9913,6 +9933,7 @@ function fvAgentLog(agent, text, kind) {
   if (fvState.agentLog.some((x) => x.agent === agent && x.text === text)) return
   fvState.agentLog.push({ at: Date.now(), agent, text, kind: kind || 'done' })
   fvRenderAgentLog()
+  fvAgentsChanged()
 }
 function fvRenderAgentLog() {
   const box = document.getElementById('fv-crew-log')
@@ -9935,6 +9956,7 @@ function fvThumbError(e) {
 // Thumbnail agent: picks the best 2026 style for the topic, builds the art direction from the
 // chosen title and the opening line, and lets Nano Banana Pro design it (lib/thumbnail-styles.js).
 async function fvThumbAgent(opts = {}) {
+  const note = String(opts.note || '').trim().slice(0, 300)
   const script = fvState.script
   if (!script || fvState.thumbBusy) return
   fvState.thumbBusy = true
@@ -9951,7 +9973,7 @@ async function fvThumbAgent(opts = {}) {
   fvCrewSet('thumbnail', 'working', 'Designing ' + (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name + ' thumbnail for “' + title.slice(0, 60) + '”')
   fvPaintDelivery()
   try {
-    const prompt = buildStylePrompt({ styleId, title, topic, hook: openingOf(script, 1) })
+    const prompt = buildStylePrompt({ styleId, title, topic, hook: openingOf(script, 1) }) + (note ? '\nExtra direction from the creator: ' + note : '')
     const rec = await fvGenerateThumbImage({ prompt, model: 'nano-banana-pro', aspect: '16:9' })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
@@ -9974,6 +9996,7 @@ window.fvThumbAgentAgain = () => fvThumbAgent({ next: true })
 // The hand-off: everything the crew made, in one place. The video element is built once and
 // kept, so swapping the title or thumbnail never restarts playback.
 function fvPaintDelivery(scrollTo) {
+  fvAgentsChanged()
   const box = document.getElementById('fv-delivery')
   if (!box) return
   if (!fvState.deliveryOn || !fvState.renderUrl || !fvState.script) { box.hidden = true; box.innerHTML = ''; return }
@@ -10039,6 +10062,97 @@ function fvPaintDelivery(scrollTo) {
     try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch (_) {}
   }
 }
+
+// ── Bridge for the Agents workspace (lib/agents-chat.js) ─────────────────────
+let fvAgentsTick = 0
+function fvAgentsChanged() {
+  if (fvAgentsTick) return
+  fvAgentsTick = setTimeout(() => {
+    fvAgentsTick = 0
+    try { window.dispatchEvent(new CustomEvent('vidso:agents')) } catch (_) {}
+  }, 40)
+}
+window.fvAgentsState = () => {
+  const crew = {}
+  document.querySelectorAll('#fv-crew [data-agent]').forEach((el) => {
+    crew[el.dataset.agent] = { state: el.dataset.state || 'idle', text: el.querySelector('em')?.textContent || '' }
+  })
+  const s = fvState.script
+  const m = fvState.media || {}
+  const picked = typeof fvPickedDuration === 'function' ? fvPickedDuration() : null
+  return {
+    crew,
+    log: Array.isArray(fvState.agentLog) ? fvState.agentLog.slice() : [],
+    running: !!(fvState.crew && fvState.crew.stage !== 'done' && Object.values(crew).some((c) => c.state === 'working')),
+    busyScript: !!fvState.scriptBusy,
+    topic: document.getElementById('fv-topic')?.value || '',
+    durationId: fvState.durationId || '',
+    durationLabel: picked?.label || '',
+    aspect: fvState.aspect || '16:9',
+    script: s ? {
+      title: s.title || '',
+      options: Array.isArray(s.title_options) ? s.title_options : [],
+      words: scriptWordCount(s) || 0,
+      hook: fvState.hookScore?.verdict || '',
+      sections: (s.sections || []).map((x) => ({ heading: x.heading || '', text: x.text || '' })),
+    } : null,
+    thumb: fvState.thumb ? { ...fvState.thumb } : null,
+    media: fvState.media ? { duration: Number(m.duration) || 0, clips: (m.timeline || m.clips || []).length, voiceover: m.voiceover_url || '' } : null,
+    renderUrl: fvState.deliveryOn ? (fvState.renderUrl || '') : '',
+    madeIn: fvState.madeIn || '',
+    startedAt: fvState.runStartedAt || 0,
+  }
+}
+/** Start a full agent run from the Agents chat. Resolves with an error message, or '' when it started. */
+window.fvAgentsRun = async ({ topic, durationId, aspect } = {}) => {
+  const t = String(topic || '').trim()
+  if (!t) return 'Give the agents a topic.'
+  if (fvState.scriptBusy || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
+  try { fvInit() } catch (_) {}
+  if (fvState.script) { try { window.fvClearScript({}) } catch (_) {} }
+  const el = document.getElementById('fv-topic')
+  if (el) { el.value = t; el.dispatchEvent(new Event('input')) }
+  if (aspect) { try { window.fvSetAspect(aspect) } catch (_) {} }
+  if (durationId) { try { window.fvSetDuration(durationId) } catch (_) {} }
+  const mode = document.getElementById('fv-agent-mode')
+  if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')) }
+  const st = document.getElementById('fv-status')
+  if (st) { st.style.display = 'none'; st.textContent = '' }
+  let failed = ''
+  Promise.resolve().then(() => window.fvGenerateScript()).catch((e) => { failed = e?.message || 'Could not start the agents.' })
+  await new Promise((r) => setTimeout(r, 450))
+  if (failed) return failed
+  const started = fvState.scriptBusy || (fvState.runStartedAt && Date.now() - fvState.runStartedAt < 3000)
+  if (!started) return (st && st.textContent.trim()) || 'The agents could not start. Check the topic and voice.'
+  return ''
+}
+/** Title agent with a steer from the creator ("make it about the Netflix offer"). */
+window.fvTitleSteer = async (note) => {
+  const s = fvState.script
+  if (!s) return 'Make a video first; titles come from the script.'
+  const topic = (document.getElementById('fv-topic')?.value || s.topic || '') + (note ? '\nCreator direction for the titles: ' + String(note).slice(0, 300) : '')
+  const was = fvState.logOn
+  fvState.logOn = true
+  fvCrewSet('title', 'working', note ? 'Writing new titles: ' + String(note).slice(0, 80) : 'Writing 5 new title options')
+  try {
+    const out = await suggestTitles({ topic, hook: openingOf(s, 2), script: String(s.full_script || (s.sections || []).map((x) => x.text).join('\n\n')).slice(0, 6000), scriptTitle: s.title || '' })
+    const titles = Array.isArray(out?.titles) ? out.titles.filter((x) => x && x.title) : []
+    if (!titles.length) {
+      fvCrewSet('title', 'stuck', out ? 'No usable titles came back' : 'Titles run on the live app')
+      return out ? 'No usable titles came back. Try again.' : 'The Title agent runs on the live app.'
+    }
+    window.fvSetTitle(titles[0].title, titles)
+    fvCrewSet('title', 'done', (note ? 'Rewrote them around “' + String(note).slice(0, 60) + '”. New pick: ' : 'New pick: ') + titles[0].title)
+    return ''
+  } catch (e) {
+    fvCrewSet('title', 'stuck', e.message || 'Title agent failed')
+    return e.message || 'Title agent failed'
+  } finally {
+    fvState.logOn = was || fvState.logOn
+  }
+}
+window.fvThumbSteer = (note) => fvThumbAgent({ next: true, note })
+window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvAgentsChanged() }
 
 function fvSetPills(active) {
   for (let i = 1; i <= 4; i++) {
@@ -12316,6 +12430,10 @@ window.fvStartExport = async (opts = {}) => {
 }
 
 function fvSetYoutubeStatus(msg, kind) {
+  document.querySelectorAll('[data-yt-status]').forEach((m) => {
+    m.hidden = !msg
+    m.innerHTML = kind === 'loading' ? `<span class="spinner"></span> ${msg}` : (msg || '')
+  })
   const mirror = document.getElementById('fv-dl-yt')
   if (mirror) {
     mirror.hidden = !msg
@@ -13438,6 +13556,14 @@ async function fvGenerateThumbImage({ prompt, model, aspect, image_urls } = {}) 
     } catch (_) {}
     return saved || { storage_url: url, url }
 }
+
+try {
+  window.agentsChat = initAgentsChat({
+    root: document.getElementById('agents-root'),
+    getUser: () => currentUser,
+    openWizard: () => window.switchPanel('videogen'),
+  })
+} catch (e) { console.warn('[agents] init failed', e) }
 
 if (!panelArchived('facelessstudio')) {
 try {

@@ -15,6 +15,7 @@ const REWRITES = new Map([
   ['/preview', '/dashboard/index.html'],
   ['/ui', '/dashboard/index.html'],
   ['/dashboard', '/dashboard/index.html'],
+  ['/agents', '/dashboard/index.html'],
   ['/video-generation', '/dashboard/index.html'],
   ['/image-generation', '/dashboard/index.html'],
   ['/files', '/dashboard/index.html'],
@@ -70,6 +71,21 @@ function safeFile(rel) {
   return abs
 }
 
+// Local only: open the app without signing in by switching on the dashboard's built-in
+// UI preview mode (the same flag /preview sets). A real session still wins when you
+// are signed in. Set LOCAL_AUTH=1 to get the normal login gate back.
+const NO_AUTH = process.env.LOCAL_AUTH !== '1'
+const NO_AUTH_TAG = "<script>try{localStorage.getItem('clipzo_token')||localStorage.setItem('vidso_ui_preview','1')}catch(e){}</script>"
+
+function withNoAuth(file, data) {
+  if (!NO_AUTH || path.extname(file) !== '.html') return data
+  const html = data.toString('utf8')
+  const at = html.search(/<head[^>]*>/i)
+  if (at < 0) return NO_AUTH_TAG + html
+  const end = html.indexOf('>', at) + 1
+  return html.slice(0, end) + NO_AUTH_TAG + html.slice(end)
+}
+
 const server = http.createServer((req, res) => {
   const rel = resolveRel(req.url)
   let file = safeFile(rel)
@@ -89,10 +105,10 @@ const server = http.createServer((req, res) => {
       'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream',
       'Cache-Control': 'no-store',
     })
-    res.end(data)
+    res.end(withNoAuth(file, data))
   })
 })
 
 server.listen(PORT, HOST, () => {
-  console.log('Preview  http://' + HOST + ':' + PORT + '/login')
+  console.log('Preview  http://' + HOST + ':' + PORT + (NO_AUTH ? '/video-generation (no login)' : '/login'))
 })
