@@ -41,6 +41,7 @@ import {
 } from '../../lib/mcp-oauth.js'
 import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
 import { resolveVidsoUser } from '../../lib/gate-run.js'
+import { runTitleAgent } from '../../lib/title-agent.js'
 
 export const config = { maxDuration: 300 }
 
@@ -321,6 +322,32 @@ async function handleMcp(req, res, token, user) {
   return handleMcpMessage(req, res, token, user, body)
 }
 
+function falKey() {
+  return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
+}
+
+/** Title agent: ranked title options for a video (see lib/title-agent.js). */
+async function handleTitles(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Title agent is not configured on this deployment.' })
+  const topic = String(body?.topic || '').trim()
+  if (!topic) return send(res, 400, { error: 'A topic is required.' })
+  try {
+    const out = await runTitleAgent({
+      topic,
+      hook: body.hook,
+      script: String(body.script || '').slice(0, 6000),
+      scriptTitle: body.script_title || body.scriptTitle,
+      thumbnailText: body.thumbnail_text || body.thumbnailText,
+      falKey: key,
+      model: process.env.TITLE_MODEL || undefined,
+    })
+    return send(res, 200, out)
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Title agent failed' })
+  }
+}
+
 export default async function handler(req, res) {
   cors(req, res)
   if (req.method === 'OPTIONS') {
@@ -380,5 +407,6 @@ export default async function handler(req, res) {
   if (sub === 'token' && req.method === 'POST') return handleToken(req, res, token)
   if (sub === 'settings' && req.method === 'POST') return handleSettings(req, res, token, await readJson(req))
   if (sub === 'upload' && req.method === 'POST') return handleUpload(req, res, token, await readJson(req))
+  if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
   return send(res, 404, { error: 'Not found' })
 }
