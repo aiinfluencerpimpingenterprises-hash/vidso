@@ -104,7 +104,7 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     raw = await res.text()
   } catch (e) {
     if (e && e.name === 'AbortError') throw new Error('That request timed out. Try again.')
-    throw new Error('Cannot reach Clipzo API. The backend may be down. Try again in a minute.')
+    throw new Error("Can't reach Vidso's servers right now. Check your connection and try again in a minute.")
   } finally {
     if (timer) clearTimeout(timer)
   }

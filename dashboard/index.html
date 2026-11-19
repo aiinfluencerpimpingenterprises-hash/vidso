@@ -10107,6 +10107,7 @@ window.fvAgentsState = () => {
 window.fvAgentsRun = async ({ topic, durationId, aspect } = {}) => {
   const t = String(topic || '').trim()
   if (!t) return 'Give the agents a topic.'
+  if (!getToken()) return 'SIGN_IN'
   if (fvState.scriptBusy || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
   try { fvInit() } catch (_) {}
   if (fvState.script) { try { window.fvClearScript({}) } catch (_) {} }
