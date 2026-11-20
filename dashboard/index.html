@@ -10088,6 +10088,9 @@ window.fvAgentsState = () => {
     topic: document.getElementById('fv-topic')?.value || '',
     durationId: fvState.durationId || '',
     durationLabel: picked?.label || '',
+    voiceId: fvState.voiceId || '',
+    voiceState: typeof voicesLoadState === 'string' ? voicesLoadState : '',
+    voices: (Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), preview: v.preview_url || '' })),
     aspect: fvState.aspect || '16:9',
     script: s ? {
       title: s.title || '',
@@ -10153,6 +10156,8 @@ window.fvTitleSteer = async (note) => {
   }
 }
 window.fvThumbSteer = (note) => fvThumbAgent({ next: true, note })
+window.fvAgentsVoice = (id) => { try { window.pickFvVoice(id) } catch (_) {} ; fvAgentsChanged() }
+window.fvAgentsLoadVoices = () => { if (voicesLoadState === 'idle' || voicesLoadState === 'error') { try { loadVoices().finally(fvAgentsChanged) } catch (_) {} } }
 window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvAgentsChanged() }
 
 function fvSetPills(active) {
@@ -10480,7 +10485,9 @@ function fvPopulateVoices() {
   }
   show('ready')
   sel.disabled = false
-  const prev = fvState.voiceId || selectedVoiceId || voices[0].id
+  let saved = ''
+  try { saved = localStorage.getItem('vidso_fv_voice') || '' } catch (_) {}
+  const prev = fvState.voiceId || saved || selectedVoiceId || voices[0].id
   sel.innerHTML = voices.map(v => {
     return `<option value="${v.id}" data-preview="${v.preview_url || ''}">${fvEsc(fvVoiceLabel(v))}</option>`
   }).join('')
@@ -10495,6 +10502,8 @@ window.fvOnVoiceChange = () => {
   const opt = sel.options[sel.selectedIndex]
   fvState.voiceId = sel.value || null
   fvState.voicePreview = opt?.dataset?.preview || null
+  try { if (fvState.voiceId && !fvHydrating) localStorage.setItem('vidso_fv_voice', fvState.voiceId) } catch (_) {}
+  try { fvAgentsChanged() } catch (_) {}
   const btn = document.getElementById('fv-voice-preview-btn')
   if (btn) btn.disabled = !fvState.voicePreview
   const box = document.getElementById('fv-voice-preview')
