@@ -10445,7 +10445,7 @@ const FV_CAPTION_LOOKS = {
   comic: { name: 'Comic pop', font: 'Bangers', size: 66, color: '#ffffff', hl: '#00e5ff', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
   mono: { name: 'Minimal mono', font: 'DM Mono', size: 42, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
 }
-window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color, base: v.color, hl: v.hl, stroke: v.stroke ? (v.strokeColor || '#000') : '', strokeW: v.strokeW || 0, shadow: !!v.shadow }))
+window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, size: v.size, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color, base: v.color, hl: v.hl, stroke: v.stroke ? (v.strokeColor || '#000') : '', strokeW: v.strokeW || 0, shadow: !!v.shadow }))
 function fvApplyCaptionLook(id) {
   const L = FV_CAPTION_LOOKS[id]
   if (!L) return false
@@ -11904,6 +11904,14 @@ try {
   fillCaptionFontSelect(document.getElementById('fv-cap-font'))
   syncFvFontUi()
 } catch (_) {}
+// A caption style picked in the Agents app (or a brand profile) is saved; put it back on load,
+// otherwise the render falls back to the default style while the app still shows the saved one.
+try {
+  const savedLook = localStorage.getItem('vidso_fv_caplook')
+  if (savedLook && FV_CAPTION_LOOKS[savedLook]) fvApplyCaptionLook(savedLook)
+} catch (_) {}
+/** The caption style the next render will use, exactly as it is sent to the renderer. */
+window.fvCaptionStyleNow = () => { try { return fvCapStyle() } catch (_) { return null } }
 
 function fvMusicEl() {
   return document.getElementById('fv-prev-music')
