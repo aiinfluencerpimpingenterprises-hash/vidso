@@ -74,6 +74,10 @@
       "destination": "/dashboard/index.html"
     },
     {
+      "source": "/studio",
+      "destination": "/dashboard/index.html"
+    },
+    {
       "source": "/video-generation",
       "destination": "/dashboard/index.html"
     },

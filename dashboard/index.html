@@ -4207,6 +4207,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
+    <button type="button" class="topnav-item" id="nav-manual" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
     <button type="button" class="topnav-item" id="nav-dashboard" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-archived hidden data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
@@ -4276,6 +4277,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
+  <button type="button" class="topnav-item" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
   <button type="button" class="topnav-item" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label" data-archived hidden>Generate</span>
   <button type="button" class="topnav-item" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
@@ -6140,6 +6142,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
 
     <div class="panel content-glow" id="panel-agents"><div id="agents-root"></div></div>
+    <div class="panel content-glow" id="panel-manual"><div id="studio-root"></div></div>
 
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
@@ -6711,6 +6714,7 @@ import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptFromTex
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { initAgentsChat } from '/lib/agents-chat.js'
+import { initStudioHub } from '/lib/studio-hub.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
@@ -8811,8 +8815,9 @@ window.maybeStartUiTour = () => {
     const ob = document.getElementById('onboarding-modal')
     if (ob && !ob.classList.contains('hidden')) return
     if (tourResumePlayAll()) return
-    // The Agents home explains itself; the Long Form tour waits until the user opens that page.
+    // The Agents home and the Studio explain themselves; the Long Form tour waits until the user opens that page.
     if (document.getElementById('panel-agents')?.classList.contains('active')) return
+    if (document.getElementById('panel-manual')?.classList.contains('active')) return
     openUiTour({ auto: true, tourId: 'core' })
   }
   if (funnelLocked()) run()
@@ -9129,13 +9134,13 @@ const DEFAULT_PANEL = 'agents'
 const DEFAULT_PATH = '/agents'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Agents', agents:'Agents', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Agents', agents:'Agents', manual:'Studio', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  agents:'/agents', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  agents:'/agents', manual:'/studio', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
@@ -9220,7 +9225,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['agents','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
+    const hasPageHeader = ['agents','manual','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -9238,6 +9243,10 @@ window.switchPanel = (id, btn, opts = {}) => {
   if (id === 'agents') {
     try { fvInit() } catch (_) {}
     try { window.agentsChat?.render() } catch (_) {}
+  }
+  if (id === 'manual') {
+    try { fvInit() } catch (_) {}
+    try { window.studioHub?.render() } catch (_) {}
   }
   if (id === 'facelessstudio') { try { window.fsStudioShow?.() } catch (_) {} }
   if (id === 'editor') {
@@ -10583,6 +10592,21 @@ window.fvAgentsRunScript = async ({ text, title } = {}) => {
   } finally {
     fvState.scriptBusy = false
   }
+}
+/**
+ * Open the Long Form Generator at one step for manual work. It never starts a
+ * generation: it only shows the step, and turns the agent hand-off off.
+ */
+window.fvOpenStep = (step) => {
+  window.switchPanel('videogen')
+  fvState.autoChain = false
+  try {
+    if (step === 'new') return window.fvAgentsReset?.()
+    if (step === 'media' && fvState.media) return window.fvBackToMedia?.()
+    if (step === 'preview' && voiceoverPlaylist(fvState.media).length) return window.fvContinueToPreview?.()
+    if (step === 'export' && voiceoverPlaylist(fvState.media).length) { window.fvContinueToPreview?.(); return window.fvContinueToExport?.() }
+    if (fvState.script) return window.fvBackToEditor?.()
+  } catch (_) {}
 }
 window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvState.sceneProgress = null; fvAgentsChanged() }
 
@@ -14096,6 +14120,9 @@ try {
     openWizard: () => window.switchPanel('videogen'),
   })
 } catch (e) { console.warn('[agents] init failed', e) }
+try {
+  window.studioHub = initStudioHub({ root: document.getElementById('studio-root') })
+} catch (e) { console.warn('[studio] init failed', e) }
 
 if (!panelArchived('facelessstudio')) {
 try {
