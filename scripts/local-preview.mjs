@@ -86,7 +86,50 @@ function withNoAuth(file, data) {
   return html.slice(0, end) + NO_AUTH_TAG + html.slice(end)
 }
 
+// Local only: answer the Manager and Title agent routes so localhost behaves like the
+// live app. The fal key comes from FAL_KEY or the git-ignored .env.local.
+function localFalKey() {
+  if (process.env.FAL_KEY) return process.env.FAL_KEY.trim()
+  try {
+    const m = fs.readFileSync(path.join(ROOT, '.env.local'), 'utf8').match(/^FAL_KEY=(.*)$/m)
+    return m ? m[1].trim().replace(/^"|"$/g, '') : ''
+  } catch (_) { return '' }
+}
+function readBody(req) {
+  return new Promise((resolve) => {
+    let raw = ''
+    req.on('data', (c) => { raw += c; if (raw.length > 200000) req.destroy() })
+    req.on('end', () => { try { resolve(JSON.parse(raw || '{}')) } catch (_) { resolve({}) } })
+  })
+}
+async function localAgentRoute(req, res, sub) {
+  const json = (code, body) => { res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(body)) }
+  const falKey = localFalKey()
+  if (!falKey) return json(501, { error: 'Set FAL_KEY or add it to .env.local to use the agents locally.' })
+  const body = await readBody(req)
+  try {
+    if (sub === 'manager') {
+      const { runManagerAgent } = await import('../lib/manager-agent.js')
+      const out = await runManagerAgent({
+        message: String(body.message || '').slice(0, 1000),
+        context: body.context && typeof body.context === 'object' ? body.context : {},
+        history: Array.isArray(body.history) ? body.history.slice(-8) : [],
+        captionStyles: Array.isArray(body.caption_styles) ? body.caption_styles.slice(0, 12) : [],
+        falKey,
+      })
+      return json(200, out)
+    }
+    const { runTitleAgent } = await import('../lib/title-agent.js')
+    const out = await runTitleAgent({ topic: body.topic, hook: body.hook, script: String(body.script || '').slice(0, 6000), scriptTitle: body.script_title, thumbnailText: body.thumbnail_text, falKey })
+    return json(200, out)
+  } catch (e) {
+    return json(502, { error: e.message || 'Agent failed' })
+  }
+}
+
 const server = http.createServer((req, res) => {
+  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles)$/) || [])[1]
+  if (agentRoute) return localAgentRoute(req, res, agentRoute)
   const rel = resolveRel(req.url)
   let file = safeFile(rel)
   if (!file) {

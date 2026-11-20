@@ -19,3 +19,11 @@ test('real topics stay topics, vague asks get a question', () => {
   assert.equal(route('make a documentary video about my channel', false).type, 'vague')
   assert.equal(route('make a new video for my youtube channel', false).type, 'vague')
 })
+
+test('greetings, thanks and questions about the video never start a video', () => {
+  for (const t of ['hii', 'Hi!', 'hello there', 'good morning']) assert.equal(route(t, false).type, 'greeting', t)
+  for (const t of ['thanks!', 'ok', 'thank you so much']) assert.equal(route(t, true).type, 'thanks', t)
+  assert.equal(route('how long will this take?', true).type, 'question')
+  assert.equal(route('What did ancient humans do for fun?', false).type, 'topic')
+  assert.equal(route('cats', false).type, 'vague')
+})
