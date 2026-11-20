@@ -43,6 +43,7 @@ import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
 import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
 import { runManagerAgent } from '../../lib/manager-agent.js'
+import { runPublishAgent } from '../../lib/publish-agent.js'
 
 export const config = { maxDuration: 300 }
 
@@ -327,6 +328,25 @@ function falKey() {
   return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
 }
 
+/** Publish agent: YouTube description and tags for a finished video (see lib/publish-agent.js). */
+async function handlePublish(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Publish agent is not configured on this deployment.' })
+  try {
+    const out = await runPublishAgent({
+      title: String(body?.title || '').slice(0, 200),
+      topic: String(body?.topic || '').slice(0, 600),
+      script: String(body?.script || '').slice(0, 6000),
+      niche: String(body?.niche || '').slice(0, 80),
+      falKey: key,
+      model: process.env.PUBLISH_MODEL || undefined,
+    })
+    return send(res, 200, out)
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Publish agent failed' })
+  }
+}
+
 /** Manager agent: what the crew should do with a chat message (see lib/manager-agent.js). */
 async function handleManager(req, res, body) {
   const key = falKey()
@@ -435,5 +455,6 @@ export default async function handler(req, res) {
   if (sub === 'upload' && req.method === 'POST') return handleUpload(req, res, token, await readJson(req))
   if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
   if (sub === 'manager' && req.method === 'POST') return handleManager(req, res, await readJson(req))
+  if (sub === 'publish' && req.method === 'POST') return handlePublish(req, res, await readJson(req))
   return send(res, 404, { error: 'Not found' })
 }

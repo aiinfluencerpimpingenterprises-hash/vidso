@@ -6689,7 +6689,9 @@ import {
   uploadViaServer,
   suggestTitles,
   askManager,
+  publishMeta,
 } from '/lib/youtube-client.js'
+import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptFromText } from '/lib/channel-kit.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { initAgentsChat } from '/lib/agents-chat.js'
@@ -9614,6 +9616,7 @@ window.fvClearScript = (opts = {}) => {
   try { fvRenderTitleOptions(null) } catch (_) {}
   fvState.deliveryOn = false
   fvState.thumb = null
+  fvState.publish = null
   fvState.agentLog = []
   try { fvPaintDelivery(); fvRenderAgentLog() } catch (_) {}
   fvState.scriptAiUsed = false
@@ -9788,6 +9791,7 @@ function fvCrewScriptDone(words, short) {
     : 'Handing the script to Voice, Agent and Thumbnail')
   fvCrewEmit()
   fvThumbAgent()
+  fvPublishAgent()
   setTimeout(() => {
     if (!fvState.autoChain) return
     try { window.fvContinueToMedia(!!short) } catch (_) {}
@@ -9904,8 +9908,8 @@ function fvCrewHydrate(phase, hasScript, hasMedia) {
 
 // ── Agent mode: the crew runs every step and hands back the finished video ──
 const FV_AGENT_MODE_KEY = 'vidso_agent_mode'
-const FV_AGENT_NAME = { manager: 'Manager', script: 'Script', title: 'Title', thumbnail: 'Thumbnail', voice: 'Voice', agent: 'Agent', editor: 'Editor' }
-const FV_AGENT_COLOR = { manager: '#7c5cff', script: '#22b864', title: '#0ea5e9', thumbnail: '#e2b100', voice: '#ff6a4d', agent: '#ff4fa3', editor: '#3b82f6' }
+const FV_AGENT_NAME = { manager: 'Manager', script: 'Script', title: 'Title', thumbnail: 'Thumbnail', voice: 'Voice', agent: 'Agent', editor: 'Editor', publish: 'Publish' }
+const FV_AGENT_COLOR = { manager: '#7c5cff', script: '#22b864', title: '#0ea5e9', thumbnail: '#e2b100', voice: '#ff6a4d', agent: '#ff4fa3', editor: '#3b82f6', publish: '#84cc16' }
 function fvAgentMode() { return !!document.getElementById('fv-agent-mode')?.checked }
 function fvSyncAgentModeLabel() {
   const lab = document.getElementById('fv-gen-label')
@@ -10078,6 +10082,9 @@ window.fvAgentsState = () => {
   document.querySelectorAll('#fv-crew [data-agent]').forEach((el) => {
     crew[el.dataset.agent] = { state: el.dataset.state || 'idle', text: el.querySelector('em')?.textContent || '' }
   })
+  crew.publish = fvState.publishBusy ? { state: 'working', text: 'Writing the description and tags' }
+    : fvState.publish?.description ? { state: 'done', text: 'Description and tags ready' }
+    : fvState.publish?.error ? { state: 'stuck', text: fvState.publish.error } : { state: 'idle', text: '' }
   const s = fvState.script
   const m = fvState.media || {}
   const picked = typeof fvPickedDuration === 'function' ? fvPickedDuration() : null
@@ -10104,6 +10111,8 @@ window.fvAgentsState = () => {
     media: fvState.media ? { duration: Number(m.duration) || 0, clips: (m.timeline || m.clips || []).length, voiceover: m.voiceover_url || '' } : null,
     renderUrl: fvState.deliveryOn ? (fvState.renderUrl || '') : '',
     hasMedia: !!voiceoverPlaylist(fvState.media).length,
+    angle: fvState.angle || 'auto',
+    publish: window.fvPublishPreview?.() || null,
     stage: fvState.crew?.stage || (fvState.script ? 'script' : 'idle'),
     youtubeConnected: _ytStatus ? !!_ytStatus.connected : null,
     madeIn: fvState.madeIn || '',
@@ -10203,6 +10212,7 @@ window.fvAgentsRerender = (why) => {
   if (!fvState.crew || fvState.crew.stage !== 'render') return (document.getElementById('fv-export-status')?.textContent || 'The Editor could not start the render.').trim()
   return ''
 }
+window.fvSetCaptionLook = (id) => { const ok = fvApplyCaptionLook(id); if (ok) { try { localStorage.setItem('vidso_fv_caplook', id) } catch (_) {} } ; fvAgentsChanged(); return ok }
 window.fvAgentsCaptions = (id) => {
   if (!fvApplyCaptionLook(id)) return 'Unknown caption style.'
   return window.fvAgentsRerender('Re-cutting the video with ' + FV_CAPTION_LOOKS[id].name + ' captions')
@@ -10210,6 +10220,89 @@ window.fvAgentsCaptions = (id) => {
 window.fvAgentsVoice = (id) => { try { window.pickFvVoice(id) } catch (_) {} ; fvAgentsChanged() }
 window.fvAgentsLoadVoices = () => { if (voicesLoadState === 'idle' || voicesLoadState === 'error') { try { loadVoices().finally(fvAgentsChanged) } catch (_) {} } }
 window.fvAskManager = (args) => askManager(args)
+window.fvAgentsAngle = (id) => { fvState.angle = id || 'auto'; try { localStorage.setItem('vidso_fv_angle', fvState.angle) } catch (_) {} ; fvAgentsChanged() }
+try { fvState.angle = localStorage.getItem('vidso_fv_angle') || 'auto' } catch (_) { fvState.angle = 'auto' }
+
+// Publish agent: description + tags from the script (lib/publish-agent.js); chapters are
+// timed from the sections against the recorded narration when the video is uploaded.
+function fvPublishDescription() {
+  const s = fvState.script || {}
+  const base = String(fvState.publish?.description || s.hook || document.getElementById('fv-topic')?.value || '').trim()
+  const ch = buildChapters(s.sections || [], Number(fvState.media?.duration) || 0)
+  return ch.length ? base + '\n\nChapters\n' + chaptersText(ch) : base
+}
+window.fvPublishPreview = () => {
+  const s = fvState.script || {}
+  const ch = buildChapters(s.sections || [], Number(fvState.media?.duration) || 0)
+  return { description: fvState.publish?.description || '', tags: fvState.publish?.tags || [], chapters: ch, busy: !!fvState.publishBusy, error: fvState.publish?.error || '', full: fvPublishDescription() }
+}
+async function fvPublishAgent() {
+  const s = fvState.script
+  if (!s || fvState.publishBusy) return
+  fvState.publishBusy = true
+  fvState.publish = null
+  fvAgentLog('publish', 'Writing the YouTube description and tags', 'working')
+  fvAgentsChanged()
+  try {
+    const out = await publishMeta({
+      title: s.title || '',
+      topic: document.getElementById('fv-topic')?.value || s.topic || '',
+      script: String(s.full_script || (s.sections || []).map((x) => x.text).join('\n\n')).slice(0, 6000),
+      niche: window.vidsoNiche || '',
+    })
+    if (!out?.description) throw new Error(out ? 'No description came back' : 'Descriptions are written on the live app')
+    fvState.publish = { description: out.description, tags: Array.isArray(out.tags) ? out.tags : [] }
+    fvAgentLog('publish', 'Description and ' + fvState.publish.tags.length + ' tags ready; chapters are added from the script', 'done')
+  } catch (e) {
+    fvState.publish = { error: e.message || 'Publish agent failed' }
+    fvAgentLog('publish', e.message || 'Publish agent failed', 'stuck')
+  } finally {
+    fvState.publishBusy = false
+    fvAgentsChanged()
+    try { window.fvStudioOnChange?.() } catch (_) {}
+  }
+}
+window.fvPublishAgain = () => fvPublishAgent()
+
+/** Bring your own script: skip the Script agent and hand the crew the creator's text. */
+window.fvAgentsRunScript = async ({ text, title } = {}) => {
+  const script = scriptFromText(text, { title })
+  if (!script) return 'Paste a script first.'
+  if (!getToken()) return 'SIGN_IN'
+  if (fvState.scriptBusy || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
+  try { fvInit() } catch (_) {}
+  if (fvState.script) { try { window.fvClearScript({}) } catch (_) {} }
+  const words = scriptWordCount(script)
+  const secs = Math.round((words / 150) * 60)
+  try { window.fvSetDuration(nearestDuration(secs).id) } catch (_) {}
+  const el = document.getElementById('fv-topic')
+  if (el) { el.value = script.title; el.dispatchEvent(new Event('input')) }
+  const mode = document.getElementById('fv-agent-mode')
+  if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')) }
+  try { await fvEnsureVoice() } catch (_) {}
+  if (!fvState.voiceId) return 'Pick a narrator voice first.'
+  fvState.scriptBusy = true
+  window.fvStudioAutoRun = true
+  fvCrewStartRun()
+  fvCrewSet('script', 'working', 'Reading your script')
+  try {
+    let data = rebuildFullScript({ ...script, aspect: fvState.aspect, topic: script.title })
+    fvState.hookScore = scoreHook(openingOf(data))
+    data = await fvPickTitle(data, script.title)
+    fvState.phase = 1
+    fvRenderScript(data)
+    fvSetScriptAiLock(true)
+    const picked = fvPickedDuration()
+    const short = picked?.seconds ? secs < picked.seconds * 0.85 : false
+    fvCrewScriptDone(words, short)
+    return ''
+  } catch (e) {
+    fvCrewFail('script', e.message || 'Could not use the script')
+    return e.message || 'Could not use the script'
+  } finally {
+    fvState.scriptBusy = false
+  }
+}
 window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvAgentsChanged() }
 
 function fvSetPills(active) {
@@ -12535,7 +12628,8 @@ window.fvUploadToYoutube = async (opts = {}) => {
     }
     fvSyncYoutubeUploadBtn(st)
     const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
-    const description = String(fvState.script?.hook || fvState.topic || '').slice(0, 4000)
+    const description = fvPublishDescription().slice(0, 4900)
+    const tags = Array.isArray(fvState.publish?.tags) && fvState.publish.tags.length ? fvState.publish.tags : ['vidso']
     const privacy = st.privacy || 'public'
     let result
     try {
@@ -12550,6 +12644,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
         title,
         description,
         privacy: tok.privacy || privacy,
+        tags,
         onProgress: (pct) => fvSetYoutubeStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
     } catch (e) {
@@ -12560,6 +12655,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
         title,
         description,
         privacy,
+        tags,
       })
     }
     fvState.ytVideoId = result.videoId
@@ -13047,6 +13143,8 @@ window.fvGenerateScript = async () => {
       durationId: picked.id,
       durationSeconds: picked.seconds,
     })
+    const angleNote = angleBrief(fvState.angle)
+    if (angleNote) payload.brief = [payload.brief, angleNote].filter(Boolean).join(' ')
     const timeoutMs = scriptTimeoutMs(picked.seconds)
     fvLengthTrace('script-request', {
       seconds: payload.duration_seconds,

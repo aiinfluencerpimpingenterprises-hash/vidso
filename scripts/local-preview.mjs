@@ -119,6 +119,11 @@ async function localAgentRoute(req, res, sub) {
       })
       return json(200, out)
     }
+    if (sub === 'publish') {
+      const { runPublishAgent } = await import('../lib/publish-agent.js')
+      const out = await runPublishAgent({ title: body.title, topic: body.topic, script: String(body.script || '').slice(0, 6000), niche: body.niche, falKey })
+      return json(200, out)
+    }
     const { runTitleAgent } = await import('../lib/title-agent.js')
     const out = await runTitleAgent({ topic: body.topic, hook: body.hook, script: String(body.script || '').slice(0, 6000), scriptTitle: body.script_title, thumbnailText: body.thumbnail_text, falKey })
     return json(200, out)
@@ -128,7 +133,7 @@ async function localAgentRoute(req, res, sub) {
 }
 
 const server = http.createServer((req, res) => {
-  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles)$/) || [])[1]
+  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish)$/) || [])[1]
   if (agentRoute) return localAgentRoute(req, res, agentRoute)
   const rel = resolveRel(req.url)
   let file = safeFile(rel)
