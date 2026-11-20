@@ -6688,6 +6688,7 @@ import {
   uploadBlobToYoutube,
   uploadViaServer,
   suggestTitles,
+  askManager,
 } from '/lib/youtube-client.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
@@ -10102,6 +10103,9 @@ window.fvAgentsState = () => {
     thumb: fvState.thumb ? { ...fvState.thumb } : null,
     media: fvState.media ? { duration: Number(m.duration) || 0, clips: (m.timeline || m.clips || []).length, voiceover: m.voiceover_url || '' } : null,
     renderUrl: fvState.deliveryOn ? (fvState.renderUrl || '') : '',
+    hasMedia: !!voiceoverPlaylist(fvState.media).length,
+    stage: fvState.crew?.stage || (fvState.script ? 'script' : 'idle'),
+    youtubeConnected: _ytStatus ? !!_ytStatus.connected : null,
     madeIn: fvState.madeIn || '',
     startedAt: fvState.runStartedAt || 0,
   }
@@ -10156,8 +10160,56 @@ window.fvTitleSteer = async (note) => {
   }
 }
 window.fvThumbSteer = (note) => fvThumbAgent({ next: true, note })
+// Caption looks the Manager can apply from chat, then re-render through the Editor.
+const FV_CAPTION_LOOKS = {
+  bold: { name: 'Bold yellow', font: 'Arial Black', size: 64, color: '#ffffff', hl: '#ffd400', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
+  clean: { name: 'Clean white', font: 'Inter', size: 54, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
+  outline: { name: 'Heavy outline', font: 'Impact', size: 70, color: '#ffffff', hl: '#ff3b30', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 6 },
+  doc: { name: 'Documentary', font: 'Times New Roman', size: 46, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
+  comic: { name: 'Comic pop', font: 'Bangers', size: 66, color: '#ffffff', hl: '#00e5ff', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
+  mono: { name: 'Minimal mono', font: 'DM Mono', size: 42, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
+}
+window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color }))
+function fvApplyCaptionLook(id) {
+  const L = FV_CAPTION_LOOKS[id]
+  if (!L) return false
+  const sel = document.getElementById('fv-cap-font')
+  try { if (sel && sel.options.length < 8) fillCaptionFontSelect(sel) } catch (_) {}
+  const opt = sel && [...sel.options].find((o) => o.textContent.trim().toLowerCase() === L.font.toLowerCase())
+  if (opt) sel.value = opt.value
+  const set = (elId, v) => { const el = document.getElementById(elId); if (el) el.value = String(v) }
+  set('fv-cap-size', L.size); set('fv-cap-color', L.color); set('fv-cap-hl', L.hl)
+  const sv = document.getElementById('fv-cap-size-val'); if (sv) sv.textContent = String(L.size)
+  fvSetCapChip('fv-cap-shadow', !!L.shadow)
+  fvSetCapChip('fv-cap-stroke', !!L.stroke)
+  const so = document.getElementById('fv-cap-stroke-opts'); if (so) so.hidden = !L.stroke
+  if (L.stroke) { set('fv-cap-stroke-color', L.strokeColor); set('fv-cap-stroke-w', L.strokeW) }
+  try { syncFvFontUi() } catch (_) {}
+  try { fvApplyCapStyle() } catch (_) {}
+  return true
+}
+/** Re-render the current video (after a caption change). Returns an error message or ''. */
+window.fvAgentsRerender = (why) => {
+  if (!voiceoverPlaylist(fvState.media).length) return 'There is no finished narration to re-render yet.'
+  if (fvState.crew && fvState.crew.stage === 'render' && fvState.renderPoll) return 'The Editor is already rendering.'
+  fvState.logOn = true
+  fvCrewSet('manager', 'working', why || 'Asking Editor for a new cut')
+  try { window.fvContinueToPreview() } catch (_) {}
+  try { window.fvContinueToExport() } catch (_) {}
+  try { window.fvStartExport() } catch (_) {}
+  if ((!fvState.crew || fvState.crew.stage !== 'render') && !document.getElementById('fv-export-short-btn')?.hidden) {
+    try { window.fvStartExport({ allowShort: true }) } catch (_) {}
+  }
+  if (!fvState.crew || fvState.crew.stage !== 'render') return (document.getElementById('fv-export-status')?.textContent || 'The Editor could not start the render.').trim()
+  return ''
+}
+window.fvAgentsCaptions = (id) => {
+  if (!fvApplyCaptionLook(id)) return 'Unknown caption style.'
+  return window.fvAgentsRerender('Re-cutting the video with ' + FV_CAPTION_LOOKS[id].name + ' captions')
+}
 window.fvAgentsVoice = (id) => { try { window.pickFvVoice(id) } catch (_) {} ; fvAgentsChanged() }
 window.fvAgentsLoadVoices = () => { if (voicesLoadState === 'idle' || voicesLoadState === 'error') { try { loadVoices().finally(fvAgentsChanged) } catch (_) {} } }
+window.fvAskManager = (args) => askManager(args)
 window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvAgentsChanged() }
 
 function fvSetPills(active) {

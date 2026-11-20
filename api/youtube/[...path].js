@@ -42,6 +42,7 @@ import {
 import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
 import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
+import { runManagerAgent } from '../../lib/manager-agent.js'
 
 export const config = { maxDuration: 300 }
 
@@ -326,6 +327,31 @@ function falKey() {
   return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
 }
 
+/** Manager agent: what the crew should do with a chat message (see lib/manager-agent.js). */
+async function handleManager(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Manager agent is not configured on this deployment.' })
+  const message = String(body?.message || '').trim()
+  if (!message) return send(res, 400, { error: 'Empty message' })
+  try {
+    const styles = (Array.isArray(body.caption_styles) ? body.caption_styles : []).slice(0, 12)
+      .map((x) => ({ id: String(x?.id || '').slice(0, 30), name: String(x?.name || '').slice(0, 40) })).filter((x) => x.id)
+    const history = (Array.isArray(body.history) ? body.history : []).slice(-8)
+      .map((h) => ({ from: h?.from === 'me' ? 'me' : 'manager', text: String(h?.text || '').slice(0, 300) }))
+    const out = await runManagerAgent({
+      message: message.slice(0, 1000),
+      context: body.context && typeof body.context === 'object' ? body.context : {},
+      history,
+      captionStyles: styles,
+      falKey: key,
+      model: process.env.MANAGER_MODEL || undefined,
+    })
+    return send(res, 200, out)
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Manager agent failed' })
+  }
+}
+
 /** Title agent: ranked title options for a video (see lib/title-agent.js). */
 async function handleTitles(req, res, body) {
   const key = falKey()
@@ -408,5 +434,6 @@ export default async function handler(req, res) {
   if (sub === 'settings' && req.method === 'POST') return handleSettings(req, res, token, await readJson(req))
   if (sub === 'upload' && req.method === 'POST') return handleUpload(req, res, token, await readJson(req))
   if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
+  if (sub === 'manager' && req.method === 'POST') return handleManager(req, res, await readJson(req))
   return send(res, 404, { error: 'Not found' })
 }
