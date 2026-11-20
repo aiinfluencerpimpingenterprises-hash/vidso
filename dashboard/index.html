@@ -9560,7 +9560,9 @@ async function fvApplyAiScenes(job) {
   const duration = Number(job.duration) || 0
   const text = String(fvState.script?.full_script || (fvState.script?.sections || []).map((x) => x.text).join(' '))
   const scenes = planScenes({ text, duration, pace: vis.pace, mode: vis.mode })
+  fvState.aiSceneError = ''
   if (!scenes.length) return job
+  let firstImageError = ''
   const was = fvState.logOn
   fvState.logOn = true
   const say = (t) => { fvCrewSet('agent', 'working', t); fvSetMediaStatus(t, 'loading') }
@@ -9592,7 +9594,7 @@ async function fvApplyAiScenes(job) {
       const url = data?.urls?.[0] || ''
       if (url) fvState.sceneProgress.images[sc.i] = url
       return url
-    } catch (_) { return '' } finally {
+    } catch (e) { if (!firstImageError) firstImageError = e?.message || String(e); return '' } finally {
       drawn++
       fvState.sceneProgress.drawn = drawn
       say(`Drawing scene ${drawn} of ${scenes.length} (${style.name})`)
@@ -9601,7 +9603,7 @@ async function fvApplyAiScenes(job) {
   })
   // A scene whose image failed reuses the nearest good one, so the timeline has no holes.
   for (let k = 0; k < images.length; k++) if (!images[k]) images[k] = images[k - 1] || images.find(Boolean) || ''
-  if (!images.some(Boolean)) throw new Error('No scene images came back; keeping stock footage.')
+  if (!images.some(Boolean)) throw new Error('no scene images came back' + (firstImageError ? ': ' + firstImageError : ''))
   const mode = visualModeById(vis.mode)
   const videoModel = videoModelById(mode.id === 'cinematic' ? 'kling-3-pro' : 'wan-2.7')
   const clips = {}
@@ -9633,7 +9635,10 @@ async function fvApplyAiScenes(job) {
     if (!run.length) return
     const start = run[0].start
     const end = run[run.length - 1].end
-    const out = await composeScenes(run.map((sc) => ({ url: images[sc.i], ms: Math.round((sc.end - sc.start) * 1000) })))
+    let out
+    try {
+      out = await composeScenes(run.map((sc) => ({ url: images[sc.i], ms: Math.round((sc.end - sc.start) * 1000) })))
+    } catch (e) { throw new Error('joining the scenes failed: ' + (e?.message || e)) }
     timeline.push({ id: 'ai-' + timeline.length, url: out.url, preview: out.url, start, end, clip_start: 0, provider: 'ai', query: style.name })
     run = []
   }
@@ -9985,6 +9990,7 @@ function fvCrewMediaDone() {
   fvCrewSet('voice', 'done', dur ? 'Narration recorded · ' + formatDurationSeconds(dur) : 'Narration recorded')
   const clips = (m.timeline || m.clips || []).length
   if (m.broll_source === 'ai') fvCrewSet('agent', 'done', `${m.scene_count || clips} scenes drawn in ${visualStyleById(fvState.visual?.style)?.name || 'your style'}`)
+  else if (fvState.aiSceneError) fvCrewSet('agent', 'stuck', `AI scenes failed (${fvState.aiSceneError}), so I used ${clips} stock clips`)
   else fvCrewSet('agent', 'done', clips ? clips + (clips === 1 ? ' B-roll clip placed' : ' B-roll clips placed') : 'B-roll placed')
   if (!fvState.autoChain) {
     fvCrewSet('manager', 'done', 'Media ready for your review')
@@ -11490,7 +11496,9 @@ window.fvStartMedia = async (force) => {
     let ready = await fvBuildMediaViaTtsFallback()
     if (fvAiScenesOn()) {
       try { ready = await fvApplyAiScenes(ready) } catch (e) {
-        ready.warning = (ready.warning ? ready.warning + ' ' : '') + (e.message || 'AI scenes failed; keeping stock footage')
+        fvState.aiSceneError = e.message || 'AI scenes failed'
+        try { console.error('[ai-scenes]', e) } catch (_) {}
+        ready.warning = (ready.warning ? ready.warning + ' ' : '') + 'AI scenes failed (' + fvState.aiSceneError + '); used stock clips instead.'
       }
     } else if (isFalVideoModel(fvState.videoModel)) {
       try { ready = await fvApplyFalBroll(ready) } catch (e) {
@@ -11528,7 +11536,9 @@ window.fvStartMedia = async (force) => {
     }
     if (fvAiScenesOn()) {
       try { ready = await fvApplyAiScenes(ready) } catch (e) {
-        ready.warning = (ready.warning ? ready.warning + ' ' : '') + (e.message || 'AI scenes failed; keeping stock footage')
+        fvState.aiSceneError = e.message || 'AI scenes failed'
+        try { console.error('[ai-scenes]', e) } catch (_) {}
+        ready.warning = (ready.warning ? ready.warning + ' ' : '') + 'AI scenes failed (' + fvState.aiSceneError + '); used stock clips instead.'
       }
     } else if (isFalVideoModel(fvState.videoModel)) {
       try { ready = await fvApplyFalBroll(ready) } catch (e) {
@@ -12689,9 +12699,36 @@ window.fvStartExport = async (opts = {}) => {
         : null,
     })
     fvState.renderJobId = jobId
-    fvState.renderPoll = setInterval(async () => {
+    fvState.renderPicked = picked
+    fvPollRenderJob(jobId, picked, btn)
+  } catch (e) {
+    if (btn) btn.disabled = false
+    if (e.needsPlan) fvSetExportStatus(e.message || 'Active plan required to export', 'err')
+    else fvSetExportStatus(e.message || 'Could not start render', 'err')
+    fvCrewFail('render', e.message || 'Could not start render')
+  }
+}
+
+/** True when a request never reached the server (offline, dropped connection), not a real job error. */
+function fvIsNetworkBlip(e) {
+  return /reach Vidso|timed out|Failed to fetch|NetworkError|Load failed/i.test(String(e?.message || e || ''))
+}
+
+/**
+ * Poll a render job until it finishes. The render keeps going on the server
+ * even if this tab loses its connection, so dropped checks are retried for a
+ * few minutes instead of failing the whole video on one network blip.
+ */
+function fvPollRenderJob(jobId, picked, btn) {
+  if (fvState.renderPoll) clearInterval(fvState.renderPoll)
+  let misses = 0
+  let busy = false
+  fvState.renderPoll = setInterval(async () => {
+    if (busy) return
+    busy = true
       try {
         const job = await api.faceless.pollRender(jobId)
+        if (misses) { misses = 0; fvCrewSet('editor', 'working', 'Back online, still rendering') }
         document.getElementById('fv-export-bar').style.width = Math.max(3, job.progress || 0) + '%'
         fvCrewProgress('render', job.progress)
         if (job.status === 'queued' || job.status === 'processing') {
@@ -12732,19 +12769,36 @@ window.fvStartExport = async (opts = {}) => {
         fvPaintDelivery(true)
         fvMaybeAutoUploadYoutube()
       } catch (e) {
+        // About 3 minutes of failed checks before giving up; the job is kept so it can be resumed.
+        if (fvIsNetworkBlip(e) && ++misses < 120) {
+          fvSetExportStatus('Connection dropped. The render keeps going on the server; reconnecting…', 'loading')
+          fvCrewSet('editor', 'working', 'Connection dropped, reconnecting to the render')
+          return
+        }
         clearInterval(fvState.renderPoll)
         fvState.renderPoll = null
         if (btn) btn.disabled = false
-        fvSetExportStatus(e.message || 'Poll failed', 'err')
-        fvCrewFail('render', e.message || 'Poll failed')
+        const msg = fvIsNetworkBlip(e) ? 'Lost the connection to the render. It may still finish: press Try again to check on it.' : (e.message || 'Poll failed')
+        fvSetExportStatus(msg, 'err')
+        fvCrewFail('render', msg)
+      } finally {
+        busy = false
       }
     }, 1500)
-  } catch (e) {
-    if (btn) btn.disabled = false
-    if (e.needsPlan) fvSetExportStatus(e.message || 'Active plan required to export', 'err')
-    else fvSetExportStatus(e.message || 'Could not start render', 'err')
-    fvCrewFail('render', e.message || 'Could not start render')
+}
+
+/** Pick up a render that lost its connection, or start a new one if there is none. */
+window.fvResumeRender = () => {
+  if (fvState.renderJobId && !fvState.deliveryOn && !fvState.renderPoll) {
+    fvState.logOn = true
+    if (!fvState.crew) fvState.crew = { stage: 'render', p: 0 }
+    fvState.crew.stage = 'render'
+    fvCrewSet('manager', 'working', 'Checking on the render')
+    fvCrewSet('editor', 'working', 'Reconnecting to the render')
+    fvPollRenderJob(fvState.renderJobId, fvState.renderPicked || fvPickedDuration(), document.getElementById('fv-export-btn'))
+    return ''
   }
+  return window.fvAgentsRerender('Asking Editor to render again')
 }
 
 function fvSetYoutubeStatus(msg, kind) {

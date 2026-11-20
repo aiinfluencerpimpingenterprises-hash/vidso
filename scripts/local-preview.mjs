@@ -133,6 +133,7 @@ async function localAgentRoute(req, res, sub) {
     const out = await runTitleAgent({ topic: body.topic, hook: body.hook, script: String(body.script || '').slice(0, 6000), scriptTitle: body.script_title, thumbnailText: body.thumbnail_text, falKey })
     return json(200, out)
   } catch (e) {
+    console.error('[local] agent route failed:', e?.message || e)
     return json(502, { error: e.message || 'Agent failed' })
   }
 }
@@ -162,6 +163,7 @@ async function localGenerate(req, res, sub) {
     if (!urls.length) return json(502, { error: 'Nothing came back' })
     return json(200, { urls, kind: video ? 'video' : 'image', model: body.model })
   } catch (e) {
+    console.error('[local] generate failed:', e?.message || e)
     return json(400, { error: e.message || 'Generation failed' })
   }
 }
