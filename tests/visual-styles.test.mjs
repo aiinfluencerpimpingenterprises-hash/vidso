@@ -1,11 +1,25 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
-import { VISUAL_STYLES, planScenes, sceneImagePrompt, MAX_SCENES } from '../lib/visual-styles.js'
+import { VISUAL_STYLES, STYLE_GROUPS, DEFAULT_STYLE, visualStyleById, planScenes, sceneImagePrompt, MAX_SCENES } from '../lib/visual-styles.js'
+import { normalizeProfile } from '../lib/channel-kit.js'
 import { parseScenes } from '../lib/scene-agent.js'
 import { routeManagerMessage as route } from '../lib/agents-chat.js'
 
 const words = (n) => Array.from({ length: n }, (_, i) => 'w' + i).join(' ')
+
+test('over 100 styles, unique ids, every group used, a real default', () => {
+  assert.ok(VISUAL_STYLES.length >= 100)
+  assert.equal(new Set(VISUAL_STYLES.map((s) => s.id)).size, VISUAL_STYLES.length)
+  for (const g of STYLE_GROUPS) assert.ok(VISUAL_STYLES.some((s) => s.group === g), g)
+  assert.ok(visualStyleById(DEFAULT_STYLE))
+})
+
+test('profiles saved with stock footage move to the default AI style', () => {
+  assert.equal(normalizeProfile({ visualStyle: 'stock' }).visualStyle, DEFAULT_STYLE)
+  assert.equal(normalizeProfile({}).visualStyle, DEFAULT_STYLE)
+  assert.equal(normalizeProfile({ visualStyle: 'anime' }).visualStyle, 'anime')
+})
 
 test('every style has a prompt and a sample image', () => {
   for (const s of VISUAL_STYLES) {

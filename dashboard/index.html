@@ -6700,7 +6700,7 @@ import { initAgentsChat } from '/lib/agents-chat.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
-import { planScenes, sceneImagePrompt, visualStyleById, visualModeById } from '/lib/visual-styles.js'
+import { planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE } from '/lib/visual-styles.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
@@ -9510,14 +9510,17 @@ function fvFalBrollPrompts(job) {
 const FV_VISUAL_KEY = 'vidso_fv_visual'
 function fvVisual() {
   if (!fvState.visual) {
-    const base = { style: 'stock', mode: 'cheapest', pace: 'normal', characterUrl: '', characterDesc: '' }
+    const base = { style: DEFAULT_STYLE, mode: 'cheapest', pace: 'normal', characterUrl: '', characterDesc: '' }
     try { fvState.visual = { ...base, ...JSON.parse(localStorage.getItem(FV_VISUAL_KEY) || '{}') } } catch (_) { fvState.visual = base }
   }
+  // Stock footage was removed as a choice: anything that isn't a known style gets the default.
+  if (!visualStyleById(fvState.visual.style)) fvState.visual.style = DEFAULT_STYLE
   return fvState.visual
 }
-function fvAiScenesOn() { const v = fvVisual(); return !!(v.style && v.style !== 'stock' && visualStyleById(v.style)) }
+function fvAiScenesOn() { return !!visualStyleById(fvVisual().style) }
 window.fvSetVisual = (patch = {}) => {
   fvState.visual = { ...fvVisual(), ...patch }
+  if (!visualStyleById(fvState.visual.style)) fvState.visual.style = DEFAULT_STYLE
   try { localStorage.setItem(FV_VISUAL_KEY, JSON.stringify(fvState.visual)) } catch (_) {}
   try { fvAgentsChanged() } catch (_) {}
   return fvState.visual
