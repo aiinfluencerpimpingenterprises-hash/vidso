@@ -289,6 +289,20 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 }
 .topnav-avatar:focus-visible{outline:2px solid rgba(var(--glow),.65);outline-offset:2px}
 .nav-drawer{display:none}
+/* Seamless chrome: the bar and the announcement share the page background, no strips or lines. */
+.app-banner{justify-content:center;gap:8px;background:var(--bg);color:var(--ink)}
+.app-banner-msg{flex:0 1 auto;color:rgba(255,255,255,.88);font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);line-height:1.1}
+.app-banner-end{margin-left:0}
+.app-banner-cta{height:26px;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:.72rem}
+.app-banner-cta:focus-visible,.app-banner-x:focus-visible{outline:2px solid rgba(255,255,255,.7)}
+.app-banner-x{position:absolute;right:var(--chrome-pad-x);color:rgba(255,255,255,.5)}
+.app-banner-x:hover{background:rgba(255,255,255,.06);color:#fff}
+.app-topnav{background:var(--bg);border:0;box-shadow:none}
+.topnav-item{color:rgba(255,255,255,.92);font-size:.92rem;font-weight:500;padding:0 14px;border-radius:999px}
+.topnav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.topnav-item.active{color:#fff;font-weight:600}
+.topnav-item .nav-caret{opacity:.8}
+.topnav-item:focus-visible,.topnav-ico-btn:focus-visible,.topnav-logo:focus-visible,.topnav-avatar:focus-visible{outline:2px solid rgba(255,255,255,.7)}
 .nav-badge,.badge-soon{display:inline-flex;align-items:center;justify-content:center;height:18px;padding:0 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
 .user-profile-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;background:transparent;text-decoration:none;color:inherit;cursor:default}
@@ -4193,11 +4207,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
-    <button type="button" class="topnav-item" id="nav-dashboard" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
-    <button type="button" class="topnav-item" id="nav-imagegen" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-    <button type="button" class="topnav-item" id="nav-videogen" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+    <button type="button" class="topnav-item" id="nav-dashboard" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
+    <button type="button" class="topnav-item" id="nav-imagegen" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+    <button type="button" class="topnav-item" id="nav-videogen" data-archived hidden data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
     <button type="button" class="topnav-item" id="nav-facelessstudio" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
-    <div class="topnav-drop" id="nav-tools-wrap">
+    <div class="topnav-drop" id="nav-tools-wrap" data-archived hidden>
       <button type="button" class="topnav-item" id="nav-tools-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-tools-menu">
         Short Form Tools
         <svg class="nav-caret" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -4213,11 +4227,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <button type="button" role="menuitem" id="nav-commentary" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
       </div>
     </div>
-    <button type="button" class="topnav-item" id="nav-files" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-    <button type="button" class="topnav-item" id="nav-youtube" data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
+    <button type="button" class="topnav-item" id="nav-files" data-archived hidden data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+    <button type="button" class="topnav-item" id="nav-youtube" data-archived hidden data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
   </nav>
   <div class="topnav-right">
-    <div class="topnav-drop" id="nav-search-wrap">
+    <div class="topnav-drop" id="nav-search-wrap" data-archived hidden>
       <button type="button" class="topnav-ico-btn" id="nav-search-btn" aria-label="Search tools" aria-haspopup="true" aria-expanded="false" aria-controls="nav-search-pop">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
       </button>
@@ -4262,24 +4276,24 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
-  <button type="button" class="topnav-item" data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
-  <span class="nav-drawer-label">Generate</span>
-  <button type="button" class="topnav-item" data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
-  <button type="button" class="topnav-item" data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
+  <span class="nav-drawer-label" data-archived hidden>Generate</span>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
   <button type="button" class="topnav-item" data-panel="facelessstudio" data-archived hidden onclick="switchPanel('facelessstudio',this)">Faceless Studio</button>
-  <span class="nav-drawer-label">Short Form Tools</span>
-  <button type="button" class="topnav-item" data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
-  <button type="button" class="topnav-item" data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
-  <button type="button" class="topnav-item" data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
-  <button type="button" class="topnav-item" data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
-  <button type="button" class="topnav-item" data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
-  <button type="button" class="topnav-item" data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
-  <button type="button" class="topnav-item" data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
-  <button type="button" class="topnav-item" data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
-  <span class="nav-drawer-label">Library</span>
-  <button type="button" class="topnav-item" data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
-  <button type="button" class="topnav-item" data-panel="files" onclick="switchPanel('files',this)">My Files</button>
-  <button type="button" class="topnav-item" data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
+  <span class="nav-drawer-label" data-archived hidden>Short Form Tools</span>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="clipper" onclick="switchPanel('clipper',this)">Clipping</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="ranking" onclick="switchPanel('ranking',this)">Ranking</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="captions" onclick="switchPanel('captions',this)">AI Captions</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="voiceover" onclick="switchPanel('voiceover',this)">AI Voiceover</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="reframe" onclick="switchPanel('reframe',this)">AI Reframe</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="editor" onclick="switchPanel('editor',this)">Video Editor</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="downloader" onclick="switchPanel('downloader',this)">Video Downloader</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="commentary" onclick="switchPanel('commentary',this)">Video Commentary</button>
+  <span class="nav-drawer-label" data-archived hidden>Library</span>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="tools" onclick="switchPanel('tools',this)">All tools</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="files" onclick="switchPanel('files',this)">My Files</button>
+  <button type="button" class="topnav-item" data-archived hidden data-panel="youtube" onclick="switchPanel('youtube',this)">My YouTube Channel</button>
 </aside>
 
 <div class="nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()" hidden></div>
