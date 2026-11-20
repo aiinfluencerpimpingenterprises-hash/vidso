@@ -91,3 +91,9 @@ test('Whop receipt email matches Vidso login when only the dots differ', () => {
   assert.equal(membershipMatchesUser(row, { email: 'subramaniamvishwak@gmail.com' }), true)
   assert.equal(membershipMatchesUser(row, { emails: ['subramaniamvishwak@gmail.com'] }), true)
 })
+
+test('aiinfluencerpimpingenterprises gets unlimited (Studio) on both spellings', async () => {
+  const { compedTierForEmail } = await import('../lib/comped.js')
+  assert.equal(compedTierForEmail('aiinfluencerpimpingenterprises@gmail.com'), 'studio')
+  assert.equal(compedTierForEmail('aiinfluencerpimpingenterprises@gamil.com'), 'studio')
+})
