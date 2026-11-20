@@ -13852,10 +13852,37 @@ async function fvSaveRenderToLibrary(blobUrl, title) {
     const file = new File([blob], name, { type: blob.type || 'video/mp4' })
     const fd = new FormData()
     fd.append('file', file)
-    await api.upload.file(fd)
+    const rec = await api.upload.file(fd)
+    const saved = rec?.url || rec?.file?.url || rec?.storage_url || rec?.file_url || ''
+    if (saved) fvRememberVideo({ url: saved, title: title || '' })
     loadFiles()
     fvSetExportStatus('Render complete · saved to My Files', 'ok')
   } catch (_) {}
+}
+
+// The finished MP4 lives in this tab as a blob URL, which a reload clears. The
+// saved copy in My Files is remembered so the Agents chat can still show it.
+const fvLastVideoKey = () => 'vidso_last_video:' + (currentUser?.id || currentUser?.email || 'guest')
+function fvRememberVideo(v) {
+  try { localStorage.setItem(fvLastVideoKey(), JSON.stringify({ ...v, at: Date.now() })) } catch (_) {}
+}
+window.fvLastVideoSaved = () => { try { return JSON.parse(localStorage.getItem(fvLastVideoKey()) || 'null') } catch (_) { return null } }
+/** The newest finished long-form video: the remembered one, else the newest "Long-form-…" file in My Files. */
+window.fvLastVideo = async () => {
+  try {
+    const v = JSON.parse(localStorage.getItem(fvLastVideoKey()) || 'null')
+    if (v?.url) return v
+  } catch (_) {}
+  try {
+    if (!Array.isArray(filesCache) || !filesCache.length) await loadFiles()
+    const f = (filesCache || []).find((x) => /^Long-form-/i.test(String(x.original_name || x.name || '')) && (x.url || x.storage_url))
+    if (f) {
+      const name = String(f.original_name || f.name)
+      const title = name.replace(/^Long-form-/i, '').replace(/-\d{4}-\d{2}-\d{2}\.mp4$/i, '').replace(/[-_]+/g, ' ').trim()
+      return { url: f.url || f.storage_url, title, at: Date.parse(f.created_at || '') || 0, fromFiles: true }
+    }
+  } catch (_) {}
+  return null
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
