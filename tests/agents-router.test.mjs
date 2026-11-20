@@ -27,3 +27,10 @@ test('greetings, thanks and questions about the video never start a video', () =
   assert.equal(route('What did ancient humans do for fun?', false).type, 'topic')
   assert.equal(route('cats', false).type, 'vague')
 })
+
+test('asking to see the finished video shows it instead of starting a new one', async () => {
+  const { routeManagerMessage: r } = await import('../lib/agents-chat.js')
+  for (const t of ['show me', 'where can i watch it', 'done?', 'play the video', 'download it', 'is it ready']) assert.equal(r(t, true).type, 'watch', t)
+  assert.equal(r('show me a video about cats', true).type, 'topic')
+  assert.equal(r('make a video about sharks', false).type, 'topic')
+})

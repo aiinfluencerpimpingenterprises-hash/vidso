@@ -40,3 +40,9 @@ test('falls back to the second model', async () => {
   assert.equal(out.reply, 'Thanks!')
   assert.equal(seen.length, 2)
 })
+
+test('show_video is a valid Manager action', async () => {
+  const { parseManagerResponse } = await import('../lib/manager-agent.js')
+  const out = parseManagerResponse('{"reply":"Here it is.","actions":[{"type":"show_video"}]}')
+  assert.deepEqual(out.actions, [{ type: 'show_video' }])
+})
