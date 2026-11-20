@@ -9628,7 +9628,22 @@ async function fvApplyAiScenes(job) {
       tick()
     }
   })
-  // Runs of stills become one clip each (fal ffmpeg); animated scenes are their own clips.
+  fvState.sceneProject = {
+    style: style.id,
+    styleName: style.name,
+    videoModel: videoModel.id,
+    aspect: fvState.aspect || '16:9',
+    edits: 0,
+    scenes: scenes.map((sc) => ({ i: sc.i, start: sc.start, end: sc.end, text: sc.text, prompt: prompts[sc.i] || sc.text, image: images[sc.i] || '', clip: clips[sc.i] || '' })),
+  }
+  say('Joining the scenes')
+  const timeline = await fvTimelineFromScenes(fvState.sceneProject)
+  fvState.logOn = was || fvState.logOn
+  return { ...job, timeline, clips: timeline, broll_source: 'ai', scene_count: scenes.length, scene_images: images }
+}
+
+/** Timeline for the render: runs of stills become one clip each (fal ffmpeg); animated scenes are their own clips. */
+async function fvTimelineFromScenes(proj) {
   const timeline = []
   let run = []
   const flush = async () => {
@@ -9637,24 +9652,115 @@ async function fvApplyAiScenes(job) {
     const end = run[run.length - 1].end
     let out
     try {
-      out = await composeScenes(run.map((sc) => ({ url: images[sc.i], ms: Math.round((sc.end - sc.start) * 1000) })))
+      out = await composeScenes(run.map((sc) => ({ url: sc.image, ms: Math.round((sc.end - sc.start) * 1000) })))
     } catch (e) { throw new Error('joining the scenes failed: ' + (e?.message || e)) }
-    timeline.push({ id: 'ai-' + timeline.length, url: out.url, preview: out.url, start, end, clip_start: 0, provider: 'ai', query: style.name })
+    timeline.push({ id: 'ai-' + timeline.length, url: out.url, preview: out.url, start, end, clip_start: 0, provider: 'ai', query: proj.styleName })
     run = []
   }
-  say('Joining the scenes')
-  for (const sc of scenes) {
-    if (clips[sc.i]) {
+  for (const sc of proj.scenes) {
+    if (sc.clip) {
       await flush()
-      timeline.push({ id: 'ai-' + timeline.length, url: clips[sc.i], preview: clips[sc.i], start: sc.start, end: sc.end, clip_start: 0, provider: 'ai', model: videoModel.id, query: style.name })
-    } else {
+      timeline.push({ id: 'ai-' + timeline.length, url: sc.clip, preview: sc.clip, start: sc.start, end: sc.end, clip_start: 0, provider: 'ai', model: proj.videoModel, query: proj.styleName })
+    } else if (sc.image) {
       run.push(sc)
       if (run.length >= 40) await flush()
     }
   }
   await flush()
-  fvState.logOn = was || fvState.logOn
-  return { ...job, timeline, clips: timeline, broll_source: 'ai', scene_count: scenes.length, scene_images: images }
+  return timeline
+}
+
+// ── Scene editor bridge (Agents app) ────────────────────────────────────────
+window.fvSceneProject = () => {
+  const p = fvState.sceneProject
+  if (!p?.scenes?.length) return null
+  const m = fvState.media || {}
+  return {
+    ...p,
+    scenes: p.scenes.map((x) => ({ ...x })),
+    voiceover: m.voiceover_url || voiceoverPlaylist(m)[0] || '',
+    duration: Number(m.duration) || (p.scenes[p.scenes.length - 1]?.end || 0),
+    words: (m.words || []).slice(0, 6000).map((w) => [Number(w.start) || 0, Number(w.end) || 0, String(w.word || w.text || '')]),
+    musicId: fvState.preview?.musicId || 'none',
+    musicVol: fvState.preview?.musicVol ?? 0.25,
+  }
+}
+function fvSceneAt(i) {
+  const sc = fvState.sceneProject?.scenes?.find((x) => x.i === Number(i))
+  if (!sc) throw new Error('That scene is not in this video.')
+  return sc
+}
+window.fvRedrawScene = async (i, prompt) => {
+  const sc = fvSceneAt(i)
+  const vis = fvVisual()
+  const p = String(prompt || sc.prompt || sc.text).trim().slice(0, 600)
+  const data = await api.generate.image({
+    prompt: sceneImagePrompt({ scene: p, style: fvState.sceneProject.style, character: vis.characterDesc, aspect: fvState.sceneProject.aspect }),
+    model: 'nano-banana',
+    aspect_ratio: fvState.sceneProject.aspect,
+    quality: '1K',
+    resolution: '1K',
+    num_images: 1,
+    ...(vis.characterUrl ? { image_urls: [vis.characterUrl] } : {}),
+  })
+  const url = data?.urls?.[0]
+  if (!url) throw new Error('No image came back. Try again.')
+  sc.prompt = p
+  sc.image = url
+  sc.clip = '' // the old animation shows the old picture
+  fvState.sceneProject.edits++
+  fvAgentsChanged()
+  return url
+}
+window.fvAnimateScene = async (i) => {
+  const sc = fvSceneAt(i)
+  if (!sc.image) throw new Error('Draw the scene first.')
+  const model = videoModelById(fvState.sceneProject.videoModel || 'wan-2.7')
+  const data = await api.generate.video({
+    model: model.id,
+    prompt: (sc.prompt || sc.text) + '. Gentle natural motion, keep the art style.',
+    aspect: fvState.sceneProject.aspect,
+    duration: fvVideoDurationFor(model, sc.end - sc.start),
+    generate_audio: false,
+    image_urls: [sc.image],
+  })
+  const url = data?.urls?.[0]
+  if (!url) throw new Error('The animation did not come back. Try again.')
+  sc.clip = url
+  fvState.sceneProject.edits++
+  fvAgentsChanged()
+  return url
+}
+window.fvStillScene = (i) => {
+  const sc = fvSceneAt(i)
+  if (!sc.clip) return
+  sc.clip = ''
+  fvState.sceneProject.edits++
+  fvAgentsChanged()
+}
+window.fvMusicList = () => FV_MUSIC.map((m) => ({ id: m.id, name: m.name, url: m.url }))
+window.fvSetMusicVol = (v) => {
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.musicVol = Math.max(0, Math.min(1, Number(v) || 0))
+  if (fvState.sceneProject) fvState.sceneProject.edits++
+  fvAgentsChanged()
+}
+/** Rebuild the timeline from the edited scenes and hand it to the Editor. Resolves with an error message, or ''. */
+window.fvRenderSceneEdits = async () => {
+  const proj = fvState.sceneProject
+  if (!proj || !fvState.media) return 'There is no video to re-render.'
+  fvCrewSet('agent', 'working', 'Joining your edited scenes')
+  try {
+    const timeline = await fvTimelineFromScenes(proj)
+    fvState.media = { ...fvState.media, timeline, clips: timeline, broll_source: 'ai' }
+  } catch (e) {
+    fvCrewSet('agent', 'stuck', e.message || 'Could not join the scenes')
+    return e.message || 'Could not join the scenes'
+  }
+  fvCrewSet('agent', 'done', `${proj.scenes.length} scenes in ${proj.styleName}, ${proj.edits} edit${proj.edits === 1 ? '' : 's'}`)
+  proj.edits = 0
+  fvState.deliveryOn = false
+  return window.fvAgentsRerender('Rendering your edits')
 }
 
 window.fvApplyAiScenes = (job) => fvApplyAiScenes(job)

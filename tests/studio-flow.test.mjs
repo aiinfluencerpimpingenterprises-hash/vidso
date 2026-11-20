@@ -29,3 +29,15 @@ test('video plan counts scenes, animated scenes and a rough time', () => {
   assert.equal(makeTimeLabel(75), 'about 1 h 15 min')
   assert.equal(makeTimeLabel(12), 'about 12 min')
 })
+
+test('scene and caption at a time follow the timings', async () => {
+  const { sceneIndexAt, captionAt } = await import('../lib/studio-flow.js')
+  const scenes = [{ start: 0, end: 7 }, { start: 7, end: 14 }, { start: 14, end: 20 }]
+  assert.equal(sceneIndexAt(scenes, 0), 0)
+  assert.equal(sceneIndexAt(scenes, 7.5), 1)
+  assert.equal(sceneIndexAt(scenes, 99), 2)
+  const words = [[0, 0.4, 'Night'], [0.4, 0.8, 'owls'], [0.8, 1.2, 'think'], [1.2, 1.6, 'very'], [1.6, 2, 'differently'], [2, 2.4, 'and']]
+  assert.deepEqual(captionAt(words, 0.5), { line: ['Night', 'owls', 'think', 'very', 'differently'], hot: 1 })
+  assert.deepEqual(captionAt(words, 2.1).line, ['and'])
+  assert.deepEqual(captionAt([], 1), { line: [], hot: -1 })
+})
