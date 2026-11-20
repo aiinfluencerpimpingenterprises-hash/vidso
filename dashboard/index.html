@@ -9564,6 +9564,9 @@ async function fvApplyAiScenes(job) {
   const was = fvState.logOn
   fvState.logOn = true
   const say = (t) => { fvCrewSet('agent', 'working', t); fvSetMediaStatus(t, 'loading') }
+  // Live progress for the Agents progress view: which scenes are drawn and animated so far.
+  fvState.sceneProgress = { total: scenes.length, drawn: 0, animTotal: scenes.filter((x) => x.animate).length, animated: 0, images: [], style: style.name }
+  const tick = () => { try { fvAgentsChanged() } catch (_) {} }
   say(`Planning ${scenes.length} scenes in ${style.name}`)
   const plan = await planSceneVisuals({
     scenes: scenes.map((x) => ({ i: x.i, text: x.text })),
@@ -9586,10 +9589,14 @@ async function fvApplyAiScenes(job) {
         num_images: 1,
         ...(refs.length ? { image_urls: refs } : {}),
       })
-      return data?.urls?.[0] || ''
+      const url = data?.urls?.[0] || ''
+      if (url) fvState.sceneProgress.images[sc.i] = url
+      return url
     } catch (_) { return '' } finally {
       drawn++
+      fvState.sceneProgress.drawn = drawn
       say(`Drawing scene ${drawn} of ${scenes.length} (${style.name})`)
+      tick()
     }
   })
   // A scene whose image failed reuses the nearest good one, so the timeline has no holes.
@@ -9614,7 +9621,9 @@ async function fvApplyAiScenes(job) {
       if (data?.urls?.[0]) clips[sc.i] = data.urls[0]
     } catch (_) {} finally {
       animated++
+      fvState.sceneProgress.animated = animated
       say(`Animating scene ${animated} of ${toAnimate.length}`)
+      tick()
     }
   })
   // Runs of stills become one clip each (fal ffmpeg); animated scenes are their own clips.
@@ -10261,6 +10270,8 @@ window.fvAgentsState = () => {
     youtubeConnected: _ytStatus ? !!_ytStatus.connected : null,
     madeIn: fvState.madeIn || '',
     startedAt: fvState.runStartedAt || 0,
+    scenes: fvState.sceneProgress ? { ...fvState.sceneProgress, images: (fvState.sceneProgress.images || []).filter(Boolean).slice(-24) } : null,
+    captionLook: (() => { try { return localStorage.getItem('vidso_fv_caplook') || '' } catch (_) { return '' } })(),
   }
 }
 /** Start a full agent run from the Agents chat. Resolves with an error message, or '' when it started. */
@@ -10322,7 +10333,7 @@ const FV_CAPTION_LOOKS = {
   comic: { name: 'Comic pop', font: 'Bangers', size: 66, color: '#ffffff', hl: '#00e5ff', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
   mono: { name: 'Minimal mono', font: 'DM Mono', size: 42, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
 }
-window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color }))
+window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color, base: v.color, hl: v.hl, stroke: v.stroke ? (v.strokeColor || '#000') : '', strokeW: v.strokeW || 0, shadow: !!v.shadow }))
 function fvApplyCaptionLook(id) {
   const L = FV_CAPTION_LOOKS[id]
   if (!L) return false
@@ -10447,7 +10458,7 @@ window.fvAgentsRunScript = async ({ text, title } = {}) => {
     fvState.scriptBusy = false
   }
 }
-window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvAgentsChanged() }
+window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvState.sceneProgress = null; fvAgentsChanged() }
 
 function fvSetPills(active) {
   for (let i = 1; i <= 4; i++) {
