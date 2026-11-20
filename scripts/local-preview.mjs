@@ -119,6 +119,11 @@ async function localAgentRoute(req, res, sub) {
       })
       return json(200, out)
     }
+    if (sub === 'scenes' || sub === 'compose') {
+      const { runCompose, runScenePlanner } = await import('../lib/scene-agent.js')
+      if (sub === 'compose') return json(200, await runCompose({ segments: body.segments, falKey }))
+      return json(200, { scenes: await runScenePlanner({ scenes: body.scenes, topic: body.topic, styleName: body.style, character: body.character, falKey }) })
+    }
     if (sub === 'publish') {
       const { runPublishAgent } = await import('../lib/publish-agent.js')
       const out = await runPublishAgent({ title: body.title, topic: body.topic, script: String(body.script || '').slice(0, 6000), niche: body.niche, falKey })
@@ -132,8 +137,39 @@ async function localAgentRoute(req, res, sub) {
   }
 }
 
+// Local only: image and video generation straight through fal (no credits, no login),
+// so thumbnails and AI scenes work on localhost. The live app uses /api/generate/*.
+async function localGenerate(req, res, sub) {
+  const json = (code, body) => { res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(body)) }
+  const falKey = localFalKey()
+  if (!falKey) return json(501, { error: 'Set FAL_KEY or add it to .env.local to generate locally.' })
+  const body = await readBody(req)
+  if (sub === 'image-save') return json(200, { items: [{ storage_url: body.url, url: body.url }] })
+  try {
+    const video = body.kind === 'video' || body.mode === 'video'
+    let built
+    if (video) {
+      const { falVideoInput } = await import('../lib/fal-video.js')
+      built = falVideoInput(body.model, body.prompt, { aspect: body.aspect_ratio || body.aspect, duration: body.duration, resolution: String(body.resolution || '').toLowerCase(), generate_audio: body.generate_audio === true, image_urls: Array.isArray(body.image_urls) ? body.image_urls : (body.image_url ? [body.image_url] : []) })
+    } else {
+      const { falImageInput } = await import('../lib/fal-image.js')
+      built = falImageInput(body.model, body.prompt, { aspect: body.aspect_ratio || body.aspect, num_images: body.num_images, resolution: body.resolution || body.quality, image_urls: body.image_urls })
+    }
+    const r = await fetch('https://fal.run/' + built.endpoint, { method: 'POST', headers: { Authorization: 'Key ' + falKey, 'Content-Type': 'application/json' }, body: JSON.stringify(built.input) })
+    const data = await r.json().catch(() => ({}))
+    if (!r.ok) return json(502, { error: data?.detail?.[0]?.msg || data?.detail || data?.error || 'Generation failed' })
+    const urls = video ? [data.video?.url || data.video_url].filter(Boolean) : (data.images || []).map((x) => x.url).filter(Boolean)
+    if (!urls.length) return json(502, { error: 'Nothing came back' })
+    return json(200, { urls, kind: video ? 'video' : 'image', model: body.model })
+  } catch (e) {
+    return json(400, { error: e.message || 'Generation failed' })
+  }
+}
+
 const server = http.createServer((req, res) => {
-  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish)$/) || [])[1]
+  const genRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/generate\/(image|image-save)$/) || [])[1]
+  if (genRoute) return localGenerate(req, res, genRoute)
+  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish|scenes|compose)$/) || [])[1]
   if (agentRoute) return localAgentRoute(req, res, agentRoute)
   const rel = resolveRel(req.url)
   let file = safeFile(rel)

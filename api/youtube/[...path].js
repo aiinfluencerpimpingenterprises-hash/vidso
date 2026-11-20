@@ -44,6 +44,7 @@ import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
 import { runManagerAgent } from '../../lib/manager-agent.js'
 import { runPublishAgent } from '../../lib/publish-agent.js'
+import { runCompose, runScenePlanner } from '../../lib/scene-agent.js'
 
 export const config = { maxDuration: 300 }
 
@@ -328,6 +329,20 @@ function falKey() {
   return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
 }
 
+/** Scene agent: scene descriptions for AI visuals, and joining stills into clips (lib/scene-agent.js). */
+async function handleScenes(req, res, body, mode) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'AI scenes are not configured on this deployment.' })
+  try {
+    if (mode === 'compose') return send(res, 200, await runCompose({ segments: body?.segments, falKey: key }))
+    const scenes = (Array.isArray(body?.scenes) ? body.scenes : []).slice(0, 200)
+    const out = await runScenePlanner({ scenes, topic: String(body?.topic || '').slice(0, 300), styleName: String(body?.style || '').slice(0, 60), character: String(body?.character || '').slice(0, 300), falKey: key })
+    return send(res, 200, { scenes: out })
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Scene agent failed' })
+  }
+}
+
 /** Publish agent: YouTube description and tags for a finished video (see lib/publish-agent.js). */
 async function handlePublish(req, res, body) {
   const key = falKey()
@@ -456,5 +471,6 @@ export default async function handler(req, res) {
   if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
   if (sub === 'manager' && req.method === 'POST') return handleManager(req, res, await readJson(req))
   if (sub === 'publish' && req.method === 'POST') return handlePublish(req, res, await readJson(req))
+  if ((sub === 'scenes' || sub === 'compose') && req.method === 'POST') return handleScenes(req, res, await readJson(req), sub)
   return send(res, 404, { error: 'Not found' })
 }
