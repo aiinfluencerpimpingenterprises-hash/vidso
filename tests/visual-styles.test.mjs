@@ -9,7 +9,7 @@ import { routeManagerMessage as route } from '../lib/agents-chat.js'
 const words = (n) => Array.from({ length: n }, (_, i) => 'w' + i).join(' ')
 
 test('a short list of proven faceless styles, unique ids, every group used, a real default', () => {
-  assert.ok(VISUAL_STYLES.length >= 12 && VISUAL_STYLES.length <= 40)
+  assert.equal(VISUAL_STYLES.length, 67)
   assert.equal(new Set(VISUAL_STYLES.map((s) => s.id)).size, VISUAL_STYLES.length)
   for (const g of STYLE_GROUPS) assert.ok(VISUAL_STYLES.some((s) => s.group === g), g)
   assert.ok(visualStyleById(DEFAULT_STYLE))
@@ -20,13 +20,16 @@ test('profiles saved with stock footage move to the default AI style', () => {
   assert.equal(normalizeProfile({}).visualStyle, DEFAULT_STYLE)
   assert.equal(normalizeProfile({ visualStyle: 'cartoon' }).visualStyle, 'cartoon')
   // Styles no longer offered map to the closest kept one, including older retired ids.
-  assert.equal(normalizeProfile({ visualStyle: 'ghibli' }).visualStyle, 'cartoon')
-  assert.equal(normalizeProfile({ visualStyle: 'anime' }).visualStyle, 'cartoon')
+  assert.equal(normalizeProfile({ visualStyle: 'ghibli' }).visualStyle, 'ghibli')
+  assert.equal(normalizeProfile({ visualStyle: 'shonen' }).visualStyle, 'shonen')
+  assert.equal(normalizeProfile({ visualStyle: 'golden_stick' }).visualStyle, 'golden_stick')
+  assert.equal(normalizeProfile({ visualStyle: 'pop_art' }).visualStyle, 'comic')
   assert.equal(normalizeProfile({ visualStyle: 'vintage_sketch' }).visualStyle, 'oil')
   assert.equal(normalizeProfile({ visualStyle: 'whiteboard' }).visualStyle, 'flat_whiteboard')
   assert.equal(normalizeProfile({ visualStyle: 'painted' }).visualStyle, 'oil')
   assert.equal(normalizeProfile({ visualStyle: 'wet_plate' }).visualStyle, 'archive')
-  assert.equal(normalizeProfile({ visualStyle: 'biblical' }).visualStyle, 'oil')
+  assert.equal(normalizeProfile({ visualStyle: 'biblical' }).visualStyle, 'biblical')
+  assert.equal(normalizeProfile({ visualStyle: 'war_film' }).visualStyle, 'epic')
   assert.equal(normalizeProfile({ visualStyle: 'no-such-style' }).visualStyle, DEFAULT_STYLE)
 })
 
