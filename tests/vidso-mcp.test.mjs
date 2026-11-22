@@ -37,7 +37,7 @@ test('youtube_upload accepts a long-form render_job_id', () => {
   assert.ok(upload.inputSchema.required.includes('title'))
 })
 
-test('unknown Vidso MCP tool is -32601', async () => {
+test('unknown TubeOps MCP tool is -32601', async () => {
   await assert.rejects(
     () => runVidsoMcpTool('faceless_hack', {}, { token: 'tok', user: { id: 'u' } }),
     (err) => err.code === -32601,

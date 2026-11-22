@@ -82,7 +82,7 @@ test('login with dotted Gmail still gets the Pro grant', () => {
   ].sort())
 })
 
-test('Whop receipt email matches Vidso login when only the dots differ', () => {
+test('Whop receipt email matches TubeOps login when only the dots differ', () => {
   const row = {
     status: 'active',
     user: { email: 'subramaniam.vishwak@gmail.com' },

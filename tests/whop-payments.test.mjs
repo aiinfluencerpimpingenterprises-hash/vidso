@@ -177,7 +177,7 @@ test('a plan is only done once adaptive pricing, 3DS, and platform methods are a
   assert.equal(planHasOrchestration({ ...ready, three_ds_level: 'mandate_challenge' }, { WHOP_THREE_DS_LEVEL: 'off' }), true)
 })
 
-test('enabling orchestration patches every mapped Vidso plan once', async () => {
+test('enabling orchestration patches every mapped TubeOps plan once', async () => {
   _resetOrchestrationCacheForTests()
   const real = globalThis.fetch
   const patched = []

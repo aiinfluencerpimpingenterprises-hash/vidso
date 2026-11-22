@@ -47,7 +47,7 @@ test('YouTube titles come from the topic, not the filename slug', () => {
     '5 Biggest Tigers of All Time',
   )
   assert.equal(youtubeTitleFromFileName('vacation.mp4'), 'Vacation')
-  assert.equal(youtubeTitleFromFileName('Long-form-2026-09-01.mp4'), 'Vidso video')
+  assert.equal(youtubeTitleFromFileName('Long-form-2026-09-01.mp4'), 'TubeOps video')
 })
 
 test('files sort newest first and sizes format', () => {

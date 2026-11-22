@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <script>!function(w,d,s,u,n,a,b){if(w[n])return;a=w[n]={q:[],t:+new Date,s:[],o:u,track:function(){a.q.push([+new Date].concat([].slice.call(arguments)))},setScope:function(){a.s=[].slice.call(arguments).filter(function(x){return typeof x==="string"});a.q.push([+new Date,"setScope"].concat(a.s))},scope:function(){var c=[].slice.call(arguments);return{track:function(){a.q.push([+new Date].concat([].slice.call(arguments)).concat([{__scope:c}]))}}}};b=d.createElement(s);b.async=1;b.src=u+"/s.js";d.getElementsByTagName(s)[0].parentNode.insertBefore(b,d.getElementsByTagName(s)[0])}(window,document,"script","https://t.whop.tw","whop");whop.setScope("biz_1rGZhPBGkczqgF");whop.track("page");</script>
-<title>Vidso · Dashboard</title>
+<title>TubeOps · Dashboard</title>
 <script>
 (function(){
   var hash = location.hash || ''
@@ -128,7 +128,8 @@
   // blank #0B0B0C frame while /user/me runs.
   // New signups land in the app: the Manager runs the channel setup in the Agents chat.
   if (needOb) document.documentElement.classList.add('needs-setup')
-  else if (!paid) document.documentElement.classList.add('needs-paywall')
+  // The channel setup at /create is free; the paywall waits for "Create video".
+  else if (!paid && !/^\/create\/?$/.test(location.pathname)) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -299,6 +300,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 .app-banner-x{position:absolute;right:var(--chrome-pad-x);color:rgba(255,255,255,.5)}
 .app-banner-x:hover{background:rgba(255,255,255,.06);color:#fff}
 .app-topnav{background:var(--bg);border:0;box-shadow:none}
+/* Channel setup with a banner: the top nav floats over it, see-through until the page scrolls. */
+html:has(#panel-create.active .cc-banner) #app-chrome{position:absolute;top:0;left:0;right:0;z-index:60}
+html:has(#panel-create.active .cc-banner) .app-topnav{background:transparent!important}
+html.nav-scrolled:has(#panel-create.active .cc-banner) .app-topnav{background:rgba(11,11,12,.86)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+html:has(#panel-create.active .cc-banner) .content{padding-top:calc(var(--app-chrome-h,64px) + 28px)}
+@media (max-width:820px){html:has(#panel-create.active .cc-banner) .content{padding-top:calc(var(--app-chrome-h,56px) + 16px)}}
 .topnav-item{color:rgba(255,255,255,.92);font-size:.92rem;font-weight:500;padding:0 14px;border-radius:999px}
 .topnav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
 .topnav-item.active{color:#fff;font-weight:600}
@@ -1592,7 +1599,7 @@ body.editor-open .topbar{display:none!important}
 .vr-count-input{width:64px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--ink);font-size:.85rem;font-weight:700;padding:7px 8px;text-align:center}
 .cv-genre-btn.active{border-color:var(--a2);background:rgba(var(--glow),.12)}
 
-/* Clipper section — exact Vidso production match */
+/* Clipper section — exact TubeOps production match */
 #panel-clipper #clip-loader{max-width:960px;margin:0 auto}
 #panel-clipper .tool-card{
   background:#111113;border:1px solid rgba(255,255,255,.1);border-radius:24px;
@@ -1846,7 +1853,7 @@ body.editor-open .topbar{display:none!important}
 .preview-stage.framed video{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none;left:-9999px}
 .preview-stage.framed canvas{position:relative;display:inline-block;border-radius:4px;max-height:340px}
 
-/* Vidso polish + V2 depth */
+/* TubeOps polish + V2 depth */
 ::selection{background:rgba(var(--glow),.35);color:var(--ink)}
 html{color-scheme:dark}
 body{position:relative}
@@ -3776,6 +3783,8 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap"/>
+<link rel="stylesheet" href="/lib/paywall.css"/>
 </head>
 <body class="has-page-header">
 <!-- ONBOARDING -->
@@ -3784,7 +3793,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="ob-top">
       <div class="ob-brand-lockup">
         <img data-vidso-logo width="28" height="28" alt="" decoding="async">
-        <span class="brand">Vidso</span>
+        <span class="brand">TubeOps</span>
       </div>
       <div class="ob-progress" aria-label="Onboarding progress">
         <div class="ob-segs" id="ob-segs">
@@ -3805,7 +3814,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="ob-step is-active is-center" data-ob-step="1">
         <span class="ob-badge">Set up your first long-form video</span>
         <h2 class="ob-title" id="ob-title">Your first <span class="ob-grad">long-form video</span> starts here</h2>
-        <p class="ob-sub">Vidso turns a topic into a full faceless video — script, voiceover, real footage, B-roll, and captions — built to hold watch time, not chase shorts.</p>
+        <p class="ob-sub">TubeOps turns a topic into a full faceless video — script, voiceover, real footage, B-roll, and captions — built to hold watch time, not chase shorts.</p>
         <div class="ob-stats">
           <div class="ob-stat"><strong>10+ min</strong><span>Made for long-form watch time</span></div>
           <div class="ob-stat"><strong>One run</strong><span>Script, voice, footage, captions</span></div>
@@ -3880,7 +3889,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="ob-step" data-ob-step="4">
         <div>
           <h2 class="ob-title">What kind of long-form video?</h2>
-          <p class="ob-sub">This shapes the script Vidso writes — still one full YouTube video, not a short.</p>
+          <p class="ob-sub">This shapes the script TubeOps writes — still one full YouTube video, not a short.</p>
         </div>
         <div class="ob-cards ob-methods" id="ob-format-options" role="listbox" aria-label="Long-form video format">
           <button type="button" class="ob-card ob-method" role="option" aria-selected="false" data-value="explainer">
@@ -3995,18 +4004,19 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <!-- PAYWALL (shown after onboarding + tour for unpaid accounts) -->
 <div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
   <div class="paywall-shell" tabindex="-1">
-    <p class="paywall-kicker">Unlock Vidso</p>
-    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
-    <p class="paywall-sub">Pick a plan to unlock Long Form Generator.</p>
+    <p class="paywall-kicker">Unlock TubeOps</p>
+    <h2 class="paywall-title" id="paywall-title">Choose the plan for you.</h2>
+    <p class="paywall-sub">Pick a plan to start making videos with your agents.</p>
     <div class="paywall-status" id="paywall-status"></div>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
       <button type="button" class="paywall-tg" data-cycle="monthly" onclick="setPaywallCycle('monthly')">Monthly</button>
-      <button type="button" class="paywall-tg active" data-cycle="annual" onclick="setPaywallCycle('annual')">Annual <span style="opacity:.85;font-weight:700">Save</span></button>
+      <button type="button" class="paywall-tg active" data-cycle="annual" onclick="setPaywallCycle('annual')">Annual <span class="save">Save</span></button>
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
+    <p class="paywall-under"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>Cancel anytime. No hidden fees.</p>
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
-      <p class="paywall-note">Checkout starts from this Vidso account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
+      <p class="paywall-note">Checkout starts from this TubeOps account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
 </div>
@@ -4035,9 +4045,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </aside>
     <div class="auth-panel">
       <div class="auth-brand">
-        <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+        <img data-vidso-logo width="40" height="40" alt="TubeOps" decoding="async" style="object-fit:contain">
       </div>
-      <h2 id="auth-title">Welcome to Vidso</h2>
+      <h2 id="auth-title">Welcome to TubeOps</h2>
       <p class="auth-lead">Sign in to access your AI content tools.</p>
       <div class="modal-tabs">
         <button type="button" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
@@ -4201,9 +4211,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="nav-drawer" aria-expanded="false">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <a href="/home" class="topnav-logo" aria-label="Vidso home">
+    <a href="/home" class="topnav-logo" aria-label="TubeOps home">
       <img data-vidso-logo width="28" height="28" alt="" decoding="async">
-      <span class="brand">Vidso</span>
+      <span class="brand">TubeOps</span>
     </a>
   </div>
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
@@ -4272,7 +4282,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <aside class="nav-drawer" id="nav-drawer" aria-label="Main navigation">
   <div class="nav-drawer-head">
-    <span class="brand">Vidso</span>
+    <span class="brand">TubeOps</span>
     <button type="button" class="topnav-ico-btn" onclick="closeMobileNav()" aria-label="Close menu">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
@@ -4470,7 +4480,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           </div>
           <h1 class="img-empty-title">
             <span class="lead">Start creating with</span>
-            <span class="accent">Vidso thumbnails</span>
+            <span class="accent">TubeOps thumbnails</span>
           </h1>
           <p class="img-empty-sub">Describe a scene, a subject, a mood, or a style, and watch it come to life.</p>
         </div>
@@ -4607,7 +4617,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div class="tool-card clip-hero-card">
           <div class="page-header">
           <h2>Video Clipper</h2>
-          <p>Paste a link. Vidso finds the best moments and reframes them to 9:16.</p>
+          <p>Paste a link. TubeOps finds the best moments and reframes them to 9:16.</p>
           </div>
           <div class="clip-hero" id="clip-hero">
             <div class="clip-hero-row">
@@ -4916,7 +4926,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
         <div class="ve-mid">
           <nav class="ve-rail" id="ed-rail" aria-label="Editor tools">
-            <button class="ve-logo" type="button" title="Vidso" onclick="veSetTool('media')">
+            <button class="ve-logo" type="button" title="TubeOps" onclick="veSetTool('media')">
               <svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
             <button class="ve-rail-btn on" type="button" data-ve="media" onclick="veSetTool('media')">
@@ -6007,14 +6017,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="panel content-glow" id="panel-youtube">
       <div class="page-header">
         <h2>My YouTube Channel</h2>
-        <p>Connect a channel to upload finished videos from Vidso.</p>
+        <p>Connect a channel to upload finished videos from TubeOps.</p>
       </div>
       <div class="tool-card" id="yt-ch-card">
         <div id="yt-ch-gate" hidden>
           <div class="yt-ch-hero">
             <img class="yt-ch-logo" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/youtubelogo.png" alt="" width="56" height="56">
             <h3 class="ui-card-title">Sign in first</h3>
-            <p class="ui-card-desc">Sign in to Vidso, then connect the Google account that owns your channel.</p>
+            <p class="ui-card-desc">Sign in to TubeOps, then connect the Google account that owns your channel.</p>
             <a class="btn btn-primary" href="/login">Sign in</a>
           </div>
         </div>
@@ -6133,7 +6143,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
             <div class="fs-hero fs-hero-center">
               <h1 class="fs-hero-title">
                 <span class="lead">Start creating with</span>
-                <span class="accent">Vidso faceless</span>
+                <span class="accent">TubeOps faceless</span>
               </h1>
               <p class="fs-hero-sub">Describe a topic, a style, or a story, and watch it come to life.</p>
             </div>
@@ -6557,7 +6567,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="tools-page">
         <div class="page-header">
           <h2>Tools</h2>
-          <p>Every Vidso tool in one place.</p>
+          <p>Every TubeOps tool in one place.</p>
         </div>
         <div id="tools-gallery"></div>
       </div>
@@ -6791,18 +6801,32 @@ function uiPreviewMode() {
   } catch (_) { return false }
 }
 
+// No paywall on a local preview (localhost / 127.0.0.1): you can sign in with any
+// account and test the app. Add ?paywall=1 to see the paywall locally.
+function localPreviewHost() {
+  try { return /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost)$/.test(location.hostname) } catch (_) { return false }
+}
+
 function paywallDevBypass() {
+  if (localPreviewHost()) {
+    try {
+      if (/(?:\?|&)paywall=1(?:&|$)/.test(location.search || '')) sessionStorage.setItem('vidso_local_paywall', '1')
+      return sessionStorage.getItem('vidso_local_paywall') !== '1'
+    } catch (_) { return true }
+  }
   return uiPreviewMode()
 }
 
 function enterUiPreview() {
+  // ?unpaid=1 previews the app as an account with no plan (with ?paywall=1 on localhost).
+  const unpaid = /(?:\?|&)unpaid=1(?:&|$)/.test(location.search || '')
   currentUser = {
     id: 'local-preview',
     email: 'preview@vidso.pro',
     name: 'Preview',
     credits: 0,
-    plan: 'studio',
-    plan_status: 'active'
+    plan: unpaid ? '' : 'studio',
+    plan_status: unpaid ? 'inactive' : 'active'
   }
   document.documentElement.classList.remove('needs-gate', 'needs-auth', 'needs-paywall', 'needs-onboarding')
   hideModal()
@@ -6836,6 +6860,8 @@ function afterAuthReady(opts = {}) {
   else if (tourHasSeen()) _tourDoneThisSession = true
   hideModal()
   populateUser()
+  // A video the team is making on the server shows up again after a reload.
+  setTimeout(() => { try { window.fvResumeServerRun?.() } catch (_) {} }, 300)
   const pendingOb = obForcePreview() || obShouldAutoOpen()
   if (pendingOb) {
     document.documentElement.classList.add('needs-gate', 'needs-onboarding')
@@ -7568,6 +7594,7 @@ function obMarkSeen() {
 function obFinishStep() {
   _obDoneThisSession = true
   obMarkSeen()
+  obClearNeedFlag() // setup is done: a reload must not start it again
 }
 function obShouldAutoOpen() {
   // The signup survey is replaced by the Manager's channel setup (lib/onboarding.js).
@@ -7881,7 +7908,8 @@ window.finishOnboarding = (dest) => {
 /** First run: open the Agents chat and let the Manager set up the channel. */
 function startManagerSetup() {
   try { switchPanel('agents', document.getElementById('nav-agents'), { allowLocked: true }) } catch (_) {}
-  try { window.agentsChat?.startSetup({ force: true }) } catch (e) { console.warn('[setup] could not start', e) }
+  // Not forced: an account that already finished (or skipped) setup goes straight to the app.
+  try { if (window.agentsChat?.startSetup() === false) { obFinishStep(); switchPanel('agents', document.getElementById('nav-agents'), { allowLocked: true }) } } catch (e) { console.warn('[setup] could not start', e) }
 }
 /** The Manager's setup finished (or was skipped): close the signup step, then the usual paywall. */
 window.fvSetupDone = (answers = {}) => {
@@ -8602,7 +8630,7 @@ window.closeUiTour = () => {
   tourHighlightEl()?.classList.remove('is-on')
   try { closeMobileNav() } catch (_) {}
   try { tourRestoreFv() } catch (_) {}
-  if (funnelLocked() && !introPending()) {
+  if (funnelLocked() && !introPending() && !setupScreenOpen()) {
     document.documentElement.classList.add('needs-paywall')
     document.documentElement.classList.remove('needs-gate')
   }
@@ -8858,6 +8886,13 @@ function hasActivePlan() {
   return !!(currentUser && resolveAccess(currentUser).active)
 }
 
+// The channel setup (/create) is free to use; the paywall waits for "Create video".
+function setupScreenOpen() {
+  if (document.getElementById('panel-create')?.classList.contains('active')) return true
+  // While booting no panel is active yet: go by the URL.
+  return !document.querySelector('.panel.active') && /^\/create\/?$/.test(location.pathname)
+}
+
 function paywallOn() {
   return PAYWALL_ENABLED && !paywallDevBypass()
 }
@@ -8953,7 +8988,10 @@ async function watchForPurchase(opts = {}) {
       _tourDoneThisSession = true
       document.documentElement.classList.remove('needs-gate', 'needs-paywall')
       setPaywallStatus(`Plan active — ${api.billing.unlockCopy(currentUser)} unlocked.`, 'ok')
-      setTimeout(() => closePaywall(), 700)
+      setTimeout(() => {
+        closePaywall()
+        try { window.dispatchEvent(new CustomEvent('vidso:plan-active')) } catch (_) {}
+      }, 700)
       return true
     }
     document.documentElement.classList.add('needs-paywall')
@@ -9037,7 +9075,7 @@ window.openPaywall = (opts = {}) => {
 window.closePaywall = () => {
   const modal = document.getElementById('paywall-modal')
   if (!modal) return
-  if (paywallOn() && currentUser && !hasActivePlan() && !introPending()) {
+  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !setupScreenOpen()) {
     modal.classList.remove('hidden')
     document.body.classList.add('paywalled')
     document.documentElement.classList.add('needs-paywall')
@@ -9061,6 +9099,8 @@ window.maybeShowPaywall = () => {
   const onboarding = document.getElementById('onboarding-modal')
   if (onboarding && !onboarding.classList.contains('hidden')) return
   if (_tourActive) return
+  // The channel setup is free: no paywall until they press "Create video".
+  if (setupScreenOpen() && !/(?:\?|&)paywall=1(?:&|$)/.test(location.search || '')) return
   // First signup: wait for onboarding + tour. Returning unpaid users: paywall now.
   if (funnelLocked()) {
     if (introPending()) return
@@ -9153,7 +9193,7 @@ function populateUser() {
   try { fvRenderDurationChips() } catch (_) {}
 }
 
-// ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
+// ── PANELS + clean URL routes (TubeOps-style) ───────────────────────────────
 const DEFAULT_PANEL = 'create'
 const DEFAULT_PATH = '/create'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
@@ -9218,7 +9258,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   // Tour itself may navigate panels — allow while tour/onboarding is open.
   const tourOpen = _tourActive || (document.getElementById('ui-tour') && !document.getElementById('ui-tour').classList.contains('hidden'))
   const obOpen = document.getElementById('onboarding-modal') && !document.getElementById('onboarding-modal').classList.contains('hidden')
-  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !tourOpen && !obOpen && !opts.allowLocked) {
+  if (paywallOn() && currentUser && !hasActivePlan() && !introPending() && !tourOpen && !obOpen && !opts.allowLocked && id !== 'create') {
     openPaywall({ force: true })
     return
   }
@@ -10403,6 +10443,34 @@ function fvAgentsChanged() {
   }, 40)
 }
 window.fvAgentsState = () => {
+  const local = fvLocalAgentsState()
+  const r = fvState.serverRun?.data
+  if (!r) return local
+  // A server run replaces the in-tab crew, log and result with the server's record.
+  const crew = { ...(r.crew || {}) }
+  if (!crew.publish) crew.publish = { state: 'idle', text: '' }
+  return {
+    ...local,
+    crew,
+    log: Array.isArray(r.log) ? r.log : [],
+    running: r.status === 'running',
+    serverSide: true,
+    runStatus: r.status,
+    runError: r.error || '',
+    busyScript: r.status === 'running' && ['script', 'expand', 'hook'].includes(r.stage),
+    topic: r.topic || local.topic,
+    script: r.script || null,
+    thumb: null,
+    media: r.media ? { duration: r.media.duration, clips: 0, voiceover: r.media.voiceover } : null,
+    renderUrl: r.videoUrl || '',
+    stage: r.status === 'done' ? 'done' : r.stage,
+    startedAt: r.startedAt || 0,
+    madeIn: r.finishedAt && r.startedAt ? fvClock((r.finishedAt - r.startedAt) / 1000) : '',
+    scenes: r.scenes || null,
+    publish: null,
+  }
+}
+function fvLocalAgentsState() {
   const crew = {}
   document.querySelectorAll('#fv-crew [data-agent]').forEach((el) => {
     crew[el.dataset.agent] = { state: el.dataset.state || 'idle', text: el.querySelector('em')?.textContent || '' }
@@ -10447,18 +10515,111 @@ window.fvAgentsState = () => {
     captionLook: (() => { try { return localStorage.getItem('vidso_fv_caplook') || '' } catch (_) { return '' } })(),
   }
 }
+// ── Server-side runs: the video keeps being made after this tab closes ───────
+// lib/video-run.js does the work on the server (/api/youtube/runs/…); this tab
+// only starts it and watches. The in-tab pipeline below is the fallback when the
+// deployment cannot run videos itself.
+const FV_SERVER_RUN_KEY = 'vidso_server_run'
+let fvServerPoll = 0
+function fvServerRunSettings(topic, { channel } = {}) {
+  const picked = fvPickedDuration() || {}
+  const caption = fvCapStyle()
+  const music = FV_MUSIC.find((m) => m.id === (fvState.preview?.musicId || 'none'))
+  return {
+    topic,
+    channel: channel || '',
+    durationId: picked.id || fvState.durationId,
+    durationSeconds: picked.seconds || secondsFromDurationId(fvState.durationId),
+    aspect: fvState.aspect || '16:9',
+    angle: fvState.angle || 'auto',
+    voiceId: fvState.voiceId || '',
+    voiceSettings: voiceSettingsPayload(fvState.voiceSettings || readVoiceControls('fv')),
+    visual: { ...fvVisual() },
+    caption: {
+      font: caption.font, size: caption.size, color: caption.color, highlight: caption.highlight,
+      letterSpacing: caption.letterSpacing, weight: caption.weight, shadow: !!caption.shadow,
+      textShadow: caption.shadow ? FACELESS_CAPTION_SHADOW_CSS : 'none',
+      stroke: !!caption.stroke, strokeColor: caption.strokeColor, strokeWidth: caption.stroke ? caption.strokeWidth : 0,
+      outline: caption.stroke ? caption.strokeColor : 'none', outlineWidth: caption.stroke ? caption.strokeWidth : 0,
+    },
+    music: music?.url ? { url: music.url, volume: fvState.preview?.musicVol ?? 0.25 } : null,
+  }
+}
+function fvServerRunActive() { return fvState.serverRun?.data?.status === 'running' }
+function fvAttachServerRun(run) {
+  if (!run?.id) return
+  fvState.serverRun = { id: run.id, data: run }
+  try { localStorage.setItem(FV_SERVER_RUN_KEY, run.id) } catch (_) {}
+  fvAgentsChanged()
+  if (fvServerPoll) clearInterval(fvServerPoll)
+  if (run.status !== 'running') return
+  let busy = false
+  fvServerPoll = setInterval(async () => {
+    if (busy || document.hidden) return
+    busy = true
+    try {
+      const out = await api.runs.get(run.id)
+      if (!out?.run || fvState.serverRun?.id !== run.id) return
+      fvState.serverRun.data = out.run
+      if (out.run.status !== 'running') {
+        clearInterval(fvServerPoll); fvServerPoll = 0
+        if (out.run.videoUrl) fvRememberVideo({ url: out.run.videoUrl, title: out.run.script?.title || out.run.topic || '' })
+        try { loadFiles() } catch (_) {}
+      }
+      fvAgentsChanged()
+    } catch (_) {} finally { busy = false }
+  }, 3000)
+}
+/** After a reload (or on another device): pick up the newest run, still going or just finished. */
+window.fvResumeServerRun = async () => {
+  if (!getToken() || !api.runs.available()) return
+  try {
+    const out = await api.runs.latest()
+    const run = out?.run
+    if (!run) return
+    const fresh = run.status === 'running' || Date.now() - (run.finishedAt || run.updated || 0) < 6 * 3600 * 1000
+    if (fresh) fvAttachServerRun(run)
+  } catch (_) {}
+}
+window.fvCancelServerRun = async () => {
+  const id = fvState.serverRun?.id
+  if (!id) return
+  try { const out = await api.runs.cancel(id); if (out?.run) fvState.serverRun.data = out.run } catch (_) {}
+  fvAgentsChanged()
+}
+/** Start the video on the server. '' when started, a message to show, or null to fall back to this tab. */
+async function fvStartServerRun(topic, channel) {
+  if (!api.runs.available()) return null
+  try { await fvEnsureVoice() } catch (_) {}
+  try {
+    const out = await api.runs.start(fvServerRunSettings(topic, { channel }))
+    if (!out?.run) return null
+    fvState.runStartedAt = out.run.startedAt || Date.now()
+    fvAttachServerRun(out.run)
+    return ''
+  } catch (e) {
+    if (e.status === 409) { if (e.body?.run) fvAttachServerRun(e.body.run); return e.message || 'The team is still on the last video.' }
+    if (e.status === 402 || e.needsPlan) return e.message || 'An active plan is required.'
+    return null // runs not set up here (501/404) or unreachable: make it in this tab instead
+  }
+}
+
 /** Start a full agent run from the Agents chat. Resolves with an error message, or '' when it started. */
-window.fvAgentsRun = async ({ topic, durationId, aspect } = {}) => {
+window.fvAgentsRun = async ({ topic, durationId, aspect, channel } = {}) => {
   const t = String(topic || '').trim()
   if (!t) return 'Give the agents a topic.'
   if (!getToken()) return 'SIGN_IN'
-  if (fvState.scriptBusy || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
+  if (fvState.scriptBusy || fvServerRunActive() || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
   try { fvInit() } catch (_) {}
+  if (aspect) { try { window.fvSetAspect(aspect) } catch (_) {} }
+  if (durationId) { try { window.fvSetDuration(durationId) } catch (_) {} }
+  // Made on the server when this deployment can: the video keeps going if the tab closes.
+  const remote = await fvStartServerRun(t, channel)
+  if (remote !== null) return remote
+  fvState.serverRun = null
   if (fvState.script) { try { window.fvClearScript({}) } catch (_) {} }
   const el = document.getElementById('fv-topic')
   if (el) { el.value = t; el.dispatchEvent(new Event('input')) }
-  if (aspect) { try { window.fvSetAspect(aspect) } catch (_) {} }
-  if (durationId) { try { window.fvSetDuration(durationId) } catch (_) {} }
   const mode = document.getElementById('fv-agent-mode')
   if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')) }
   const st = document.getElementById('fv-status')
@@ -10853,7 +11014,7 @@ function fvSyncBrollSourceUi() {
   const hint = document.getElementById('fv-broll-source-hint')
   if (hint) {
     hint.textContent = src === 'youtube'
-      ? 'After voiceover, Vidso searches YouTube for each section (for example each plane) and lays those clips on the timeline.'
+      ? 'After voiceover, TubeOps searches YouTube for each section (for example each plane) and lays those clips on the timeline.'
       : 'Cinematic footage scored to each beat of the script. Pro can pull real YouTube scenes for every section.'
   }
   const q = document.getElementById('fv-broll-query')
@@ -11627,7 +11788,7 @@ async function fvBuildMediaViaTtsFallback() {
     voice_id: voiceId,
     warning: urls.length > 1
       ? 'Voiceover is ' + urls.length + ' parts. Preview plays them in order.'
-      : 'Built on Vidso after the media server failed.',
+      : 'Built on TubeOps after the media server failed.',
   }
 }
 
@@ -12932,7 +13093,7 @@ window.fvStartExport = async (opts = {}) => {
 
 /** True when a request never reached the server (offline, dropped connection), not a real job error. */
 function fvIsNetworkBlip(e) {
-  return /reach Vidso|timed out|Failed to fetch|NetworkError|Load failed/i.test(String(e?.message || e || ''))
+  return /reach TubeOps|timed out|Failed to fetch|NetworkError|Load failed/i.test(String(e?.message || e || ''))
 }
 
 /**
@@ -13065,7 +13226,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
       return
     }
     fvSyncYoutubeUploadBtn(st)
-    const title = (fvState.script?.title || 'Vidso video').slice(0, 100)
+    const title = (fvState.script?.title || 'TubeOps video').slice(0, 100)
     const description = fvPublishDescription().slice(0, 4900)
     const tags = Array.isArray(fvState.publish?.tags) && fvState.publish.tags.length ? fvState.publish.tags : ['vidso']
     const privacy = st.privacy || 'public'
@@ -13087,7 +13248,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
       })
     } catch (e) {
       if (!fvState.renderJobId) throw e
-      fvSetYoutubeStatus('Uploading to YouTube from Vidso…', 'loading')
+      fvSetYoutubeStatus('Uploading to YouTube from TubeOps…', 'loading')
       result = await uploadViaServer({
         renderJobId: fvState.renderJobId,
         title,
@@ -13995,7 +14156,7 @@ window.filesUploadToYoutube = async () => {
         onProgress: (pct) => filesSetYtStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
     } catch (e) {
-      filesSetYtStatus('Uploading to YouTube from Vidso…', 'loading')
+      filesSetYtStatus('Uploading to YouTube from TubeOps…', 'loading')
       result = await uploadViaServer({
         videoUrl: f.url,
         title,
@@ -19191,5 +19352,16 @@ window.addEventListener('unhandledrejection', (ev) => {
 })
 </script>
 <script src="/topo-bg.js"></script>
+<script>
+// Floating nav over the channel banner: keep its height in a CSS variable and go solid once scrolled.
+(function () {
+  var chrome = document.getElementById('app-chrome'), content = document.querySelector('.content')
+  if (!chrome || !content) return
+  function measure() { document.documentElement.style.setProperty('--app-chrome-h', chrome.offsetHeight + 'px') }
+  measure()
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(chrome)
+  content.addEventListener('scroll', function () { document.documentElement.classList.toggle('nav-scrolled', content.scrollTop > 8) }, { passive: true })
+})()
+</script>
 </body>
 </html>

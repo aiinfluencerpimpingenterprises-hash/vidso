@@ -1,4 +1,4 @@
-/* Shared Vidso brand assets (Cloudflare R2). Loaded as a classic script: sets globals. */
+/* Shared TubeOps brand assets (Cloudflare R2). Loaded as a classic script: sets globals. */
 (function (global) {
   var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
 
@@ -17,14 +17,14 @@
       {
         key: 'instagram',
         href: global.VIDSO_INSTAGRAM_URL,
-        label: 'Vidso on Instagram',
+        label: 'TubeOps on Instagram',
         external: true,
         icon: SOCIAL_SVG.instagram
       },
       {
         key: 'email',
         href: 'mailto:' + global.VIDSO_SUPPORT_EMAIL,
-        label: 'Email Vidso',
+        label: 'Email TubeOps',
         external: false,
         icon: SOCIAL_SVG.mail
       }
@@ -102,7 +102,7 @@
     for (var i = 0; i < imgs.length; i++) {
       var img = imgs[i];
       img.src = global.VIDSO_LOGO_URL;
-      if (!img.getAttribute('alt')) img.setAttribute('alt', 'Vidso');
+      if (!img.getAttribute('alt')) img.setAttribute('alt', 'TubeOps');
     }
   };
 

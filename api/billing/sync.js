@@ -163,10 +163,10 @@ function syncMessage(reason, user) {
   if (reason === 'missing_permission') return 'The Whop API key is missing the member:email:read permission, so payments cannot be matched to an email.'
   if (reason === 'whop_error') return 'Whop could not be reached to confirm the payment.'
   if (reason === 'need_checkout') {
-    return 'Start checkout from this Vidso account first, then enter the email on your Whop receipt.'
+    return 'Start checkout from this TubeOps account first, then enter the email on your Whop receipt.'
   }
   if (reason === 'membership_taken') {
-    return 'That payment is already attached to another Vidso account. Sign in there, or contact support.'
+    return 'That payment is already attached to another TubeOps account. Sign in there, or contact support.'
   }
   return `No active Whop membership is attached to ${email} yet.`
 }

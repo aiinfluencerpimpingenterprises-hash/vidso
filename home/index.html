@@ -15,30 +15,30 @@
   }
 })()
 </script>
-<title>Vidso · AI Long-Form Videos for YouTube</title>
+<title>TubeOps · AI Long-Form Videos for YouTube</title>
 <meta name="google-site-verification" content="yHxnlqDRCP6NXQ1Cu8QglsQjyz7NxsOu2anCc1Tt1NI">
 <meta name="google-site-verification" content="ewq8xStt8tEBZ80eVf-Fmucu902PQeY3rhV-M87thKg">
-<meta name="description" content="Vidso generates AI long-form videos for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
+<meta name="description" content="TubeOps generates AI long-form videos for YouTube: script to video with voiceover, B-roll, and captions. Build a faceless YouTube channel and grow watch hours toward monetization.">
 <link rel="canonical" href="https://www.vidso.pro/">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Vidso">
+<meta property="og:site_name" content="TubeOps">
 <meta property="og:url" content="https://www.vidso.pro/">
-<meta property="og:title" content="Vidso · AI Long-Form Videos for YouTube">
+<meta property="og:title" content="TubeOps · AI Long-Form Videos for YouTube">
 <meta property="og:description" content="Build a faceless YouTube channel with an automated production workflow: script to final cut using real footage, B-roll, voiceover, and captions.">
 <meta property="og:image" content="https://www.vidso.pro/og-image-v2.jpg">
 <meta property="og:image:secure_url" content="https://www.vidso.pro/og-image-v2.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Vidso — AI long-form videos for YouTube">
+<meta property="og:image:alt" content="TubeOps — AI long-form videos for YouTube">
 <meta name="twitter:image" content="https://www.vidso.pro/og-image-v2.jpg">
-<meta name="twitter:image:alt" content="Vidso — AI long-form videos for YouTube">
+<meta name="twitter:image:alt" content="TubeOps — AI long-form videos for YouTube">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vidso · AI Long-Form Videos for YouTube">
+<meta name="twitter:title" content="TubeOps · AI Long-Form Videos for YouTube">
 <meta name="twitter:description" content="Script to videos for long-form YouTube: AI scripts, voiceover, B-roll, and burned-in captions. Faceless channel automation built for watch time and monetization.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -490,57 +490,90 @@
     .hero-pin .blob,.hero-pin .blob .eyes{animation:none}
     .lf-tasks li.is-on::before{animation:none}
   }
-  /* bring your own agent */
-  .lf-agents{position:relative;z-index:2;padding:80px 0 40px}
-  .ag-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:44px}
-  .ag-card{min-width:0;display:flex;flex-direction:column;gap:14px;padding:16px;border-radius:22px;background:#121214;border:1px solid rgba(255,255,255,.08);text-align:left}
-  .ag-card header{display:flex;align-items:center;gap:10px}
-  .ag-card header b{white-space:nowrap;font-size:16px;font-weight:600;letter-spacing:-.02em;color:#f6f3ee}
-  .ag-card header em{margin-left:auto;font-style:normal;font:600 10.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(245,245,244,.45);padding:5px 7px;border-radius:6px;border:1px solid rgba(255,255,255,.08)}
-  .ag-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
-  .ag-ico svg{width:17px;height:17px}
-  .ag-claude{background:rgba(217,119,87,.16);color:#e08a6a}
+  /* bring your own agent: split header like "Work with agents like a team", then a bento of agent cards */
+  .lf-agents{position:relative;z-index:2;padding:40px 0 96px}
+  .ag-wrap{max-width:1220px;margin:0 auto;padding:0 32px}
+  .ag-top{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .ag-top h2{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:500;font-size:clamp(40px,4.6vw,64px);line-height:1.04;letter-spacing:-.035em;color:#f6f3ee;text-align:left}
+  .ag-copy p{margin:0 0 24px;font-size:clamp(16px,1.35vw,19px);line-height:1.6;color:rgba(245,245,244,.86);text-align:left}
+  .ag-connect{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+  .ag-connect .vcta{margin:0;padding:12px 20px}
+  .ag-url{display:flex;align-items:center;gap:10px;padding:5px 5px 5px 7px;border-radius:999px;background:#121214;border:1px solid rgba(255,255,255,.1);max-width:100%;min-width:0}
+  .ag-url-k{font:700 10.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:#b9a8ff;background:rgba(109,74,255,.18);padding:6px 8px;border-radius:999px;flex-shrink:0}
+  .ag-url code{font:500 13.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f4f1ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .ag-url button{flex-shrink:0;border:0;cursor:pointer;font:600 12.5px/1 inherit;font-family:inherit;color:#161616;background:#fff;border-radius:999px;padding:9px 14px}
+  .ag-url button[data-copied="1"]{background:#8fd8a8}
+  .ag-row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-top:64px}
+  .ag-card{grid-column:span 5;min-width:0;display:flex;flex-direction:column;padding:8px;border-radius:24px;background:#0e0e10;border:1px solid rgba(255,255,255,.08);text-align:left;transition:border-color .25s,transform .25s}
+  .ag-card.is-wide{grid-column:span 7}
+  .ag-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
+  .ag-media{position:relative;height:330px;border-radius:17px;overflow:hidden;background:#0a0a0b;border:1px solid rgba(255,255,255,.05)}
+  .ag-media > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .ag-media.has-shade::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 55%,rgba(0,0,0,.75))}
+  .ag-foot{display:flex;align-items:flex-start;gap:12px;padding:16px 10px 10px}
+  .ag-foot div{min-width:0;flex:1}
+  .ag-foot b{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;letter-spacing:-.02em;color:#f6f3ee}
+  .ag-foot b em{font-style:normal;font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(245,245,244,.5);padding:4px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.1)}
+  .ag-foot p{margin:4px 0 0;font-size:14px;line-height:1.5;color:rgba(245,245,244,.6)}
+  .ag-ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+  .ag-ico svg{width:18px;height:18px}
+  .ag-claude{background:rgba(217,119,87,.16);color:#d97757}
   .ag-term{background:rgba(255,255,255,.08);color:#f4f1ea}
   .ag-cursor{background:#f4f1ea;color:#161616}
   .ag-any{background:rgba(109,74,255,.18);color:#b9a8ff}
-  .ag-media{position:relative;aspect-ratio:4/4.1;border-radius:14px;overflow:hidden;background:#0a0a0b;border:1px solid rgba(255,255,255,.06)}
-  .ag-media > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .ag-media::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.05) 40%,rgba(0,0,0,.7))}
-  .ag-toast{position:absolute;left:10px;right:10px;bottom:10px;z-index:2;display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;background:rgba(14,14,16,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);font-size:12.5px;color:rgba(245,245,244,.75);line-height:1.3}
-  .ag-toast b{display:block;font-size:11.5px;font-weight:650;color:#f6f3ee}
+  .ag-toast{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(14,14,16,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(245,245,244,.75);line-height:1.35}
+  .ag-toast b{display:block;font-size:12px;font-weight:650;color:#f6f3ee}
   .ag-spin{flex-shrink:0;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.18);border-top-color:#fff;animation:lfSpin .9s linear infinite}
-  .ag-bubble{position:absolute;right:10px;top:10px;z-index:2;max-width:78%;padding:8px 11px;border-radius:12px 12px 4px 12px;background:rgba(255,255,255,.92);color:#161616;font-size:12.5px;font-weight:550;line-height:1.35}
-  .ag-terminal{padding:14px 14px 70px;font:500 11px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(245,245,244,.82)}
-  .ag-terminal::after{display:none}
-  .ag-terminal p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ag-p{color:#e08a6a}
+  /* Claude: a short chat over the scene being rewritten */
+  .ag-chat{position:absolute;left:12px;right:12px;top:12px;z-index:2;display:flex;flex-direction:column;gap:8px}
+  .ag-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4}
+  .ag-msg.me{align-self:flex-end;border-bottom-right-radius:4px;background:rgba(255,255,255,.94);color:#161616;font-weight:550}
+  .ag-msg.ai{align-self:flex-start;display:flex;gap:8px;align-items:flex-start;border-bottom-left-radius:4px;background:rgba(14,14,16,.84);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);color:rgba(245,245,244,.88);opacity:0;animation:agIn 7s ease infinite 1.2s}
+  .ag-msg.ai svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:#d97757}
+  /* Claude Code: a terminal that prints the run line by line */
+  .ag-terminal{display:flex;flex-direction:column;background:#0b0b0d}
+  .ag-bar3{display:flex;align-items:center;gap:6px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);font:500 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(245,245,244,.4)}
+  .ag-bar3 i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.14)}
+  .ag-bar3 span{margin-left:8px}
+  .ag-lines{padding:16px 18px 70px;font:500 12.5px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(245,245,244,.82)}
+  .ag-lines p{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;animation:agIn 9s ease infinite;animation-delay:calc(var(--i) * .6s)}
+  .ag-lines p:first-child{opacity:1;animation:none}
+  .ag-lines .k{display:inline-block;width:9.5ch;color:rgba(245,245,244,.95)}
+  .ag-p{color:#d97757}
   .ag-dim{color:rgba(245,245,244,.4)}
   .ag-ok{color:#8fd8a8}
-  .ag-bar{display:inline-block;vertical-align:middle;width:56px;height:5px;margin-left:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
-  .ag-bar span{display:block;height:100%;width:30%;background:#fff;animation:agBar 3.2s ease-in-out infinite}
-  @keyframes agBar{0%{width:12%}100%{width:96%}}
-  .ag-strip{position:absolute;left:10px;right:10px;top:10px;z-index:2;display:flex;gap:4px;padding:5px;border-radius:10px;background:rgba(14,14,16,.82)}
-  .ag-strip span{flex:1;height:26px;border-radius:6px;background-size:cover;background-position:center;opacity:.65}
+  .ag-prog{display:inline-block;vertical-align:middle;width:120px;height:6px;margin-left:4px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  .ag-prog span{display:block;height:100%;width:30%;border-radius:3px;background:#fff;animation:agBar 4s ease-in-out infinite}
+  @keyframes agBar{0%{width:8%}100%{width:96%}}
+  @keyframes agIn{0%{opacity:0;transform:translateY(4px)}6%{opacity:1;transform:none}90%{opacity:1}97%,100%{opacity:0}}
+  /* Cursor: pick a new shot for scene 4 */
+  .ag-strip{position:absolute;left:12px;right:12px;top:12px;z-index:2;display:flex;gap:5px;padding:6px;border-radius:12px;background:rgba(14,14,16,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .ag-strip span{flex:1;height:44px;border-radius:7px;background-size:cover;background-position:center;opacity:.55}
   .ag-strip span.is-sel{opacity:1;outline:2px solid #fff;outline-offset:-2px;animation:agSel 2.4s ease-in-out infinite}
   @keyframes agSel{50%{outline-color:rgba(255,255,255,.35)}}
-  .ag-yt{position:absolute;left:10px;right:10px;top:10px;z-index:2;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(14,14,16,.82);font-size:12px;color:#f4f1ea}
-  .ag-yt svg{width:16px;height:16px;color:#ff0033;flex-shrink:0}
-  .ag-yt span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:550}
-  .ag-yt em{font-style:normal;font-variant-numeric:tabular-nums;color:rgba(245,245,244,.6)}
-  .ag-connect{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:32px}
-  .ag-connect .vcta{margin:0}
-  .ag-url{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 8px;border-radius:999px;background:#121214;border:1px solid rgba(255,255,255,.08);max-width:100%}
-  .ag-url-k{font:700 10.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:#b9a8ff;background:rgba(109,74,255,.18);padding:6px 8px;border-radius:999px}
-  .ag-url code{font:500 13.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f4f1ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-  .ag-url button{border:0;cursor:pointer;font:600 12.5px/1 inherit;font-family:inherit;color:#161616;background:#fff;border-radius:999px;padding:9px 14px}
-  .ag-url button[data-copied="1"]{background:#8fd8a8}
-  @media(max-width:1100px){.ag-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:560px){
-    .lf-agents{padding:56px 0 24px}
-    .ag-row{grid-template-columns:minmax(0,1fr)}
-    .ag-media{aspect-ratio:16/11}
-    .ag-connect{flex-direction:column}
+  /* Any MCP client: the upload */
+  .ag-yt{position:absolute;left:12px;right:12px;top:12px;z-index:2;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;padding:11px 13px;border-radius:12px;background:rgba(14,14,16,.84);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);font-size:13px;color:#f4f1ea}
+  .ag-yt svg{width:18px;height:18px;color:#ff0033;grid-row:span 2}
+  .ag-yt strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .ag-yt small{font-size:11.5px;color:rgba(245,245,244,.55)}
+  .ag-yt .ag-prog{grid-column:2;width:100%;margin:4px 0 0;height:4px}
+  .ag-yt .ag-prog span{background:#ff0033;animation-duration:6s}
+  @media(max-width:1000px){.ag-top{grid-template-columns:1fr;gap:22px}.ag-card,.ag-card.is-wide{grid-column:span 6}.ag-media{height:280px}}
+  @media(max-width:700px){
+    .lf-agents{padding:24px 0 64px}
+    .ag-wrap{padding:0 16px}
+    .ag-row{margin-top:40px;gap:12px}
+    .ag-card,.ag-card.is-wide{grid-column:1 / -1}
+    .ag-media{height:250px}
+    .ag-media.ag-terminal{height:auto}
+    .ag-terminal .ag-toast{display:none}
+    .ag-lines{font-size:11.5px;padding:14px 14px 18px}
+    .ag-lines p:first-child{white-space:normal}
+    .ag-connect .vcta{width:100%;justify-content:center}
+    .ag-url{width:100%}
+    .ag-url code{flex:1}
   }
+  @media (prefers-reduced-motion:reduce){.ag-lines p,.ag-msg.ai{animation:none;opacity:1}.ag-card:hover{transform:none}}
   /* meet your agents */
   .lf-meet{position:relative;z-index:2;padding:8px 0 24px}
   .mt-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px;align-items:center;padding:20px 20px 20px 56px;border-radius:28px;background:#0b0b0c;border:1px solid rgba(255,255,255,.08)}
@@ -588,6 +621,9 @@
   .lp-tools{display:flex;gap:6px;padding:0 4px}
   .lp-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:transparent;color:rgba(255,255,255,.82);font:inherit;font-size:.82rem;cursor:pointer}
   .lp-chip:hover,.lp-chip.is-on{border-color:rgba(255,255,255,.4);color:#fff}
+  .lp-auto.is-busy span::after{content:"…"}
+  .lp-auto.is-busy svg{animation:lpSpark .8s linear infinite}
+  @keyframes lpSpark{to{transform:rotate(360deg)}}
   .lp-ref{display:flex;gap:6px;align-items:center;padding:0 4px}
   .lp-ref[hidden]{display:none}
   .lp-ref input{flex:1;min-width:0;height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:#111113;color:#f4f4f2;font:inherit;font-size:.88rem;outline:none}
@@ -604,6 +640,92 @@
     mask-image:linear-gradient(#000 60%,transparent)!important;-webkit-mask-image:linear-gradient(#000 60%,transparent)!important}
   @media(max-width:640px){.lp-box{flex-direction:column;align-items:stretch;border-radius:22px}.lp-next{width:100%}}
   @media (prefers-reduced-motion:reduce){.lp-blob .eyes{animation:none}}
+  /* Hero banner + category tiles (layout after higgsfield.ai/faceless-studio): a looping scene per
+     category behind the heading, four video tiles over the prompt box; picking one swaps both. */
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
+  .hero-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s ease}
+  .hero-bg video.is-on{opacity:.42}
+  .hero-bg::before{content:"";position:absolute;left:50%;top:150px;width:1100px;height:700px;max-width:96vw;transform:translateX(-50%);border-radius:50%;background:rgba(0,0,0,.72);filter:blur(80px);z-index:1}
+  .hero-bg::after{content:"";position:absolute;inset:auto 0 0 0;height:240px;background:linear-gradient(to bottom,transparent,#000);z-index:1}
+  .hero::before{display:none}
+  .hero > .wrap{position:relative;z-index:2}
+  .hero > .hero-pin,.hero > .hero-alt{z-index:2}
+  .lp-cats{display:flex;align-items:flex-end;justify-content:center;gap:8px;width:min(720px,100%);margin:40px auto 0}
+  .lp-cat{position:relative;flex:1 1 0;min-width:0;height:58px;display:flex;align-items:flex-end;padding:0;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#141416;cursor:pointer;transition:height .3s cubic-bezier(.2,.8,.2,1),flex-grow .3s cubic-bezier(.2,.8,.2,1),border-color .2s,box-shadow .2s}
+  .lp-cat video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+  .lp-cat::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45),transparent 60%);pointer-events:none}
+  .lp-cat span{position:relative;z-index:1;margin:6px;padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:rgba(255,255,255,.85);font-size:11.5px;font-weight:600;letter-spacing:-.005em}
+  .lp-cat:hover{border-color:rgba(255,255,255,.28)}
+  .lp-cat.is-on{height:68px;flex-grow:1.22;border:2px solid #fff;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+  .lp-cat.is-on span{background:#fff;color:#111}
+  .lp-cats + .lp-box{margin-top:10px}
+  @media(max-width:640px){.lp-cats{gap:6px;margin-top:28px}.lp-cat{height:50px;border-radius:12px}.lp-cat.is-on{height:58px;flex-grow:1.12}.lp-cat span{font-size:10.5px;padding:2px 7px;margin:4px}.hero-bg::before{top:90px;height:520px}}
+  @media (prefers-reduced-motion:reduce){.hero-bg video{transition:none}.lp-cat{transition:none}}
+  /* Phone hero (after higgsfield.ai/faceless-studio on mobile): glowing perspective grid instead of the
+     banner video, three style cards over the heading, round buttons in the prompt box, MCP link as a pill.
+     The settings button shows the four category tiles. */
+  .hero-mgrid,.lp-mcards,.lp-ico,.lp-next-i{display:none}
+  @media(max-width:640px){
+    .hero{justify-content:flex-start!important;min-height:0!important;padding:96px 0 40px!important}
+    .hero-bg video,.hero-bg::before{display:none}
+    .hero-bg::after{height:120px}
+    .hero-mgrid{display:block;position:absolute;left:0;right:0;top:0;height:400px;
+      background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(255,255,255,.13),transparent 70%);
+      -webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+    .hero-mgrid svg{position:absolute;inset:0;width:100%;height:100%}
+    .hero .wrap{padding:0 16px}
+    .hero > .hero-pin{display:none!important}
+    .lp-mcards{display:block;position:relative;width:100%;max-width:380px;height:138px;margin:0 auto 30px;perspective:700px}
+    .lp-mcard{position:absolute;top:50%;overflow:hidden;border-radius:14px;background:#151517;border:1px solid rgba(255,255,255,.16)}
+    .lp-mcard video{display:block;width:100%;height:100%;object-fit:cover}
+    .lp-mcard.is-c{left:50%;width:55%;height:100%;z-index:2;transform:translate(-50%,-50%);border:1.5px solid rgba(255,255,255,.7);box-shadow:0 18px 44px rgba(0,0,0,.7)}
+    .lp-mcard.is-l{left:0;width:42%;height:82%;transform:translateY(-50%) rotateY(24deg);transform-origin:right center;opacity:.85}
+    .lp-mcard.is-r{right:0;width:42%;height:82%;transform:translateY(-50%) rotateY(-24deg);transform-origin:left center;opacity:.85}
+    .hero #hero-h1{font-size:clamp(34px,10.4vw,44px)!important;line-height:1.06}
+    .lp-cats{display:none;margin-top:22px}
+    .hero.show-cats .lp-cats{display:flex}
+    .hero .lp-box{display:block;position:relative;margin-top:28px;padding:14px 14px 12px;border-radius:24px;background:#1c1c1f}
+    .lp-cats + .lp-box{margin-top:10px}
+    .hero .lp-box textarea{min-height:70px;font-size:1rem;padding:4px 6px}
+    .lp-tools{align-items:center;padding:0;margin-top:4px}
+    .lp-tools #lp-ref-open{display:none}
+    .lp-ico{display:inline-grid;place-items:center;flex:0 0 40px;width:40px;height:40px;padding:0;border-radius:50%;border:0;background:#2b2b2f;color:#f4f4f2;cursor:pointer}
+    .lp-ico svg{width:18px;height:18px}
+    .lp-ico.is-on{background:#fff;color:#111}
+    .lp-set{margin-left:auto;margin-right:48px}
+    .hero .lp-next{position:absolute;right:14px;bottom:12px;width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center}
+    .lp-next-t{display:none}
+    .lp-next-i{display:block;width:18px;height:18px}
+    .hero > .hero-alt{position:static;transform:none;margin:18px auto 0;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:#141416;font-size:14px}
+  }
+  /* Sign-up popup: opens over the landing page when a new visitor presses Next or Sign up
+     (after higgsfield.ai: small centred card, Google first, then email). */
+  .su-bg{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .2s}
+  .su-bg.is-open{opacity:1;pointer-events:auto}
+  .su-card{position:relative;width:min(400px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:36px 28px 22px;border-radius:24px;background:#141416;border:1px solid rgba(255,255,255,.1);box-shadow:0 40px 100px rgba(0,0,0,.6);text-align:center;color:#f4f4f2;transform:translateY(10px) scale(.98);transition:transform .25s cubic-bezier(.2,.9,.3,1)}
+  .su-bg.is-open .su-card{transform:none}
+  .su-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer}
+  .su-x:hover{background:rgba(255,255,255,.12);color:#fff}
+  .su-card h2{margin:0;font-family:Lora,Georgia,serif;font-weight:500;font-size:30px;line-height:1.15;letter-spacing:-.02em;color:#f6f3ee}
+  .su-card h2 span{display:inline-flex;align-items:center;gap:8px}
+  .su-card h2 img{width:28px;height:28px;object-fit:contain}
+  .su-sub{margin:10px 0 24px;font-size:14px;color:rgba(245,245,244,.55)}
+  .su-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#222225;color:#f4f4f2;font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s,opacity .15s}
+  .su-btn:hover{background:#2a2a2e}
+  .su-btn.is-white{background:#fff;color:#111;border-color:#fff}
+  .su-btn.is-white:hover{background:#ececec}
+  .su-btn svg{width:18px;height:18px}
+  .su-btn:disabled{opacity:.5;cursor:default}
+  .su-or{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12.5px;color:rgba(245,245,244,.4)}
+  .su-or::before,.su-or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.1)}
+  .su-in{width:100%;height:48px;margin-bottom:10px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#0e0e10;color:#f4f4f2;font:inherit;font-size:15px;outline:none}
+  .su-in:focus{border-color:rgba(255,255,255,.4)}
+  .su-in[hidden]{display:none}
+  .su-err{min-height:0;margin:4px 0 8px;font-size:13px;color:#f87171;text-align:left}
+  .su-err:empty{display:none}
+  .su-legal{margin:18px 0 0;font-size:11.5px;line-height:1.5;color:rgba(245,245,244,.4)}
+  .su-legal a{color:rgba(245,245,244,.7);text-decoration:underline;text-underline-offset:2px}
+  body.su-lock{overflow:hidden}
   .hero-alt{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);z-index:2;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:rgba(245,245,244,.62);font-size:14.5px;font-weight:500;text-decoration:none}
   .hero-alt-claude{width:16px;height:16px;flex:0 0 16px;color:#d97757}
   .hero-alt:hover{color:#fff}
@@ -1234,7 +1356,7 @@
     .fmt-example .result{margin-left:0}
   }
 
-  /* Why Vidso workflow */
+  /* Why TubeOps workflow */
   .why-vidso{padding:90px 0}
   .why-vidso .punch{margin:40px auto 0;max-width:720px;text-align:center}
   .why-vidso .punch h3{font-size:clamp(26px,3.6vw,36px);margin:0 0 10px;letter-spacing:-.03em;font-weight:800}
@@ -1436,7 +1558,7 @@
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "Vidso",
+      "name": "TubeOps",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web",
       "url": "https://vidso.pro/home",
@@ -1445,26 +1567,26 @@
         {
           "@type": "Offer",
           "name": "Plus",
-          "price": "14.99",
+          "price": "49",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Plus plan: $14.99/mo billed annually ($70/mo monthly). 10 long-form videos, 15 short-form videos."
+          "description": "Plus plan: $49/mo billed annually ($70/mo monthly). 30 long-form videos, 15 short-form videos."
         },
         {
           "@type": "Offer",
           "name": "Pro",
-          "price": "24.99",
+          "price": "69",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Pro: $24.99/mo billed annually ($99/mo monthly). 25 long-form videos, 30 short-form videos."
+          "description": "Pro: $69/mo billed annually ($99/mo monthly). 100 long-form videos, 30 short-form videos."
         },
         {
           "@type": "Offer",
           "name": "Studio",
-          "price": "29.99",
+          "price": "105",
           "priceCurrency": "USD",
           "priceValidUntil": "2027-12-31",
-          "description": "Studio: $29.99/mo billed annually ($150/mo monthly). Unlimited long-form videos, unlimited short-form videos."
+          "description": "Studio: $105/mo billed annually ($150/mo monthly). Unlimited long-form videos, unlimited short-form videos."
         }
       ]
     },
@@ -1473,10 +1595,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What is Vidso?",
+          "name": "What is TubeOps?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output."
+            "text": "TubeOps is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output."
           }
         },
         {
@@ -1484,7 +1606,7 @@
           "name": "How does AI long-form generation work?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You pick a topic and length. Vidso writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download."
+            "text": "You pick a topic and length. TubeOps writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download."
           }
         },
         {
@@ -1500,7 +1622,7 @@
           "name": "How do I stay consistent for monetization?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Connect your channel to keep publishing consistently. Vidso helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling."
+            "text": "Connect your channel to keep publishing consistently. TubeOps helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling."
           }
         },
         {
@@ -1516,12 +1638,12 @@
           "name": "Where does the B-roll come from?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Vidso generates AI B-roll for lines that need a custom shot and pulls real footage from a library of millions of stock clips for the rest, then cuts both to the narration."
+            "text": "TubeOps generates AI B-roll for lines that need a custom shot and pulls real footage from a library of millions of stock clips for the rest, then cuts both to the narration."
           }
         },
         {
           "@type": "Question",
-          "name": "Does Vidso make Shorts and thumbnails too?",
+          "name": "Does TubeOps make Shorts and thumbnails too?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Yes. The Shorts generator cuts vertical clips from your long-form video, and the thumbnail generator makes thumbnails from your title and hook. You can also generate video ideas and scripts."
@@ -1559,12 +1681,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="wrap" style="position:relative">
     <nav>
       <a href="/" class="logo">
-        <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="Vidso" decoding="async">
-        Vidso
+        <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="TubeOps" decoding="async">
+        TubeOps
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#pricing">Pricing<span class="nav-badge">UP TO 80% OFF</span></a>
+        <a href="#pricing">Pricing<span class="nav-badge">30% OFF YEARLY</span></a>
         <a href="/mcp">MCP</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -1578,7 +1700,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </nav>
     <div class="nav-drawer" id="navDrawer">
       <a href="#features" onclick="document.querySelector('header').classList.remove('menu-open')">Features</a>
-      <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing<span class="nav-badge">UP TO 80% OFF</span></a>
+      <a href="#pricing" onclick="document.querySelector('header').classList.remove('menu-open')">Pricing<span class="nav-badge">30% OFF YEARLY</span></a>
       <a href="/mcp" onclick="document.querySelector('header').classList.remove('menu-open')">MCP</a>
       <a href="#faq" onclick="document.querySelector('header').classList.remove('menu-open')">FAQ</a>
       <a href="/login" onclick="document.querySelector('header').classList.remove('menu-open')">Login</a>
@@ -1589,6 +1711,13 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-mgrid"><svg viewBox="0 0 400 330" preserveAspectRatio="xMidYMin slice" fill="none" stroke="rgba(255,255,255,.16)" stroke-width=".8"><line x1="-600" y1="0" x2="200" y2="330"/><line x1="-500" y1="0" x2="200" y2="330"/><line x1="-400" y1="0" x2="200" y2="330"/><line x1="-300" y1="0" x2="200" y2="330"/><line x1="-200" y1="0" x2="200" y2="330"/><line x1="-100" y1="0" x2="200" y2="330"/><line x1="0" y1="0" x2="200" y2="330"/><line x1="100" y1="0" x2="200" y2="330"/><line x1="200" y1="0" x2="200" y2="330"/><line x1="300" y1="0" x2="200" y2="330"/><line x1="400" y1="0" x2="200" y2="330"/><line x1="500" y1="0" x2="200" y2="330"/><line x1="600" y1="0" x2="200" y2="330"/><line x1="700" y1="0" x2="200" y2="330"/><line x1="800" y1="0" x2="200" y2="330"/><line x1="900" y1="0" x2="200" y2="330"/><line x1="1000" y1="0" x2="200" y2="330"/><line x1="-200" y1="0" x2="600" y2="0"/><line x1="-200" y1="46" x2="600" y2="46"/><line x1="-200" y1="86" x2="600" y2="86"/><line x1="-200" y1="120" x2="600" y2="120"/><line x1="-200" y1="148" x2="600" y2="148"/><line x1="-200" y1="172" x2="600" y2="172"/><line x1="-200" y1="192" x2="600" y2="192"/><line x1="-200" y1="208" x2="600" y2="208"/><line x1="-200" y1="221" x2="600" y2="221"/></svg></div>
+    <video muted playsinline loop preload="none" data-cat="education" poster="/home/img/hero-education.jpg" data-src="/home/vid/hero-education.mp4" class="is-on"></video>
+    <video muted playsinline loop preload="none" data-cat="history" poster="/home/img/hero-history.jpg" data-src="/home/vid/hero-history.mp4"></video>
+    <video muted playsinline loop preload="none" data-cat="mystery" poster="/home/img/hero-mystery.jpg" data-src="/home/vid/hero-mystery.mp4"></video>
+    <video muted playsinline loop preload="none" data-cat="storytelling" poster="/home/img/hero-storytelling.jpg" data-src="/home/vid/hero-storytelling.mp4"></video>
+  </div>
   <span class="hero-pin pin-you" aria-hidden="true"><svg class="blob" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><circle cx="14" cy="15" r="9"/><circle cx="26" cy="14" r="9"/><circle cx="13" cy="26" r="9"/><circle cx="27" cy="26" r="9"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="15.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.6" y="15.5" width="3.6" height="7.2" rx="1.8"/></g></svg><b>Manager</b></span>
   <span class="hero-pin pin-script" aria-hidden="true"><svg class="blob" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><rect x="7" y="7" width="26" height="26" rx="8" transform="rotate(-12 20 20)"/></g><g class="eyes"><rect x="15.4" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><b>Script</b></span>
   <span class="hero-pin pin-voice" aria-hidden="true"><svg class="blob" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><path d="M20 8L34 31H6Z" stroke-width="7" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="20.5" width="3.6" height="7.2" rx="1.8"/><rect x="21" y="20.5" width="3.6" height="7.2" rx="1.8"/></g></svg><b>Voice</b></span>
@@ -1607,27 +1736,31 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
     <!-- Selected H1: Your faceless YouTube empire starts here -->
+    <div class="lp-mcards" aria-hidden="true">
+      <div class="lp-mcard is-l"><video muted loop playsinline preload="none" poster="/home/img/hero-history-tile.jpg" data-src="/home/vid/hero-history-tile.mp4"></video></div>
+      <div class="lp-mcard is-r"><video muted loop playsinline preload="none" poster="/home/img/hero-education-tile.jpg" data-src="/home/vid/hero-education-tile.mp4"></video></div>
+      <div class="lp-mcard is-c"><video muted loop playsinline preload="none" poster="/home/img/hero-storytelling-tile.jpg" data-src="/home/vid/hero-storytelling-tile.mp4"></video></div>
+    </div>
     <h1 id="hero-h1">Let agents run your YouTube channel</h1>
+    <div class="lp-cats" role="radiogroup" aria-label="Channel type">
+      <button type="button" class="lp-cat is-on" role="radio" aria-checked="true" data-cat="education" data-idea="Channel that explains how everyday things really work"><video muted playsinline loop preload="none" poster="/home/img/hero-education-tile.jpg" data-src="/home/vid/hero-education-tile.mp4" aria-hidden="true"></video><span>Education</span></button>
+      <button type="button" class="lp-cat" role="radio" aria-checked="false" data-cat="history" data-idea="Channel about how ordinary people lived in ancient Rome"><video muted playsinline loop preload="none" poster="/home/img/hero-history-tile.jpg" data-src="/home/vid/hero-history-tile.mp4" aria-hidden="true"></video><span>History</span></button>
+      <button type="button" class="lp-cat" role="radio" aria-checked="false" data-cat="mystery" data-idea="Channel about famous heists and unsolved cases"><video muted playsinline loop preload="none" poster="/home/img/hero-mystery-tile.jpg" data-src="/home/vid/hero-mystery-tile.mp4" aria-hidden="true"></video><span>Mystery</span></button>
+      <button type="button" class="lp-cat" role="radio" aria-checked="false" data-cat="storytelling" data-idea="Channel with dark fantasy tales told like epics"><video muted playsinline loop preload="none" poster="/home/img/hero-storytelling-tile.jpg" data-src="/home/vid/hero-storytelling-tile.mp4" aria-hidden="true"></video><span>Storytelling</span></button>
+    </div>
     <form class="lp-box" id="lp-form">
       <div class="lp-main">
         <label class="lp-sr" for="lp-about">What is the channel about?</label>
-        <textarea id="lp-about" rows="2" maxlength="300" placeholder="Channel about how ordinary people lived in ancient Rome"></textarea>
+        <textarea id="lp-about" rows="2" maxlength="300" placeholder="Channel that explains how everyday things really work"></textarea>
         <div class="lp-ref" id="lp-ref-row" hidden>
           <label class="lp-sr" for="lp-ref">YouTube channel link</label>
           <input id="lp-ref" type="url" inputmode="url" placeholder="youtube.com/@channel you want to be like" autocomplete="off">
           <button type="button" class="lp-chip" id="lp-ref-close" aria-label="Remove reference">✕</button>
         </div>
-        <div class="lp-tools"><button type="button" class="lp-chip" id="lp-ref-open"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1"/></svg>Reference</button></div>
+        <div class="lp-tools"><button type="button" class="lp-ico lp-plus" id="lp-plus" aria-label="Add a channel you want to be like"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><button type="button" class="lp-chip" id="lp-ref-open"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1"/></svg>Reference</button><button type="button" class="lp-chip lp-auto" id="lp-auto" title="The Manager picks a proven channel idea for this category"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>Let agent choose</span></button><button type="button" class="lp-ico lp-set" id="lp-set" aria-label="Pick a channel type" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
       </div>
-      <button type="submit" class="lp-next" id="lp-next" disabled>Next →</button>
+      <button type="submit" class="lp-next" id="lp-next" disabled><span class="lp-next-t">Next →</span><svg class="lp-next-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lp-sr">Next</span></button>
     </form>
-    <div class="lp-ideas" aria-label="Ideas">
-      <span>Try:</span>
-      <button type="button">The darkest unsolved crimes in history</button>
-      <button type="button">How money really works</button>
-      <button type="button">Myths and legends of the ancient world</button>
-      <button type="button">What life was like in the Middle Ages</button>
-    </div>
     <div class="hero-platforms">
       <div class="plabel">Supported platform</div>
       <div class="plogos">
@@ -1670,7 +1803,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="hero-visual">
       <div class="hero-reel" id="mockup-clips" tabindex="0">
         <div class="clip is-feature">
-          <video muted autoplay loop playsinline preload="auto" poster="/home/vidso-hero-poster.jpg" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso/vidso-r2-upload/vidso_explainer_25s_v2.mp4" aria-label="Full Vidso pipeline from script to finished video"></video>
+          <video muted autoplay loop playsinline preload="auto" poster="/home/vidso-hero-poster.jpg" src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/vidso/vidso-r2-upload/vidso_explainer_25s_v2.mp4" aria-label="Full TubeOps pipeline from script to finished video"></video>
           <span class="clip-badge"><span class="dot"></span>Full pipeline</span>
           <div class="hero-play-center" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
           <div class="hero-ctrl">
@@ -1703,15 +1836,15 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
    </div><!-- /hero-grid -->
   </div>
-  <a class="hero-alt" href="/mcp">Or connect <svg class="hero-alt-claude" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>Claude to Vidso →</a>
+  <a class="hero-alt" href="/mcp">Or connect <svg class="hero-alt-claude" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>Claude to TubeOps →</a>
 </section>
 
-<section class="agent-drop" id="features" aria-label="Setting up a channel in Vidso">
+<section class="agent-drop" id="features" aria-label="Setting up a channel in TubeOps">
   <div class="agent-card">
     <div class="agent-screen lf-app" id="lfApp" data-step="0">
       <div class="lf-bar" aria-hidden="true"><span></span><span></span><span></span><em>vidso.pro/create</em></div>
       <div class="nu" aria-hidden="true">
-        <div class="nu-nav"><b><img src="/vidso-logo.png" width="16" height="16" alt="">Vidso</b><span>Agents</span><span>Studio</span><span>Brand</span><i>P</i></div>
+        <div class="nu-nav"><b><img src="/vidso-logo.png" width="16" height="16" alt="">TubeOps</b><span>Agents</span><span>Studio</span><span>Brand</span><i>P</i></div>
         <div class="nu-body">
           <div class="nu-main">
             <div class="nu-crumb">‹ Start <em>/</em> New channel</div>
@@ -1767,7 +1900,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="mt-card">
       <div class="mt-copy">
         <h2>Meet your agents</h2>
-        <p>Every Vidso video is made by a small team of AI agents, each with one job. They hand the work to each other, so all you give them is the topic.</p>
+        <p>Every TubeOps video is made by a small team of AI agents, each with one job. They hand the work to each other, so all you give them is the topic.</p>
         <a class="vlink" href="/signup">Put them to work →</a>
       </div>
       <div class="mt-rail">
@@ -1808,10 +1941,11 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       var r = pins[n].getBoundingClientRect()
       start[n] = r.width ? { x: r.left, y: r.top + window.scrollY } : null
     })
-    names.forEach(function (n) { pins[n].classList.add('is-flying'); document.body.appendChild(pins[n]) })
+    names.forEach(function (n) { pins[n].classList.add('is-flying'); if (window.innerWidth <= 800) pins[n].style.opacity = '0'; document.body.appendChild(pins[n]) })
   }
 
-  function rectOf(sel) { var el = card.querySelector(sel) || document.querySelector(sel); return el ? el.getBoundingClientRect() : null }
+  // Hidden parts (the step rail is hidden on phones) have no box: treat them as missing.
+  function rectOf(sel) { var el = card.querySelector(sel) || document.querySelector(sel); var r = el && el.getBoundingClientRect(); return r && r.width ? r : null }
 
   // Where each cursor works once it has landed.
   function target(n, now) {
@@ -1854,7 +1988,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     names.forEach(function (n) {
       var p = pins[n]
       var goal = target(n, reduce ? 0 : now)
-      if (!goal) return
+      if (!goal) { p.style.opacity = '0'; return }
       goal = { x: goal.x - 20, y: goal.y - 24 }
       var d = dock[n]
       if (!d || reduce || snap) d = dock[n] = { x: goal.x, y: goal.y }
@@ -1892,7 +2026,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 </script>
 
 <!-- ARCHIVED (Nov 2026): feature rows. Remove `hidden` to bring back. -->
-<section class="vsec" id="features-archived" aria-label="What Vidso does" hidden>
+<section class="vsec" id="features-archived" aria-label="What TubeOps does" hidden>
   <div class="vsec-wrap">
 
     <div class="vsplit">
@@ -1918,7 +2052,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="vsplit vsplit-flip">
       <div>
         <h2>AI B-roll for the line you're narrating</h2>
-        <p class="vlead">Vidso reads each sentence and generates a shot to match it, so the picture changes when the story does. No hunting for clips that almost fit.</p>
+        <p class="vlead">TubeOps reads each sentence and generates a shot to match it, so the picture changes when the story does. No hunting for clips that almost fit.</p>
         <a class="vlink" href="/signup">Try AI B-roll →</a>
       </div>
       <div class="vpanel lf-broll">
@@ -1955,7 +2089,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="vsplit vsplit-flip">
       <div>
         <h2>Millions of stock clips, already searched</h2>
-        <p class="vlead">When a line needs real footage, Vidso pulls it from a library of millions of stock videos and cuts it to the narration. Swap any clip in one click.</p>
+        <p class="vlead">When a line needs real footage, TubeOps pulls it from a library of millions of stock videos and cuts it to the narration. Swap any clip in one click.</p>
         <a class="vlink" href="/signup">Browse the library →</a>
       </div>
       <div class="vpanel lf-stock">
@@ -2010,7 +2144,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <span style="background-image:url(/home/img/broll-coins.jpg)"><video muted loop playsinline preload="none" poster="/home/img/broll-coins.jpg" data-src="/home/vid/broll-coins.mp4" width="1280" height="720" aria-hidden="true"></video><b>Broke by 50 BC</b></span>
         </div>
         <h3>Shorts generator</h3>
-        <p>Vidso finds the strongest moments in your long-form video and cuts them into captioned vertical Shorts.</p>
+        <p>TubeOps finds the strongest moments in your long-form video and cuts them into captioned vertical Shorts.</p>
       </article>
       <article class="lf-tile lf-thumbs-tile">
         <div class="lf-yt" aria-hidden="true">
@@ -2051,10 +2185,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <p>Say the topic. The Manager picks the look the biggest channels in that niche use, then the team makes the video.</p>
     </div>
     <div class="lf-niche-row">
-      <a class="lf-niche" href="/" data-niche-topic="History documentaries"><video muted loop playsinline preload="none" poster="/home/img/niche2-history.jpg" data-src="/home/vid/niche2-history.mp4" width="720" height="960" aria-label="The Colosseum at sunset"></video><span class="lf-niche-tag">Historical painting</span><div><h3>History documentaries</h3><p>Painted like the old masters, told chapter by chapter.</p></div></a>
-      <a class="lf-niche" href="/" data-niche-topic="Money and business"><video muted loop playsinline preload="none" poster="/home/img/niche2-money.jpg" data-src="/home/vid/niche2-money.mp4" width="720" height="960" aria-label="A stick figure on a stack of coins above one carrying a credit card"></video><span class="lf-niche-tag">Stick figure</span><div><h3>Money and business</h3><p>Stick figures and plain English, like the top finance explainers.</p></div></a>
-      <a class="lf-niche" href="/" data-niche-topic="Science and space"><video muted loop playsinline preload="none" poster="/home/img/niche2-space.jpg" data-src="/home/vid/niche2-space.mp4" width="720" height="960" aria-label="Saturn rising over an icy moon"></video><span class="lf-niche-tag">Space CGI</span><div><h3>Science and space</h3><p>Real-looking planets and probes, like the top space channels.</p></div></a>
-      <a class="lf-niche" href="/" data-niche-topic="Mysteries and true crime"><video muted loop playsinline preload="none" poster="/home/img/niche2-crime.jpg" data-src="/home/vid/niche2-crime.mp4" width="720" height="960" aria-label="A detective with a flashlight in a foggy alley"></video><span class="lf-niche-tag">Cinematic realism</span><div><h3>Mysteries and true crime</h3><p>Dark, cinematic scenes that build slowly to the end.</p></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="History documentaries"><video muted loop playsinline preload="none" poster="/home/img/niche2-history.jpg" data-src="/home/vid/niche2-history.mp4" width="720" height="960" aria-label="The Colosseum at sunset"></video><span class="lf-niche-tag">Historical painting</span><div><h3>History documentaries</h3></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Money and business"><video muted loop playsinline preload="none" poster="/home/img/niche2-money.jpg" data-src="/home/vid/niche2-money.mp4" width="720" height="960" aria-label="A stick figure on a stack of coins above one carrying a credit card"></video><span class="lf-niche-tag">Stick figure</span><div><h3>Money and business</h3></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Science and space"><video muted loop playsinline preload="none" poster="/home/img/niche2-space.jpg" data-src="/home/vid/niche2-space.mp4" width="720" height="960" aria-label="Saturn rising over an icy moon"></video><span class="lf-niche-tag">Space CGI</span><div><h3>Science and space</h3></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Mysteries and true crime"><video muted loop playsinline preload="none" poster="/home/img/niche2-crime.jpg" data-src="/home/vid/niche2-crime.mp4" width="720" height="960" aria-label="A detective with a flashlight in a foggy alley"></video><span class="lf-niche-tag">Cinematic realism</span><div><h3>Mysteries</h3></div></a>
     </div>
     <div class="vsec-cta"><a class="vcta" href="/" data-lp-focus>Create your channel</a></div>
     <div class="vopt">OPTIMIZED FOR <b><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</b></div>
@@ -2083,53 +2217,62 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
-<section class="lf-agents" id="mcp" aria-label="Bring your own agent">
-  <div class="vsec-wrap">
-    <div class="s-head center">
-      <h2>Bring your own agent</h2>
-      <p>Connect the AI you already use to Vidso with MCP. It plans the video, writes the script, swaps shots, and uploads to your channel while you watch.</p>
+<section class="lf-agents" id="mcp" aria-labelledby="ag-h">
+  <div class="ag-wrap">
+    <div class="ag-top">
+      <h2 id="ag-h">Bring your own agent</h2>
+      <div class="ag-copy">
+        <p>Connect the AI you already use to TubeOps with MCP. It plans the video, writes the script, swaps shots and uploads to your channel while you watch.</p>
+        <div class="ag-connect">
+          <div class="ag-url"><span class="ag-url-k">MCP</span><code data-mcp-url>https://www.vidso.pro/mcp</code><button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button></div>
+          <a class="vcta" href="/mcp">Connect your agent →</a>
+        </div>
+      </div>
     </div>
     <div class="ag-row">
-      <article class="ag-card">
-        <header><span class="ag-ico ag-claude" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.3 6.2 4.9-4-3 5.6 6.3-.3-5.9 2.3 5.9 2.3-6.3-.3 3 5.6-4.9-4L12 21.5l-1.3-6.2-4.9 4 3-5.6-6.3.3 5.9-2.3-5.9-2.3 6.3.3-3-5.6 4.9 4z"/></svg></span><b>Claude</b><em>Chat</em></header>
-        <div class="ag-media">
-          <video muted loop playsinline preload="none" poster="/home/img/broll-senate.jpg" data-src="/home/vid/broll-senate.mp4" width="1280" height="720" aria-hidden="true"></video>
-          <div class="ag-bubble">Make chapter 3 tenser and end on a question.</div>
-          <div class="ag-toast"><i class="ag-spin"></i><span><b>Claude</b> Rewriting chapter 3</span></div>
-        </div>
-      </article>
-      <article class="ag-card">
-        <header><span class="ag-ico ag-term" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l4 4-4 4M12 16h7"/></svg></span><b>Claude Code</b><em>Terminal</em></header>
+      <article class="ag-card is-wide">
         <div class="ag-media ag-terminal" aria-hidden="true">
-          <p><span class="ag-p">&gt;</span> make a 12 min video on the deepest places on Earth</p>
-          <p class="ag-dim">vidso · longform_make_video</p>
-          <p class="ag-ok">✓ script · 8 chapters, 1,700 words</p>
-          <p class="ag-ok">✓ voiceover · Narrator</p>
-          <p class="ag-ok">✓ B-roll · 41 shots</p>
-          <p>⠿ rendering 12:04 <span class="ag-bar"><span></span></span></p>
+          <div class="ag-bar3"><i></i><i></i><i></i><span>claude — vidso</span></div>
+          <div class="ag-lines">
+            <p><span class="ag-p">&gt;</span> make a 12 min video on the deepest places on Earth</p>
+            <p class="ag-dim" style="--i:1">⏺ vidso · make_video</p>
+            <p style="--i:2"><span class="ag-ok">✓</span> <span class="k">Script</span><span class="ag-dim">8 chapters · 1,700 words</span></p>
+            <p style="--i:3"><span class="ag-ok">✓</span> <span class="k">Style</span><span class="ag-dim">Cinematic realism</span></p>
+            <p style="--i:4"><span class="ag-ok">✓</span> <span class="k">Voice</span><span class="ag-dim">Marcus · 12:04</span></p>
+            <p style="--i:5"><span class="ag-ok">✓</span> <span class="k">Scenes</span><span class="ag-dim">41 shots, animated</span></p>
+            <p style="--i:6">⠿ <span class="k">Render</span><span class="ag-prog"><span></span></span></p>
+          </div>
           <div class="ag-toast"><i class="ag-spin"></i><span><b>Claude Code</b> Rendering the video</span></div>
         </div>
+        <footer class="ag-foot"><span class="ag-ico ag-term" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l4 4-4 4M12 16h7"/></svg></span><div><b>Claude Code <em>Terminal</em></b><p>One line in your terminal makes the whole video, from script to render.</p></div></footer>
       </article>
       <article class="ag-card">
-        <header><span class="ag-ico ag-cursor" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 7-6.2 1.8L10 18z"/></svg></span><b>Cursor</b><em>Editor</em></header>
-        <div class="ag-media ag-cut" aria-hidden="true">
+        <div class="ag-media has-shade" aria-hidden="true">
+          <video muted loop playsinline preload="none" poster="/home/img/broll-senate.jpg" data-src="/home/vid/broll-senate.mp4" width="1280" height="720"></video>
+          <div class="ag-chat">
+            <div class="ag-msg me">Make chapter 3 tenser and end on a question.</div>
+            <div class="ag-msg ai"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg><span>Rewriting chapter 3 and re-voicing it now.</span></div>
+          </div>
+          <div class="ag-toast"><i class="ag-spin"></i><span><b>Claude</b> Rewriting chapter 3</span></div>
+        </div>
+        <footer class="ag-foot"><span class="ag-ico ag-claude" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg></span><div><b>Claude <em>Chat</em></b><p>Ask for changes in plain words. It edits the script and the scenes.</p></div></footer>
+      </article>
+      <article class="ag-card">
+        <div class="ag-media has-shade" aria-hidden="true">
           <video muted loop playsinline preload="none" poster="/home/img/broll-rubicon.jpg" data-src="/home/vid/broll-rubicon.mp4" width="1280" height="720"></video>
           <div class="ag-strip"><span style="background-image:url(/home/img/broll-map.jpg)"></span><span class="is-sel" style="background-image:url(/home/img/broll-rubicon.jpg)"></span><span style="background-image:url(/home/img/broll-legion.jpg)"></span><span style="background-image:url(/home/img/broll-senate.jpg)"></span></div>
           <div class="ag-toast"><i class="ag-spin"></i><span><b>Cursor</b> Swapping the shot in scene 4</span></div>
         </div>
+        <footer class="ag-foot"><span class="ag-ico ag-cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><defs><linearGradient id="cur-a" gradientUnits="userSpaceOnUse" x1="11.925" x2="11.925" y1="12" y2="24"><stop offset=".16" stop-color="#000" stop-opacity=".39"/><stop offset=".658" stop-color="#000" stop-opacity=".8"/></linearGradient><linearGradient id="cur-b" gradientUnits="userSpaceOnUse" x1="22.35" x2="11.925" y1="6.037" y2="12.15"><stop offset=".182" stop-color="#000" stop-opacity=".31"/><stop offset=".715" stop-color="#000" stop-opacity="0"/></linearGradient><linearGradient id="cur-c" gradientUnits="userSpaceOnUse" x1="11.925" x2="1.5" y1="0" y2="18"><stop stop-color="#000" stop-opacity=".6"/><stop offset=".667" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M11.925 24l10.425-6-10.425-6L1.5 18l10.425 6z" fill="url(#cur-a)"/><path d="M22.35 18V6L11.925 0v12l10.425 6z" fill="url(#cur-b)"/><path d="M11.925 0L1.5 6v12l10.425-6V0z" fill="url(#cur-c)"/><path d="M22.35 6L11.925 24V12L22.35 6z" fill="#555"/><path d="M22.35 6l-10.425 6L1.5 6h20.85z" fill="#000"/></svg></span><div><b>Cursor <em>Editor</em></b><p>Swap any shot, scene or line right from your editor.</p></div></footer>
       </article>
-      <article class="ag-card">
-        <header><span class="ag-ico ag-any" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg></span><b>Any MCP client</b><em>MCP</em></header>
-        <div class="ag-media ag-up" aria-hidden="true">
+      <article class="ag-card is-wide">
+        <div class="ag-media has-shade" aria-hidden="true">
           <video muted loop playsinline preload="none" poster="/home/img/broll-fire.jpg" data-src="/home/vid/broll-fire.mp4" width="1280" height="720"></video>
-          <div class="ag-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg><span>The Fall of the Roman Republic</span><em>72%</em></div>
+          <div class="ag-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg><strong>The Fall of the Roman Republic</strong><small>Uploading · goes public at 5 PM</small><span class="ag-prog"><span></span></span></div>
           <div class="ag-toast"><i class="ag-spin"></i><span><b>Your agent</b> Uploading to your channel</span></div>
         </div>
+        <footer class="ag-foot"><span class="ag-ico ag-any" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg></span><div><b>Any MCP client <em>MCP</em></b><p>ChatGPT, Windsurf, VS Code or your own agent. It can upload and schedule to your channel.</p></div></footer>
       </article>
-    </div>
-    <div class="ag-connect">
-      <div class="ag-url"><span class="ag-url-k">MCP</span><code data-mcp-url>https://www.vidso.pro/mcp</code><button type="button" data-mcp-copy><span data-mcp-copy-label>Copy</span></button></div>
-      <a class="vcta" href="/mcp">Connect your agent →</a>
     </div>
   </div>
 </section>
@@ -2163,12 +2306,12 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
     <div class="faq-inner" style="margin-top:44px">
       <details>
-        <summary>What is Vidso?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Vidso is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
+        <summary>What is TubeOps?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p>TubeOps is an AI studio for long-form YouTube. Enter a topic and it generates a script, voiceover, B-roll, and captions into a full video you can export and upload. Built for creators who want to monetize with consistent long-form output.</p>
       </details>
       <details>
         <summary>How does AI long-form generation work?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>You pick a topic and length. Vidso writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download.</p>
+        <p>You pick a topic and length. TubeOps writes the script, generates narration, fetches matching B-roll, syncs captions, and renders a 16:9 MP4 you can preview, edit, and download.</p>
       </details>
       <details>
         <summary>What kinds of videos should I make to monetize?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
@@ -2176,7 +2319,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </details>
       <details>
         <summary>How do I stay consistent for monetization?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Connect your channel to keep publishing consistently. Vidso helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling.</p>
+        <p>Connect your channel to keep publishing consistently. TubeOps helps you produce the next long-form upload faster so you can hit posting cadence, watch-hour goals, and revenue milestones without stalling.</p>
       </details>
       <details>
         <summary>Can I edit the video after the agent makes it?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
@@ -2184,10 +2327,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       </details>
       <details>
         <summary>Where does the B-roll come from?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p>Vidso generates AI B-roll for lines that need a custom shot and pulls real footage from a library of millions of stock clips for the rest, then cuts both to the narration.</p>
+        <p>TubeOps generates AI B-roll for lines that need a custom shot and pulls real footage from a library of millions of stock clips for the rest, then cuts both to the narration.</p>
       </details>
       <details>
-        <summary>Does Vidso make Shorts and thumbnails too?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <summary>Does TubeOps make Shorts and thumbnails too?<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></summary>
         <p>Yes. The Shorts generator cuts vertical clips from your long-form video, and the thumbnail generator makes thumbnails from your title and hook. You can also generate video ideas and scripts.</p>
       </details>
     </div>
@@ -2221,8 +2364,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <div class="foot">
       <div>
         <a href="/home" class="logo">
-          <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="Vidso" decoding="async">
-          Vidso
+          <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="TubeOps" decoding="async">
+          TubeOps
         </a>
         <p class="fdesc">Create YouTube videos with AI: script, voice, B-roll, and captions. Built for creators who want to monetize.</p>
         <div class="foot-social" data-vidso-socials></div>
@@ -2246,7 +2389,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <a data-vidso-support data-label="Contact support" data-fill-text></a>
       </div>
     </div>
-    <div class="foot-copy">© 2026 Vidso · vidso.pro</div>
+    <div class="foot-copy">© 2026 TubeOps · vidso.pro</div>
   </div>
 </footer>
 
@@ -2670,6 +2813,28 @@ if (window.gsap) {
   var steps = app.querySelectorAll('.nu-steps li')
   var say = document.getElementById('nuSay')
   var STEP_MS = 4200
+  // The captions step stays open for the whole 12 s doodle clip, three caption lines over it.
+  var STEP_LEN = [4200, 4200, 4200, 12000]
+  var CAPS = [
+    ['In', '133', 'BC,', 'the', 'Republic', 'looked', '*unbreakable.'],
+    ['But', 'in', 'the', 'Senate,', 'the', 'knives', 'were', '*out.'],
+    ['A', 'century', 'later,', 'Rome', 'had', 'an', '*emperor.']
+  ]
+  var capEl = app.querySelector('.nu-cap em'), capTimer = null
+  function setCap(n) {
+    if (!capEl) return
+    capEl.innerHTML = CAPS[n].map(function (w, i) {
+      var hl = w.charAt(0) === '*', t = hl ? w.slice(1) : w
+      return '<' + (hl ? 'u' : 'span') + ' style="--i:' + i + '">' + t + '</' + (hl ? 'u' : 'span') + '>'
+    }).join(' ')
+  }
+  function runCaps(on) {
+    if (capTimer) { clearInterval(capTimer); capTimer = null }
+    setCap(0)
+    if (!on) return
+    var n = 0
+    capTimer = setInterval(function () { n = (n + 1) % CAPS.length; setCap(n) }, 4000)
+  }
   var lines = [
     'I named your channel. Rename it if you like, then pick the first episode.',
     'Every scene is drawn in one style. These suit a history channel best.',
@@ -2695,11 +2860,13 @@ if (window.gsap) {
     if (say) say.textContent = lines[s]
     // The captions step shows the animated preview clip; it only plays while that step is open.
     var vid = document.getElementById('nuVid')
+    runCaps(s === 3)
+    app.parentNode.style.setProperty('--lf-step-ms', STEP_LEN[s] + 'ms')
     if (vid) { if (s === 3) { try { vid.currentTime = 0 } catch (e) {} ; var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}) } else vid.pause() }
   }
-  function next() { show((step + 1) % tabs.length) }
-  function start() { stop(); timer = setInterval(next, STEP_MS) }
-  function stop() { if (timer) clearInterval(timer); timer = null }
+  function next() { show((step + 1) % tabs.length); timer = setTimeout(next, STEP_LEN[step]) }
+  function start() { stop(); timer = setTimeout(next, STEP_LEN[step]) }
+  function stop() { if (timer) clearTimeout(timer); timer = null }
   for (var t = 0; t < tabs.length; t++) {
     tabs[t].addEventListener('click', (function (n) { return function () { show(n); start() } })(t))
   }
@@ -2727,15 +2894,67 @@ if (window.gsap) {
   about.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit() } })
   open.addEventListener('click', function(){ row.hidden = !row.hidden; open.classList.toggle('is-on', !row.hidden); if (!row.hidden) ref.focus() })
   document.getElementById('lp-ref-close').addEventListener('click', function(){ ref.value = ''; row.hidden = true; open.classList.remove('is-on') })
-  document.querySelectorAll('.lp-ideas button').forEach(function(b){ b.addEventListener('click', function(){
-    about.value = 'Channel about ' + b.textContent.charAt(0).toLowerCase() + b.textContent.slice(1); sync(); about.focus()
-  }) })
+  // Category tiles: swap the banner scene, type that category's example into the placeholder.
+  var bgVids = document.querySelectorAll('.hero-bg video'), cats = document.querySelectorAll('.lp-cat'), typing = 0
+  function load(v){ if (v && !v.getAttribute('src') && v.dataset.src) v.src = v.dataset.src }
+  function playIf(v){ if (!v) return; load(v); var p = v.play && v.play(); if (p && p.catch) p.catch(function(){}) }
+  function typePh(text){
+    var t = ++typing, i = 0
+    about.placeholder = ''
+    ;(function step(){ if (t !== typing) return; about.placeholder = text.slice(0, ++i); if (i < text.length) setTimeout(step, 22) })()
+  }
+  function pick(btn){
+    var cat = btn.getAttribute('data-cat')
+    cats.forEach(function(b){ var on = b === btn; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', on ? 'true' : 'false') })
+    bgVids.forEach(function(v){ var on = v.getAttribute('data-cat') === cat; v.classList.toggle('is-on', on); if (on) { try { v.currentTime = 0 } catch (e) {} playIf(v) } else if (v.pause) v.pause() })
+    if (!about.value) typePh(btn.getAttribute('data-idea'))
+  }
+  cats.forEach(function(b){ b.addEventListener('click', function(){ pick(b); about.focus() }) })
+  if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    if (!(window.matchMedia && window.matchMedia('(max-width:640px)').matches)) playIf(document.querySelector('.hero-bg video.is-on'))
+    cats.forEach(function(b){ playIf(b.querySelector('video')) })
+  }
+  // Phone: "+" opens the reference link, settings shows the category tiles, the cards play their clips.
+  var plus = document.getElementById('lp-plus'), setBtn = document.getElementById('lp-set'), heroEl = form.closest('.hero')
+  if (plus) plus.addEventListener('click', function(){ open.click(); plus.classList.toggle('is-on', !row.hidden) })
+  if (setBtn) setBtn.addEventListener('click', function(){ var on = !heroEl.classList.contains('show-cats'); heroEl.classList.toggle('show-cats', on); setBtn.classList.toggle('is-on', on); setBtn.setAttribute('aria-expanded', on ? 'true' : 'false') })
+  if (window.matchMedia && window.matchMedia('(max-width:640px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.lp-mcard video').forEach(function(v){ playIf(v) })
+  }
+  // "Let agent choose": the Manager drops in a proven channel idea for the picked category
+  // (the niches the biggest faceless channels run), typed into the box.
+  var IDEAS = {
+    education: ['Channel that explains how everyday things really work', 'Channel about the psychology behind everyday habits', 'Channel explaining how money, banks and the economy actually work', 'Channel about the science of the human body', 'Channel about how giant engineering projects get built'],
+    history: ['Channel about how ordinary people lived in ancient Rome', 'Channel about the strangest events in medieval history', 'Channel about the rise and fall of great empires', 'Channel about the battles that changed history', 'Channel about forgotten civilisations and what happened to them'],
+    mystery: ['Channel about famous heists and how they were pulled off', 'Channel about unsolved disappearances', 'Channel about the biggest cons and scams in history', 'Channel about places scientists still cannot explain', 'Channel about cold cases cracked decades later'],
+    storytelling: ['Channel about the rise and fall of famous companies', 'Channel retelling Greek myths as epic stories', 'Channel with dark fantasy tales told like epics', 'Channel about the lives of history\'s most ruthless rulers', 'Channel telling true survival stories']
+  }
+  var auto = document.getElementById('lp-auto'), autoT = 0
+  if (auto) auto.addEventListener('click', function(){
+    if (auto.classList.contains('is-busy')) return
+    var on = document.querySelector('.lp-cat.is-on'), cat = on ? on.getAttribute('data-cat') : 'history'
+    var list = IDEAS[cat] || IDEAS.history
+    var pickIdx = Math.floor(Math.random() * list.length)
+    if (list[pickIdx] === about.value && list.length > 1) pickIdx = (pickIdx + 1) % list.length
+    var text = list[pickIdx]
+    auto.classList.add('is-busy'); auto.querySelector('span').textContent = 'Choosing'
+    typing++ // stop any placeholder typing
+    clearTimeout(autoT)
+    autoT = setTimeout(function(){
+      about.value = ''
+      var i = 0
+      ;(function step(){ about.value = text.slice(0, ++i); if (i < text.length) setTimeout(step, 16); else { sync(); auto.classList.remove('is-busy'); auto.querySelector('span').textContent = 'Let agent choose'; about.focus() } })()
+    }, 650)
+  })
+  // Tab in an empty box takes the example on screen.
+  about.addEventListener('keydown', function(e){ if (e.key === 'Tab' && !e.shiftKey && !about.value && about.placeholder) { e.preventDefault(); about.value = about.placeholder; sync() } })
   form.addEventListener('submit', function(e){
     e.preventDefault()
     var text = about.value.trim(); if (text.length < 3) return
     try { localStorage.setItem('vidso_landing_topic', JSON.stringify({ about: text.slice(0, 300), ref: ref.value.trim().slice(0, 200), t: Date.now() })) } catch (e2) {}
     if (signedIn) { location.href = '/create'; return }
     try { sessionStorage.setItem('vidso_after_login', '/create') } catch (e3) {}
+    if (window.vidsoOpenSignup) { window.vidsoOpenSignup(); return }
     location.href = '/signup'
   })
   sync()
@@ -2774,6 +2993,91 @@ if (window.gsap) {
   document.querySelectorAll('[data-niche-topic]').forEach(function (a) { a.addEventListener('click', function (e) { go(e, topics[a.getAttribute('data-niche-topic')]) }) })
   document.querySelectorAll('[data-lp-focus]').forEach(function (a) { a.addEventListener('click', function (e) { go(e, '') }) })
 })()
+</script>
+<div class="su-bg" id="su" role="dialog" aria-modal="true" aria-labelledby="su-h" hidden>
+  <div class="su-card">
+    <button type="button" class="su-x" id="su-x" aria-label="Close">✕</button>
+    <h2 id="su-h">Get started with<br><span><img src="/vidso-logo.png" alt="" width="28" height="28">TubeOps</span></h2>
+    <p class="su-sub" id="su-sub">Your agents set up the channel next.</p>
+    <button type="button" class="su-btn is-white" id="su-google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Continue with Google</span></button>
+    <div class="su-or">or continue with email</div>
+    <form id="su-form" novalidate>
+      <input class="su-in" id="su-email" type="email" placeholder="Email" autocomplete="email" required>
+      <input class="su-in" id="su-pass" type="password" placeholder="Password (6+ characters)" autocomplete="new-password" minlength="6" hidden>
+      <div class="su-err" id="su-err" role="alert"></div>
+      <button type="submit" class="su-btn" id="su-go">Continue</button>
+    </form>
+    <p class="su-legal">By continuing, you agree to the <a href="/terms" target="_blank" rel="noopener">Terms of Use</a> and acknowledge the <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  </div>
+</div>
+<script type="module">
+// Sign-up popup on the landing page. Google goes through /login (it finishes the sign-in there)
+// and lands on /create; email signs up, or signs in if the account already exists.
+import { api, setSession } from '/api.js'
+import { trackCompleteRegistration, pixelIdentify } from '/lib/meta-pixel.js'
+const bg = document.getElementById('su'), form = document.getElementById('su-form')
+const email = document.getElementById('su-email'), pass = document.getElementById('su-pass')
+const err = document.getElementById('su-err'), go = document.getElementById('su-go'), gBtn = document.getElementById('su-google')
+let lastFocus = null
+function openSu() {
+  try { sessionStorage.setItem('vidso_after_login', '/create') } catch (_) {}
+  lastFocus = document.activeElement
+  bg.hidden = false
+  void bg.offsetWidth
+  bg.classList.add('is-open')
+  document.body.classList.add('su-lock')
+  setTimeout(() => gBtn.focus(), 60)
+}
+function closeSu() {
+  bg.classList.remove('is-open')
+  document.body.classList.remove('su-lock')
+  setTimeout(() => { bg.hidden = true }, 200)
+  try { lastFocus?.focus() } catch (_) {}
+}
+window.vidsoOpenSignup = openSu
+document.getElementById('su-x').addEventListener('click', closeSu)
+bg.addEventListener('click', (e) => { if (e.target === bg) closeSu() })
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !bg.hidden) closeSu() })
+gBtn.addEventListener('click', () => {
+  gBtn.disabled = true
+  try { sessionStorage.setItem('vidso_auth_intent', 'signup'); sessionStorage.setItem('vidso_after_login', '/create') } catch (_) {}
+  location.href = api.auth.googleStartUrl(location.origin + '/login')
+})
+function done(isNew, addr) {
+  try {
+    if (isNew) sessionStorage.setItem('vidso_need_onboarding', '1')
+    localStorage.removeItem('vidso_ui_preview')
+  } catch (_) {}
+  try { pixelIdentify(addr); if (isNew) trackCompleteRegistration(addr) } catch (_) {}
+  location.href = '/create'
+}
+form.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  err.textContent = ''
+  const addr = email.value.trim()
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) { err.textContent = 'Enter your email address.'; email.focus(); return }
+  if (pass.hidden) { pass.hidden = false; go.textContent = 'Create account'; pass.focus(); return }
+  if (pass.value.length < 6) { err.textContent = 'Use at least 6 characters for the password.'; pass.focus(); return }
+  go.disabled = true; go.textContent = 'One moment…'
+  try {
+    const data = await api.auth.signup(addr, pass.value, addr.split('@')[0])
+    setSession(data.session)
+    done(true, addr)
+  } catch (e1) {
+    // Already has an account: sign in with the same details instead.
+    if (/already|exist|registered|in use/i.test(e1?.message || '')) {
+      try {
+        const data = await api.auth.login(addr, pass.value)
+        setSession(data.session)
+        done(false, addr)
+        return
+      } catch (e2) { err.textContent = e2?.message || 'Could not sign in.' }
+    } else err.textContent = e1?.message || 'Could not create the account.'
+    go.disabled = false; go.textContent = 'Create account'
+  }
+})
+// Header "Sign up" opens the popup too.
+document.querySelectorAll('a[href="/signup"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); openSu() }))
 </script>
 </body>
 </html>

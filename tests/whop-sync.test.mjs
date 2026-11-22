@@ -21,7 +21,7 @@ import { createHmac } from 'node:crypto'
 const PRO_MONTHLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_MONTHLY
 const STUDIO_YEARLY = WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_STUDIO_YEARLY
 
-test('membership matches Vidso email or checkout metadata user id', () => {
+test('membership matches TubeOps email or checkout metadata user id', () => {
   const row = {
     status: 'active',
     user: { email: 'Buyer@Example.com' },
@@ -60,7 +60,7 @@ test('pickBestGrant prefers Studio over Pro and ignores canceled', () => {
   assert.equal(grant.membershipId, 'mem_studio')
 })
 
-test('mapped Pro membership becomes an active Vidso grant', () => {
+test('mapped Pro membership becomes an active TubeOps grant', () => {
   const grant = grantFromMembership({
     id: 'mem_1',
     status: 'active',
@@ -239,7 +239,7 @@ test('the same Whop membership cannot be attached to a second account', async ()
   _resetGrantsForTests()
 })
 
-test('checkout metadata stamps the Vidso account, not the Whop email', () => {
+test('checkout metadata stamps the TubeOps account, not the Whop email', () => {
   const meta = checkoutMetadata({ userId: 'u-1', email: 'Buyer@Gmail.com', tier: 'pro' })
   assert.equal(meta.user_id, 'u-1')
   assert.equal(meta.vidso_user_id, 'u-1')
@@ -275,7 +275,7 @@ test('webhook identity prefers checkout metadata over the Apple relay email', ()
   assert.equal(id.email, 'buyer@gmail.com')
 })
 
-test('membership.activated with checkout metadata grants the Vidso account', async () => {
+test('membership.activated with checkout metadata grants the TubeOps account', async () => {
   _resetGrantsForTests()
   const result = await fulfillWhopEvent({
     type: 'membership.activated',

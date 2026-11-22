@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <script>!function(w,d,s,u,n,a,b){if(w[n])return;a=w[n]={q:[],t:+new Date,s:[],o:u,track:function(){a.q.push([+new Date].concat([].slice.call(arguments)))},setScope:function(){a.s=[].slice.call(arguments).filter(function(x){return typeof x==="string"});a.q.push([+new Date,"setScope"].concat(a.s))},scope:function(){var c=[].slice.call(arguments);return{track:function(){a.q.push([+new Date].concat([].slice.call(arguments)).concat([{__scope:c}]))}}}};b=d.createElement(s);b.async=1;b.src=u+"/s.js";d.getElementsByTagName(s)[0].parentNode.insertBefore(b,d.getElementsByTagName(s)[0])}(window,document,"script","https://t.whop.tw","whop");whop.setScope("biz_1rGZhPBGkczqgF");whop.track("page");</script>
-<title>Vidso · Sign in</title>
+<title>TubeOps · Sign in</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -153,6 +153,8 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap"/>
+<link rel="stylesheet" href="/lib/paywall.css"/>
 </head>
 <body>
 <div class="auth-page" id="auth-card" role="dialog" aria-labelledby="auth-title">
@@ -160,9 +162,9 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <a class="auth-home" href="/home" id="auth-home">← Home</a>
   <div class="auth-panel" id="auth-panel">
     <div class="auth-brand">
-      <img data-vidso-logo width="44" height="44" alt="Vidso" decoding="async" style="object-fit:contain">
+      <img data-vidso-logo width="44" height="44" alt="TubeOps" decoding="async" style="object-fit:contain">
     </div>
-    <h2 id="auth-title">Welcome to Vidso</h2>
+    <h2 id="auth-title">Welcome to TubeOps</h2>
     <p class="auth-lead"></p>
     <div class="auth-switch" id="auth-switch" hidden>
       <p>This browser is already signed in as <strong id="auth-switch-email">another account</strong>.</p>
@@ -215,18 +217,19 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <div class="hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
   <div class="paywall-shell" tabindex="-1">
-    <p class="paywall-kicker">Unlock Vidso</p>
-    <h2 class="paywall-title" id="paywall-title">Choose a plan to continue</h2>
-    <p class="paywall-sub">Pick a plan to unlock clipping, video tools, captions, and every other tool.</p>
+    <p class="paywall-kicker">Unlock TubeOps</p>
+    <h2 class="paywall-title" id="paywall-title">Choose the plan for you.</h2>
+    <p class="paywall-sub">Pick a plan to start making videos with your agents.</p>
     <div class="paywall-status" id="paywall-status"></div>
     <div class="paywall-toggle" role="tablist" aria-label="Billing cycle">
       <button type="button" class="paywall-tg" data-cycle="monthly" id="tg-monthly">Monthly</button>
-      <button type="button" class="paywall-tg active" data-cycle="annual" id="tg-annual">Annual <span style="opacity:.85;font-weight:700">Save</span></button>
+      <button type="button" class="paywall-tg active" data-cycle="annual" id="tg-annual">Annual <span class="save">Save</span></button>
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
+    <p class="paywall-under"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>Cancel anytime. No hidden fees.</p>
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" id="paywall-signout">Sign out</button>
-      <p class="paywall-note">Checkout starts from this Vidso account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
+      <p class="paywall-note">Checkout starts from this TubeOps account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
     </div>
   </div>
 </div>
@@ -234,7 +237,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 (function(){
   var path = (location.pathname || '').replace(/\/+$/, '') || '/'
   var isSignup = path === '/signup'
-  document.title = isSignup ? 'Vidso · Sign up' : 'Vidso · Sign in'
+  document.title = isSignup ? 'TubeOps · Sign up' : 'TubeOps · Sign in'
   document.getElementById('tab-login').style.display = isSignup ? 'none' : ''
   document.getElementById('tab-signup').style.display = isSignup ? '' : 'none'
   document.getElementById('tab-btn-login').classList.toggle('active', !isSignup)
@@ -329,7 +332,7 @@ function switchTab(tab) {
   document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login')
   document.getElementById('tab-btn-signup').classList.toggle('active', tab === 'signup')
   history.replaceState({}, '', tab === 'signup' ? '/signup' : '/login')
-  document.title = tab === 'signup' ? 'Vidso · Sign up' : 'Vidso · Sign in'
+  document.title = tab === 'signup' ? 'TubeOps · Sign up' : 'TubeOps · Sign in'
   const typed = document.getElementById(tab === 'signup' ? 'login-email' : 'su-email').value
   const into = document.getElementById(tab === 'signup' ? 'su-email' : 'login-email')
   if (typed && !into.value) into.value = typed
@@ -377,7 +380,7 @@ function showPaywall() {
   if (card) card.style.display = 'none'
   if (home) home.style.display = 'none'
   if (modal) modal.classList.remove('hidden')
-  document.title = 'Vidso · Choose a plan'
+  document.title = 'TubeOps · Choose a plan'
 }
 
 function setPaywallStatus(msg, kind) {
@@ -476,11 +479,11 @@ function rememberAuthNext() {
 
 function prepareConnectorLogin() {
   document.documentElement.classList.add('auth-oauth')
-  document.title = 'Vidso · Connect Claude'
+  document.title = 'TubeOps · Connect Claude'
   const title = document.getElementById('auth-title')
   const lead = document.querySelector('.auth-lead')
-  if (title) title.textContent = 'Connect Claude to Vidso'
-  if (lead) lead.textContent = 'Sign in so Claude can use your Vidso tools. This window will close after you continue.'
+  if (title) title.textContent = 'Connect Claude to TubeOps'
+  if (lead) lead.textContent = 'Sign in so Claude can use your TubeOps tools. This window will close after you continue.'
   const email = document.getElementById('login-email')
   if (email) try { email.focus() } catch (_) {}
 }

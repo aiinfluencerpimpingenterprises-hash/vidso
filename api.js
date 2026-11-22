@@ -104,7 +104,7 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     raw = await res.text()
   } catch (e) {
     if (e && e.name === 'AbortError') throw new Error('That request timed out. Try again.')
-    throw new Error("Can't reach Vidso's servers right now. Check your connection and try again in a minute.")
+    throw new Error("Can't reach TubeOps's servers right now. Check your connection and try again in a minute.")
   } finally {
     if (timer) clearTimeout(timer)
   }
@@ -242,7 +242,9 @@ function planReady(me, expectedTier) {
 function checkoutUrl(tier, interval, opts = {}) {
   const email = String(opts.email || emailFromToken() || '').trim()
   if (!email || !email.includes('@')) return ''
-  const base = WHOP_CHECKOUT[`${tier}_${interval}`]
+  // The paywall calls it 'annual'; the Whop links are keyed '_yearly'.
+  const cycle = interval === 'annual' || interval === 'yearly' ? 'yearly' : 'monthly'
+  const base = WHOP_CHECKOUT[`${tier}_${cycle}`]
   if (!base) return ''
   const u = new URL(base)
   const userId = opts.userId ? String(opts.userId) : ''
@@ -321,10 +323,10 @@ function syncProblem(sync) {
     return 'This account has no email, so there is nothing to match against Whop. Contact support.'
   }
   if (s.reason === 'need_checkout') {
-    return 'Start checkout from this signed-in account first. Apple Hide My Email is a different address than your Vidso login.'
+    return 'Start checkout from this signed-in account first. Apple Hide My Email is a different address than your TubeOps login.'
   }
   if (s.reason === 'membership_taken') {
-    return 'That payment is already attached to another Vidso account. Sign in there, or contact support.'
+    return 'That payment is already attached to another TubeOps account. Sign in there, or contact support.'
   }
   return ''
 }
@@ -591,6 +593,14 @@ export const api = {
       }
       return URL.createObjectURL(await res.blob())
     },
+  },
+  /** Server-side video runs (lib/runs-api.js): the video keeps going after the tab closes. */
+  runs: {
+    available: () => !!sameOriginApi('/api/youtube/runs/latest'),
+    start: (settings) => reqTo(sameOriginApi('/api/youtube/runs/start'), 'POST', { settings, refresh_token: getRefreshToken() || '' }),
+    get: (id) => reqTo(sameOriginApi('/api/youtube/runs/' + encodeURIComponent(id)), 'GET', undefined, false, { timeoutMs: 20000 }),
+    latest: () => reqTo(sameOriginApi('/api/youtube/runs/latest'), 'GET', undefined, false, { timeoutMs: 20000 }),
+    cancel: (id) => reqTo(sameOriginApi('/api/youtube/runs/' + encodeURIComponent(id) + '/cancel'), 'POST', {}),
   },
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),

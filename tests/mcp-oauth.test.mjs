@@ -34,7 +34,7 @@ test('Claude connector URL is origin plus /mcp', () => {
   )
 })
 
-test('protected resource metadata names Vidso YouTube and the authorization server', () => {
+test('protected resource metadata names TubeOps YouTube and the authorization server', () => {
   const meta = protectedResourceMetadata('https://www.vidso.pro', 'https://www.vidso.pro/mcp')
   assert.equal(meta.resource, 'https://www.vidso.pro/mcp')
   assert.deepEqual(meta.authorization_servers, ['https://www.vidso.pro'])
@@ -81,7 +81,7 @@ test('PKCE S256 verifies the code_verifier', () => {
   assert.equal(verifyPkce('nope', challenge), false)
 })
 
-test('OAuth access tokens unwrap to the Vidso JWT; raw JWTs still pass through', () => {
+test('OAuth access tokens unwrap to the TubeOps JWT; raw JWTs still pass through', () => {
   const tokens = tokenResponse({
     access: 'vidso-jwt',
     refresh: 'vidso-rt',

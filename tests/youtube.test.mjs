@@ -187,7 +187,7 @@ test('oauth sidecar is hidden from My Files', () => {
   assert.equal(isHistorySidecarName('Thumbnail-demo-abcd.jpg'), false)
 })
 
-test('MCP tool list covers YouTube plus Vidso generation', () => {
+test('MCP tool list covers YouTube plus TubeOps generation', () => {
   const names = mcpTools().map((t) => t.name)
   assert.deepEqual(names.filter((n) => n.startsWith('youtube_')), [
     'youtube_status',
@@ -251,7 +251,7 @@ test('unknown MCP tool is rejected without calling YouTube', async () => {
   )
 })
 
-test('MCP youtube_connect_url is a one-time Google start link for this Vidso account', async () => {
+test('MCP youtube_connect_url is a one-time Google start link for this TubeOps account', async () => {
   const connect = await runMcpTool('youtube_connect_url', {}, {
     token: 'tok',
     req: { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } },
@@ -265,7 +265,7 @@ test('MCP youtube_connect_url is a one-time Google start link for this Vidso acc
   assert.equal(payload.token, 'tok')
 })
 
-test('YouTube connect ticket starts Google OAuth without a Vidso browser session', () => {
+test('YouTube connect ticket starts Google OAuth without a TubeOps browser session', () => {
   const ticket = issueYoutubeConnectTicket({ token: 'vidso-jwt', returnTo: '/video-generation', env })
   assert.equal(readYoutubeConnectTicket(ticket, env).token, 'vidso-jwt')
   const start = youtubeConnectStartUrl('https://www.vidso.pro', ticket)
@@ -289,7 +289,7 @@ test('YouTube connect ticket starts Google OAuth without a Vidso browser session
   assert.ok(dedicated.bridge)
 })
 
-test('MCP config JSON points at the Vidso YouTube server', () => {
+test('MCP config JSON points at the TubeOps YouTube server', () => {
   const json = JSON.parse(mcpConfigJson('https://vidso.pro/api/youtube/mcp', 'tok_123'))
   assert.equal(json.mcpServers['vidso-youtube'].url, 'https://vidso.pro/api/youtube/mcp')
   assert.equal(json.mcpServers['vidso-youtube'].headers.Authorization, 'Bearer tok_123')

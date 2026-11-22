@@ -1,5 +1,6 @@
 import { evaluatePlan, toHttp } from '../../lib/enforce.js'
 import { cors, readJson, requireUser, send, bearer } from '../_lib/http.js'
+import { handleRuns } from '../../lib/runs-api.js'
 import {
   bridgeCookieHeader,
   deleteYoutubeRecord,
@@ -448,6 +449,8 @@ export default async function handler(req, res) {
   }
 
   const sub = pathOf(req)
+  // Server-side video runs share this function (Vercel's function cap): /api/youtube/runs/…
+  if (sub === 'runs' || sub.startsWith('runs/')) return handleRuns(req, res, sub.split('/').slice(1).filter(Boolean))
   if (sub === 'callback' && req.method === 'GET') {
     return handleCallback(req, res)
   }

@@ -138,7 +138,7 @@ function verdict({ configured, member, memberships, lookup }) {
     return 'Whop has no member matching this email. The buyer paid with a different email, or the purchase is on another business.'
   }
   if (memberships.ok && memberships.rows === 0) {
-    return 'The buyer exists on Whop but has no membership on a Vidso plan. Check whether the charge actually completed.'
+    return 'The buyer exists on Whop but has no membership on a TubeOps plan. Check whether the charge actually completed.'
   }
   if (memberships.unmappedPlanIds?.length) {
     return 'Memberships were found on plan IDs that are not in lib/whop-map.js, so the tier cannot be resolved: ' + memberships.unmappedPlanIds.join(', ')
@@ -184,7 +184,7 @@ export default async function handler(req, res) {
   const { apiKey, companyId } = whopConfig()
 
   // ?orchestration=1 writes adaptive pricing, platform payment methods, and the
-  // WHOP_THREE_DS_LEVEL setting onto every mapped Vidso plan. Checkout also does
+  // WHOP_THREE_DS_LEVEL setting onto every mapped TubeOps plan. Checkout also does
   // this lazily; this is the explicit "turn it on now" path.
   if (req.query?.orchestration) {
     if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
@@ -202,7 +202,7 @@ export default async function handler(req, res) {
           ? 'The API key cannot update plans. Grant plan:update and plan:basic:read in Whop under Developer, Company API Keys.'
           : failed.length
             ? 'Some plans did not take the checkout patch. See plans[].message.'
-            : 'Adaptive pricing, Whop platform payment methods, and the configured 3D Secure level are on for every Vidso plan. Hosted checkout already collects billing address; declined cards are retried by Whop for five days.',
+            : 'Adaptive pricing, Whop platform payment methods, and the configured 3D Secure level are on for every TubeOps plan. Hosted checkout already collects billing address; declined cards are retried by Whop for five days.',
       },
     })
   }

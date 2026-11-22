@@ -93,7 +93,7 @@ async function handleAuthorize(req, res) {
     client = readClient(clientId)
     assertRedirect(client, redirectUri)
   } catch {
-    return html(res, 400, authorizeHtml('This Claude connector is not registered. Add the Vidso URL again.'))
+    return html(res, 400, authorizeHtml('This Claude connector is not registered. Add the TubeOps URL again.'))
   }
   let session
   try {

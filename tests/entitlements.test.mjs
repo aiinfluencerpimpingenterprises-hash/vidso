@@ -78,16 +78,16 @@ test('unlimited is null, never a large integer', () => {
 })
 
 test('quota boundary: last allowed Plus long-form, then the next is refused', () => {
-  const last = evaluateQuota({ user: plusUser, kind: 'long_form', used: 9 })
+  const last = evaluateQuota({ user: plusUser, kind: 'long_form', used: 29 })
   assert.equal(last.ok, true)
   assert.equal(last.increment, true)
   assert.equal(last.remaining, 1)
 
-  const next = evaluateQuota({ user: plusUser, kind: 'long_form', used: 10 })
+  const next = evaluateQuota({ user: plusUser, kind: 'long_form', used: 30 })
   assert.equal(next.ok, false)
   assert.equal(next.status, 402)
   assert.equal(next.code, 'quota_exceeded')
-  assert.match(next.message, /10 long-form/)
+  assert.match(next.message, /30 long-form/)
   assert.match(next.message, /Pro/)
 })
 
@@ -100,11 +100,11 @@ test('quota boundary: last allowed Plus short-form, then the next is refused', (
 })
 
 test('quota boundary: last allowed Pro long-form, then the next is refused', () => {
-  const last = evaluateQuota({ user: proUser, kind: 'long_form', used: 24 })
+  const last = evaluateQuota({ user: proUser, kind: 'long_form', used: 99 })
   assert.equal(last.ok, true)
-  const next = evaluateQuota({ user: proUser, kind: 'long_form', used: 25 })
+  const next = evaluateQuota({ user: proUser, kind: 'long_form', used: 100 })
   assert.equal(next.ok, false)
-  assert.match(next.message, /25 long-form/)
+  assert.match(next.message, /100 long-form/)
   assert.match(next.message, /Studio/)
 })
 
@@ -260,14 +260,14 @@ test('usage parser never treats credits as video counts', () => {
 
 test('quota display matches advertised counts, not credits', () => {
   const view = quotaView({ plan_status: 'active', plan: 'plus', credits: 300 })
-  assert.equal(view.compact, '10 LF · 15 SF')
+  assert.equal(view.compact, '30 LF · 15 SF')
   assert.doesNotMatch(view.compact, /300/)
   assert.doesNotMatch(view.longText, /credit/i)
   const remaining = quotaView(
     { plan_status: 'active', plan: 'plus' },
     { long_form_used: 3, short_form_used: 5 },
   )
-  assert.equal(remaining.compact, '7 LF · 10 SF')
+  assert.equal(remaining.compact, '27 LF · 10 SF')
 })
 
 test('Faceless Studio credits stay metered but off the pricing cards', () => {
@@ -299,10 +299,10 @@ test('faceless render is the only quota consumer; captions are plan-only', () =>
 })
 
 test('evaluateGeneration refuses Plus over length or over quota', () => {
-  const ok = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 9 })
+  const ok = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 29 })
   assert.equal(ok.ok, true)
   assert.equal(ok.kind, 'long_form')
-  const overQuota = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 10 })
+  const overQuota = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 30 })
   assert.equal(overQuota.ok, false)
   assert.equal(overQuota.code, 'quota_exceeded')
   const overLen = evaluateGeneration({ user: plusUser, durationSeconds: 901, kind: 'long_form', used: 0 })
@@ -311,9 +311,9 @@ test('evaluateGeneration refuses Plus over length or over quota', () => {
 })
 
 test('Whop yearly charges match the live whole-dollar prices', () => {
-  assert.equal(expectedPrice('plus', 'yearly'), 179)
-  assert.equal(expectedPrice('pro', 'yearly'), 299)
-  assert.equal(expectedPrice('studio', 'yearly'), 359)
+  assert.equal(expectedPrice('plus', 'yearly'), 588)
+  assert.equal(expectedPrice('pro', 'yearly'), 828)
+  assert.equal(expectedPrice('studio', 'yearly'), 1260)
 })
 
 test('duration_id long_600 is 600 seconds', () => {
@@ -422,7 +422,7 @@ test('paid Pro email is granted when Whop has not provisioned yet', () => {
     const access = resolveAccess(paid, off)
     assert.equal(access.active, true)
     assert.equal(access.tier, 'pro')
-    assert.equal(access.entitlements.long_form_per_month, 25)
+    assert.equal(access.entitlements.long_form_per_month, 100)
     const q = quotaView(paid)
     assert.equal(q.unlimited, false)
     assert.equal(q.tier, 'pro')
