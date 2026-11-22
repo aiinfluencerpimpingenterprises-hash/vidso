@@ -13207,10 +13207,26 @@ function fvPollRenderJob(jobId, picked, btn) {
           return
         }
         fvSetExportStatus('Render complete', 'ok')
-        fvCrewRenderDone()
         document.getElementById('fv-export-bar').style.width = '100%'
-        const url = await api.faceless.downloadRender(jobId)
-        if (fvState.renderUrl) URL.revokeObjectURL(fvState.renderUrl)
+        // Through the /rapi proxy a big MP4 download can fail; the server saves it to
+        // My Files instead and the tab plays that link. Directly, download as before.
+        let url = ''
+        let savedLink = false
+        try {
+          if (api.faceless.proxied()) {
+            fvCrewSet('editor', 'working', 'Saving the finished video to My Files')
+            url = (await api.faceless.saveRender(jobId, fvState.script?.title))?.url || ''
+            savedLink = !!url
+          }
+          if (!url) url = await api.faceless.downloadRender(jobId)
+        } catch (err) {
+          const msg = 'The video finished but could not be fetched: ' + (err.message || 'try again') + '. Press Try again.'
+          fvSetExportStatus(msg, 'err')
+          fvCrewFail('render', msg)
+          return
+        }
+        fvCrewRenderDone()
+        if (fvState.renderUrl && String(fvState.renderUrl).startsWith('blob:')) URL.revokeObjectURL(fvState.renderUrl)
         fvState.renderUrl = url
         const vid = document.getElementById('fv-export-video')
         vid.src = url
@@ -13226,7 +13242,7 @@ function fvPollRenderJob(jobId, picked, btn) {
         document.getElementById('fv-export-result').style.display = ''
         document.getElementById('fv-export-actions').style.display = 'none'
         fvSyncYoutubeUploadBtn(_ytStatus)
-        fvSaveRenderToLibrary(url, fvState.script?.title)
+        if (!savedLink) fvSaveRenderToLibrary(url, fvState.script?.title)
         fvState.deliveryOn = true
         fvState.madeIn = fvState.runStartedAt ? fvClock((Date.now() - fvState.runStartedAt) / 1000) : ''
         fvPaintDelivery(true)

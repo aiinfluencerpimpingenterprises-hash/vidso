@@ -634,6 +634,10 @@ export const api = {
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
     startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
     pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
+    /** Server-side copy of a finished render into My Files; returns { url }. */
+    saveRender: (jobId, title) => reqTo(sameOriginApi('/api/youtube/runs?op=save-render'), 'POST', { jobId, title: title || '' }, false, { timeoutMs: 280000 }),
+    /** True when API calls go through the /rapi proxy, where big downloads are unreliable. */
+    proxied: () => !/up\.railway\.app$/.test(new URL(BASE, 'https://x').hostname),
     downloadRender: async (jobId) => {
       const res = await fetch(BASE + `/api/faceless/render/${jobId}/download`, {
         headers: { Authorization: `Bearer ${getToken()}` },
