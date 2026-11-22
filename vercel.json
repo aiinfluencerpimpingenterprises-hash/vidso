@@ -2,6 +2,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/home/index.html"
+    },
+    {
       "source": "/mcp",
       "destination": "/api/youtube/mcp"
     },
@@ -75,6 +79,14 @@
     },
     {
       "source": "/studio",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/brand",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/create",
       "destination": "/dashboard/index.html"
     },
     {
@@ -159,11 +171,6 @@
     }
   ],
   "redirects": [
-    {
-      "source": "/",
-      "destination": "/home",
-      "permanent": false
-    },
     {
       "source": "/landing",
       "destination": "/home",

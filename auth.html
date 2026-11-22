@@ -17,65 +17,65 @@
   --glow:233,75,88;
 }
 html,body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100%}
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-shell{display:flex;width:min(920px,100%);max-width:920px;padding:0;overflow:hidden;background:rgba(18,18,20,.97);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
-.auth-showcase{position:relative;flex:1.05;min-width:0;padding:36px 32px;display:flex;flex-direction:column;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 20% 0%,rgba(var(--glow),.16),transparent 55%),radial-gradient(90% 70% at 90% 100%,rgba(179,29,44,.14),transparent 50%),linear-gradient(165deg,#12141C 0%,#0B0B0C 55%,#0D0D0F 100%);border-right:1px solid var(--line)}
-.auth-showcase > *{position:relative;z-index:1}
-.auth-preview{aspect-ratio:16/9;width:100%;border-radius:14px;background:linear-gradient(165deg,#1c1c1c,#0c0c0c);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45);cursor:pointer}
-.auth-preview-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0c0c0c}
-.auth-showcase h3{font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
-.auth-sub{font-size:.9rem;color:var(--muted);line-height:1.45;margin:0}
-.auth-chips{display:flex;flex-wrap:wrap;gap:8px}
-.auth-chips span{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.62);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
-.auth-panel{flex:1;min-width:0;padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
-.auth-brand{display:flex;justify-content:center;margin:0 0 16px}
-.auth-panel h2{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:1.6rem;font-weight:500;letter-spacing:-.015em;margin:0 0 8px;text-align:center}
-.auth-lead{font-size:.85rem;color:var(--muted);margin:0 0 22px;text-align:center;line-height:1.45}
-.auth-switch{
-  display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:12px 14px;
-  border-radius:12px;border:1px solid rgba(var(--glow),.35);background:rgba(var(--glow),.08)
-}
+body{margin:0;min-height:100vh}
+.auth-page{display:grid;grid-template-columns:minmax(400px,34%) 1fr;min-height:100vh}
+.auth-left{position:relative;background:#141414;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px 36px}
+.auth-panel{width:100%;max-width:400px;display:flex;flex-direction:column}
+.auth-brand{display:flex;justify-content:center;margin:0 0 22px}
+.auth-panel h2{font-size:1.9rem;font-weight:400;letter-spacing:-.02em;margin:0 0 36px;text-align:center}
+.auth-lead{font-size:.9rem;color:var(--faint);margin:-24px 0 32px;text-align:center;line-height:1.45}
+.auth-lead:empty{display:none}
+.auth-right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 48px;background-color:var(--bg);background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:22px 22px;min-width:0}
+.auth-right h1{font-family:'Lora',Georgia,serif;font-size:clamp(2.2rem,3.6vw,3.4rem);font-weight:500;letter-spacing:-.02em;line-height:1.1;margin:0 0 12px;text-align:center}
+.auth-right p{font-size:1.05rem;color:var(--muted);margin:0 0 40px;text-align:center}
+.auth-wall{width:min(980px,100%);display:flex;flex-direction:column;gap:12px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.wall-row{display:flex;gap:12px;width:max-content;animation:wall 60s linear infinite}
+.wall-row.rev{animation-direction:reverse}
+.wall-row img{width:240px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid var(--line);display:block}
+@keyframes wall{to{transform:translateX(calc(-50% - 6px))}}
+@media (prefers-reduced-motion:reduce){.wall-row{animation:none}}
+.more{display:none}
+.step2 .more{display:block}
+.auth-switch{display:flex;flex-direction:column;gap:10px;margin:0 0 20px;padding:14px;border-radius:16px;border:1px solid var(--line-2)}
 .auth-switch[hidden]{display:none!important}
-.auth-switch p{margin:0;font-size:.8rem;line-height:1.4;color:rgba(255,255,255,.7);text-align:center}
-.auth-switch strong{color:var(--ink);font-weight:700}
+.auth-switch p{margin:0;font-size:.8rem;line-height:1.4;color:var(--muted);text-align:center}
+.auth-switch strong{color:var(--ink);font-weight:600}
 .auth-switch .btn{width:100%}
-.auth-switch-note{font-size:.72rem;color:rgba(255,255,255,.45)}
-.modal-tabs{display:flex;gap:0;margin-bottom:22px;background:var(--card);border-radius:10px;padding:4px;border:1px solid var(--line)}
-.tab-btn{flex:1;padding:9px 10px;border-radius:8px;border:none;background:none;color:var(--muted);font-size:.84rem;font-weight:500;cursor:pointer;font-family:inherit}
-.tab-btn.active{background:var(--grad);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(196,16,40,.28)}
-.field{margin-bottom:14px}
-label{display:block;font-size:.75rem;color:var(--faint);margin-bottom:6px;font-weight:500}
-input[type=text],input[type=email],input[type=password]{
-  width:100%;border-radius:10px;padding:12px 14px;background:var(--bg);border:1px solid var(--line-2);color:var(--ink);font:inherit;font-size:.875rem;outline:none
-}
-input:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(var(--glow),.22)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;font-size:.92rem;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:inherit;line-height:1}
-.btn-primary{background:var(--grad);color:#fff}
-.btn-primary:hover{background:var(--grad-hover)}
-.auth-cta{width:100%;position:relative}
+.auth-switch-note{font-size:.72rem;color:var(--faint)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.field{margin-bottom:10px}
+input[type=text],input[type=email],input[type=password]{width:100%;height:48px;border-radius:999px;padding:0 20px;background:transparent;border:1px solid var(--line-2);color:var(--ink);font:inherit;font-size:.92rem;outline:none;transition:border-color .15s}
+input::placeholder{color:var(--faint)}
+input:focus{border-color:rgba(245,245,244,.45)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 20px;border-radius:999px;font-size:.92rem;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:inherit;line-height:1;transition:background .15s,border-color .15s}
+.btn-primary{background:var(--ink);color:#0B0B0C;font-weight:600}
+.btn-primary:hover{background:#fff}
+.auth-cta{width:100%;position:relative;margin-top:4px}
 .auth-cta.is-loading,.auth-google.is-loading{pointer-events:none;opacity:.85}
 .auth-cta.is-loading .auth-cta-label{opacity:0}
 .auth-cta-spinner,.auth-google .auth-cta-spinner{display:none;position:absolute;inset:0;place-items:center}
 .auth-cta.is-loading .auth-cta-spinner,.auth-google.is-loading .auth-cta-spinner{display:grid}
-.auth-cta-spinner i{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-.auth-social{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
-.auth-google{width:100%;justify-content:center;gap:10px;padding:12px 16px;font-weight:600;font-size:.9rem;background:#fff;color:#1f1f1f;position:relative}
-.auth-google:hover{background:#f5f5f5}
-.auth-google svg{width:18px;height:18px;flex-shrink:0}
+.auth-cta-spinner i{width:16px;height:16px;border:2px solid rgba(0,0,0,.15);border-top-color:#111;border-radius:50%;animation:spin .7s linear infinite}
+.auth-social{display:flex;flex-direction:column;gap:10px}
+.auth-google,.auth-email{width:100%;position:relative;background:transparent;color:var(--ink);border-color:var(--line-2)}
+.auth-google:hover,.auth-email:hover{background:rgba(255,255,255,.05);border-color:rgba(245,245,244,.28)}
+.auth-google svg,.auth-email svg{width:18px;height:18px;flex-shrink:0}
 .auth-google.is-loading .auth-cta-label,.auth-google.is-loading > svg{opacity:0}
-.auth-google .auth-cta-spinner i{border-color:rgba(0,0,0,.15);border-top-color:#222}
-.auth-or{display:flex;align-items:center;gap:12px;margin:0 0 18px;color:var(--faint);font-size:.72rem;font-weight:600}
+.auth-google .auth-cta-spinner i{border-color:rgba(255,255,255,.2);border-top-color:#fff}
+.auth-or{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--faint);font-size:.75rem}
 .auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
-.modal-error{font-size:.78rem;color:#eb5757;margin-top:10px;display:none;text-align:center}
-.auth-legal{margin-top:16px;font-size:.72rem;line-height:1.5;color:var(--faint);text-align:center}
-.auth-legal a{color:var(--a1);text-decoration:none;font-weight:500}
-.auth-legal a:hover{text-decoration:underline}
-.auth-home{position:absolute;top:18px;left:18px;z-index:3;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:600;text-decoration:none}
-.auth-home:hover{color:#fff}
-html.auth-oauth .auth-showcase{display:none}
-html.auth-oauth .auth-shell{max-width:440px}
-html.auth-oauth .auth-home{display:none}
-html.auth-oauth body{padding:12px}
+.modal-error{font-size:.8rem;color:#f87171;margin-top:12px;display:none;text-align:center}
+.auth-alt{margin-top:18px;text-align:center;font-size:.85rem;color:var(--faint)}
+.auth-alt span:has(.tab-btn.active){display:none}
+.tab-btn{background:none;border:none;padding:0;color:var(--ink);font:inherit;font-weight:500;cursor:pointer}
+.tab-btn:hover{text-decoration:underline}
+.auth-legal{max-width:400px;margin-top:auto;padding-top:40px;font-size:.75rem;line-height:1.5;color:var(--faint);text-align:center}
+.auth-legal a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.auth-legal a:hover{color:var(--ink)}
+.auth-home{position:absolute;top:22px;left:24px;z-index:3;color:var(--faint);font-size:.85rem;font-weight:500;text-decoration:none}
+.auth-home:hover{color:var(--ink)}
+html.auth-oauth .auth-home,html.auth-oauth .auth-right{display:none}
+html.auth-oauth .auth-page{grid-template-columns:1fr}
 .btn-secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--ink)}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
@@ -123,13 +123,12 @@ html.auth-oauth body{padding:12px}
 .paywall-note a{color:var(--a1);font-weight:500;text-decoration:none}
 .paywall-note a:hover{text-decoration:underline}
 @keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:900px){
+  .auth-page{grid-template-columns:1fr}
+  .auth-right{display:none}
+  .auth-left{border:0;padding:72px 16px 28px}
+}
 @media (max-width:760px){
-  body{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:16px 16px 28px;gap:18px}
-  .auth-home{position:static;align-self:flex-start;z-index:2;padding:2px 2px 0;line-height:1.2}
-  .auth-shell{width:100%;max-width:420px;align-self:center;border-radius:18px;flex-direction:column}
-  .auth-showcase{display:flex;padding:16px 16px 0;border-right:none;background:transparent}
-  .auth-showcase h3,.auth-sub,.auth-chips{display:none}
-  .auth-panel{padding:24px 24px 32px}
   .paywall-plans{grid-template-columns:1fr}
   .paywall-plan .feat{display:flex;flex-direction:column;grid-template-rows:none}
   .paywall-plan .feat-row{min-height:0}
@@ -156,47 +155,38 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <!-- End Meta Pixel Code -->
 </head>
 <body>
-<a class="auth-home" href="/home" id="auth-home">← Home</a>
-<div class="auth-shell" id="auth-card" role="dialog" aria-labelledby="auth-title">
-  <aside class="auth-showcase" aria-hidden="true">
-    <div class="auth-preview">
-      <video
-        id="auth-preview-video"
-        class="auth-preview-video"
-        src="https://pub-f40c956471ff49feab622906892ec527.r2.dev/Signupscreenvideo.mp4"
-        muted
-        playsinline
-        webkit-playsinline
-        autoplay
-        loop
-        preload="auto"
-        aria-label="Vidso product preview"
-      ></video>
-    </div>
-    <h3>Long-form YouTube videos on autopilot</h3>
-    <p class="auth-sub">Script, voiceover, B-roll, and captions in one run.</p>
-    <div class="auth-chips">
-      <span>Faceless explainer</span>
-      <span>Documentary</span>
-      <span>Listicle</span>
-      <span>Tutorial</span>
-    </div>
-  </aside>
-  <div class="auth-panel">
+<div class="auth-page" id="auth-card" role="dialog" aria-labelledby="auth-title">
+<section class="auth-left">
+  <a class="auth-home" href="/home" id="auth-home">← Home</a>
+  <div class="auth-panel" id="auth-panel">
     <div class="auth-brand">
-      <img data-vidso-logo width="40" height="40" alt="Vidso" decoding="async" style="object-fit:contain">
+      <img data-vidso-logo width="44" height="44" alt="Vidso" decoding="async" style="object-fit:contain">
     </div>
     <h2 id="auth-title">Welcome to Vidso</h2>
-    <p class="auth-lead">Sign in to access your AI content tools.</p>
+    <p class="auth-lead"></p>
     <div class="auth-switch" id="auth-switch" hidden>
       <p>This browser is already signed in as <strong id="auth-switch-email">another account</strong>.</p>
-      <a class="btn btn-secondary" id="auth-switch-continue" href="/video-generation">Open the app</a>
+      <a class="btn btn-primary" id="auth-switch-continue" href="/create">Open the app</a>
       <p class="auth-switch-note">Sign in below to switch accounts. That replaces the session in this browser.</p>
     </div>
-    <div class="modal-tabs">
-      <button type="button" class="tab-btn" id="tab-btn-login">Sign In</button>
-      <button type="button" class="tab-btn" id="tab-btn-signup">Sign Up</button>
+    <div id="tab-login">
+      <div class="field"><label class="sr-only" for="login-email">Email</label><input type="email" id="login-email" placeholder="Email address" autocomplete="email"/></div>
+      <div class="field more"><label class="sr-only" for="login-pass">Password</label><input type="password" id="login-pass" placeholder="Password" autocomplete="current-password"/></div>
+      <button type="button" class="btn btn-primary auth-cta" id="login-cta"><span class="auth-cta-label">Continue</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <div class="modal-error" id="login-err"></div>
     </div>
+    <div id="tab-signup" style="display:none">
+      <div class="field"><label class="sr-only" for="su-email">Email</label><input type="email" id="su-email" placeholder="Email address" autocomplete="email"/></div>
+      <div class="field more"><label class="sr-only" for="su-name">Name</label><input type="text" id="su-name" placeholder="Name" autocomplete="name"/></div>
+      <div class="field more"><label class="sr-only" for="su-pass">Password</label><input type="password" id="su-pass" placeholder="Password (6+ characters)" autocomplete="new-password"/></div>
+      <button type="button" class="btn btn-primary auth-cta" id="signup-cta"><span class="auth-cta-label">Continue</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <div class="modal-error" id="signup-err"></div>
+    </div>
+    <p class="auth-alt">
+      <span>Don't have an account? <button type="button" class="tab-btn" id="tab-btn-signup">Sign up</button></span>
+      <span>Already have an account? <button type="button" class="tab-btn" id="tab-btn-login">Sign in</button></span>
+    </p>
+    <div class="auth-or">OR</div>
     <div class="auth-social">
       <button type="button" class="btn auth-google" id="google-cta">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -209,22 +199,18 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="auth-cta-spinner" aria-hidden="true"><i></i></span>
       </button>
     </div>
-    <div class="auth-or">or continue with email</div>
-    <div id="tab-login">
-      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
-      <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
-      <button type="button" class="btn btn-primary auth-cta" id="login-cta"><span class="auth-cta-label">Sign In</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-      <div class="modal-error" id="login-err"></div>
-    </div>
-    <div id="tab-signup" style="display:none">
-      <div class="field"><label for="su-name">Name</label><input type="text" id="su-name" placeholder="Your name" autocomplete="name"/></div>
-      <div class="field"><label for="su-email">Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
-      <div class="field"><label for="su-pass">Password</label><input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password"/></div>
-      <button type="button" class="btn btn-primary auth-cta" id="signup-cta"><span class="auth-cta-label">Create Account</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
-      <div class="modal-error" id="signup-err"></div>
-    </div>
-    <p class="auth-legal">By continuing, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
   </div>
+  <p class="auth-legal">By continuing, you agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</a> and acknowledge the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+</section>
+<aside class="auth-right" aria-hidden="true">
+  <h1>Long-form videos on autopilot</h1>
+  <p>Script, voiceover, scenes and captions for YouTube, in the looks the biggest faceless channels use.</p>
+  <div class="auth-wall">
+    <div class="wall-row"><img src="/home/img/styles/stick.jpg" alt="" decoding="async"><img src="/home/img/styles/oil.jpg" alt="" decoding="async"><img src="/home/img/styles/map.jpg" alt="" decoding="async"><img src="/home/img/styles/3d.jpg" alt="" decoding="async"><img src="/home/img/styles/map.jpg" alt="" decoding="async"><img src="/home/img/styles/cartoon.jpg" alt="" decoding="async"><img src="/home/img/styles/cosmic.jpg" alt="" decoding="async"><img src="/home/img/styles/doodle.jpg" alt="" decoding="async"><img src="/home/img/styles/stick.jpg" alt="" decoding="async"><img src="/home/img/styles/oil.jpg" alt="" decoding="async"><img src="/home/img/styles/vhs.jpg" alt="" decoding="async"><img src="/home/img/styles/3d.jpg" alt="" decoding="async"><img src="/home/img/styles/map.jpg" alt="" decoding="async"><img src="/home/img/styles/cartoon.jpg" alt="" decoding="async"><img src="/home/img/styles/cosmic.jpg" alt="" decoding="async"><img src="/home/img/styles/doodle.jpg" alt="" decoding="async"></div>
+    <div class="wall-row rev"><img src="/home/img/styles/flat.jpg" alt="" decoding="async"><img src="/home/img/styles/archive.jpg" alt="" decoding="async"><img src="/home/img/styles/unreal.jpg" alt="" decoding="async"><img src="/home/img/styles/flat_whiteboard.jpg" alt="" decoding="async"><img src="/home/img/styles/anamorphic.jpg" alt="" decoding="async"><img src="/home/img/styles/cutout.jpg" alt="" decoding="async"><img src="/home/img/styles/vhs.jpg" alt="" decoding="async"><img src="/home/img/styles/dark_fantasy.jpg" alt="" decoding="async"><img src="/home/img/styles/flat.jpg" alt="" decoding="async"><img src="/home/img/styles/archive.jpg" alt="" decoding="async"><img src="/home/img/styles/unreal.jpg" alt="" decoding="async"><img src="/home/img/styles/flat_whiteboard.jpg" alt="" decoding="async"><img src="/home/img/styles/anamorphic.jpg" alt="" decoding="async"><img src="/home/img/styles/cutout.jpg" alt="" decoding="async"><img src="/home/img/styles/vhs.jpg" alt="" decoding="async"><img src="/home/img/styles/dark_fantasy.jpg" alt="" decoding="async"></div>
+    <div class="wall-row"><img src="/home/img/styles/vhs.jpg" alt="" decoding="async"><img src="/home/img/styles/cartoon.jpg" alt="" decoding="async"><img src="/home/img/styles/oil.jpg" alt="" decoding="async"><img src="/home/img/styles/stick.jpg" alt="" decoding="async"><img src="/home/img/styles/cosmic.jpg" alt="" decoding="async"><img src="/home/img/styles/3d.jpg" alt="" decoding="async"><img src="/home/img/styles/archive.jpg" alt="" decoding="async"><img src="/home/img/styles/flat.jpg" alt="" decoding="async"><img src="/home/img/styles/vhs.jpg" alt="" decoding="async"><img src="/home/img/styles/cartoon.jpg" alt="" decoding="async"><img src="/home/img/styles/oil.jpg" alt="" decoding="async"><img src="/home/img/styles/stick.jpg" alt="" decoding="async"><img src="/home/img/styles/cosmic.jpg" alt="" decoding="async"><img src="/home/img/styles/3d.jpg" alt="" decoding="async"><img src="/home/img/styles/archive.jpg" alt="" decoding="async"><img src="/home/img/styles/flat.jpg" alt="" decoding="async"></div>
+  </div>
+</aside>
 </div>
 
 <div class="hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
@@ -254,64 +240,38 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   document.getElementById('tab-btn-login').classList.toggle('active', !isSignup)
   document.getElementById('tab-btn-signup').classList.toggle('active', isSignup)
 
-  var video = document.getElementById('auth-preview-video')
-  var preview = video && video.closest('.auth-preview')
-  var oauthPopup = false
   try {
     var nextParam = new URLSearchParams(location.search).get('next') || ''
-    oauthPopup = nextParam.indexOf('/oauth/') === 0 || nextParam.indexOf('/api/oauth/') === 0 || !!window.opener
+    if (nextParam.indexOf('/oauth/') === 0 || nextParam.indexOf('/api/oauth/') === 0 || window.opener) document.documentElement.classList.add('auth-oauth')
   } catch (e) {}
-  if (oauthPopup) document.documentElement.classList.add('auth-oauth')
-  if (video) {
-    var reduce = false
-    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) {}
-    var expired = false
-    var hovering = false
-    var unmute = function () {
-      video.muted = false
-      video.volume = 1
-      video.play().catch(function () {})
-    }
-    var mute = function () {
-      video.muted = true
-    }
-    if (preview) {
-      preview.addEventListener('pointerenter', function () {
-        hovering = true
-        unmute()
-      })
-      preview.addEventListener('pointerleave', function () {
-        hovering = false
-        mute()
-        if (expired) {
-          video.loop = false
-          try { video.pause() } catch (e2) {}
-        }
-      })
-    }
-    if (reduce || oauthPopup) {
-      video.removeAttribute('autoplay')
-      video.loop = false
-      try { video.pause() } catch (e2) {}
-    } else {
-      var armed = false
-      var stop = function () {
-        expired = true
-        video.loop = false
-        if (!hovering) {
-          mute()
-          try { video.pause() } catch (e2) {}
-        }
-      }
-      var arm = function () {
-        if (armed) return
-        armed = true
-        window.setTimeout(stop, 30000)
-      }
-      video.addEventListener('playing', arm)
-      video.play().catch(function () {})
-    }
+  var panel = document.getElementById('auth-panel')
+  function label(id, text) { document.querySelector('#' + id + ' .auth-cta-label').textContent = text }
+  // Email first, like invideo: Continue reveals the rest of the form.
+  window.vidsoStep2 = function (on, focus) {
+    panel.classList.toggle('step2', !!on)
+    label('login-cta', on ? 'Sign in' : 'Continue')
+    label('signup-cta', on ? 'Create account' : 'Continue')
+    if (!on || !focus) return
+    var login = document.getElementById('tab-login').style.display !== 'none'
+    try { document.getElementById(login ? 'login-pass' : 'su-name').focus() } catch (e) {}
   }
+  // True when the click should only move on to step 2.
+  window.vidsoNeedsStep2 = function (emailId, errId) {
+    if (panel.classList.contains('step2')) return false
+    var v = document.getElementById(emailId).value.trim()
+    var err = document.getElementById(errId)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+      err.textContent = 'Enter a valid email address.'
+      err.style.display = 'block'
+      return true
+    }
+    err.style.display = 'none'
+    window.vidsoStep2(true, true)
+    return true
+  }
+  ;[['login-email', 'login-cta'], ['su-email', 'signup-cta']].forEach(function (x) {
+    document.getElementById(x[0]).addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById(x[1]).click() })
+  })
 })()
 </script>
 <script type="module">
@@ -319,7 +279,7 @@ import { api, setSession, clearSession, getToken, getRefreshToken, restoreSessio
 import { mountPricing } from '/lib/pricing-ui.js'
 import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, pixelIdentify, pixelClickIds } from '/lib/meta-pixel.js'
 
-const APP = '/video-generation'
+const APP = '/create'
 let paywallCycle = 'annual'
 let currentUser = null
 let _planPoll = null
@@ -370,6 +330,9 @@ function switchTab(tab) {
   document.getElementById('tab-btn-signup').classList.toggle('active', tab === 'signup')
   history.replaceState({}, '', tab === 'signup' ? '/signup' : '/login')
   document.title = tab === 'signup' ? 'Vidso · Sign up' : 'Vidso · Sign in'
+  const typed = document.getElementById(tab === 'signup' ? 'login-email' : 'su-email').value
+  const into = document.getElementById(tab === 'signup' ? 'su-email' : 'login-email')
+  if (typed && !into.value) into.value = typed
 }
 
 function setLoading(btn, on) {
@@ -382,6 +345,7 @@ function showError(message) {
   const loginVisible = document.getElementById('tab-login').style.display !== 'none'
   const err = document.getElementById(loginVisible ? 'login-err' : 'signup-err')
   if (!err) return
+  window.vidsoStep2?.(true)
   err.textContent = message
   err.style.display = 'block'
 }
@@ -670,6 +634,7 @@ document.getElementById('google-cta').onclick = () => {
 }
 
 document.getElementById('login-cta').onclick = async () => {
+  if (window.vidsoNeedsStep2?.('login-email', 'login-err')) return
   const email = document.getElementById('login-email').value.trim()
   const pass = document.getElementById('login-pass').value
   const err = document.getElementById('login-err')
@@ -689,6 +654,7 @@ document.getElementById('login-cta').onclick = async () => {
 }
 
 document.getElementById('signup-cta').onclick = async () => {
+  if (window.vidsoNeedsStep2?.('su-email', 'signup-err')) return
   const name = document.getElementById('su-name').value.trim()
   const email = document.getElementById('su-email').value.trim()
   const pass = document.getElementById('su-pass').value

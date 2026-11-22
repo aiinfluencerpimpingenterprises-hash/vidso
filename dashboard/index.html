@@ -126,7 +126,8 @@
   // Do not paint the solid black cover on refresh. Paid users should see the
   // app immediately; unpaid users should see onboarding or the paywall, not a
   // blank #0B0B0C frame while /user/me runs.
-  if (needOb) document.documentElement.classList.add('needs-onboarding')
+  // New signups land in the app: the Manager runs the channel setup in the Agents chat.
+  if (needOb) document.documentElement.classList.add('needs-setup')
   else if (!paid) document.documentElement.classList.add('needs-paywall')
 })()
 </script>
@@ -4208,6 +4209,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
     <button type="button" class="topnav-item" id="nav-manual" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
+    <button type="button" class="topnav-item" id="nav-brand" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
     <button type="button" class="topnav-item" id="nav-dashboard" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-archived hidden data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
@@ -4278,6 +4280,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
   <button type="button" class="topnav-item" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
+  <button type="button" class="topnav-item" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
   <button type="button" class="topnav-item" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label" data-archived hidden>Generate</span>
   <button type="button" class="topnav-item" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
@@ -6143,6 +6146,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
     <div class="panel content-glow" id="panel-agents"><div id="agents-root"></div></div>
     <div class="panel content-glow" id="panel-manual"><div id="studio-root"></div></div>
+    <div class="panel content-glow" id="panel-brand"><div id="brand-root"></div></div>
+    <div class="panel" id="panel-create"><div id="create-root"></div></div>
 
     <div class="panel content-glow" id="panel-videogen">
       <div class="page-header">
@@ -6709,12 +6714,16 @@ import {
   publishMeta,
   planSceneVisuals,
   composeScenes,
+  setupChannel,
+  readReference,
 } from '/lib/youtube-client.js'
 import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptFromText } from '/lib/channel-kit.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { initAgentsChat } from '/lib/agents-chat.js'
 import { initStudioHub } from '/lib/studio-hub.js'
+import { initBrandStudio } from '/lib/brand-studio.js'
+import { initChannelCreator } from '/lib/channel-creator.js'
 import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
@@ -6850,9 +6859,10 @@ function afterAuthReady(opts = {}) {
     try { consumeYoutubeQuery() } catch (_) {}
     return
   }
-  document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding')
+  document.documentElement.classList.remove('needs-gate', 'needs-paywall', 'needs-onboarding', 'needs-setup')
   closePaywall()
-  if (opts.restoreRoute !== false) restorePanelFromHash()
+  if (obIsSignupSession() && !_obDoneThisSession) startManagerSetup()
+  else if (opts.restoreRoute !== false) restorePanelFromHash()
   maybeStartUiTour()
   try { consumeYoutubeQuery() } catch (_) {}
 }
@@ -7019,7 +7029,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/agents'
+  if (path === '/login' || path === '/signup') return location.origin + '/create'
   return location.origin + location.pathname + location.search
 }
 
@@ -7560,9 +7570,8 @@ function obFinishStep() {
   obMarkSeen()
 }
 function obShouldAutoOpen() {
-  if (obForcePreview()) return true
-  if (paywallDevBypass()) return false
-  return obIsSignupSession()
+  // The signup survey is replaced by the Manager's channel setup (lib/onboarding.js).
+  return obForcePreview()
 }
 function obLoadAnswers() {
   try { return JSON.parse(localStorage.getItem(obAnswersKey()) || 'null') || {} } catch (_) { return {} }
@@ -7869,6 +7878,19 @@ window.finishOnboarding = (dest) => {
   maybeStartUiTour()
 }
 
+/** First run: open the Agents chat and let the Manager set up the channel. */
+function startManagerSetup() {
+  try { switchPanel('agents', document.getElementById('nav-agents'), { allowLocked: true }) } catch (_) {}
+  try { window.agentsChat?.startSetup({ force: true }) } catch (e) { console.warn('[setup] could not start', e) }
+}
+/** The Manager's setup finished (or was skipped): close the signup step, then the usual paywall. */
+window.fvSetupDone = (answers = {}) => {
+  try { obSaveAnswers({ completedVia: 'manager', setup: answers }) } catch (_) {}
+  try { obFinishStep() } catch (_) {}
+  _tourDoneThisSession = true
+  try { tourMarkSeen() } catch (_) {}
+  setTimeout(() => { try { maybeShowPaywall() } catch (_) {} }, 1500)
+}
 window.maybeShowOnboarding = () => {
   const force = obForcePreview()
   if (!currentUser && !force) return
@@ -8818,6 +8840,8 @@ window.maybeStartUiTour = () => {
     // The Agents home and the Studio explain themselves; the Long Form tour waits until the user opens that page.
     if (document.getElementById('panel-agents')?.classList.contains('active')) return
     if (document.getElementById('panel-manual')?.classList.contains('active')) return
+    if (document.getElementById('panel-brand')?.classList.contains('active')) return
+    if (document.getElementById('panel-create')?.classList.contains('active')) return
     openUiTour({ auto: true, tourId: 'core' })
   }
   if (funnelLocked()) run()
@@ -9130,17 +9154,17 @@ function populateUser() {
 }
 
 // ── PANELS + clean URL routes (Vidso-style) ───────────────────────────────
-const DEFAULT_PANEL = 'agents'
-const DEFAULT_PATH = '/agents'
+const DEFAULT_PANEL = 'create'
+const DEFAULT_PATH = '/create'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Agents', agents:'Agents', manual:'Studio', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Agents', agents:'Agents', manual:'Studio', brand:'Brand', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  agents:'/agents', manual:'/studio', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  agents:'/agents', manual:'/studio', brand:'/brand', create:'/create', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
@@ -9225,7 +9249,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['agents','manual','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
+    const hasPageHeader = ['agents','manual','brand','create','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -9247,6 +9271,16 @@ window.switchPanel = (id, btn, opts = {}) => {
   if (id === 'manual') {
     try { fvInit() } catch (_) {}
     try { window.studioHub?.render() } catch (_) {}
+  }
+  if (id === 'create') {
+    try { fvInit() } catch (_) {}
+    try { window.fvAgentsLoadVoices?.() } catch (_) {}
+    try { window.channelCreator?.takeLanding?.() } catch (_) {}
+  }
+  if (id === 'brand') {
+    try { fvInit() } catch (_) {}
+    try { window.fvAgentsLoadVoices?.() } catch (_) {}
+    try { window.brandStudio?.render() } catch (_) {}
   }
   if (id === 'facelessstudio') { try { window.fsStudioShow?.() } catch (_) {} }
   if (id === 'editor') {
@@ -9761,6 +9795,10 @@ window.fvStillScene = (i) => {
   fvState.sceneProject.edits++
   fvAgentsChanged()
 }
+/** Manager setup: a channel name and first-episode topics, or null. */
+window.fvSetupChannel = (args) => setupChannel(args)
+/** Channel setup: read a YouTube channel the user wants to be like. */
+window.fvReadReference = (url) => readReference(url)
 window.fvMusicList = () => FV_MUSIC.map((m) => ({ id: m.id, name: m.name, url: m.url }))
 window.fvSetMusicVol = (v) => {
   if (!fvState.preview) fvState.preview = {}
@@ -10385,7 +10423,7 @@ window.fvAgentsState = () => {
     durationLabel: picked?.label || '',
     voiceId: fvState.voiceId || '',
     voiceState: typeof voicesLoadState === 'string' ? voicesLoadState : '',
-    voices: (Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), preview: v.preview_url || '' })),
+    voices: (Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), name: String(v.name || '').split(' - ')[0], desc: String(v.name || '').includes(' - ') ? String(v.name).split(' - ').slice(1).join(' - ') : (v.description || ''), category: v.category || '', gender: String(v.labels?.gender || v.gender || '').toLowerCase(), accent: v.labels?.accent || v.accent || '', preview: v.preview_url || '' })),
     aspect: fvState.aspect || '16:9',
     script: s ? {
       title: s.title || '',
@@ -10502,7 +10540,7 @@ window.fvAgentsRerender = (why) => {
   if (!fvState.crew || fvState.crew.stage !== 'render') return (document.getElementById('fv-export-status')?.textContent || 'The Editor could not start the render.').trim()
   return ''
 }
-window.fvSetCaptionLook = (id) => { const ok = fvApplyCaptionLook(id); if (ok) { try { localStorage.setItem('vidso_fv_caplook', id) } catch (_) {} } ; fvAgentsChanged(); return ok }
+window.fvSetCaptionLook = (id) => { const ok = fvApplyCaptionLook(id); if (ok) { try { localStorage.setItem('vidso_fv_caplook', id); localStorage.removeItem('vidso_fv_capstyle') } catch (_) {} } ; fvAgentsChanged(); return ok }
 window.fvAgentsCaptions = (id) => {
   if (!fvApplyCaptionLook(id)) return 'Unknown caption style.'
   return window.fvAgentsRerender('Re-cutting the video with ' + FV_CAPTION_LOOKS[id].name + ' captions')
@@ -11950,6 +11988,37 @@ try {
 } catch (_) {}
 /** The caption style the next render will use, exactly as it is sent to the renderer. */
 window.fvCaptionStyleNow = () => { try { return fvCapStyle() } catch (_) { return null } }
+/**
+ * Set the render caption style field by field (Brand profile editor). Saved, and put back on load
+ * like a preset look; a preset picked later replaces it.
+ */
+function fvApplyCaptionStyle(c) {
+  if (!c || typeof c !== 'object') return false
+  const sel = document.getElementById('fv-cap-font')
+  try { if (sel && sel.options.length < 8) fillCaptionFontSelect(sel) } catch (_) {}
+  if (sel && c.font && [...sel.options].some((o) => o.value === c.font)) sel.value = c.font
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = String(v) }
+  set('fv-cap-size', Math.max(24, Math.min(140, Number(c.size) || 64)))
+  set('fv-cap-color', c.color); set('fv-cap-hl', c.highlight)
+  const sv = document.getElementById('fv-cap-size-val'); if (sv) sv.textContent = String(Math.max(24, Math.min(140, Number(c.size) || 64)))
+  fvSetCapChip('fv-cap-shadow', !!c.shadow)
+  fvSetCapChip('fv-cap-stroke', !!c.stroke)
+  const so = document.getElementById('fv-cap-stroke-opts'); if (so) so.hidden = !c.stroke
+  if (c.stroke) { set('fv-cap-stroke-color', c.strokeColor || '#000000'); set('fv-cap-stroke-w', Math.max(1, Math.min(12, Number(c.strokeWidth) || 3))) }
+  try { syncFvFontUi() } catch (_) {}
+  try { fvApplyCapStyle() } catch (_) {}
+  return true
+}
+window.fvSetCaptionStyle = (c) => {
+  const ok = fvApplyCaptionStyle(c)
+  if (ok) { try { localStorage.setItem('vidso_fv_capstyle', JSON.stringify(c)); localStorage.removeItem('vidso_fv_caplook') } catch (_) {} }
+  fvAgentsChanged()
+  return ok
+}
+try {
+  const savedStyle = JSON.parse(localStorage.getItem('vidso_fv_capstyle') || 'null')
+  if (savedStyle && !localStorage.getItem('vidso_fv_caplook')) fvApplyCaptionStyle(savedStyle)
+} catch (_) {}
 
 function fvMusicEl() {
   return document.getElementById('fv-prev-music')
@@ -14123,6 +14192,12 @@ try {
 try {
   window.studioHub = initStudioHub({ root: document.getElementById('studio-root') })
 } catch (e) { console.warn('[studio] init failed', e) }
+try {
+  window.brandStudio = initBrandStudio({ root: document.getElementById('brand-root') })
+} catch (e) { console.warn('[brand] init failed', e) }
+try {
+  window.channelCreator = initChannelCreator({ root: document.getElementById('create-root'), getUser: () => currentUser })
+} catch (e) { console.warn('[create] init failed', e) }
 
 if (!panelArchived('facelessstudio')) {
 try {

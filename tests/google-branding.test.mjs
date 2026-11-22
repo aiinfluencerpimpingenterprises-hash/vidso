@@ -2,12 +2,14 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, existsSync } from 'node:fs'
 
-test('the public homepage is the marketing site', () => {
+test('the public homepage is the full marketing page, with the create-your-channel box as its hero', () => {
   const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'))
-  const home = vercel.redirects.find((r) => r.source === '/')
-  assert.equal(home?.destination, '/home')
+  assert.equal(vercel.redirects.find((r) => r.source === '/'), undefined)
+  assert.equal(vercel.rewrites.find((r) => r.source === '/')?.destination, '/home/index.html')
   assert.equal(existsSync(new URL('../index.html', import.meta.url)), false)
   const html = readFileSync(new URL('../home/index.html', import.meta.url), 'utf8')
+  assert.match(html, /Let agents run your YouTube channel/)
+  assert.match(html, /id="lp-form"/)
   assert.match(html, /Your faceless YouTube empire starts here/)
   assert.match(html, /google-site-verification/)
 })

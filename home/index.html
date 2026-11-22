@@ -271,6 +271,102 @@
   .lf-wave{background:var(--lf-wave) center/auto 100% repeat-x;opacity:.9}
   .lf-caps span{flex:1;border-radius:5px;background:rgba(255,255,255,.12)}
   .lf-playhead{position:absolute;top:6px;bottom:6px;left:calc(84px + 2%);width:2px;border-radius:2px;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.12);transition:left 1.2s cubic-bezier(.4,0,.2,1)}
+  /* ---------- demo card: the new create-your-channel UI ---------- */
+  .nu{display:flex;flex-direction:column;background:#0b0b0c;text-align:left;color:#f4f4f2}
+  .nu-nav{display:flex;align-items:center;justify-content:center;gap:22px;height:40px;padding:0 16px;position:relative;font-size:12.5px;color:rgba(245,245,244,.82)}
+  .nu-nav b{position:absolute;left:16px;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:#fff}
+  .nu-nav i{position:absolute;right:14px;width:22px;height:22px;border-radius:50%;background:#d83a46;color:#fff;font-style:normal;font-size:10.5px;font-weight:700;display:grid;place-items:center}
+  .nu-body{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:26px;padding:14px 26px 26px;min-height:524px}
+  .nu-crumb{font-size:12px;color:rgba(245,245,244,.5)}
+  .nu-crumb em{font-style:normal;margin:0 6px;opacity:.6}
+  .nu-head{display:flex;align-items:center;gap:16px;margin:14px 0 18px}
+  .nu-ava{width:66px;height:66px;flex:0 0 66px;border-radius:50%;background-size:cover;background-position:center;border:2px solid rgba(255,255,255,.12)}
+  .nu-head strong{display:block;font-family:Lora,Georgia,serif;font-weight:400;font-size:34px;line-height:1.05;letter-spacing:-.02em;color:#f6f3ee}
+  .nu-head small{display:block;margin-top:6px;font-size:11.5px;color:rgba(245,245,244,.5)}
+  .nu-head p{margin:2px 0 0;font-size:13px;font-weight:600;color:#f4f1ea}
+  .nu-screen{display:none}
+  .nu-screen.is-on{display:block;animation:nuIn .45s ease}
+  @keyframes nuIn{from{transform:translateY(6px)}to{transform:none}}
+  .nu-screen h4{margin:0 0 12px;font-family:Lora,Georgia,serif;font-weight:400;font-size:24px;letter-spacing:-.015em;color:#f6f3ee}
+  .nu-lens,.nu-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .nu-lens span,.nu-chips span{height:26px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;border:1px solid rgba(255,255,255,.12);font-size:11.5px;color:rgba(245,245,244,.8)}
+  .nu-lens span.is-on,.nu-chips span.is-on{background:#fff;border-color:#fff;color:#111;font-weight:600}
+  .nu-eps,.nu-voices{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+  .nu-eps li{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#121214;font-size:13px;font-weight:550}
+  .nu-eps li b{width:16px;height:16px;flex:0 0 16px;border-radius:5px;border:1.5px solid rgba(255,255,255,.25);display:grid;place-items:center}
+  .nu-eps li.is-on{border-color:rgba(255,255,255,.55);background:#18181b}
+  .nu-eps li.is-on b{background:#fff;border-color:#fff;color:#111}
+  .nu-eps li b svg,.nu-img b svg{width:11px;height:11px}
+  .nu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:520px}
+  .nu-card{padding:6px 6px 9px;border-radius:14px;background:#121214;border:1.5px solid transparent;font-size:12px;font-weight:600}
+  .nu-card.is-on{border-color:#fff}
+  .nu-card > span:last-child{display:block;margin:7px 4px 0}
+  .nu-img{position:relative;display:block;aspect-ratio:16/9;border-radius:9px;background-size:cover;background-position:center}
+  .nu-img b{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:6px;background:#fff;color:#111;display:grid;place-items:center}
+  .nu-voices li{display:grid;grid-template-columns:30px 120px minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#121214}
+  .nu-voices li.is-on{border-color:rgba(255,255,255,.55);background:#18181b}
+  .nu-voices b{display:block;font-size:13px}
+  .nu-voices small{display:block;font-size:11px;color:rgba(245,245,244,.5)}
+  .nu-play{width:30px;height:30px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center}
+  .nu-play svg{width:12px;height:12px}
+  .nu-wave{display:flex;align-items:center;gap:2px;height:26px}
+  .nu-wave i{flex:1;border-radius:2px;background:rgba(255,255,255,.22)}
+  .nu-voices li.is-on .nu-wave i:nth-child(-n+14){background:#8f73ff}
+  .nu-cap{position:relative;max-width:440px;border-radius:14px;overflow:hidden;margin-bottom:12px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .nu-cap .nu-img{border-radius:0}
+  .nu-cap{container-type:inline-size}
+  /* Caption size follows the preview card: 2.6% of the width is 4.6% of the 16:9 frame height, the usual 48–52px on a 1080p YouTube video. */
+  .nu-cap em{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);width:84%;text-align:center;font-style:normal;font-family:Impact,'Arial Black',sans-serif;font-size:2.6cqw;line-height:1.15;text-transform:uppercase;letter-spacing:.02em;color:#fff;-webkit-text-stroke:.22cqw #000;paint-order:stroke fill;text-shadow:0 .3cqw .8cqw rgba(0,0,0,.65)}
+  .nu-cap u{text-decoration:none;color:#ffd84a}
+  /* Captions pop in word by word each time the step opens, like karaoke captions on a real video. */
+  .nu-cap em span,.nu-cap em u{display:inline-block;opacity:0;animation:nuWord .28s cubic-bezier(.2,1.4,.5,1) forwards;animation-delay:calc(.35s + var(--i) * .22s)}
+  @keyframes nuWord{from{opacity:0;transform:translateY(.6em) scale(.7)}to{opacity:1;transform:none}}
+  /* Style images drift slowly so the cards feel like footage, not stills. */
+  .nu-card .nu-img,.nu-ava{animation:nuDrift 9s ease-in-out infinite alternate;background-size:110%}
+  .nu-card:nth-child(2n) .nu-img{animation-delay:-3s}.nu-card:nth-child(3n) .nu-img{animation-delay:-6s}
+  @keyframes nuDrift{from{background-size:110%;background-position:30% 40%}to{background-size:124%;background-position:70% 60%}}
+  .nu-cap video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+  @media (prefers-reduced-motion:reduce){.nu-cap em span,.nu-cap em u{animation:none;opacity:1}.nu-card .nu-img,.nu-ava{animation:none;background-size:cover}}
+  .nu-rail{display:flex;flex-direction:column;gap:18px;padding-top:4px}
+  .nu-mgr{display:flex;gap:9px;align-items:flex-start}
+  .nu-blob{width:30px;height:30px;flex:0 0 30px}
+  .nu-mgr p{margin:0;padding:9px 11px;border-radius:6px 14px 14px 14px;background:#18181a;border:1px solid rgba(255,255,255,.08);font-size:12px;line-height:1.45;color:#f4f1ea}
+  .nu-mgr b{display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,245,244,.55);margin-bottom:2px}
+  .nu-steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .nu-steps li{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;color:rgba(245,245,244,.85)}
+  .nu-steps i{width:26px;height:26px;flex:0 0 26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11.5px;border:1px solid rgba(255,255,255,.18)}
+  .nu-steps li.is-on i{border:2px solid #fff;color:#fff}
+  .nu-steps li.is-done i{background:#1f3a2a;border-color:#1f3a2a;color:#3ddc84;font-size:0}
+  .nu-steps li.is-done i::before{content:"✓";font-size:12px}
+  .nu-steps small{display:block;font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(245,245,244,.45)}
+  .nu-next{display:flex;gap:8px;margin-top:4px}
+  .nu-next span{width:40px;height:38px;border-radius:999px;background:#1d1d20;display:grid;place-items:center;color:#fff;font-size:13px}
+  .nu-next b{flex:1;height:38px;border-radius:999px;background:#fff;color:#111;display:grid;place-items:center;font-size:13px}
+  @media(max-width:900px){.nu-body{grid-template-columns:1fr;padding:12px 14px 16px;min-height:0}.nu-rail{display:none}.nu-nav span{display:none}.nu-head strong{font-size:26px}}
+  @media(max-width:600px){.nu-grid{grid-template-columns:1fr 1fr}.nu-grid .nu-card:nth-child(n+5){display:none}.nu-voices li{grid-template-columns:30px minmax(0,1fr)}.nu-wave{display:none}.nu-eps li{font-size:12px}}
+  @media (prefers-reduced-motion:reduce){.nu-screen.is-on{animation:none}}
+  /* ---------- "Work with agents like a team": big agent blobs ---------- */
+  .tb{position:relative;z-index:2;padding:120px 0 96px}
+  .tb-wrap{max-width:1220px;margin:0 auto;padding:0 32px}
+  .tb-top{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .tb h2{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:500;font-size:clamp(40px,4.6vw,64px);line-height:1.04;letter-spacing:-.035em;color:#f6f3ee;text-align:left}
+  .tb-copy p{margin:0 0 18px;font-size:clamp(16px,1.35vw,19px);line-height:1.6;color:rgba(245,245,244,.86);text-align:left}
+  /* Eight equal columns spanning the same width as the text above: the first blob lines up with the heading, the last with the copy. */
+  .tb-row{list-style:none;margin:110px 0 0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:clamp(8px,1.4vw,20px);align-items:start}
+  .tb-m{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;transform:translateY(var(--y)) rotate(var(--r))}
+  .tb-m:first-child{align-items:flex-start}.tb-m:last-child{align-items:flex-end}
+  .tb-blob{display:block;width:min(var(--s),100%);aspect-ratio:1;animation:tbBob 4.2s ease-in-out infinite;animation-delay:var(--d)}
+  .tb-svg{width:100%;height:100%;overflow:visible;display:block}
+  .tb-svg .body{fill:var(--c);stroke:var(--c);transition:transform .35s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+  .tb-svg .eyes{fill:#141414;transition:transform .12s linear}
+  .tb-svg .eyes rect{transform-box:fill-box;transform-origin:center;animation:tbBlink 5.2s infinite;animation-delay:var(--d)}
+  .tb-m:hover .body{transform:scale(1.07) rotate(-4deg)}
+  .tb-m b{position:absolute;bottom:-34px;left:50%;transform:translateX(-50%) rotate(calc(var(--r) * -1));padding:4px 10px;border-radius:999px;background:var(--c);color:#fff;font-size:12.5px;font-weight:650;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s}
+  .tb-m:hover b{opacity:1}
+  @keyframes tbBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(-3deg)}}
+  @keyframes tbBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @media(max-width:900px){.tb{padding:80px 0 64px}.tb-top{grid-template-columns:1fr;gap:22px}.tb-row{margin-top:56px;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 14px}.tb-m,.tb-m:first-child,.tb-m:last-child{align-items:center;transform:translateY(calc(var(--y) * .35)) rotate(var(--r))}.tb-blob{width:min(calc(var(--s) * .62),100%)}}
+  @media (prefers-reduced-motion:reduce){.tb-blob,.tb-svg .eyes rect{animation:none}}
   .lf-steps.agent-caption{width:100%;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
   .lf-steps button{position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:12px;text-align:left;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:transparent;color:rgba(245,245,244,.5);font:inherit;cursor:pointer;transition:background .25s,color .25s,border-color .25s}
   .lf-steps button:hover{color:rgba(245,245,244,.8)}
@@ -349,6 +445,7 @@
   .lf-ideas em{font-style:normal;flex-shrink:0;font-size:12px;font-weight:650;padding:5px 10px;border-radius:999px;background:#fff;color:#161616}
 
   /* niches */
+  .lf-niche-tag{position:absolute;left:14px;top:14px;z-index:1;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:600;letter-spacing:-.01em}
   .lf-niche-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:44px}
   .lf-niche{position:relative;display:block;aspect-ratio:3/4;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#121214}
   .lf-niche video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
@@ -476,7 +573,39 @@
   .hero-pin.is-flying{position:fixed;left:0;top:0;right:auto;bottom:auto;margin:0;z-index:30;pointer-events:none;will-change:transform}
   .hero-pin .blob{transition:width .3s ease,height .3s ease}
   .hero-pin.is-working .blob{width:32px;height:32px;animation:blobHop .95s ease-in-out infinite}
-  .hero-alt{display:inline-flex;margin-top:18px;color:rgba(245,245,244,.62);font-size:14.5px;font-weight:500;text-decoration:none}
+  /* ---------- hero: create your channel (topic box), invideo-style grid ---------- */
+  .lp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .lp-pill{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 5px 0 6px;margin-bottom:26px;border-radius:999px;background:#18181a;font-size:.86rem;color:rgba(255,255,255,.72);white-space:nowrap}
+  .lp-pill b{color:#fff;font-weight:600}
+  .lp-pill i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#262628;font-style:normal;font-size:.72rem;color:#fff}
+  .lp-blob{width:24px;height:24px;flex:0 0 24px}
+  .lp-blob .eyes{fill:#141414;transform-box:fill-box;transform-origin:center;animation:blobBlink 4.6s infinite}
+  .lp-box{display:flex;align-items:flex-end;gap:12px;width:min(720px,100%);margin:44px auto 0;padding:12px 12px 12px 20px;border-radius:30px;background:#18181a;border:1px solid rgba(255,255,255,.06);text-align:left}
+  .lp-box:focus-within{border-color:rgba(255,255,255,.18)}
+  .lp-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+  .lp-box textarea{width:100%;min-height:52px;background:transparent;border:0;color:#f4f4f2;font:inherit;font-size:1.05rem;line-height:1.45;resize:none;padding:6px 8px;outline:none;box-shadow:none}
+  .lp-box textarea::placeholder{color:rgba(255,255,255,.4)}
+  .lp-tools{display:flex;gap:6px;padding:0 4px}
+  .lp-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:transparent;color:rgba(255,255,255,.82);font:inherit;font-size:.82rem;cursor:pointer}
+  .lp-chip:hover,.lp-chip.is-on{border-color:rgba(255,255,255,.4);color:#fff}
+  .lp-ref{display:flex;gap:6px;align-items:center;padding:0 4px}
+  .lp-ref[hidden]{display:none}
+  .lp-ref input{flex:1;min-width:0;height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:#111113;color:#f4f4f2;font:inherit;font-size:.88rem;outline:none}
+  .lp-next{height:52px;padding:0 26px;border-radius:999px;border:0;background:#fff;color:#111;font:inherit;font-size:1rem;font-weight:600;cursor:pointer;white-space:nowrap}
+  .lp-next:hover{background:#ececec}
+  .lp-next{transition:opacity .15s}
+  .lp-next:disabled{background:#fff;color:#111;opacity:.4;cursor:not-allowed}
+  .lp-next:focus-visible,.lp-chip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .lp-ideas{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;max-width:760px;margin:18px auto 0;font-size:.84rem;color:rgba(255,255,255,.4)}
+  .lp-ideas button{background:none;border:0;padding:0;color:rgba(255,255,255,.62);font:inherit;cursor:pointer}
+  .lp-ideas button:hover{color:#fff}
+  .hero{background:#000}
+  .hero::before{background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px)!important;background-size:40px 40px!important;background-position:center top!important;
+    mask-image:linear-gradient(#000 60%,transparent)!important;-webkit-mask-image:linear-gradient(#000 60%,transparent)!important}
+  @media(max-width:640px){.lp-box{flex-direction:column;align-items:stretch;border-radius:22px}.lp-next{width:100%}}
+  @media (prefers-reduced-motion:reduce){.lp-blob .eyes{animation:none}}
+  .hero-alt{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);z-index:2;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:rgba(245,245,244,.62);font-size:14.5px;font-weight:500;text-decoration:none}
+  .hero-alt-claude{width:16px;height:16px;flex:0 0 16px;color:#d97757}
   .hero-alt:hover{color:#fff}
   @media(max-width:800px){
     .hero .hero-pin{display:none}
@@ -508,7 +637,7 @@
     .btn-lg{padding:14px 26px;font-size:15px}
   }
   @media(min-width:901px){
-    .hero{margin-top:-95px;padding:120px 0 56px}
+    .hero{margin-top:-95px;padding:128px 0 72px}
     .hero-grid h1{font-size:clamp(56px,6.2vw,84px)}
     .hero-copy .sub{margin:22px auto 0;font-size:16px}
     .hero-grid .hero-visual{margin:56px auto 0}
@@ -1429,7 +1558,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <header>
   <div class="wrap" style="position:relative">
     <nav>
-      <a href="/home" class="logo">
+      <a href="/" class="logo">
         <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="Vidso" decoding="async">
         Vidso
       </a>
@@ -1478,15 +1607,27 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <span>Built for creators who want to <b>get paid</b> on YouTube</span>
     </div>
     <!-- Selected H1: Your faceless YouTube empire starts here -->
-    <h1 id="hero-h1">Long-form YouTube videos, made by your agents</h1>
-    <p class="sub">Give Vidso a topic. Its agents write the script, record the voiceover, add AI B-roll and an intro, and hand you a video up to 30 minutes long, ready to upload.</p>
-    <div class="hero-cta">
-      <button class="btn btn-primary btn-lg" onclick="location.href='/signup'">
-        Generate a Video Now
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </button>
+    <h1 id="hero-h1">Let agents run your YouTube channel</h1>
+    <form class="lp-box" id="lp-form">
+      <div class="lp-main">
+        <label class="lp-sr" for="lp-about">What is the channel about?</label>
+        <textarea id="lp-about" rows="2" maxlength="300" placeholder="Channel about how ordinary people lived in ancient Rome"></textarea>
+        <div class="lp-ref" id="lp-ref-row" hidden>
+          <label class="lp-sr" for="lp-ref">YouTube channel link</label>
+          <input id="lp-ref" type="url" inputmode="url" placeholder="youtube.com/@channel you want to be like" autocomplete="off">
+          <button type="button" class="lp-chip" id="lp-ref-close" aria-label="Remove reference">✕</button>
+        </div>
+        <div class="lp-tools"><button type="button" class="lp-chip" id="lp-ref-open"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1"/></svg>Reference</button></div>
+      </div>
+      <button type="submit" class="lp-next" id="lp-next" disabled>Next →</button>
+    </form>
+    <div class="lp-ideas" aria-label="Ideas">
+      <span>Try:</span>
+      <button type="button">The darkest unsolved crimes in history</button>
+      <button type="button">How money really works</button>
+      <button type="button">Myths and legends of the ancient world</button>
+      <button type="button">What life was like in the Middle Ages</button>
     </div>
-    <a class="hero-alt" href="/mcp">Or connect Claude to Vidso →</a>
     <div class="hero-platforms">
       <div class="plabel">Supported platform</div>
       <div class="plogos">
@@ -1562,52 +1703,62 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
    </div><!-- /hero-grid -->
   </div>
+  <a class="hero-alt" href="/mcp">Or connect <svg class="hero-alt-claude" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>Claude to Vidso →</a>
 </section>
 
-<section class="agent-drop" aria-label="The Vidso agent making a long-form video">
+<section class="agent-drop" id="features" aria-label="Setting up a channel in Vidso">
   <div class="agent-card">
     <div class="agent-screen lf-app" id="lfApp" data-step="0">
-      <div class="lf-bar" aria-hidden="true"><span></span><span></span><span></span><em>The Fall of the Roman Republic · 14:12</em></div>
-      <div class="lf-body">
-        <aside class="lf-chat">
-          <div class="lf-msg lf-you">Make a 14 minute documentary on how the Roman Republic fell. Calm narrator, history channel style.</div>
-          <div class="lf-msg lf-agent">
-            <b>Vidso agent</b>
-            <ul class="lf-tasks">
-              <li data-s="0">Researched the topic and planned 6 chapters</li>
-              <li data-s="1">Wrote a 2,100-word script and recorded the narrator</li>
-              <li data-s="2">Generated an AI intro and matched 46 B-roll shots</li>
-              <li data-s="3">Synced captions and exported 14:12 in 16:9</li>
-            </ul>
+      <div class="lf-bar" aria-hidden="true"><span></span><span></span><span></span><em>vidso.pro/create</em></div>
+      <div class="nu" aria-hidden="true">
+        <div class="nu-nav"><b><img src="/vidso-logo.png" width="16" height="16" alt="">Vidso</b><span>Agents</span><span>Studio</span><span>Brand</span><i>P</i></div>
+        <div class="nu-body">
+          <div class="nu-main">
+            <div class="nu-crumb">‹ Start <em>/</em> New channel</div>
+            <div class="nu-head"><span class="nu-ava" style="background-image:url(/home/img/preview-doodle.jpg)"></span><div><strong>Rome Unrolled</strong><small>Initial prompt</small><p>Channel about how the Roman Republic fell</p></div></div>
+            <div class="nu-screen is-on" data-n="0">
+              <h4>Pick the first episode</h4>
+              <div class="nu-lens"><span>8 min</span><span class="is-on">10 min</span><span>15 min</span><span>20 min</span></div>
+              <ul class="nu-eps">
+                <li class="nu-hop nu-pick is-on"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg></b>Why the Roman Republic Fell Without a Single Invasion</li>
+                <li class="nu-hop"><b></b>The Brothers Who Tried to Fix Rome and Were Killed for It</li>
+                <li class="nu-hop"><b></b>How Generals With Private Armies Broke the Senate</li>
+                <li class="nu-hop"><b></b>The Night Caesar Crossed the Rubicon</li>
+              </ul>
+            </div>
+            <div class="nu-screen" data-n="1">
+              <h4>Pick a style</h4>
+              <div class="nu-chips"><span class="is-on">All</span><span>Suggested</span><span>Drawn</span><span>Animated</span><span>Painted</span><span>Real</span></div>
+              <div class="nu-grid"><div class="nu-card nu-hop"><span class="nu-img" style="background-image:url(/home/img/styles/oil.jpg)"></span><span>Historical painting</span></div><div class="nu-card nu-hop"><span class="nu-img" style="background-image:url(/home/img/styles/map.jpg)"></span><span>Map animation</span></div><div class="nu-card nu-hop"><span class="nu-img" style="background-image:url(/home/img/styles/archive.jpg)"></span><span>Archive photos</span></div><div class="nu-card nu-hop"><span class="nu-img" style="background-image:url(/home/img/styles/cutout.jpg)"></span><span>Paper cutout</span></div><div class="nu-card nu-hop nu-pick is-on"><span class="nu-img" style="background-image:url(/home/img/styles/doodle.jpg)"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg></b></span><span>Crude doodle</span></div><div class="nu-card nu-hop"><span class="nu-img" style="background-image:url(/home/img/styles/anamorphic.jpg)"></span><span>Cinematic realism</span></div></div>
+            </div>
+            <div class="nu-screen" data-n="2">
+              <h4>Pick a narrator</h4>
+              <ul class="nu-voices"><li class="nu-hop nu-pick is-on"><span class="nu-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><div><b>Marcus</b><small>Deep documentary</small></div><span class="nu-wave"><i style="height:66%"></i><i style="height:44%"></i><i style="height:75%"></i><i style="height:31%"></i><i style="height:34%"></i><i style="height:93%"></i><i style="height:37%"></i><i style="height:71%"></i><i style="height:99%"></i><i style="height:32%"></i><i style="height:89%"></i><i style="height:52%"></i><i style="height:29%"></i><i style="height:36%"></i><i style="height:80%"></i><i style="height:78%"></i><i style="height:33%"></i><i style="height:55%"></i><i style="height:36%"></i><i style="height:95%"></i><i style="height:79%"></i><i style="height:32%"></i><i style="height:97%"></i><i style="height:40%"></i><i style="height:53%"></i><i style="height:99%"></i><i style="height:32%"></i><i style="height:98%"></i><i style="height:99%"></i><i style="height:75%"></i><i style="height:31%"></i><i style="height:53%"></i><i style="height:30%"></i><i style="height:96%"></i></span></li><li class="nu-hop"><span class="nu-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><div><b>Ava</b><small>Warm storyteller</small></div><span class="nu-wave"><i style="height:42%"></i><i style="height:62%"></i><i style="height:78%"></i><i style="height:43%"></i><i style="height:94%"></i><i style="height:40%"></i><i style="height:98%"></i><i style="height:64%"></i><i style="height:96%"></i><i style="height:48%"></i><i style="height:38%"></i><i style="height:99%"></i><i style="height:98%"></i><i style="height:49%"></i><i style="height:72%"></i><i style="height:37%"></i><i style="height:95%"></i><i style="height:33%"></i><i style="height:97%"></i><i style="height:32%"></i><i style="height:51%"></i><i style="height:88%"></i><i style="height:93%"></i><i style="height:79%"></i><i style="height:65%"></i><i style="height:84%"></i><i style="height:99%"></i><i style="height:83%"></i><i style="height:71%"></i><i style="height:63%"></i><i style="height:56%"></i><i style="height:48%"></i><i style="height:56%"></i><i style="height:35%"></i></span></li><li class="nu-hop"><span class="nu-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><div><b>James</b><small>Calm British</small></div><span class="nu-wave"><i style="height:98%"></i><i style="height:63%"></i><i style="height:92%"></i><i style="height:88%"></i><i style="height:68%"></i><i style="height:82%"></i><i style="height:61%"></i><i style="height:34%"></i><i style="height:40%"></i><i style="height:90%"></i><i style="height:78%"></i><i style="height:46%"></i><i style="height:68%"></i><i style="height:44%"></i><i style="height:87%"></i><i style="height:78%"></i><i style="height:30%"></i><i style="height:34%"></i><i style="height:96%"></i><i style="height:98%"></i><i style="height:65%"></i><i style="height:68%"></i><i style="height:69%"></i><i style="height:88%"></i><i style="height:99%"></i><i style="height:83%"></i><i style="height:33%"></i><i style="height:36%"></i><i style="height:59%"></i><i style="height:85%"></i><i style="height:33%"></i><i style="height:32%"></i><i style="height:64%"></i><i style="height:98%"></i></span></li><li class="nu-hop"><span class="nu-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><div><b>Nora</b><small>Clear explainer</small></div><span class="nu-wave"><i style="height:82%"></i><i style="height:61%"></i><i style="height:74%"></i><i style="height:69%"></i><i style="height:27%"></i><i style="height:84%"></i><i style="height:70%"></i><i style="height:46%"></i><i style="height:39%"></i><i style="height:88%"></i><i style="height:32%"></i><i style="height:52%"></i><i style="height:61%"></i><i style="height:41%"></i><i style="height:56%"></i><i style="height:75%"></i><i style="height:75%"></i><i style="height:88%"></i><i style="height:35%"></i><i style="height:46%"></i><i style="height:82%"></i><i style="height:76%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:42%"></i><i style="height:80%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:78%"></i><i style="height:70%"></i><i style="height:73%"></i><i style="height:54%"></i><i style="height:44%"></i><i style="height:35%"></i></span></li></ul>
+            </div>
+            <div class="nu-screen" data-n="3">
+              <h4>Pick captions</h4>
+              <div class="nu-cap"><video id="nuVid" muted loop playsinline preload="none" poster="/home/img/preview-doodle.jpg" src="/home/vid/preview-doodle.mp4" width="960" height="540" aria-hidden="true"></video><em><span style="--i:0">In</span> <span style="--i:1">133</span> <span style="--i:2">BC,</span> <span style="--i:3">the</span> <span style="--i:4">Republic</span> <span style="--i:5">looked</span> <u style="--i:6">unbreakable.</u></em></div>
+              <div class="nu-chips nu-capchips"><span class="nu-hop">Clean</span><span class="nu-hop nu-pick is-on">Bold</span><span class="nu-hop">Outline</span><span class="nu-hop">Documentary</span><span class="nu-hop">Comic</span></div>
+            </div>
           </div>
-          <div class="lf-input" aria-hidden="true">Ask the agent to change anything<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M6 11l6-6 6 6"/></svg></i></div>
-        </aside>
-        <div class="lf-stage">
-          <div class="lf-preview">
-            <video class="is-on" muted loop playsinline preload="none" poster="/home/img/hero-forum.jpg" data-src="/home/vid/hero-forum.mp4" width="1280" height="720" aria-label="Roman Forum at dusk, the opening shot of the video" data-manual></video>
-            <video muted loop playsinline preload="none" poster="/home/img/broll-senate.jpg" data-src="/home/vid/broll-senate.mp4" width="1280" height="720" aria-hidden="true" data-manual></video>
-            <video muted loop playsinline preload="none" poster="/home/img/broll-legion.jpg" data-src="/home/vid/broll-legion.mp4" width="1280" height="720" aria-hidden="true" data-manual></video>
-            <video muted loop playsinline preload="none" poster="/home/img/broll-rubicon.jpg" data-src="/home/vid/broll-rubicon.mp4" width="1280" height="720" aria-hidden="true" data-manual></video>
-            <span class="lf-cap" id="lfCap">In 133 BC, the Republic looked unbreakable.</span>
-            <span class="lf-tc" id="lfTc">00:12 / 14:12</span>
-          </div>
-          <div class="lf-timeline" aria-hidden="true">
-            <div class="lf-track"><b>Intro</b><div class="lf-lane"><span class="lf-clip lf-ai" style="width:12%">AI intro</span></div></div>
-            <div class="lf-track"><b>B-roll</b><div class="lf-lane lf-thumbs">
-              <span style="background-image:url(/home/img/hero-forum.jpg)"></span><span style="background-image:url(/home/img/broll-senate.jpg)"></span><span style="background-image:url(/home/img/broll-coins.jpg)"></span><span style="background-image:url(/home/img/broll-legion.jpg)"></span><span style="background-image:url(/home/img/broll-map.jpg)"></span><span style="background-image:url(/home/img/broll-rubicon.jpg)"></span><span style="background-image:url(/home/img/broll-fire.jpg)"></span>
-            </div></div>
-            <div class="lf-track"><b>Voice</b><div class="lf-lane lf-wave"></div></div>
-            <div class="lf-track"><b>Captions</b><div class="lf-lane lf-caps"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
-            <span class="lf-playhead" id="lfHead"></span>
-          </div>
+          <aside class="nu-rail">
+            <div class="nu-mgr"><svg class="nu-blob" viewBox="0 0 40 40"><g fill="#7c5cff" stroke="#7c5cff"><circle cx="14" cy="15" r="9"/><circle cx="26" cy="14" r="9"/><circle cx="13" cy="26" r="9"/><circle cx="27" cy="26" r="9"/><circle cx="20" cy="20" r="10"/></g><g fill="#141414"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg><p><b>Manager</b><span id="nuSay">I named your channel. Rename it if you like, then pick the first episode.</span></p></div>
+            <ol class="nu-steps">
+              <li class="is-on"><i>1</i><span><small>Step 1</small>Select topic</span></li>
+              <li><i>2</i><span><small>Step 2</small>Select video style</span></li>
+              <li><i>3</i><span><small>Step 3</small>Select narrator</span></li>
+              <li><i>4</i><span><small>Step 4</small>Select captions</span></li>
+            </ol>
+            <div class="nu-next"><span>←</span><b>Next</b></div>
+          </aside>
         </div>
       </div>
     </div>
-    <div class="agent-caption lf-steps" role="tablist" aria-label="How the agent makes a video">
-      <button type="button" role="tab" class="is-on" aria-selected="true" data-s="0"><i>1</i><span>Pick a topic<small>One line and a length</small></span></button>
-      <button type="button" role="tab" aria-selected="false" data-s="1"><i>2</i><span>Script and voice<small>Written for watch time</small></span></button>
-      <button type="button" role="tab" aria-selected="false" data-s="2"><i>3</i><span>AI B-roll and intro<small>A shot for every line</small></span></button>
-      <button type="button" role="tab" aria-selected="false" data-s="3"><i>4</i><span>Edit and export<small>16:9, ready to upload</small></span></button>
+    <div class="agent-caption lf-steps" role="tablist" aria-label="How you set up a channel">
+      <button type="button" role="tab" class="is-on" aria-selected="true" data-s="0"><i>1</i><span>Pick the first episode<small>The Manager names your channel</small></span></button>
+      <button type="button" role="tab" aria-selected="false" data-s="1"><i>2</i><span>Pick a style<small>One look for every scene</small></span></button>
+      <button type="button" role="tab" aria-selected="false" data-s="2"><i>3</i><span>Pick a narrator<small>Hear each voice first</small></span></button>
+      <button type="button" role="tab" aria-selected="false" data-s="3"><i>4</i><span>Pick captions<small>Then the team makes it</small></span></button>
     </div>
   </div>
 </section>
@@ -1672,20 +1823,21 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       return r && { x: r.right - 84, y: window.innerWidth <= 900 ? r.top - 10 : r.top + r.height * 0.5 }
     }
     if (n === 'script') {
-      var li = card.querySelector('.lf-tasks li.is-on') || card.querySelector('.lf-tasks li.is-done:last-of-type') || card.querySelector('.lf-tasks li')
-      r = li && li.getBoundingClientRect()
-      return r && { x: r.right + 2 + Math.sin(now / 520) * 4, y: r.top + r.height * 0.5 + Math.sin(now / 380) * 3 }
+      // Script hovers beside the step the Manager is on.
+      r = rectOf('.nu-steps li.is-on') || rectOf('.nu-screen.is-on .nu-pick')
+      return r && { x: r.right - 20 + Math.sin(now / 520) * 4, y: r.top + r.height * 0.5 + Math.sin(now / 380) * 3 }
     }
     if (n === 'voice') {
-      var lane = rectOf('.lf-timeline .lf-wave')
-      var head = rectOf('#lfHead')
-      return lane && head && { x: head.left + 8 + Math.sin(now / 700) * 18, y: lane.top + lane.height * 0.55 }
+      // Voice sits on the picked item of the current step.
+      r = rectOf('.nu-screen.is-on .nu-pick')
+      return r && { x: r.right - 34 + Math.sin(now / 700) * 6, y: r.top + r.height * 0.5 }
     }
     if (n === 'agent') {
-      var thumbs = card.querySelectorAll('.lf-thumbs span')
-      if (!thumbs.length) return null
-      if (now - lastHop > 1150) { thumbIndex = (thumbIndex + 1) % thumbs.length; lastHop = now }
-      r = thumbs[thumbIndex].getBoundingClientRect()
+      // Agent hops across the options of the current step.
+      var hops = card.querySelectorAll('.nu-screen.is-on .nu-hop')
+      if (!hops.length) return null
+      if (now - lastHop > 1150) { thumbIndex = (thumbIndex + 1) % hops.length; lastHop = now }
+      r = hops[thumbIndex % hops.length].getBoundingClientRect()
       return { x: r.left + r.width * 0.5, y: r.top + r.height * 0.6 }
     }
   }
@@ -1739,7 +1891,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 })()
 </script>
 
-<section class="vsec" id="features" aria-label="What Vidso does">
+<!-- ARCHIVED (Nov 2026): feature rows. Remove `hidden` to bring back. -->
+<section class="vsec" id="features-archived" aria-label="What Vidso does" hidden>
   <div class="vsec-wrap">
 
     <div class="vsplit">
@@ -1842,7 +1995,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   </div>
 </section>
 
-<section class="lf-tools" id="tools" aria-label="More tools">
+<!-- ARCHIVED (Nov 2026): "Everything else your channel needs" tools. Remove `hidden` to bring back. -->
+<section class="lf-tools" id="tools" aria-label="More tools" hidden>
   <div class="vsec-wrap">
     <div class="s-head center">
       <h2>Everything else your channel needs</h2>
@@ -1894,16 +2048,38 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <div class="vsec-wrap">
     <div class="s-head center">
       <h2>Made for faceless niches that pay</h2>
-      <p>Pick a format and Vidso shapes the script, pacing, and footage to fit it.</p>
+      <p>Say the topic. The Manager picks the look the biggest channels in that niche use, then the team makes the video.</p>
     </div>
     <div class="lf-niche-row">
-      <a class="lf-niche" href="/signup"><video muted loop playsinline preload="none" poster="/home/img/niche-history.jpg" data-src="/home/vid/niche-history.mp4" width="720" height="960" aria-label="The Colosseum at dawn"></video><div><h3>History documentaries</h3><p>Long, calm, chapter-by-chapter stories.</p></div></a>
-      <a class="lf-niche" href="/signup"><video muted loop playsinline preload="none" poster="/home/img/niche-finance.jpg" data-src="/home/vid/niche-finance.mp4" width="720" height="960" aria-label="Banknotes and a glowing stock chart"></video><div><h3>Finance explainers</h3><p>Charts, numbers, and plain-English narration.</p></div></a>
-      <a class="lf-niche" href="/signup"><video muted loop playsinline preload="none" poster="/home/img/niche-countdown.jpg" data-src="/home/vid/niche-countdown.mp4" width="720" height="960" aria-label="A giant creature beneath a small submarine light"></video><div><h3>Top 10 countdowns</h3><p>Fast lists with a reveal at every number.</p></div></a>
-      <a class="lf-niche" href="/signup"><video muted loop playsinline preload="none" poster="/home/img/niche-mystery.jpg" data-src="/home/vid/niche-mystery.mp4" width="720" height="960" aria-label="An abandoned lighthouse in fog"></video><div><h3>Mysteries and true stories</h3><p>Slow builds that keep people to the end.</p></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="History documentaries"><video muted loop playsinline preload="none" poster="/home/img/niche2-history.jpg" data-src="/home/vid/niche2-history.mp4" width="720" height="960" aria-label="The Colosseum at sunset"></video><span class="lf-niche-tag">Historical painting</span><div><h3>History documentaries</h3><p>Painted like the old masters, told chapter by chapter.</p></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Money and business"><video muted loop playsinline preload="none" poster="/home/img/niche2-money.jpg" data-src="/home/vid/niche2-money.mp4" width="720" height="960" aria-label="A stick figure on a stack of coins above one carrying a credit card"></video><span class="lf-niche-tag">Stick figure</span><div><h3>Money and business</h3><p>Stick figures and plain English, like the top finance explainers.</p></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Science and space"><video muted loop playsinline preload="none" poster="/home/img/niche2-space.jpg" data-src="/home/vid/niche2-space.mp4" width="720" height="960" aria-label="Saturn rising over an icy moon"></video><span class="lf-niche-tag">Space CGI</span><div><h3>Science and space</h3><p>Real-looking planets and probes, like the top space channels.</p></div></a>
+      <a class="lf-niche" href="/" data-niche-topic="Mysteries and true crime"><video muted loop playsinline preload="none" poster="/home/img/niche2-crime.jpg" data-src="/home/vid/niche2-crime.mp4" width="720" height="960" aria-label="A detective with a flashlight in a foggy alley"></video><span class="lf-niche-tag">Cinematic realism</span><div><h3>Mysteries and true crime</h3><p>Dark, cinematic scenes that build slowly to the end.</p></div></a>
     </div>
-    <div class="vsec-cta"><a class="vcta" href="/signup">Generate a Video Now</a></div>
+    <div class="vsec-cta"><a class="vcta" href="/" data-lp-focus>Create your channel</a></div>
     <div class="vopt">OPTIMIZED FOR <b><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>YouTube</b></div>
+  </div>
+</section>
+
+<section class="tb" aria-labelledby="tb-h">
+  <div class="tb-wrap">
+    <div class="tb-top">
+      <h2 id="tb-h">Work with agents<br>like a team</h2>
+      <div class="tb-copy">
+        <p>Each agent has one job. The Manager plans the channel, Script writes for watch time, Voice narrates, Agent finds a shot for every line, Editor cuts and captions, and Thumbnail designs the click.</p>
+        <p>They hand the work to each other from topic to an upload-ready video, and you can step in and change anything along the way.</p>
+      </div>
+    </div>
+    <ul class="tb-row" aria-label="Your agents">
+      <li class="tb-m" style="--c:#7c5cff;--s:150px;--y:10px;--r:-6deg;--d:0.00s" title="Manager: Plans the video and runs the team"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><circle cx="14" cy="15" r="9"/><circle cx="26" cy="14" r="9"/><circle cx="13" cy="26" r="9"/><circle cx="27" cy="26" r="9"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Manager</b></li>
+      <li class="tb-m" style="--c:#22b864;--s:170px;--y:40px;--r:4deg;--d:-0.55s" title="Script: Writes every chapter for watch time"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><rect x="7" y="7" width="26" height="26" rx="8" transform="rotate(-12 20 20)"/></g><g class="eyes"><path d="M14.6 21.2a2.6 2.6 0 0 1 5.2 0M21 21.2a2.6 2.6 0 0 1 5.2 0" fill="none" stroke="#141414" stroke-width="2.2" stroke-linecap="round"/></g></svg></span><b>Script</b></li>
+      <li class="tb-m" style="--c:#ff6a4d;--s:150px;--y:-10px;--r:8deg;--d:-1.10s" title="Voice: Narrates in your channel’s voice"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><path d="M20 8L34 31H6Z" stroke-width="7" stroke-linejoin="round"/></g><g class="eyes"><rect x="15.6" y="20.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="20.5" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Voice</b></li>
+      <li class="tb-m" style="--c:#ff4fa3;--s:140px;--y:50px;--r:-4deg;--d:-1.65s" title="Agent: Finds the B-roll for each line"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><circle cx="20.00" cy="11.00" r="7"/><circle cx="27.79" cy="15.50" r="7"/><circle cx="27.79" cy="24.50" r="7"/><circle cx="20.00" cy="29.00" r="7"/><circle cx="12.21" cy="24.50" r="7"/><circle cx="12.21" cy="15.50" r="7"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><path d="M14.6 21.2a2.6 2.6 0 0 1 5.2 0M21 21.2a2.6 2.6 0 0 1 5.2 0" fill="none" stroke="#141414" stroke-width="2.2" stroke-linecap="round"/></g></svg></span><b>Agent</b></li>
+      <li class="tb-m" style="--c:#f5a524;--s:175px;--y:0px;--r:-8deg;--d:-2.20s" title="Intro: Builds the cinematic opener"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><circle cx="20" cy="20" r="15"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Intro</b></li>
+      <li class="tb-m" style="--c:#3b82f6;--s:150px;--y:35px;--r:5deg;--d:-2.75s" title="Editor: Cuts and captions the timeline"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><rect x="4" y="11" width="32" height="20" rx="10" transform="rotate(-8 20 20)"/></g><g class="eyes"><rect x="15.6" y="17.5" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="17.5" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Editor</b></li>
+      <li class="tb-m" style="--c:#e2b100;--s:165px;--y:-5px;--r:-3deg;--d:-3.30s" title="Thumbnail: Designs the thumbnail that gets the click"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><circle cx="20.00" cy="10.00" r="6.5"/><circle cx="29.51" cy="16.91" r="6.5"/><circle cx="25.88" cy="28.09" r="6.5"/><circle cx="14.12" cy="28.09" r="6.5"/><circle cx="10.49" cy="16.91" r="6.5"/><circle cx="20" cy="20" r="10"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Thumbnail</b></li>
+      <li class="tb-m" style="--c:#14b8a6;--s:155px;--y:20px;--r:6deg;--d:-3.85s" title="Shorts: Cuts vertical Shorts from the long video"><span class="tb-blob"><svg class="tb-svg" viewBox="0 0 40 40" aria-hidden="true"><g class="body"><rect x="10" y="5" width="20" height="30" rx="9" transform="rotate(10 20 20)"/></g><g class="eyes"><rect x="15.6" y="16" width="3.6" height="7.2" rx="1.8"/><rect x="21.4" y="16" width="3.6" height="7.2" rx="1.8"/></g></svg></span><b>Shorts</b></li>
+    </ul>
   </div>
 </section>
 
@@ -2485,22 +2661,20 @@ if (window.gsap) {
 })()
 </script>
 <script>
-/* Agent mockup: four steps that cycle on their own; clicking a step jumps to it. */
+/* Demo card: the four set-up steps of the new create screen. They cycle on their own; clicking a step jumps to it. */
 (function () {
   var app = document.getElementById('lfApp')
   var tabs = document.querySelectorAll('.lf-steps button')
   if (!app || !tabs.length) return
-  var shots = app.querySelectorAll('.lf-preview > video')
-  var tasks = app.querySelectorAll('.lf-tasks li')
-  var cap = document.getElementById('lfCap')
-  var tc = document.getElementById('lfTc')
-  var head = document.getElementById('lfHead')
+  var screens = app.querySelectorAll('.nu-screen')
+  var steps = app.querySelectorAll('.nu-steps li')
+  var say = document.getElementById('nuSay')
   var STEP_MS = 4200
   var lines = [
-    ['In 133 BC, the Republic looked unbreakable.', '00:12', 2],
-    ['Inside the Senate, arguments turned into threats.', '02:47', 22],
-    ['Then the legions began answering to their generals.', '07:30', 52],
-    ['By 49 BC, one river stood between Caesar and Rome.', '11:58', 84]
+    'I named your channel. Rename it if you like, then pick the first episode.',
+    'Every scene is drawn in one style. These suit a history channel best.',
+    'Pick who narrates. Tap play to hear each voice.',
+    'Last step: how captions look. Then I get the team making episode one.'
   ]
   var step = 0
   var timer = null
@@ -2508,23 +2682,20 @@ if (window.gsap) {
   function show(s) {
     step = s
     for (var i = 0; i < tabs.length; i++) {
-      var on = i === s
       tabs[i].classList.remove('is-on')
-      tabs[i].setAttribute('aria-selected', on ? 'true' : 'false')
+      tabs[i].setAttribute('aria-selected', i === s ? 'true' : 'false')
     }
     void tabs[s].offsetWidth // restart the progress bar
     tabs[s].classList.add('is-on')
-    for (var j = 0; j < shots.length; j++) {
-      shots[j].classList.toggle('is-on', j === s)
-      if (window.lfPlay) j === s ? window.lfPlay(shots[j]) : shots[j].pause()
+    for (var j = 0; j < screens.length; j++) screens[j].classList.toggle('is-on', j === s)
+    for (var k = 0; k < steps.length; k++) {
+      steps[k].classList.toggle('is-done', k < s)
+      steps[k].classList.toggle('is-on', k === s)
     }
-    for (var k = 0; k < tasks.length; k++) {
-      tasks[k].classList.toggle('is-done', k < s || (s === tasks.length - 1 && k === s))
-      tasks[k].classList.toggle('is-on', k === s && s !== tasks.length - 1)
-    }
-    if (cap) cap.textContent = lines[s][0]
-    if (tc) tc.textContent = lines[s][1] + ' / 14:12'
-    if (head) head.style.left = 'calc(' + (window.innerWidth <= 900 ? 70 : 84) + 'px + ' + lines[s][2] * 0.86 + '%)'
+    if (say) say.textContent = lines[s]
+    // The captions step shows the animated preview clip; it only plays while that step is open.
+    var vid = document.getElementById('nuVid')
+    if (vid) { if (s === 3) { try { vid.currentTime = 0 } catch (e) {} ; var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}) } else vid.pause() }
   }
   function next() { show((step + 1) % tabs.length) }
   function start() { stop(); timer = setInterval(next, STEP_MS) }
@@ -2540,6 +2711,68 @@ if (window.gsap) {
   } else {
     start()
   }
+})()
+</script>
+<script>
+// Hero topic box: the topic waits in this browser and /create starts the Manager on it after sign-up.
+(function(){
+  var form = document.getElementById('lp-form'); if (!form) return
+  var about = document.getElementById('lp-about'), next = document.getElementById('lp-next')
+  var row = document.getElementById('lp-ref-row'), ref = document.getElementById('lp-ref'), open = document.getElementById('lp-ref-open')
+  var signedIn = false
+  try { signedIn = !!(localStorage.getItem('clipzo_token') || localStorage.getItem('clipzo_refresh')) } catch (e) {}
+  if (!signedIn) signedIn = /(?:^|;\s*)clipzo_(?:token|refresh)=/.test(document.cookie)
+  function sync(){ next.disabled = about.value.trim().length < 3 }
+  about.addEventListener('input', sync)
+  about.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit() } })
+  open.addEventListener('click', function(){ row.hidden = !row.hidden; open.classList.toggle('is-on', !row.hidden); if (!row.hidden) ref.focus() })
+  document.getElementById('lp-ref-close').addEventListener('click', function(){ ref.value = ''; row.hidden = true; open.classList.remove('is-on') })
+  document.querySelectorAll('.lp-ideas button').forEach(function(b){ b.addEventListener('click', function(){
+    about.value = 'Channel about ' + b.textContent.charAt(0).toLowerCase() + b.textContent.slice(1); sync(); about.focus()
+  }) })
+  form.addEventListener('submit', function(e){
+    e.preventDefault()
+    var text = about.value.trim(); if (text.length < 3) return
+    try { localStorage.setItem('vidso_landing_topic', JSON.stringify({ about: text.slice(0, 300), ref: ref.value.trim().slice(0, 200), t: Date.now() })) } catch (e2) {}
+    if (signedIn) { location.href = '/create'; return }
+    try { sessionStorage.setItem('vidso_after_login', '/create') } catch (e3) {}
+    location.href = '/signup'
+  })
+  sync()
+})()
+</script>
+<script>
+/* Agents section: their eyes follow the pointer. */
+(function () {
+  var row = document.querySelector('.tb-row'); if (!row) return
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  var eyes = [].slice.call(row.querySelectorAll('.tb-svg .eyes'))
+  var raf = 0, px = 0, py = 0
+  function look() {
+    raf = 0
+    eyes.forEach(function (g) {
+      var r = g.ownerSVGElement.getBoundingClientRect()
+      var dx = px - (r.left + r.width / 2), dy = py - (r.top + r.height / 2)
+      var d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 400) * 2.6
+      g.style.transform = 'translate(' + (dx / d * k).toFixed(2) + 'px,' + (dy / d * k).toFixed(2) + 'px)'
+    })
+  }
+  window.addEventListener('pointermove', function (e) { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(look) }, { passive: true })
+})()
+</script>
+<script>
+/* Niche cards and the CTA go back up to the hero box; a card fills in a starter topic for its niche. */
+(function () {
+  var about = document.getElementById('lp-about'); if (!about) return
+  var topics = { 'History documentaries': 'Channel about how ordinary people lived in ancient Rome', 'Money and business': 'Channel explaining how money and the economy really work', 'Science and space': 'Channel about the strangest places in our solar system', 'Mysteries and true crime': 'Channel about the darkest unsolved crimes in history' }
+  function go(e, text) {
+    e.preventDefault()
+    if (text) { about.value = text; about.dispatchEvent(new Event('input')) }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setTimeout(function () { try { about.focus({ preventScroll: true }) } catch (_) { about.focus() } }, 500)
+  }
+  document.querySelectorAll('[data-niche-topic]').forEach(function (a) { a.addEventListener('click', function (e) { go(e, topics[a.getAttribute('data-niche-topic')]) }) })
+  document.querySelectorAll('[data-lp-focus]').forEach(function (a) { a.addEventListener('click', function (e) { go(e, '') }) })
 })()
 </script>
 </body>

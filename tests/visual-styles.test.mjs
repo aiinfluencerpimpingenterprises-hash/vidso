@@ -1,15 +1,15 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
-import { VISUAL_STYLES, STYLE_GROUPS, DEFAULT_STYLE, visualStyleById, planScenes, sceneImagePrompt, MAX_SCENES } from '../lib/visual-styles.js'
+import { VISUAL_STYLES, STYLE_GROUPS, DEFAULT_STYLE, visualStyleById, planScenes, sceneImagePrompt, MAX_SCENES, styleSample } from '../lib/visual-styles.js'
 import { normalizeProfile } from '../lib/channel-kit.js'
 import { parseScenes } from '../lib/scene-agent.js'
 import { routeManagerMessage as route } from '../lib/agents-chat.js'
 
 const words = (n) => Array.from({ length: n }, (_, i) => 'w' + i).join(' ')
 
-test('over 100 styles, unique ids, every group used, a real default', () => {
-  assert.ok(VISUAL_STYLES.length >= 100)
+test('a short list of proven faceless styles, unique ids, every group used, a real default', () => {
+  assert.ok(VISUAL_STYLES.length >= 12 && VISUAL_STYLES.length <= 40)
   assert.equal(new Set(VISUAL_STYLES.map((s) => s.id)).size, VISUAL_STYLES.length)
   for (const g of STYLE_GROUPS) assert.ok(VISUAL_STYLES.some((s) => s.group === g), g)
   assert.ok(visualStyleById(DEFAULT_STYLE))
@@ -18,7 +18,16 @@ test('over 100 styles, unique ids, every group used, a real default', () => {
 test('profiles saved with stock footage move to the default AI style', () => {
   assert.equal(normalizeProfile({ visualStyle: 'stock' }).visualStyle, DEFAULT_STYLE)
   assert.equal(normalizeProfile({}).visualStyle, DEFAULT_STYLE)
-  assert.equal(normalizeProfile({ visualStyle: 'anime' }).visualStyle, 'anime')
+  assert.equal(normalizeProfile({ visualStyle: 'cartoon' }).visualStyle, 'cartoon')
+  // Styles no longer offered map to the closest kept one, including older retired ids.
+  assert.equal(normalizeProfile({ visualStyle: 'ghibli' }).visualStyle, 'cartoon')
+  assert.equal(normalizeProfile({ visualStyle: 'anime' }).visualStyle, 'cartoon')
+  assert.equal(normalizeProfile({ visualStyle: 'vintage_sketch' }).visualStyle, 'oil')
+  assert.equal(normalizeProfile({ visualStyle: 'whiteboard' }).visualStyle, 'flat_whiteboard')
+  assert.equal(normalizeProfile({ visualStyle: 'painted' }).visualStyle, 'oil')
+  assert.equal(normalizeProfile({ visualStyle: 'wet_plate' }).visualStyle, 'archive')
+  assert.equal(normalizeProfile({ visualStyle: 'biblical' }).visualStyle, 'oil')
+  assert.equal(normalizeProfile({ visualStyle: 'no-such-style' }).visualStyle, DEFAULT_STYLE)
 })
 
 test('every style has a prompt and a sample image', () => {
@@ -54,4 +63,10 @@ test('planner output is parsed per scene and unknown ids are dropped', () => {
 test('asking about art style opens the visuals settings', () => {
   assert.equal(route('make it a stick figure video', true).type, 'visuals')
   assert.equal(route('change the art style', true).type, 'visuals')
+})
+
+test('style samples: one image per style, the same in every genre', () => {
+  assert.equal(styleSample('archive'), '/home/img/styles/archive.jpg')
+  assert.equal(styleSample('archive', 'mystery'), '/home/img/styles/archive.jpg')
+  assert.equal(styleSample('whiteboard'), '/home/img/styles/flat_whiteboard.jpg')
 })

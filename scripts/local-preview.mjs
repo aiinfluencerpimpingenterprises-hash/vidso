@@ -17,6 +17,8 @@ const REWRITES = new Map([
   ['/dashboard', '/dashboard/index.html'],
   ['/agents', '/dashboard/index.html'],
   ['/studio', '/dashboard/index.html'],
+  ['/brand', '/dashboard/index.html'],
+  ['/create', '/dashboard/index.html'],
   ['/video-generation', '/dashboard/index.html'],
   ['/image-generation', '/dashboard/index.html'],
   ['/files', '/dashboard/index.html'],
@@ -125,6 +127,14 @@ async function localAgentRoute(req, res, sub) {
       if (sub === 'compose') return json(200, await runCompose({ segments: body.segments, falKey }))
       return json(200, { scenes: await runScenePlanner({ scenes: body.scenes, topic: body.topic, styleName: body.style, character: body.character, falKey }) })
     }
+    if (sub === 'channel') {
+      const { runChannelAgent } = await import('../lib/channel-agent.js')
+      return json(200, await runChannelAgent({ genre: body.genre, about: body.about, niche: body.niche, reference: body.reference, falKey }))
+    }
+    if (sub === 'reference') {
+      const { runReferenceAgent } = await import('../lib/reference-agent.js')
+      try { return json(200, await runReferenceAgent({ url: body.url, falKey })) } catch (e) { return json(400, { error: e.message || 'Could not read that channel' }) }
+    }
     if (sub === 'publish') {
       const { runPublishAgent } = await import('../lib/publish-agent.js')
       const out = await runPublishAgent({ title: body.title, topic: body.topic, script: String(body.script || '').slice(0, 6000), niche: body.niche, falKey })
@@ -172,7 +182,7 @@ async function localGenerate(req, res, sub) {
 const server = http.createServer((req, res) => {
   const genRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/generate\/(image|image-save)$/) || [])[1]
   if (genRoute) return localGenerate(req, res, genRoute)
-  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish|scenes|compose)$/) || [])[1]
+  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish|scenes|compose|channel|reference)$/) || [])[1]
   if (agentRoute) return localAgentRoute(req, res, agentRoute)
   const rel = resolveRel(req.url)
   let file = safeFile(rel)
@@ -197,5 +207,5 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(PORT, HOST, () => {
-  console.log('Preview  http://' + HOST + ':' + PORT + (NO_AUTH ? '/video-generation (no login)' : '/login'))
+  console.log('Preview  http://' + HOST + ':' + PORT + (NO_AUTH ? '/create (no login)' : '/login'))
 })

@@ -44,6 +44,8 @@ import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
 import { runManagerAgent } from '../../lib/manager-agent.js'
 import { runPublishAgent } from '../../lib/publish-agent.js'
+import { runChannelAgent } from '../../lib/channel-agent.js'
+import { runReferenceAgent } from '../../lib/reference-agent.js'
 import { runCompose, runScenePlanner } from '../../lib/scene-agent.js'
 
 export const config = { maxDuration: 300 }
@@ -362,6 +364,35 @@ async function handlePublish(req, res, body) {
   }
 }
 
+/** Channel agent: a name and first-episode topics for a new channel (Manager setup). */
+async function handleChannel(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Channel agent is not configured on this deployment.' })
+  try {
+    const out = await runChannelAgent({
+      genre: String(body?.genre || '').slice(0, 40),
+      about: String(body?.about || '').slice(0, 300),
+      niche: String(body?.niche || '').slice(0, 80),
+      reference: Array.isArray(body?.reference) ? body.reference.slice(0, 8).map((t) => String(t).slice(0, 140)) : [],
+      falKey: key,
+    })
+    return send(res, 200, out)
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Channel agent failed' })
+  }
+}
+
+/** Reference agent: read a YouTube channel the user wants to be like (public page + RSS only). */
+async function handleReference(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Reference reading is not configured on this deployment.' })
+  try {
+    return send(res, 200, await runReferenceAgent({ url: String(body?.url || '').slice(0, 300), falKey: key }))
+  } catch (e) {
+    return send(res, 400, { error: e.message || 'Could not read that channel' })
+  }
+}
+
 /** Manager agent: what the crew should do with a chat message (see lib/manager-agent.js). */
 async function handleManager(req, res, body) {
   const key = falKey()
@@ -471,6 +502,8 @@ export default async function handler(req, res) {
   if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
   if (sub === 'manager' && req.method === 'POST') return handleManager(req, res, await readJson(req))
   if (sub === 'publish' && req.method === 'POST') return handlePublish(req, res, await readJson(req))
+  if (sub === 'channel' && req.method === 'POST') return handleChannel(req, res, await readJson(req))
+  if (sub === 'reference' && req.method === 'POST') return handleReference(req, res, await readJson(req))
   if ((sub === 'scenes' || sub === 'compose') && req.method === 'POST') return handleScenes(req, res, await readJson(req), sub)
   return send(res, 404, { error: 'Not found' })
 }
