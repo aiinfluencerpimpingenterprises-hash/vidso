@@ -199,9 +199,21 @@ const server = http.createServer((req, res) => {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
       return res.end('Not found')
     }
+    const type = TYPES[path.extname(file)] || 'application/octet-stream'
+    // Byte ranges for audio and video, like the live CDN, so players can seek.
+    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ''))
+    if (range && /^(audio|video)\//.test(type)) {
+      const size = data.length
+      let start = range[1] === '' ? Math.max(0, size - Number(range[2] || 0)) : Number(range[1])
+      let end = range[1] !== '' && range[2] !== '' ? Math.min(Number(range[2]), size - 1) : size - 1
+      if (start >= size || start > end) { res.writeHead(416, { 'Content-Range': 'bytes */' + size }); return res.end() }
+      res.writeHead(206, { 'Content-Type': type, 'Content-Range': `bytes ${start}-${end}/${size}`, 'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1, 'Cache-Control': 'no-store' })
+      return res.end(data.subarray(start, end + 1))
+    }
     res.writeHead(200, {
-      'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream',
+      'Content-Type': type,
       'Cache-Control': 'no-store',
+      ...(/^(audio|video)\//.test(type) ? { 'Accept-Ranges': 'bytes' } : {}),
     })
     res.end(withNoAuth(file, data))
   })
