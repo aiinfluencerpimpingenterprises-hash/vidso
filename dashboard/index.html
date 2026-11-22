@@ -4219,6 +4219,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <nav class="topnav-primary" id="topnav-primary" aria-label="Main">
     <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
     <button type="button" class="topnav-item" id="nav-manual" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
+    <button type="button" class="topnav-item" id="nav-edit" data-panel="edit" onclick="switchPanel('edit',this)">Editor</button>
     <button type="button" class="topnav-item" id="nav-brand" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
     <button type="button" class="topnav-item" id="nav-dashboard" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
@@ -4290,6 +4291,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <span class="nav-drawer-label">Workspace</span>
   <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
   <button type="button" class="topnav-item" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
+  <button type="button" class="topnav-item" data-panel="edit" onclick="switchPanel('edit',this)">Editor</button>
   <button type="button" class="topnav-item" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
   <button type="button" class="topnav-item" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label" data-archived hidden>Generate</span>
@@ -6156,6 +6158,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
     <div class="panel content-glow" id="panel-agents"><div id="agents-root"></div></div>
     <div class="panel content-glow" id="panel-manual"><div id="studio-root"></div></div>
+    <div class="panel content-glow" id="panel-edit"><div id="edit-root"></div></div>
     <div class="panel content-glow" id="panel-brand"><div id="brand-root"></div></div>
     <div class="panel" id="panel-create"><div id="create-root"></div></div>
 
@@ -9198,13 +9201,13 @@ const DEFAULT_PANEL = 'create'
 const DEFAULT_PATH = '/create'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Agents', agents:'Agents', manual:'Studio', brand:'Brand', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Agents', agents:'Agents', manual:'Studio', edit:'Editor', brand:'Brand', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  agents:'/agents', manual:'/studio', brand:'/brand', create:'/create', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  agents:'/agents', manual:'/studio', edit:'/edit', brand:'/brand', create:'/create', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
@@ -9289,7 +9292,7 @@ window.switchPanel = (id, btn, opts = {}) => {
   const titleEl = document.getElementById('topbar-title')
   if (titleEl) {
     titleEl.textContent = titles[id]
-    const hasPageHeader = ['agents','manual','brand','create','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
+    const hasPageHeader = ['agents','manual','edit','brand','create','dashboard','clipper','tools','ranking','imagegen','videogen','ytvideogen','facelessstudio','files','youtube'].includes(id)
     titleEl.classList.toggle('is-hidden', hasPageHeader)
     document.body.classList.toggle('has-page-header', hasPageHeader)
     document.body.classList.toggle('editor-open', id === 'editor')
@@ -9311,6 +9314,13 @@ window.switchPanel = (id, btn, opts = {}) => {
   if (id === 'manual') {
     try { fvInit() } catch (_) {}
     try { window.studioHub?.render() } catch (_) {}
+  }
+  // The Editor page borrows the Agents scene editor; leaving it hands it back.
+  if (id === 'edit') {
+    try { fvInit() } catch (_) {}
+    try { window.agentsChat?.hostEditor(document.getElementById('edit-root')) } catch (_) {}
+  } else {
+    try { window.agentsChat?.hostChat() } catch (_) {}
   }
   if (id === 'create') {
     try { fvInit() } catch (_) {}
@@ -10754,7 +10764,7 @@ async function fvPublishAgent() {
 window.fvPublishAgain = () => fvPublishAgent()
 
 /** Bring your own script: skip the Script agent and hand the crew the creator's text. */
-window.fvAgentsRunScript = async ({ text, title } = {}) => {
+window.fvAgentsRunScript = async ({ text, title, manual = false } = {}) => {
   const script = scriptFromText(text, { title })
   if (!script) return 'Paste a script first.'
   if (!getToken()) return 'SIGN_IN'
@@ -10767,11 +10777,12 @@ window.fvAgentsRunScript = async ({ text, title } = {}) => {
   const el = document.getElementById('fv-topic')
   if (el) { el.value = script.title; el.dispatchEvent(new Event('input')) }
   const mode = document.getElementById('fv-agent-mode')
-  if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')) }
+  if (manual) fvStudioManual()
+  else if (mode && !mode.checked) { mode.checked = true; mode.dispatchEvent(new Event('change')) }
   try { await fvEnsureVoice() } catch (_) {}
   if (!fvState.voiceId) return 'Pick a narrator voice first.'
   fvState.scriptBusy = true
-  window.fvStudioAutoRun = true
+  window.fvStudioAutoRun = !manual
   fvCrewStartRun()
   fvCrewSet('script', 'working', 'Reading your script')
   try {
@@ -10806,6 +10817,76 @@ window.fvOpenStep = (step) => {
     if (step === 'export' && voiceoverPlaylist(fvState.media).length) { window.fvContinueToPreview?.(); return window.fvContinueToExport?.() }
     if (fvState.script) return window.fvBackToEditor?.()
   } catch (_) {}
+}
+// ── Studio: make a video by hand, one step at a time ─────────────────────────
+// Each call runs one step and stops; nothing hands off to the next agent.
+function fvStudioManual() {
+  const mode = document.getElementById('fv-agent-mode')
+  if (mode && mode.checked) { mode.checked = false; mode.dispatchEvent(new Event('change')) }
+  window.fvStudioAutoRun = false
+  fvState.autoChain = false
+}
+function fvStudioError(ids, fallback) {
+  for (const id of ids) {
+    const el = document.getElementById(id)
+    if (el && el.style.display !== 'none' && el.classList.contains('err') && el.textContent.trim()) return el.textContent.trim()
+  }
+  return fallback || ''
+}
+window.fvStudioWriteScript = async (topic) => {
+  topic = String(topic || '').trim()
+  if (!topic) return 'Describe the video first.'
+  if (!getToken()) return 'SIGN_IN'
+  if (fvState.scriptBusy) return 'The script is still being written.'
+  try { fvInit() } catch (_) {}
+  fvStudioManual()
+  const el = document.getElementById('fv-topic')
+  if (el) { el.value = topic; el.dispatchEvent(new Event('input')) }
+  try { await window.fvGenerateScript() } catch (e) { return e.message || 'The script could not be written.' }
+  fvState.autoChain = false
+  fvAgentsChanged()
+  return fvState.script ? '' : fvStudioError(['fv-status'], 'The script could not be written.')
+}
+window.fvStudioUseScript = (opts = {}) => window.fvAgentsRunScript({ ...opts, manual: true })
+window.fvStudioEditSection = (i, text) => {
+  const sec = fvState.script?.sections?.[i]
+  if (!sec) return
+  sec.text = String(text || '').trim()
+  const ta = document.querySelector(`#fv-sections textarea[data-sid="${sec.id}"]`)
+  if (ta) ta.value = sec.text
+  fvRebuildFullScriptFromSections()
+  try { fvRenderScript(fvState.script) } catch (_) {}
+  fvAgentsChanged()
+}
+window.fvStudioSetTitle = (t) => {
+  t = String(t || '').trim().slice(0, 120)
+  if (!fvState.script || !t) return
+  fvState.script.title = t
+  try { sessionStorage.setItem('vidso_faceless_draft', JSON.stringify(fvState.script)) } catch (_) {}
+  fvAgentsChanged()
+}
+window.fvStudioMakeMedia = () => {
+  if (!fvState.script) return 'Write the script first.'
+  if (fvState.crew && ['media', 'render'].includes(fvState.crew.stage) && Object.values(fvLocalAgentsState().crew).some((c) => c.state === 'working')) return 'The narration is already being made.'
+  fvStudioManual()
+  try { window.fvContinueToMedia(true) } catch (e) { return e.message || 'Could not start the narration.' }
+  fvAgentsChanged()
+  return fvStudioError(['fv-status-2', 'fv-media-status'])
+}
+window.fvStudioThumbnail = (note) => { fvStudioManual(); if (!fvState.script) return 'Write the script first.'; fvThumbAgent({ note: note || '', next: !!fvState.thumb?.url }); return '' }
+window.fvStudioRender = () => {
+  if (!voiceoverPlaylist(fvState.media).length) return 'Make the voiceover and scenes first.'
+  if (fvState.crew && fvState.crew.stage === 'render' && fvState.renderPoll) return 'It is already rendering.'
+  fvStudioManual()
+  try { window.fvContinueToPreview() } catch (_) {}
+  try { window.fvContinueToExport() } catch (_) {}
+  try { window.fvStartExport() } catch (_) {}
+  if ((!fvState.crew || fvState.crew.stage !== 'render') && !document.getElementById('fv-export-short-btn')?.hidden) {
+    try { window.fvStartExport({ allowShort: true }) } catch (_) {}
+  }
+  fvAgentsChanged()
+  if (!fvState.crew || fvState.crew.stage !== 'render') return fvStudioError(['fv-export-status'], 'The render could not start.')
+  return ''
 }
 window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvState.sceneProgress = null; fvAgentsChanged() }
 
@@ -14352,6 +14433,8 @@ try {
 } catch (e) { console.warn('[agents] init failed', e) }
 try {
   window.studioHub = initStudioHub({ root: document.getElementById('studio-root') })
+  window.videoEditor = { open: (tab) => { try { window.agentsChat?.hostEditor(document.getElementById('edit-root'), tab) } catch (_) {} } }
+  if (document.getElementById('panel-edit')?.classList.contains('active')) window.videoEditor.open()
 } catch (e) { console.warn('[studio] init failed', e) }
 try {
   window.brandStudio = initBrandStudio({ root: document.getElementById('brand-root') })

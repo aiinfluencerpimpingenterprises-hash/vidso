@@ -17,7 +17,11 @@ import {
   hasSessionSecrets,
 } from '/lib/session-store.js'
 
-const BASE = 'https://vibrant-patience-production-a7f0.up.railway.app'
+const RAILWAY = 'https://vibrant-patience-production-a7f0.up.railway.app'
+// The Railway API only accepts browser calls from the hosts below; every other
+// host (tubeops.pro and previews) goes through the same-origin /rapi proxy in vercel.json.
+const DIRECT_HOSTS = /^(localhost|127\.0\.0\.1|(www\.)?vidso\.pro|vidso-pi\.vercel\.app)$/
+const BASE = (() => { try { return DIRECT_HOSTS.test(location.hostname) ? RAILWAY : location.origin + '/rapi' } catch { return RAILWAY } })()
 // Public Supabase project used by the Railway API (iss claim on JWTs).
 // Google OAuth starts here; tokens return to the app via redirect hash/query.
 const SUPABASE_URL = 'https://ymtmgpgcmrazqeklixwf.supabase.co'

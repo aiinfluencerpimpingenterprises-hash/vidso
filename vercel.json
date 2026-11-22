@@ -2,6 +2,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/rapi/:path*",
+      "destination": "https://vibrant-patience-production-a7f0.up.railway.app/:path*"
+    },
+    {
       "source": "/",
       "destination": "/home/index.html"
     },
@@ -79,6 +83,10 @@
     },
     {
       "source": "/studio",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/edit",
       "destination": "/dashboard/index.html"
     },
     {
