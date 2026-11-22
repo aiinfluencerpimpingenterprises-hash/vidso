@@ -596,11 +596,12 @@ export const api = {
   },
   /** Server-side video runs (lib/runs-api.js): the video keeps going after the tab closes. */
   runs: {
-    available: () => !!sameOriginApi('/api/youtube/runs/latest'),
-    start: (settings) => reqTo(sameOriginApi('/api/youtube/runs/start'), 'POST', { settings, refresh_token: getRefreshToken() || '' }),
-    get: (id) => reqTo(sameOriginApi('/api/youtube/runs/' + encodeURIComponent(id)), 'GET', undefined, false, { timeoutMs: 20000 }),
-    latest: () => reqTo(sameOriginApi('/api/youtube/runs/latest'), 'GET', undefined, false, { timeoutMs: 20000 }),
-    cancel: (id) => reqTo(sameOriginApi('/api/youtube/runs/' + encodeURIComponent(id) + '/cancel'), 'POST', {}),
+    // One path segment only (Vercel's /api/youtube function): the action rides in the query.
+    available: () => !!sameOriginApi('/api/youtube/runs'),
+    start: (settings) => reqTo(sameOriginApi('/api/youtube/runs?op=start'), 'POST', { settings, refresh_token: getRefreshToken() || '' }),
+    get: (id) => reqTo(sameOriginApi('/api/youtube/runs?id=' + encodeURIComponent(id)), 'GET', undefined, false, { timeoutMs: 20000 }),
+    latest: () => reqTo(sameOriginApi('/api/youtube/runs?op=latest'), 'GET', undefined, false, { timeoutMs: 20000 }),
+    cancel: (id) => reqTo(sameOriginApi('/api/youtube/runs?op=cancel&id=' + encodeURIComponent(id)), 'POST', {}),
   },
   faceless: {
     presets: () => req('GET', '/api/faceless/presets'),
