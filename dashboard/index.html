@@ -301,6 +301,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 .app-banner-x:hover{background:rgba(255,255,255,.06);color:#fff}
 .app-topnav{background:var(--bg);border:0;box-shadow:none}
 /* Channel setup with a banner: the top nav floats over it, see-through until the page scrolls. */
+/* The Editor fills the screen exactly: no page scroll under it. */
+html:has(#panel-edit.active) .content{padding-bottom:10px!important;overflow:hidden}
 html:has(#panel-create.active .cc-banner) #app-chrome{position:absolute;top:0;left:0;right:0;z-index:60}
 html:has(#panel-create.active .cc-banner) .app-topnav{background:transparent!important}
 html.nav-scrolled:has(#panel-create.active .cc-banner) .app-topnav{background:rgba(11,11,12,.86)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
@@ -9744,6 +9746,7 @@ async function fvApplyAiScenes(job) {
     scenes: scenes.map((sc) => ({ i: sc.i, start: sc.start, end: sc.end, text: sc.text, prompt: prompts[sc.i] || sc.text, image: images[sc.i] || '', clip: clips[sc.i] || '' })),
   }
   say('Joining the scenes')
+  fvQueueSaveEditProject()
   const timeline = await fvTimelineFromScenes(fvState.sceneProject)
   fvState.logOn = was || fvState.logOn
   return { ...job, timeline, clips: timeline, broll_source: 'ai', scene_count: scenes.length, scene_images: images }
@@ -9875,6 +9878,64 @@ window.fvRenderSceneEdits = async () => {
 }
 
 window.fvApplyAiScenes = (job) => fvApplyAiScenes(job)
+
+/** Editor: redraw every scene at a new pace (the narration stays). Resolves with an error message, or ''. */
+window.fvRepaceScenes = async (pace) => {
+  if (!fvState.media || !fvState.sceneProject) return 'There is no video to change.'
+  if (fvState.repacing) return 'The scenes are already being redrawn.'
+  fvState.repacing = true
+  try {
+    window.fvSetVisual({ pace })
+    fvState.logOn = true
+    fvCrewSet('agent', 'working', 'Re-planning the scenes at the new pace')
+    const out = await fvApplyAiScenes({ ...fvState.media })
+    if (!out?.timeline?.length) throw new Error(fvState.aiSceneError || 'The scenes could not be redrawn.')
+    fvState.media = { ...fvState.media, timeline: out.timeline, clips: out.timeline, broll_source: 'ai' }
+    try { fvPersistMedia() } catch (_) {}
+    fvState.deliveryOn = false
+    fvCrewSet('agent', 'done', `${fvState.sceneProject.scenes.length} scenes at the new pace`)
+    fvAgentsChanged()
+    return ''
+  } catch (e) {
+    fvCrewSet('agent', 'stuck', e.message || 'Could not redraw the scenes')
+    return e.message || 'Could not redraw the scenes'
+  } finally {
+    fvState.repacing = false
+    fvAgentsChanged()
+  }
+}
+
+/** Editor: make the video longer. Expands the script, then records new narration and draws new scenes. */
+window.fvLengthenVideo = async (durationId) => {
+  const s = fvState.script
+  if (!s) return 'There is no script to make longer.'
+  if (!getToken()) return 'SIGN_IN'
+  if (fvState.scriptBusy) return 'The script is already being written.'
+  try { window.fvSetDuration(durationId) } catch (_) {}
+  const picked = fvPickedDuration()
+  if (!picked?.seconds) return 'Pick a length.'
+  const topic = (document.getElementById('fv-topic')?.value || s.title || '').trim()
+  fvState.scriptBusy = true
+  fvState.logOn = true
+  fvCrewSet('script', 'working', 'Making the script ' + (picked.label || 'longer'))
+  fvAgentsChanged()
+  try {
+    const payload = facelessScriptPayload({ topic, aspect: fvState.aspect, durationId: picked.id, durationSeconds: picked.seconds })
+    let data = rebuildFullScript({ ...s, aspect: fvState.aspect, topic })
+    data = await fvExpandScriptToLength(data, topic, payload, picked, scriptTimeoutMs(picked.seconds))
+    data = rebuildFullScript({ ...data, title: s.title, title_options: s.title_options })
+    fvRenderScript(data)
+    fvCrewSet('script', 'done', scriptWordCount(data).toLocaleString('en-US') + ' words')
+  } catch (e) {
+    fvCrewSet('script', 'stuck', e.message || 'Could not make the script longer')
+    return e.message || 'Could not make the script longer'
+  } finally {
+    fvState.scriptBusy = false
+  }
+  fvState.sceneProject = null
+  fvState.deliveryOn = false
+  return window.fvStudioMakeMedia()
+}
 
 async function fvApplyFalBroll(job) {
   const modelId = fvState.videoModel || ''
@@ -10446,12 +10507,79 @@ function fvPaintDelivery(scrollTo) {
 // ── Bridge for the Agents workspace (lib/agents-chat.js) ─────────────────────
 let fvAgentsTick = 0
 function fvAgentsChanged() {
+  fvQueueSaveEditProject()
   if (fvAgentsTick) return
   fvAgentsTick = setTimeout(() => {
     fvAgentsTick = 0
     try { window.dispatchEvent(new CustomEvent('vidso:agents')) } catch (_) {}
   }, 40)
 }
+
+// ── Saved edit projects: a finished video's scenes, narration and timing ─────
+// Kept in this browser so the Editor reopens a video after a reload. Up to 8,
+// newest first; each is keyed by the narration job so re-saves replace it.
+const FV_EDIT_KEY = 'vidso_edit_projects'
+let fvEditSaveT = 0
+function fvEditProjects() {
+  try { const v = JSON.parse(localStorage.getItem(FV_EDIT_KEY) || '[]'); return Array.isArray(v) ? v : [] } catch (_) { return [] }
+}
+function fvSaveEditProject() {
+  const p = fvState.sceneProject
+  const m = fvState.media
+  if (!p?.scenes?.length || !m || !voiceoverPlaylist(m).length) return
+  const id = String(m.jobId || fvState.editProjectId || ('e' + Date.now().toString(36)))
+  fvState.editProjectId = id
+  const s = fvState.script || {}
+  const rec = {
+    id,
+    savedAt: Date.now(),
+    title: s.title || document.getElementById('fv-topic')?.value || 'Untitled video',
+    thumb: fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? fvState.thumb.url : (p.scenes[0]?.image || ''),
+    renderUrl: /^https?:/.test(String(fvState.renderUrl || '')) ? fvState.renderUrl : '',
+    aspect: fvState.aspect || p.aspect || '16:9',
+    voiceId: fvState.voiceId || '',
+    preview: { musicId: fvState.preview?.musicId || 'none', musicVol: fvState.preview?.musicVol ?? 0.25 },
+    script: { title: s.title || '', title_options: s.title_options || [], topic: s.topic || '', hook: s.hook || '', full_script: s.full_script || '', sections: (s.sections || []).map((x) => ({ id: x.id, heading: x.heading, text: x.text })) },
+    media: { jobId: m.jobId, voiceover_url: m.voiceover_url, voiceover_urls: m.voiceover_urls || voiceoverPlaylist(m), duration: m.duration, words: (m.words || []).slice(0, 12000), clips: m.clips, timeline: m.timeline, aspect: m.aspect, voice_id: m.voice_id, broll_source: m.broll_source },
+    project: p,
+  }
+  const list = [rec, ...fvEditProjects().filter((x) => x.id !== id)].slice(0, 8)
+  for (let n = list.length; n > 0; n--) {
+    try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(list.slice(0, n))); return } catch (_) { /* full: keep fewer */ }
+  }
+}
+function fvQueueSaveEditProject() {
+  if (!fvState.sceneProject) return
+  clearTimeout(fvEditSaveT)
+  fvEditSaveT = setTimeout(() => { try { fvSaveEditProject() } catch (_) {} }, 600)
+}
+window.fvEditProjects = () => fvEditProjects().map((x) => ({ id: x.id, title: x.title, thumb: x.thumb, savedAt: x.savedAt, scenes: x.project?.scenes?.length || 0, duration: Number(x.media?.duration) || 0, rendered: !!x.renderUrl, current: x.id === fvState.editProjectId && !!fvState.sceneProject }))
+/** Load a saved video back into the pipeline so the Editor (and a re-render) can use it. */
+window.fvOpenEditProject = (id) => {
+  const rec = fvEditProjects().find((x) => x.id === id)
+  if (!rec) return 'That video is no longer saved in this browser.'
+  if (fvState.scriptBusy || (fvState.crew && fvState.crew.stage !== 'done' && Object.values(fvLocalAgentsState().crew).some((c) => c.state === 'working'))) return 'Wait for the video being made to finish first.'
+  try { fvInit() } catch (_) {}
+  try { if (fvState.script && fvState.editProjectId !== id) window.fvClearScript({ silent: true }) } catch (_) {}
+  try { window.fvSetAspect?.(rec.aspect) } catch (_) {}
+  if (rec.voiceId) { try { window.pickFvVoice?.(rec.voiceId) } catch (_) {} }
+  try { fvRenderScript({ ...rec.script, sections: (rec.script.sections || []).map((x, k) => ({ ...x, id: x.id || 's' + k })) }) } catch (_) { fvState.script = rec.script }
+  fvState.media = { ...rec.media }
+  try { fvPersistMedia() } catch (_) {}
+  fvState.sceneProject = { ...rec.project, scenes: (rec.project.scenes || []).map((x) => ({ ...x })) }
+  if (!fvState.preview) fvState.preview = {}
+  fvState.preview.musicId = rec.preview?.musicId || 'none'
+  fvState.preview.musicVol = rec.preview?.musicVol ?? 0.25
+  fvState.editProjectId = rec.id
+  if (rec.renderUrl) { fvState.renderUrl = rec.renderUrl; fvState.deliveryOn = true } else { fvState.deliveryOn = false }
+  fvAgentsChanged()
+  return ''
+}
+// Save the moment the tab is hidden or closed, so a refresh never loses the last change.
+window.addEventListener('pagehide', () => { try { fvSaveEditProject() } catch (_) {} })
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { try { fvSaveEditProject() } catch (_) {} } })
+window.fvSaveEditProjectNow = () => { try { fvSaveEditProject() } catch (_) {} }
+window.fvForgetEditProject = (id) => { try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(fvEditProjects().filter((x) => x.id !== id))) } catch (_) {} ; fvAgentsChanged() }
 window.fvAgentsState = () => {
   const local = fvLocalAgentsState()
   const r = fvState.serverRun?.data
