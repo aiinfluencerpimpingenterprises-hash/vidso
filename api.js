@@ -218,7 +218,7 @@ async function gatedReq(method, path, body, opts = {}) {
 // Checkout URLs come from lib/whop-map.js (env-overridable plan IDs).
 
 function appOrigin() {
-  try { return location.origin } catch { return 'https://vidso.pro' }
+  try { return location.origin } catch { return 'https://www.tubeops.pro' }
 }
 
 function emailFromToken() {

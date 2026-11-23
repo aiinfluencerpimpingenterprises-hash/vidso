@@ -44,7 +44,7 @@ async function handlePixel(req, res, body) {
     buildCapiEvent({
       eventName,
       eventId: body.event_id,
-      eventSourceUrl: String(body.event_source_url || req.headers.referer || 'https://vidso.pro/').slice(0, 2048),
+      eventSourceUrl: String(body.event_source_url || req.headers.referer || 'https://www.tubeops.pro/').slice(0, 2048),
       userData: capiUserData({
         email: body.email,
         userId: body.user_id || body.userId,
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     eventId: purchaseEventId({ id: userId, email: emailsFromUser(user)[0] }, body.tier),
     testEventCode: sanitizeTestCode(body.test_event_code || body.testEventCode),
   })
-  const origin = String(body.origin || req.headers.origin || 'https://vidso.pro')
+  const origin = String(body.origin || req.headers.origin || 'https://www.tubeops.pro')
   const session = await createCheckoutSession({
     tier: body.tier,
     cycle: body.cycle,

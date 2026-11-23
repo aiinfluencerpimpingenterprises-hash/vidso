@@ -4,7 +4,7 @@
 
   global.VIDSO_R2_BASE = R2_BASE;
   global.VIDSO_LOGO_URL = '/vidso-logo.png';
-  global.VIDSO_SUPPORT_EMAIL = 'support@vidso.pro';
+  global.VIDSO_SUPPORT_EMAIL = 'support@tubeops.pro';
   global.VIDSO_INSTAGRAM_URL = 'https://www.instagram.com/vidso.pro/';
 
   var SOCIAL_SVG = {

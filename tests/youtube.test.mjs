@@ -166,11 +166,11 @@ test('redirect URI prefers env then canonical production host', () => {
   )
   assert.equal(
     youtubeRedirectUri({ headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, {}),
-    'https://www.vidso.pro/api/youtube/callback',
+    'https://www.tubeops.pro/api/youtube/callback',
   )
   assert.equal(
     youtubeRedirectUri({ headers: { host: 'www.vidso.pro', 'x-forwarded-proto': 'https' } }, {}),
-    'https://www.vidso.pro/api/youtube/callback',
+    'https://www.tubeops.pro/api/youtube/callback',
   )
 })
 

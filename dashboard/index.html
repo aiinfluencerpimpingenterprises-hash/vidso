@@ -28,7 +28,7 @@
       try { localStorage.setItem('clipzo_token', token) } catch (eLs) {}
       try {
         var ckHost = location.hostname
-        var ckDomain = (ckHost === 'vidso.pro' || ckHost.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
+        var ckDomain = (ckHost === 'tubeops.pro' || ckHost.endsWith('.tubeops.pro')) ? '; Domain=.tubeops.pro' : (ckHost === 'vidso.pro' || ckHost.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
         var ckSecure = location.protocol === 'https:' ? '; Secure' : ''
         document.cookie = 'clipzo_token=' + encodeURIComponent(token) + '; Path=/; Max-Age=2592000; SameSite=Lax' + ckDomain + ckSecure
         var rt = localStorage.getItem('clipzo_refresh') || ''
@@ -7442,7 +7442,7 @@ document.addEventListener('keydown', (e) => {
 //   vidso_onboarding_v3_seen:<userKey>  -> "1" when completed or skipped (once per account on this browser)
 //   vidso_onboarding_answers:<userKey>  -> JSON snapshot of Q&A
 // Auto-open only the first time after signup (marked as soon as the flow opens).
-// Replay with ?onboarding=1. Shared across vidso.pro / www via cookie.
+// Replay with ?onboarding=1. Shared across the bare domain and www via cookie.
 // userKey = currentUser.email || currentUser.id || 'anon'
 // No /api/user profile write endpoint exists in this repo; do not invent a silent backend save.
 const OB_STEPS = 6
@@ -7560,7 +7560,7 @@ function obCookieWrite(keys) {
     const all = [...new Set(obCookieRead().concat(keys || []))]
     if (!all.length) return
     const host = location.hostname
-    const domain = (host === 'vidso.pro' || host.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
+    const domain = (host === 'tubeops.pro' || host.endsWith('.tubeops.pro')) ? '; Domain=.tubeops.pro' : (host === 'vidso.pro' || host.endsWith('.vidso.pro')) ? '; Domain=.vidso.pro' : ''
     const secure = location.protocol === 'https:' ? '; Secure' : ''
     document.cookie = 'vidso_ob_v3=' + encodeURIComponent(all.join('|')) + '; Path=/; Max-Age=31536000; SameSite=Lax' + domain + secure
     localStorage.setItem('vidso_ob_v3_ids', JSON.stringify(all))
