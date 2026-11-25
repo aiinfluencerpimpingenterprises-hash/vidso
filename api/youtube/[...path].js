@@ -337,7 +337,7 @@ async function handleScenes(req, res, body, mode) {
   const key = falKey()
   if (!key) return send(res, 501, { error: 'AI scenes are not configured on this deployment.' })
   try {
-    if (mode === 'compose') return send(res, 200, await runCompose({ segments: body?.segments, falKey: key }))
+    if (mode === 'compose') return send(res, 200, await runCompose({ segments: body?.segments, id: body?.id, ms: body?.ms, falKey: key }))
     const scenes = (Array.isArray(body?.scenes) ? body.scenes : []).slice(0, 200)
     const out = await runScenePlanner({ scenes, topic: String(body?.topic || '').slice(0, 300), styleName: String(body?.style || '').slice(0, 60), character: String(body?.character || '').slice(0, 300), falKey: key })
     return send(res, 200, { scenes: out })

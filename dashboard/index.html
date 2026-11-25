@@ -6465,7 +6465,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
                   </div>
                   <div class="field">
                     <label>Size <span id="fv-cap-size-val">64</span>px at 1080p</label>
-                    <input type="range" id="fv-cap-size" min="24" max="96" value="64" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
+                    <input type="range" id="fv-cap-size" min="24" max="140" value="64" oninput="document.getElementById('fv-cap-size-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
                   <div class="cm-grid-2">
                     <div class="field" style="margin:0">
@@ -6479,7 +6479,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
                   </div>
                   <div class="field" style="margin-top:12px">
                     <label>Letter spacing <span id="fv-cap-ls-val">0</span>px</label>
-                    <input type="range" id="fv-cap-ls" min="-2" max="8" step="0.5" value="0" oninput="document.getElementById('fv-cap-ls-val').textContent=this.value;fvApplyCapStyle()">
+                    <input type="range" id="fv-cap-ls" min="-2" max="10" step="0.5" value="0" oninput="document.getElementById('fv-cap-ls-val').textContent=this.value;fvApplyCapStyle()">
                   </div>
                   <div class="cm-grid-2" style="margin-top:12px">
                     <div class="field" style="margin:0">
@@ -6647,7 +6647,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 
 <script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
-import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken, refreshSessionOnce } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
@@ -6759,6 +6759,9 @@ window._api = api
 window._setSession = setSession
 window._clearSession = clearSession
 window._getToken = getToken
+// For modules that call the server with their own fetch: refresh before a call, and after a 401.
+window._ensureFreshToken = ensureFreshToken
+window._refreshSession = refreshSessionOnce
 window._getRefreshToken = getRefreshToken
 
 let currentUser = null
@@ -6866,7 +6869,7 @@ function afterAuthReady(opts = {}) {
   hideModal()
   populateUser()
   // A video the team is making on the server shows up again after a reload.
-  setTimeout(() => { try { window.fvResumeServerRun?.() } catch (_) {} }, 300)
+  setTimeout(() => { try { window.fvRestoreDraft?.() } catch (_) {} ; try { window.fvResumeServerRun?.() } catch (_) {} }, 300)
   const pendingOb = obForcePreview() || obShouldAutoOpen()
   if (pendingOb) {
     document.documentElement.classList.add('needs-gate', 'needs-onboarding')
@@ -6980,24 +6983,22 @@ async function checkAuth() {
   const applyMe = async () => {
     currentUser = await api.user.me()
   }
-  const refreshAccess = async () => {
-    const rt = getRefreshToken()
-    if (!rt) return false
-    const { session } = await api.auth.refresh(rt)
-    if (!session?.access_token) return false
-    setSession(session)
-    return true
-  }
+  // One shared, cross-tab-safe refresh (api.js), so this page never burns a rotated refresh token.
+  const refreshAccess = async () => (getRefreshToken() ? refreshSessionOnce() : false)
   try {
     await applyMe()
   } catch (e) {
     const unauthorized = e && e.status === 401
     if (unauthorized) {
+      let refreshFailed = null
       try {
-        if (!await refreshAccess()) throw e
+        let ok = false
+        try { ok = await refreshAccess() } catch (er) { refreshFailed = er; throw er }
+        if (!ok) { refreshFailed = e; throw e }
         await applyMe()
       } catch (e2) {
-        if (isInvalidRefreshError(e2, e2?.status) || (e.status === 401 && !getRefreshToken())) {
+        // Sign out only when the refresh itself was refused, not when /me hiccups after a good refresh.
+        if ((refreshFailed && isInvalidRefreshError(refreshFailed, refreshFailed?.status)) || !getRefreshToken()) {
           persistPlanActive(false)
           clearSession()
           if (obForcePreview()) return
@@ -8870,11 +8871,9 @@ window.maybeStartUiTour = () => {
     const ob = document.getElementById('onboarding-modal')
     if (ob && !ob.classList.contains('hidden')) return
     if (tourResumePlayAll()) return
-    // The Agents home and the Studio explain themselves; the Long Form tour waits until the user opens that page.
-    if (document.getElementById('panel-agents')?.classList.contains('active')) return
-    if (document.getElementById('panel-manual')?.classList.contains('active')) return
-    if (document.getElementById('panel-brand')?.classList.contains('active')) return
-    if (document.getElementById('panel-create')?.classList.contains('active')) return
+    // The Long Form tour only starts on its own page; Agents, Studio, Editor, Brand and the rest
+    // explain themselves, and the tour must never drag someone off the page they opened.
+    if (!document.getElementById('panel-videogen')?.classList.contains('active')) return
     openUiTour({ auto: true, tourId: 'core' })
   }
   if (funnelLocked()) run()
@@ -9663,6 +9662,8 @@ function fvVideoDurationFor(model, seconds) {
 }
 
 async function fvApplyAiScenes(job) {
+  const epoch = fvState.runEpoch || 0
+  const stale = () => (fvState.runEpoch || 0) !== epoch
   const vis = fvVisual()
   const style = visualStyleById(vis.style)
   if (!style || !job) return job
@@ -9689,6 +9690,7 @@ async function fvApplyAiScenes(job) {
   const refs = vis.characterUrl ? [vis.characterUrl] : []
   let drawn = 0
   const images = await fvPool(scenes, 4, async (sc) => {
+    if (stale()) return ''
     try {
       // Straight to the image route (not fvGenerateThumbImage) so scene stills don't fill My Files.
       const data = await api.generate.image({
@@ -9737,6 +9739,7 @@ async function fvApplyAiScenes(job) {
       tick()
     }
   })
+  if (stale()) throw new Error('A new video was started')
   fvState.sceneProject = {
     style: style.id,
     styleName: style.name,
@@ -9754,30 +9757,34 @@ async function fvApplyAiScenes(job) {
 
 /** Timeline for the render: runs of stills become one clip each (fal ffmpeg); animated scenes are their own clips. */
 async function fvTimelineFromScenes(proj) {
-  const timeline = []
+  // Group the scenes: each animated scene is its own clip, runs of stills (up to 40) become one joined clip.
+  const parts = []
   let run = []
-  const flush = async () => {
-    if (!run.length) return
-    const start = run[0].start
-    const end = run[run.length - 1].end
-    let out
-    try {
-      out = await composeScenes(run.map((sc) => ({ url: sc.image, ms: Math.round((sc.end - sc.start) * 1000) })))
-    } catch (e) { throw new Error('joining the scenes failed: ' + (e?.message || e)) }
-    timeline.push({ id: 'ai-' + timeline.length, url: out.url, preview: out.url, start, end, clip_start: 0, provider: 'ai', query: proj.styleName })
-    run = []
-  }
+  const close = () => { if (run.length) parts.push({ run }); run = [] }
   for (const sc of proj.scenes) {
-    if (sc.clip) {
-      await flush()
-      timeline.push({ id: 'ai-' + timeline.length, url: sc.clip, preview: sc.clip, start: sc.start, end: sc.end, clip_start: 0, provider: 'ai', model: proj.videoModel, query: proj.styleName })
-    } else if (sc.image) {
-      run.push(sc)
-      if (run.length >= 40) await flush()
-    }
+    if (sc.clip) { close(); parts.push({ clip: sc }) } else if (sc.image) { run.push(sc); if (run.length >= 40) close() }
   }
-  await flush()
-  return timeline
+  close()
+  // Join the runs, up to 4 at a time. A run nobody changed keeps the clip it was joined into last time.
+  const before = proj.composed || {}
+  const composed = {}
+  const keyOf = (segs) => segs.map((x) => x.url + '@' + x.ms).join('|')
+  const runs = parts.filter((p) => p.run)
+  await fvPool(runs, 4, async (p) => {
+    const segs = p.run.map((sc) => ({ url: sc.image, ms: Math.round((sc.end - sc.start) * 1000) }))
+    const key = keyOf(segs)
+    let url = before[key] || composed[key] || ''
+    if (!url) {
+      try { url = (await composeScenes(segs))?.url || '' } catch (e) { throw new Error('joining the scenes failed: ' + (e?.message || e)) }
+      if (!url) throw new Error('joining the scenes failed: no clip came back')
+    }
+    composed[key] = url
+    p.url = url
+  })
+  proj.composed = composed // only the clips this timeline uses
+  return parts.map((p, n) => p.clip
+    ? { id: 'ai-' + n, url: p.clip.clip, preview: p.clip.clip, start: p.clip.start, end: p.clip.end, clip_start: 0, provider: 'ai', model: proj.videoModel, query: proj.styleName }
+    : { id: 'ai-' + n, url: p.url, preview: p.url, start: p.run[0].start, end: p.run[p.run.length - 1].end, clip_start: 0, provider: 'ai', query: proj.styleName })
 }
 
 // ── Scene editor bridge (Agents app) ────────────────────────────────────────
@@ -9788,7 +9795,8 @@ window.fvSceneProject = () => {
   return {
     ...p,
     scenes: p.scenes.map((x) => ({ ...x })),
-    voiceover: m.voiceover_url || voiceoverPlaylist(m)[0] || '',
+    voiceover: voiceoverPlaylist(m)[0] || m.voiceover_url || '',
+    voiceovers: voiceoverPlaylist(m),
     duration: Number(m.duration) || (p.scenes[p.scenes.length - 1]?.end || 0),
     words: (m.words || []).slice(0, 6000).map((w) => [Number(w.start) || 0, Number(w.end) || 0, String(w.word || w.text || '')]),
     musicId: fvState.preview?.musicId || 'none',
@@ -9815,6 +9823,8 @@ window.fvRedrawScene = async (i, prompt) => {
   })
   const url = data?.urls?.[0]
   if (!url) throw new Error('No image came back. Try again.')
+  const live = fvState.sceneProject?.scenes?.find((x) => x.i === sc.i)
+  if (live !== sc) throw new Error('The video changed while this scene was drawing. Try again.')
   sc.prompt = p
   sc.image = url
   sc.clip = '' // the old animation shows the old picture
@@ -9836,10 +9846,26 @@ window.fvAnimateScene = async (i) => {
   })
   const url = data?.urls?.[0]
   if (!url) throw new Error('The animation did not come back. Try again.')
+  if (fvState.sceneProject?.scenes?.find((x) => x.i === sc.i) !== sc) throw new Error('The video changed while this scene was animating.')
   sc.clip = url
   fvState.sceneProject.edits++
   fvAgentsChanged()
   return url
+}
+/** Editor: move the cut between a scene and the next one to time t (seconds). Each keeps at least 1s. */
+window.fvMoveSceneCut = (i, t) => {
+  const p = fvState.sceneProject
+  if (!p?.scenes?.length) return
+  const k = p.scenes.findIndex((x) => x.i === Number(i))
+  if (k < 0 || k >= p.scenes.length - 1) return
+  const a = p.scenes[k]
+  const b = p.scenes[k + 1]
+  const v = Math.round(Math.max(a.start + 1, Math.min(b.end - 1, Number(t) || 0)) * 100) / 100
+  if (Math.abs(v - a.end) < 0.01) return
+  a.end = v
+  b.start = v
+  p.edits++
+  fvAgentsChanged()
 }
 window.fvStillScene = (i) => {
   const sc = fvSceneAt(i)
@@ -9853,7 +9879,7 @@ window.fvSetupChannel = (args) => setupChannel(args)
 /** Channel setup: read a YouTube channel the user wants to be like. */
 window.fvReadReference = (url) => readReference(url)
 window.fvMusicList = () => FV_MUSIC.map((m) => ({ id: m.id, name: m.name, url: m.url }))
-window.fvSetMusicVol = (v) => {
+window.fvSetSceneMusicVol = (v) => {
   if (!fvState.preview) fvState.preview = {}
   fvState.preview.musicVol = Math.max(0, Math.min(1, Number(v) || 0))
   if (fvState.sceneProject) fvState.sceneProject.edits++
@@ -9885,7 +9911,7 @@ window.fvRepaceScenes = async (pace) => {
   if (fvState.repacing) return 'The scenes are already being redrawn.'
   fvState.repacing = true
   try {
-    window.fvSetVisual({ pace })
+    window.fvSetVisual({ pace, ...(fvState.sceneProject.style ? { style: fvState.sceneProject.style } : {}) })
     fvState.logOn = true
     fvCrewSet('agent', 'working', 'Re-planning the scenes at the new pace')
     const out = await fvApplyAiScenes({ ...fvState.media })
@@ -10048,6 +10074,12 @@ window.fvClearScript = (opts = {}) => {
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
   fvState.script = null
   try { fvRenderTitleOptions(null) } catch (_) {}
+  // The next video starts with no scenes and its own saved-project entry, and any
+  // narration or scene drawing still running for the old one stops when it next checks.
+  fvState.runEpoch = (fvState.runEpoch || 0) + 1
+  fvState.sceneProject = null
+  fvState.editProjectId = null
+  fvState.sceneProgress = null
   fvState.deliveryOn = false
   fvState.thumb = null
   fvState.publish = null
@@ -10535,6 +10567,7 @@ function fvSaveEditProject() {
     savedAt: Date.now(),
     title: s.title || document.getElementById('fv-topic')?.value || 'Untitled video',
     thumb: fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? fvState.thumb.url : (p.scenes[0]?.image || ''),
+    thumbnail: fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? { ...fvState.thumb } : null,
     renderUrl: /^https?:/.test(String(fvState.renderUrl || '')) ? fvState.renderUrl : '',
     aspect: fvState.aspect || p.aspect || '16:9',
     voiceId: fvState.voiceId || '',
@@ -10571,6 +10604,7 @@ window.fvOpenEditProject = (id) => {
   fvState.preview.musicId = rec.preview?.musicId || 'none'
   fvState.preview.musicVol = rec.preview?.musicVol ?? 0.25
   fvState.editProjectId = rec.id
+  if (rec.thumbnail?.url) fvState.thumb = { ...rec.thumbnail }
   if (rec.renderUrl) { fvState.renderUrl = rec.renderUrl; fvState.deliveryOn = true } else { fvState.deliveryOn = false }
   fvAgentsChanged()
   return ''
@@ -10579,7 +10613,12 @@ window.fvOpenEditProject = (id) => {
 window.addEventListener('pagehide', () => { try { fvSaveEditProject() } catch (_) {} })
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { try { fvSaveEditProject() } catch (_) {} } })
 window.fvSaveEditProjectNow = () => { try { fvSaveEditProject() } catch (_) {} }
-window.fvForgetEditProject = (id) => { try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(fvEditProjects().filter((x) => x.id !== id))) } catch (_) {} ; fvAgentsChanged() }
+window.fvForgetEditProject = (id) => {
+  // Forgetting the open video also stops it being saved again a moment later.
+  if (id === fvState.editProjectId) { clearTimeout(fvEditSaveT); fvState.editProjectId = null; fvState.sceneProject = null }
+  try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(fvEditProjects().filter((x) => x.id !== id))) } catch (_) {}
+  fvAgentsChanged()
+}
 window.fvAgentsState = () => {
   const local = fvLocalAgentsState()
   const r = fvState.serverRun?.data
@@ -11016,7 +11055,35 @@ window.fvStudioRender = () => {
   if (!fvState.crew || fvState.crew.stage !== 'render') return fvStudioError(['fv-export-status'], 'The render could not start.')
   return ''
 }
-window.fvAgentsReset = () => { try { window.fvClearScript({}) } catch (_) {} ; fvState.sceneProgress = null; fvAgentsChanged() }
+/**
+ * After a refresh, bring back the script (and finished narration) this tab was working on,
+ * so Studio reopens on it instead of an empty Script page. Saved copies live in sessionStorage.
+ */
+window.fvRestoreDraft = () => {
+  if (fvState.script || fvState.scriptBusy) return false
+  let draft = null
+  let media = null
+  try { draft = JSON.parse(sessionStorage.getItem('vidso_faceless_draft') || 'null') } catch (_) {}
+  try { media = JSON.parse(sessionStorage.getItem('vidso_faceless_media') || 'null') } catch (_) {}
+  if (!draft?.sections?.length) return false
+  try { fvInit() } catch (_) {}
+  try { fvRenderScript({ ...draft, sections: draft.sections.map((x, k) => ({ ...x, id: x.id || 's' + k })) }) } catch (_) { fvState.script = draft }
+  if (media && voiceoverPlaylist(media).length && !fvState.media) {
+    fvState.media = { ...media }
+    // A finished video's scenes come back from its saved Editor project, if there is one.
+    const rec = fvEditProjects().find((x) => x.id === String(media.jobId || ''))
+    if (rec?.project?.scenes?.length) { fvState.sceneProject = { ...rec.project, scenes: rec.project.scenes.map((x) => ({ ...x })) }; fvState.editProjectId = rec.id }
+  }
+  fvAgentsChanged()
+  return true
+}
+window.fvAgentsReset = () => {
+  try { window.fvClearScript({}) } catch (_) {}
+  fvState.sceneProgress = null
+  fvState.serverRun = null
+  try { localStorage.removeItem('vidso_server_run') } catch (_) {}
+  fvAgentsChanged()
+}
 
 function fvSetPills(active) {
   for (let i = 1; i <= 4; i++) {
@@ -11036,6 +11103,8 @@ function fvDurationCapSeconds() {
 function fvDurationList() {
   return durationPresets(fvState.format, fvDurationCapSeconds())
 }
+/** Lengths this user's plan allows, as [id, label] pairs (Studio, channel creator). */
+window.fvDurationChoices = () => fvDurationList().map((d) => [d.id, d.label])
 
 function fvCustomDurationLabel(seconds) {
   if (fvState.format === 'shorts') return seconds + 's'
@@ -11550,6 +11619,7 @@ window.fvEnterEditor = () => {
 }
 
 window.fvContinueToMedia = (allowShort) => {
+  fvSetStatus('', null, 2)
   fvRebuildFullScriptFromSections()
   if (!fvState.script?.full_script) return fvSetStatus('Script is empty', 'err', 2)
   if (!fvState.voiceId && !fvState.script.voice_id) return fvSetStatus('Select a narrator voice', 'err', 2)
@@ -11839,13 +11909,21 @@ function fvWaitForMediaJob(jobId, label) {
   return new Promise((resolve, reject) => {
     fvState.mediaJobId = jobId
     fvStopMediaPoll()
+    let misses = 0
+    let busy = false
+    const started = Date.now()
     fvState.mediaPoll = setInterval(async () => {
+      if (busy) return
+      if (Date.now() - started > 45 * 60 * 1000) { fvStopMediaPoll(); reject(new Error('The narration is taking too long. Try again.')); return }
+      busy = true
       try {
         const job = await api.faceless.pollMedia(jobId)
+        misses = 0
         document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
         fvCrewProgress('media', job.progress)
         if (job.status === 'processing' || job.status === 'queued') {
           fvSetMediaStatus(job.step || label || 'Processing…', 'loading')
+          busy = false
           return
         }
         fvStopMediaPoll()
@@ -11855,6 +11933,12 @@ function fvWaitForMediaJob(jobId, label) {
         }
         resolve(job)
       } catch (e) {
+        busy = false
+        // One dropped check (wifi blip, a 502 from the proxy) shouldn't fail a paid narration.
+        if (fvIsNetworkBlip(e) || (e && e.status >= 500)) {
+          misses++
+          if (misses < 150) { fvSetMediaStatus('Connection dropped, still recording on the server…', 'loading'); return }
+        }
         fvStopMediaPoll()
         reject(e)
       }
@@ -12003,6 +12087,8 @@ async function fvBuildMediaViaTtsFallback() {
 
 window.fvStartMedia = async (force) => {
   if (!fvState.script) return
+  const epoch = fvState.runEpoch || 0
+  const stale = () => (fvState.runEpoch || 0) !== epoch
   fvRebuildFullScriptFromSections()
   fvStopMediaPoll()
 
@@ -12061,6 +12147,7 @@ window.fvStartMedia = async (force) => {
         ready.warning = (ready.warning ? ready.warning + ' ' : '') + ((e && e.message) || 'YouTube B-roll failed')
       }
     }
+    if (stale()) return // a new video was started; drop this one's result
     fvSetMediaStatus('Ready', 'ok')
     fvRenderMediaResult(ready)
     try { fvNotifyStudio() } catch (_) {}
@@ -12075,8 +12162,10 @@ window.fvStartMedia = async (force) => {
         : 'Queuing voiceover + B-roll…'
       fvSetMediaStatus(label, 'loading')
       document.getElementById('fv-media-bar').style.width = Math.max(5, Math.round((i / chunks.length) * 90)) + '%'
-      jobs.push(await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label))
+      if (stale()) return
+      jobs.push(await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label, i === 0))
     }
+    if (stale()) return
     let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
     const parts = voiceoverPlaylist(ready)
     if (parts.length > 1) {
@@ -12101,6 +12190,7 @@ window.fvStartMedia = async (force) => {
         ready.warning = (e && e.message) ? e.message : 'YouTube B-roll failed; using cinematic footage'
       }
     }
+    if (stale()) return // a new video was started; drop this one's result
     fvSetMediaStatus('Ready', 'ok')
     fvRenderMediaResult(ready)
     try { fvNotifyStudio() } catch (_) {}
@@ -12370,6 +12460,7 @@ function fvApplyCaptionStyle(c) {
   const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = String(v) }
   set('fv-cap-size', Math.max(24, Math.min(140, Number(c.size) || 64)))
   set('fv-cap-color', c.color); set('fv-cap-hl', c.highlight)
+  if (c.letterSpacing != null) set('fv-cap-ls', Math.max(-2, Math.min(10, Number(c.letterSpacing) || 0)))
   const sv = document.getElementById('fv-cap-size-val'); if (sv) sv.textContent = String(Math.max(24, Math.min(140, Number(c.size) || 64)))
   fvSetCapChip('fv-cap-shadow', !!c.shadow)
   fvSetCapChip('fv-cap-stroke', !!c.stroke)

@@ -56,7 +56,10 @@ async function requireOwner(req) {
     throw err
   }
   const user = withCompedPlan({ ...data, email: data.email || emailFromJwt(token) })
-  const isOwner = emailsFromUser(user).some((email) => COMPED_STUDIO_EMAILS.includes(email))
+  // Owner only: the exact account email (no Gmail dot/plus folding, no comped customers).
+  const owners = String(process.env.VIDSO_OWNER_EMAILS || 'rishavvashisht347@gmail.com,aiinfluencerpimpingenterprises@gmail.com')
+    .split(',').map((x) => x.trim().toLowerCase()).filter(Boolean)
+  const isOwner = owners.includes(String(data.email || '').trim().toLowerCase())
   if (!isOwner) {
     const err = new Error('Owner access required.')
     err.status = 403

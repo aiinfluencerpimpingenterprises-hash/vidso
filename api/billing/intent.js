@@ -71,7 +71,10 @@ function emailFromJwt(token) {
 }
 
 async function readJson(req) {
-  if (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body)) return req.body
+  // On Vercel, reading req.body throws on malformed JSON; treat that as an empty body, not a 500.
+  let parsed
+  try { parsed = req.body } catch (_) { return {} }
+  if (parsed && typeof parsed === 'object' && !Buffer.isBuffer(parsed)) return parsed
   const chunks = []
   for await (const c of req) chunks.push(c)
   if (!chunks.length) return {}

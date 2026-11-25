@@ -278,7 +278,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 })()
 </script>
 <script type="module">
-import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError } from '/api.js'
+import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, refreshSessionOnce } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, pixelIdentify, pixelClickIds } from '/lib/meta-pixel.js'
 
@@ -529,18 +529,12 @@ async function resumeConnectorIfSession() {
   } catch (e) {
     const unauthorized = e && e.status === 401
     if (unauthorized) {
+      let refused = !getRefreshToken()
       try {
-        const rt = getRefreshToken()
-        if (rt) {
-          const { session } = await api.auth.refresh(rt)
-          if (session?.access_token) {
-            setSession(session)
-            goAfterAuth()
-            return
-          }
-        }
-      } catch (_) {}
-      clearSession()
+        if (getRefreshToken() && await refreshSessionOnce()) { goAfterAuth(); return }
+      } catch (er) { refused = isInvalidRefreshError(er, er?.status) }
+      // Only a refused refresh token ends the session; a network blip keeps it for next time.
+      if (refused) clearSession()
     }
     prepareConnectorLogin()
   }

@@ -28,11 +28,21 @@ const SUPABASE_URL = 'https://ymtmgpgcmrazqeklixwf.supabase.co'
 
 let refreshInFlight = null
 
+/**
+ * Refresh the session once. Supabase refresh tokens rotate: if two tabs (or two calls) refresh
+ * with the same token, the second is rejected and used to log the user out. So refreshes are
+ * serialised across tabs, and a rejection after another tab already stored a newer token counts
+ * as success.
+ */
 async function refreshSessionOnce() {
   if (!refreshInFlight) {
-    refreshInFlight = (async () => {
+    const tokenAtCall = getToken()
+    const run = async () => {
       const rt = getRefreshToken()
       if (!rt) return false
+      // Another tab may have refreshed while this one waited for the lock.
+      const now = getToken()
+      if (now && now !== tokenAtCall && !tokenNeedsRefresh(now)) return true
       try {
         const data = await reqTo(BASE + '/api/auth/refresh', 'POST', { refresh_token: rt }, false, {
           skipAuthRefresh: true,
@@ -46,10 +56,16 @@ async function refreshSessionOnce() {
         setSession(session)
         return true
       } catch (e) {
+        const latest = getRefreshToken()
+        if (latest && latest !== rt) return true // rotated by another tab meanwhile
         if (isInvalidRefreshError(e, e?.status)) e.code = e.code || 'refresh_invalid'
         throw e
       }
-    })().finally(() => {
+    }
+    const locked = (typeof navigator !== 'undefined' && navigator.locks?.request)
+      ? navigator.locks.request('tubeops-session-refresh', run)
+      : run()
+    refreshInFlight = Promise.resolve(locked).finally(() => {
       refreshInFlight = null
     })
   }
@@ -671,4 +687,4 @@ export const api = {
   },
 }
 
-export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, isInvalidRefreshError, WHOP_CHECKOUT, ensureFreshToken }
+export { getToken, getRefreshToken, setSession, clearSession, tokenNeedsRefresh, isExpiredAuthError, isInvalidRefreshError, WHOP_CHECKOUT, ensureFreshToken, refreshSessionOnce }

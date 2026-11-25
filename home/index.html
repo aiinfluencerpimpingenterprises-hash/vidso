@@ -2952,7 +2952,7 @@ if (window.gsap) {
   form.addEventListener('submit', function(e){
     e.preventDefault()
     var text = about.value.trim(); if (text.length < 3) return
-    try { localStorage.setItem('vidso_landing_topic', JSON.stringify({ about: text.slice(0, 300), ref: ref.value.trim().slice(0, 200), t: Date.now() })) } catch (e2) {}
+    try { localStorage.setItem('vidso_landing_topic', JSON.stringify({ about: text.slice(0, 300), ref: ref.value.trim().slice(0, 200), cat: document.querySelector('.lp-cat.is-on')?.dataset.cat || '', t: Date.now() })) } catch (e2) {}
     if (signedIn) { location.href = '/create'; return }
     try { sessionStorage.setItem('vidso_after_login', '/create') } catch (e3) {}
     if (window.vidsoOpenSignup) { window.vidsoOpenSignup(); return }
@@ -3039,6 +3039,8 @@ window.vidsoOpenSignup = openSu
 document.getElementById('su-x').addEventListener('click', closeSu)
 bg.addEventListener('click', (e) => { if (e.target === bg) closeSu() })
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !bg.hidden) closeSu() })
+// Coming back with the browser's Back button (from Google) restores a page whose buttons were disabled.
+window.addEventListener('pageshow', () => { gBtn.disabled = false })
 gBtn.addEventListener('click', () => {
   gBtn.disabled = true
   try { sessionStorage.setItem('vidso_auth_intent', 'signup'); sessionStorage.setItem('vidso_after_login', '/create') } catch (_) {}

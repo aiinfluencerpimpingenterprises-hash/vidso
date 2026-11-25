@@ -125,7 +125,7 @@ async function localAgentRoute(req, res, sub) {
     }
     if (sub === 'scenes' || sub === 'compose') {
       const { runCompose, runScenePlanner } = await import('../lib/scene-agent.js')
-      if (sub === 'compose') return json(200, await runCompose({ segments: body.segments, falKey }))
+      if (sub === 'compose') return json(200, await runCompose({ segments: body.segments, id: body.id, ms: body.ms, falKey }))
       return json(200, { scenes: await runScenePlanner({ scenes: body.scenes, topic: body.topic, styleName: body.style, character: body.character, falKey }) })
     }
     if (sub === 'channel') {
