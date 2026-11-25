@@ -40,6 +40,7 @@ export default async function handler(req, res) {
     return send(res, 200, { received: true, ...result })
   } catch (e) {
     if (e.code === 'membership_taken') return send(res, 200, { received: true, skipped: 'membership_taken' })
+    if (e.code === 'membership_revoked') return send(res, 200, { received: true, skipped: 'membership_revoked' })
     return send(res, 500, { error: e.message || 'Fulfillment failed' })
   }
 }

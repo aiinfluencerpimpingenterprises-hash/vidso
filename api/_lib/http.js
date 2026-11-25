@@ -31,6 +31,11 @@ export function bearer(req) {
   return String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
 }
 
+// Image/video polls call this every couple of seconds; a short cache keeps a busy
+// Railway (recording narration) from turning each poll into a slow lookup or a 504.
+const ME_TTL_MS = 15000
+const meCache = globalThis.__vidsoMeCache || (globalThis.__vidsoMeCache = new Map())
+
 export async function requireUser(req, tokenOverride) {
   const token = tokenOverride || bearer(req)
   if (!token) {
@@ -38,7 +43,16 @@ export async function requireUser(req, tokenOverride) {
     err.status = 401
     throw err
   }
-  const res = await fetch(UPSTREAM + '/api/user/me', { headers: { Authorization: 'Bearer ' + token } })
+  const hit = meCache.get(token)
+  if (hit && Date.now() - hit.at < ME_TTL_MS) return { user: hit.user, token }
+  let res
+  try {
+    res = await fetch(UPSTREAM + '/api/user/me', { headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(8000) })
+  } catch (e) {
+    const err = new Error('TubeOps is busy right now. Try again in a moment.')
+    err.status = 503
+    throw err
+  }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
     const err = new Error(data.message || data.error || 'Unauthorized')
@@ -46,5 +60,7 @@ export async function requireUser(req, tokenOverride) {
     err.body = data
     throw err
   }
+  if (meCache.size > 200) meCache.delete(meCache.keys().next().value)
+  meCache.set(token, { at: Date.now(), user: data })
   return { user: data, token }
 }

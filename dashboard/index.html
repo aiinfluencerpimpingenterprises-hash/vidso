@@ -115,7 +115,7 @@
     }
     for (var i = 0; i < ids.length; i++) {
       if (hasSeenId(ids[i])) obSeen = true
-      if (ids[i] === 'stormdecoded@gmail.com' || ids[i] === 'aipimp@gmail.com' || ids[i] === 'xenonforyou@gmail.com' || ids[i] === 'xenonforyou@gmai.com' || ids[i] === 'rishavvashisht347@gmail.com' || ids[i] === 'work.krishlulla@gmail.com' || ids[i] === 'ghadnijyimbere356@gmail.com' || ids[i] === 'aiinfluencerpimpingenterprises@gmail.com' || ids[i] === 'aiinfluencerpimpingenterprises@gamil.com' || ids[i] === 'ntuamassoma@gmail.com' || ids[i] === 'faisalym3@gmail.com' || ids[i] === 'margik2803@gmail.com' || ids[i] === 'subramaniamvishwak@gmail.com' || ids[i] === 'subramaniam.vishwak@gmail.com' || ids[i] === 'beyondtheframe856@gmail.com') paid = true
+      if (ids[i] === 'stormdecoded@gmail.com' || ids[i] === 'aipimp@gmail.com' || ids[i] === 'xenonforyou@gmail.com' || ids[i] === 'rishavvashisht347@gmail.com' || ids[i] === 'work.krishlulla@gmail.com' || ids[i] === 'ghadnijyimbere356@gmail.com' || ids[i] === 'aiinfluencerpimpingenterprises@gmail.com' || ids[i] === 'ntuamassoma@gmail.com' || ids[i] === 'faisalym3@gmail.com' || ids[i] === 'margik2803@gmail.com' || ids[i] === 'subramaniamvishwak@gmail.com' || ids[i] === 'subramaniam.vishwak@gmail.com' || ids[i] === 'beyondtheframe856@gmail.com') paid = true
       if (ids[i] === 'jacoblewiswrestling@gmail.com' && Date.now() < Date.parse('2026-10-01T00:00:00.000Z')) paid = true
     }
     if (paid) {
@@ -3655,7 +3655,7 @@ body.tour-active #fv-export-box.show{min-height:160px}
 .paywall-toggle{display:inline-flex;align-self:center;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
 .paywall-tg{min-height:36px;padding:0 14px;border:none;border-radius:999px;background:transparent;color:rgba(255,255,255,.55);font:inherit;font-size:.78rem;font-weight:650;cursor:pointer}
 .paywall-tg.active{background:var(--grad);color:#fff}
-.paywall-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.paywall-plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .paywall-plan{
   position:relative;display:flex;flex-direction:column;gap:10px;padding:16px 14px;
   border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);min-width:0
@@ -3677,7 +3677,7 @@ body.tour-active #fv-export-box.show{min-height:160px}
 .paywall-plan .metric{display:flex;justify-content:space-between;gap:8px;font-size:.7rem;color:rgba(255,255,255,.48)}
 .paywall-plan .metric strong{color:rgba(255,255,255,.88);font-weight:700}
 .paywall-plan .metric strong.hl{color:#FE0C30}
-.paywall-plan .feat{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-rows:repeat(17,minmax(2.2em,auto));gap:0;flex:1}
+.paywall-plan .feat{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-rows:repeat(20,minmax(2.2em,auto));gap:0;flex:1}
 .paywall-plan .feat-row{font-size:.75rem;color:rgba(255,255,255,.72);display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:7px;align-items:start;line-height:1.35;min-height:2.2em;padding-top:6px}
 .paywall-plan .feat-row.off{color:rgba(255,255,255,.32);opacity:.55}
 .paywall-plan .feat-row.off .feat-label,.paywall-plan .feat-row.off .feat-val{text-decoration:line-through}
@@ -4127,22 +4127,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Faceless Studio</span>
         <span class="settings-row-value">Test →</span>
       </button>
-      <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open billing and plans">
-        <span class="settings-row-label">Billing</span>
+      <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open plans and credits">
+        <span class="settings-row-label">Plans &amp; credits</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
       <button type="button" class="settings-row-btn" id="settings-yt-link">
         <span class="settings-row-label">My YouTube Channel</span>
         <span class="settings-row-value" id="settings-yt-state">Connect →</span>
       </button>
-      <div class="settings-row is-soon" aria-disabled="true">
-        <span class="settings-row-label">Change email</span>
-        <span class="badge-soon">Coming soon</span>
-      </div>
-      <div class="settings-row is-soon" aria-disabled="true">
-        <span class="settings-row-label">Change password</span>
-        <span class="badge-soon">Coming soon</span>
-      </div>
     </div>
     <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
   </div>
@@ -4222,7 +4214,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="topnav-item" id="nav-agents" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
     <button type="button" class="topnav-item" id="nav-manual" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
     <button type="button" class="topnav-item" id="nav-edit" data-panel="edit" onclick="switchPanel('edit',this)">Editor</button>
-    <button type="button" class="topnav-item" id="nav-brand" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
+    <button type="button" class="topnav-item" id="nav-brand" data-panel="brand" onclick="switchPanel('brand',this)">Channels</button>
     <button type="button" class="topnav-item" id="nav-dashboard" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
     <button type="button" class="topnav-item" id="nav-imagegen" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
     <button type="button" class="topnav-item" id="nav-videogen" data-archived hidden data-panel="videogen" onclick="switchPanel('videogen',this)">Long Form Generator</button>
@@ -4257,7 +4249,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <div id="nav-search-list"></div>
       </div>
     </div>
-    <span class="credits-pill" id="credits-pill" title="Monthly video allowance">
+    <span class="credits-pill" id="credits-pill" title="Your credits and plan" role="button" tabindex="0" onclick="openAccountSettings()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAccountSettings()}" style="cursor:pointer">
       <svg class="credits-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
       <span class="credits-pill-count" id="credits-count">—</span>
       <span class="credits-pill-label">videos</span>
@@ -4271,6 +4263,8 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <div class="user-name" id="user-name">Your account</div>
           <div class="user-email" id="user-email">...</div>
         </div>
+        <button type="button" role="menuitem" onclick="switchPanel('files', null)">My files</button>
+        <button type="button" role="menuitem" onclick="openPaywall({force:true})">Plans &amp; credits</button>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
         <button type="button" role="menuitem" id="nav-yt-mcp-btn">My YouTube Channel</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
@@ -4294,7 +4288,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
   <button type="button" class="topnav-item" data-panel="agents" onclick="switchPanel('agents',this)">Agents</button>
   <button type="button" class="topnav-item" data-panel="manual" onclick="switchPanel('manual',this)">Studio</button>
   <button type="button" class="topnav-item" data-panel="edit" onclick="switchPanel('edit',this)">Editor</button>
-  <button type="button" class="topnav-item" data-panel="brand" onclick="switchPanel('brand',this)">Brand</button>
+  <button type="button" class="topnav-item" data-panel="brand" onclick="switchPanel('brand',this)">Channels</button>
   <button type="button" class="topnav-item" data-archived hidden data-panel="dashboard" onclick="switchPanel('dashboard',this)">Dashboard</button>
   <span class="nav-drawer-label" data-archived hidden>Generate</span>
   <button type="button" class="topnav-item" data-archived hidden data-panel="imagegen" onclick="switchPanel('imagegen',this)">Thumbnail Generator</button>
@@ -6674,6 +6668,8 @@ import {
   wordsPerSection,
   countSpokenWords,
   WORDS_PER_MINUTE,
+  uniqueSectionIds,
+  dropRepeatedHook,
 } from '/lib/faceless-length.js'
 import { hookRewriteInstruction, openingOf, scoreHook } from '/lib/viral-playbook.js'
 import {
@@ -6739,10 +6735,11 @@ import { initAgentsChat } from '/lib/agents-chat.js'
 import { initStudioHub } from '/lib/studio-hub.js'
 import { initBrandStudio } from '/lib/brand-studio.js'
 import { initChannelCreator } from '/lib/channel-creator.js'
-import { DEFAULT_IMAGE_MODEL } from '/lib/fal-image.js'
+import { DEFAULT_IMAGE_MODEL, sceneImageModelFor } from '/lib/fal-image.js'
+import { estimateVideoCredits } from '/lib/studio-credits.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
-import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById } from '/lib/fal-video.js'
-import { planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE } from '/lib/visual-styles.js'
+import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById, SCENE_ANIMATION_MODEL } from '/lib/fal-video.js'
+import { fillSceneGaps, planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE } from '/lib/visual-styles.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
@@ -9186,8 +9183,7 @@ function populateUser() {
   if (creditsLabel) creditsLabel.textContent = q.unlimited || q.legacy ? '' : 'left'
   const pill = document.getElementById('credits-pill')
   if (pill) {
-    const credits = currentUser.studio_credits_remaining
-    pill.title = q.longText + (!panelArchived('facelessstudio') && Number.isFinite(Number(credits)) ? ' · ' + credits + ' Faceless credits left' : '')
+    pill.title = q.longText
   }
   const welcome = document.getElementById('dash-welcome-name')
   if (welcome) {
@@ -9202,7 +9198,7 @@ const DEFAULT_PANEL = 'create'
 const DEFAULT_PATH = '/create'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
-  home:'Agents', agents:'Agents', manual:'Studio', edit:'Editor', brand:'Brand', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
+  home:'Agents', agents:'Agents', manual:'Studio', edit:'Editor', brand:'Channels', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
   videogen:'Long Form Generator', ytvideogen:'YouTube Generator', facelessstudio:'Faceless Studio', tools:'Short Form Tools',
   captions:'AI Captions', voiceover:'AI Voiceover', editor:'Video Editor', reframe:'AI Reframe',
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
@@ -9223,7 +9219,7 @@ function resolvePanel(id) {
   if (id === 'home') return DEFAULT_PANEL
   if (id === 'ytvideogen') return DEFAULT_PANEL
   if (id === 'mcp' || id === 'connectors') return DEFAULT_PANEL
-  if (panelArchived(id)) return DEFAULT_PANEL
+  if (panelArchived(id)) return 'agents'
   if (id && titles[id] && document.getElementById('panel-' + id)) return id
   return DEFAULT_PANEL
 }
@@ -9361,7 +9357,10 @@ function restorePanelFromPath(opts = {}) {
     return
   }
   const p = normalizePath(location.pathname)
-  if (HOME_PATHS.has(p) || archivedPath(p)) {
+  if (archivedPath(p)) {
+    // A retired page's old link opens Agents, the app's home now.
+    history.replaceState(null, '', (PANEL_PATHS.agents || '/agents') + (location.search || '') + (location.hash || ''))
+  } else if (HOME_PATHS.has(p)) {
     history.replaceState(null, '', DEFAULT_PATH + (location.search || '') + (location.hash || ''))
   }
   const panel = panelFromPath()
@@ -9695,7 +9694,8 @@ async function fvApplyAiScenes(job) {
       // Straight to the image route (not fvGenerateThumbImage) so scene stills don't fill My Files.
       const data = await api.generate.image({
         prompt: sceneImagePrompt({ scene: prompts[sc.i] || sc.text, style: style.id, character: vis.characterDesc, aspect: fvState.aspect }),
-        model: 'nano-banana',
+        model: sceneImageModelFor(refs.length > 0),
+        scene: true,
         aspect_ratio: fvState.aspect || '16:9',
         quality: '1K',
         resolution: '1K',
@@ -9712,17 +9712,44 @@ async function fvApplyAiScenes(job) {
       tick()
     }
   })
-  // A scene whose image failed reuses the nearest good one, so the timeline has no holes.
-  for (let k = 0; k < images.length; k++) if (!images[k]) images[k] = images[k - 1] || images.find(Boolean) || ''
+  // Second chance for failed scenes (most failures are one-off fal hiccups), unless credits ran out.
+  const missed = scenes.filter((sc) => !images[sc.i])
+  if (missed.length && !stale() && !/credits/i.test(firstImageError || '')) {
+    say(`Redrawing ${missed.length} scene${missed.length === 1 ? '' : 's'} that failed`)
+    await fvPool(missed, 4, async (sc) => {
+      if (stale()) return
+      try {
+        const data = await api.generate.image({
+          prompt: sceneImagePrompt({ scene: sc.text, style: style.id, character: vis.characterDesc, aspect: fvState.aspect }),
+          model: sceneImageModelFor(refs.length > 0),
+          scene: true,
+          aspect_ratio: fvState.aspect || '16:9',
+          quality: '1K',
+          resolution: '1K',
+          num_images: 1,
+          ...(refs.length ? { image_urls: refs } : {}),
+        })
+        if (data?.urls?.[0]) { images[sc.i] = data.urls[0]; fvState.sceneProgress.images[sc.i] = data.urls[0] }
+      } catch (_) {}
+    })
+  }
+  // Scenes that still failed borrow from nearby drawn scenes in rotation, never one frame on repeat.
+  const gaps = fillSceneGaps(images)
+  gaps.images.forEach((url, k) => { images[k] = url })
   if (!images.some(Boolean)) throw new Error('no scene images came back' + (firstImageError ? ': ' + firstImageError : ''))
   const mode = visualModeById(vis.mode)
-  const videoModel = videoModelById(mode.id === 'cinematic' ? 'kling-3-pro' : 'wan-2.7')
+  const videoModel = videoModelById(SCENE_ANIMATION_MODEL) // Hailuo for every mode, Cinematic included
   const clips = {}
-  const toAnimate = scenes.filter((sc) => sc.animate && images[sc.i])
+  // A borrowed image is another scene's picture: animating it would show the same motion twice.
+  const toAnimate = scenes.filter((sc) => sc.animate && images[sc.i] && !gaps.filled.has(sc.i))
   let animated = 0
+  let animErr = ''
+  let noCredits = false
   // Video models queue for minutes per clip, so run several at once.
   await fvPool(toAnimate, 6, async (sc) => {
     try {
+      // Out of credits: don't keep submitting clips that will be refused.
+      if (noCredits || stale()) return
       const data = await api.generate.video({
         model: videoModel.id,
         prompt: (prompts[sc.i] || sc.text) + '. Gentle natural motion, keep the art style.',
@@ -9730,9 +9757,14 @@ async function fvApplyAiScenes(job) {
         duration: fvVideoDurationFor(videoModel, sc.end - sc.start),
         generate_audio: false,
         image_urls: [images[sc.i]],
+        scene: true,
       })
       if (data?.urls?.[0]) clips[sc.i] = data.urls[0]
-    } catch (_) {} finally {
+    } catch (e) {
+      // Used to be swallowed, so a run that ran out of credits looked like it "didn't animate".
+      if (e?.status === 402 || e?.needsPlan) { noCredits = true; animErr = e.message || 'Out of credits' }
+      else if (!animErr) animErr = e?.message || 'the video model failed'
+    } finally {
       animated++
       fvState.sceneProgress.animated = animated
       say(`Animating scene ${animated} of ${toAnimate.length}`)
@@ -9740,6 +9772,12 @@ async function fvApplyAiScenes(job) {
     }
   })
   if (stale()) throw new Error('A new video was started')
+  const madeClips = Object.keys(clips).length
+  if (toAnimate.length && madeClips < toAnimate.length) {
+    const why = noCredits ? 'You ran out of credits for animation, so the rest stay as still images.' : `The rest stay as still images (${animErr || 'the video model failed'}).`
+    fvState.aiSceneWarning = `Animated ${madeClips} of ${toAnimate.length} scenes. ${why}`
+    say(fvState.aiSceneWarning)
+  } else fvState.aiSceneWarning = ''
   fvState.sceneProject = {
     style: style.id,
     styleName: style.name,
@@ -9814,7 +9852,8 @@ window.fvRedrawScene = async (i, prompt) => {
   const p = String(prompt || sc.prompt || sc.text).trim().slice(0, 600)
   const data = await api.generate.image({
     prompt: sceneImagePrompt({ scene: p, style: fvState.sceneProject.style, character: vis.characterDesc, aspect: fvState.sceneProject.aspect }),
-    model: 'nano-banana',
+    model: sceneImageModelFor(!!vis.characterUrl),
+    scene: true,
     aspect_ratio: fvState.sceneProject.aspect,
     quality: '1K',
     resolution: '1K',
@@ -9835,7 +9874,8 @@ window.fvRedrawScene = async (i, prompt) => {
 window.fvAnimateScene = async (i) => {
   const sc = fvSceneAt(i)
   if (!sc.image) throw new Error('Draw the scene first.')
-  const model = videoModelById(fvState.sceneProject.videoModel || 'wan-2.7')
+  // Every animation uses Hailuo 02 Standard, whatever older videos were made with.
+  const model = videoModelById(SCENE_ANIMATION_MODEL)
   const data = await api.generate.video({
     model: model.id,
     prompt: (sc.prompt || sc.text) + '. Gentle natural motion, keep the art style.',
@@ -9843,6 +9883,7 @@ window.fvAnimateScene = async (i) => {
     duration: fvVideoDurationFor(model, sc.end - sc.start),
     generate_audio: false,
     image_urls: [sc.image],
+    scene: true,
   })
   const url = data?.urls?.[0]
   if (!url) throw new Error('The animation did not come back. Try again.')
@@ -10848,6 +10889,7 @@ window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => 
 function fvApplyCaptionLook(id) {
   const L = FV_CAPTION_LOOKS[id]
   if (!L) return false
+  fvState.captionLook = id
   const sel = document.getElementById('fv-cap-font')
   try { if (sel && sel.options.length < 8) fillCaptionFontSelect(sel) } catch (_) {}
   const opt = sel && [...sel.options].find((o) => o.textContent.trim().toLowerCase() === L.font.toLowerCase())
@@ -10888,6 +10930,15 @@ window.fvAgentsLoadVoices = () => { if (voicesLoadState === 'idle' || voicesLoad
 window.fvAskManager = (args) => askManager(args)
 window.fvAgentsAngle = (id) => { fvState.angle = id || 'auto'; try { localStorage.setItem('vidso_fv_angle', fvState.angle) } catch (_) {} ; fvAgentsChanged() }
 try { fvState.angle = localStorage.getItem('vidso_fv_angle') || 'auto' } catch (_) { fvState.angle = 'auto' }
+window.fvAgentsCaptionLook = () => fvState.captionLook || ''
+/** The review screen's cost: the same estimate the gate charges, plus what the account has left. */
+window.fvVideoCost = (seconds) => {
+  const vis = fvVisual()
+  const e = estimateVideoCredits({ seconds, pace: vis.pace, mode: vis.mode, character: !!vis.characterUrl })
+  let q = null
+  try { q = currentUser ? quotaView(currentUser, lastUsage) : null } catch (_) {}
+  return { ...e, left: q && Number.isFinite(Number(q.credits)) ? Number(q.credits) : null, unlimited: !!q?.unlimited }
+}
 
 // Publish agent: description + tags from the script (lib/publish-agent.js); chapters are
 // timed from the sections against the recorded narration when the video is uploaded.
@@ -11569,6 +11620,8 @@ function fvEsc(s) {
 }
 
 function fvRenderScript(script) {
+  // Unique ids first: the section boxes and their save are matched up by id.
+  if (script && Array.isArray(script.sections)) uniqueSectionIds(script.sections)
   fvState.script = script
   fvState.phase = 1
   const box = document.getElementById('fv-script-box')
@@ -11911,10 +11964,15 @@ function fvWaitForMediaJob(jobId, label) {
     fvStopMediaPoll()
     let misses = 0
     let busy = false
+    let nextAt = 0
     const started = Date.now()
     fvState.mediaPoll = setInterval(async () => {
       if (busy) return
       if (Date.now() - started > 45 * 60 * 1000) { fvStopMediaPoll(); reject(new Error('The narration is taking too long. Try again.')); return }
+      // Every 3s (backing off to 6s after failures), and not while the tab is hidden:
+      // recording keeps going on the server either way.
+      if (Date.now() < nextAt || document.visibilityState === 'hidden') return
+      nextAt = Date.now() + (misses ? 6000 : 3000)
       busy = true
       try {
         const job = await api.faceless.pollMedia(jobId)
@@ -11935,18 +11993,28 @@ function fvWaitForMediaJob(jobId, label) {
       } catch (e) {
         busy = false
         // One dropped check (wifi blip, a 502 from the proxy) shouldn't fail a paid narration.
-        if (fvIsNetworkBlip(e) || (e && e.status >= 500)) {
+        if (fvIsNetworkBlip(e) || e?.network || (e && e.status >= 500)) {
           misses++
-          if (misses < 150) { fvSetMediaStatus('Connection dropped, still recording on the server…', 'loading'); return }
+          if (misses < 150) {
+            // One slow check is normal; only say so when it keeps happening.
+            if (misses >= 3) fvSetMediaStatus('Connection dropped, still recording on the server…', 'loading')
+            return
+          }
         }
         fvStopMediaPoll()
         reject(e)
       }
-    }, 1200)
+    }, 1000)
   })
 }
 
-async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
+/** What the whole video will cost in credits, sent with its first voice part. */
+function fvVideoCreditEstimate(seconds) {
+  const vis = fvVisual()
+  return estimateVideoCredits({ seconds, pace: vis.pace, mode: vis.mode, character: !!vis.characterUrl }).total
+}
+
+async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label, first = false) {
   try { await ensureFreshToken() } catch (_) {}
   const { jobId } = await api.faceless.startMedia({
     script: {
@@ -11966,6 +12034,8 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label) {
     aspect: chunk.aspect || fvState.script.aspect || fvState.aspect,
     ...extras,
     ...voiceOpts,
+    scene_pace: fvVisual().pace || 'normal',
+    ...(first ? { credits_needed: fvVideoCreditEstimate(extras.duration_seconds) } : {}),
   })
   return fvWaitForMediaJob(jobId, label)
 }
@@ -13434,8 +13504,13 @@ function fvPollRenderJob(jobId, picked, btn) {
         try {
           if (api.faceless.proxied()) {
             fvCrewSet('editor', 'working', 'Saving the finished video to My Files')
-            url = (await api.faceless.saveRender(jobId, fvState.script?.title))?.url || ''
-            savedLink = !!url
+            // Saving can time out on long videos; the render itself is fine, so fall back to fetching it.
+            try {
+              url = (await api.faceless.saveRender(jobId, fvState.script?.title))?.url || ''
+              savedLink = !!url
+            } catch (saveErr) {
+              try { console.warn('[render] save to My Files failed, downloading instead:', saveErr?.message) } catch (_) {}
+            }
           }
           if (!url) url = await api.faceless.downloadRender(jobId)
         } catch (err) {
@@ -13730,8 +13805,10 @@ function fvSingleSectionPayload(payload, perWords) {
   }
 }
 
-async function fvWriteOneSection(topic, heading, index, want, perWords, payload, picked, timeoutMs, covered) {
+async function fvWriteOneSection(topic, heading, index, want, perWords, payload, picked, timeoutMs, covered, tail = '') {
   const extra = [
+    // The closer used to be written blind (no script), so it opened with a fresh hook.
+    tail ? ('This is the FINAL section of the video. The script so far ends with: "' + tail.replace(/"/g, "'") + '". Continue from there and close the video. Do not restate the opening and do not write a hook.') : '',
     'Write JSON with exactly ONE section.',
     'This is item ' + (index + 1) + ' of ' + want + ' for: ' + topic + '.',
     heading && !/^item \d+/i.test(heading) ? ('Heading: ' + heading + '.') : 'Name the specific subject for this slot.',
@@ -13977,8 +14054,9 @@ async function fvAppendLengthCloser(script, topic, payload, picked, timeoutMs, n
   const covered = fvCoveredHeadings(sections).join(', ')
   const want = Math.max(sections.length + 1, payload.target_sections || 1)
   const per = Math.max(80, Math.round(Number(needWords) || 80))
+  const tail = String(script.full_script || sections.map((x) => x?.text || '').join('\n\n')).slice(-1500)
   const one = await fvWriteOneSection(
-    topic, 'Closing', sections.length, want, per, payload, picked, timeoutMs, covered,
+    topic, 'Closing', sections.length, want, per, payload, picked, timeoutMs, covered, tail,
   )
   if (!one?.text) return script
   script.sections = sections.concat([one])
@@ -14087,6 +14165,7 @@ window.fvGenerateScript = async () => {
     }
     const targetWords = payload.final_target_words || payload.target_words
     data = capScriptToTarget(data, targetWords)
+    data = dropRepeatedHook(data) // the model sometimes ends by repeating its opening hook
     data = await fvStrengthenHook(data, topic)
     data = await fvPickTitle(data, topic)
     words = scriptWordCount(data)

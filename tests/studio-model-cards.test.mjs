@@ -7,10 +7,9 @@ import { VIDEO_MODELS } from '../lib/fal-video.js'
 const shell = readFileSync(fileURLToPath(new URL('../lib/studio-shell.js', import.meta.url)), 'utf8')
 const css = readFileSync(fileURLToPath(new URL('../dashboard/index.html', import.meta.url)), 'utf8')
 
-test('Veo card copy matches the 4K reference', () => {
-  const veo = VIDEO_MODELS.find((m) => m.id === 'veo-3.1')
-  assert.equal(veo.name, 'Veo 3.1')
-  assert.equal(veo.blurb, 'The only 4K model')
+test('the only model card is H3 Max Turbo', () => {
+  assert.deepEqual(VIDEO_MODELS.map((m) => m.name), ['MiniMax H3 Max Turbo'])
+  assert.doesNotMatch(shell, /id="fs-video-model"/)
 })
 
 test('studio model picker builds the lifted card markup', () => {

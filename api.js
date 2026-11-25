@@ -123,8 +123,15 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     })
     raw = await res.text()
   } catch (e) {
-    if (e && e.name === 'AbortError') throw new Error('That request timed out. Try again.')
-    throw new Error("Can't reach TubeOps's servers right now. Check your connection and try again in a minute.")
+    // Keep what really happened (err.cause) and mark it a network blip so pollers can retry.
+    const err = new Error(
+      e && e.name === 'AbortError' ? 'That request timed out. Try again.'
+        : res ? 'The server answered but the reply was cut off. Try again.'
+          : "Can't reach TubeOps's servers right now. Check your connection and try again in a minute.",
+    )
+    err.cause = e
+    err.network = true
+    throw err
   } finally {
     if (timer) clearTimeout(timer)
   }
@@ -179,12 +186,27 @@ async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
   if (!start.statusUrl || !start.responseUrl) throw new Error('Could not start the job.')
   const pollUrl = sameOriginApi('/api/generate/image-status')
   const deadline = Date.now() + (Number(timeoutMs) > 0 ? Number(timeoutMs) : 180000)
+  const base = body.kind === 'video' ? 4000 : 1800
+  let misses = 0
+  let lastErr = null
   while (Date.now() < deadline) {
-    await sleep(body.kind === 'video' ? 4000 : 1800)
-    const st = await reqTo(pollUrl, 'POST', {
-      statusUrl: start.statusUrl,
-      responseUrl: start.responseUrl,
-    })
+    // Back off after failed checks: 2s, 4s, then 6s at most on top of the normal pace.
+    await sleep(base + Math.min(6000, misses * 2000))
+    let st
+    try {
+      st = await reqTo(pollUrl, 'POST', {
+        statusUrl: start.statusUrl,
+        responseUrl: start.responseUrl,
+      }, false, { timeoutMs: 20000 })
+      misses = 0
+    } catch (e) {
+      // The job keeps running (and is already paid for); one dropped check must not lose it.
+      const transient = e?.network || (e?.status >= 500 && e?.status !== 501) || e?.status === 429 || e?.status === 408
+      if (!transient) throw e
+      lastErr = e
+      if (++misses >= 8) throw e
+      continue
+    }
     if (st.done && Array.isArray(st.urls) && st.urls.length) {
       return {
         ...st,
@@ -198,6 +220,7 @@ async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
       }
     }
   }
+  if (lastErr && misses) throw lastErr
   throw new Error('Timed out waiting for the ' + (waitLabel || 'result') + '. Try again.')
 }
 
@@ -386,7 +409,12 @@ export const api = {
     signup:  async (email, password, name) => {
       const data = await req('POST', '/api/auth/signup',  { email, password, name })
       const session = sessionFromAuthPayload(data)
-      if (!session) throw new Error('Signup returned no session')
+      // With email confirmation on, the account exists but has no session until
+      // the link in the email is clicked.
+      if (!session) {
+        if (data && (data.user || data.data?.user || data.id || data.email)) return { ...data, session: null, needsConfirmation: true }
+        throw new Error('Signup returned no session')
+      }
       return { ...data, session }
     },
     login:   async (email, password) => {
@@ -442,7 +470,8 @@ export const api = {
   },
   generate: {
     image: (body) => generateImageFal(body),
-    video: (body) => generateFalMedia({ ...body, kind: 'video' }, { timeoutMs: 480000, waitLabel: 'video' }),
+    // Clips can sit in fal's queue for minutes before they start; 15 minutes covers a busy queue.
+    video: (body) => generateFalMedia({ ...body, kind: 'video' }, { timeoutMs: 900000, waitLabel: 'video' }),
     imageSave: (body) => {
       const url = sameOriginApi('/api/generate/image-save')
       if (!url) throw new Error('Image history is only available on the live app.')
@@ -631,13 +660,14 @@ export const api = {
       recoverScript: true,
     }),
     // body: { topic, section_id, heading, text, full_script } → rewritten section
-    rewriteSection: (body, opts = {}) => reqTo(BASE + '/api/faceless/script/section', 'POST', body, false, {
-      timeoutMs: opts.timeoutMs || 90000,
+    // Through the gate function (300s) rather than the /rapi proxy, whose own timeout cut slow rewrites.
+    rewriteSection: (body, opts = {}) => gatedReq('POST', '/api/faceless/script/section', body, {
+      timeoutMs: opts.timeoutMs || 120000,
       recoverScript: true,
     }),
     // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
-    pollMedia: (jobId) => req('GET', `/api/faceless/media/${jobId}`),
+    pollMedia: (jobId) => reqTo(BASE + `/api/faceless/media/${jobId}`, 'GET', null, false, { timeoutMs: 15000 }),
     concatVoiceovers: (urls) => gatedReq('POST', '/api/media/concat', { urls }),
     /** Same-origin proxy for CDN voiceover parts (avoids browser CORS on join). */
     voiceoverFetchUrl: (fileUrl) => {
@@ -651,7 +681,7 @@ export const api = {
     startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
     pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
     /** Server-side copy of a finished render into My Files; returns { url }. */
-    saveRender: (jobId, title) => reqTo(sameOriginApi('/api/youtube/runs?op=save-render'), 'POST', { jobId, title: title || '' }, false, { timeoutMs: 280000 }),
+    saveRender: (jobId, title) => reqTo(sameOriginApi('/api/youtube/runs?op=save-render'), 'POST', { jobId, title: title || '' }, false, { timeoutMs: 295000 }),
     /** True when API calls go through the /rapi proxy, where big downloads are unreliable. */
     proxied: () => !/up\.railway\.app$/.test(new URL(BASE, 'https://x').hostname),
     downloadRender: async (jobId) => {

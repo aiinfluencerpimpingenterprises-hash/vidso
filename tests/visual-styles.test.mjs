@@ -41,13 +41,15 @@ test('every style has a prompt and a sample image', () => {
 })
 
 test('scenes cover the narration end to end at the chosen pace', () => {
-  const sc = planScenes({ text: words(300), duration: 120, pace: 'rapid', mode: 'balanced' })
+  const sc = planScenes({ text: words(300), duration: 120, pace: 'normal', mode: 'balanced' })
   assert.equal(sc.length, 30)
   assert.equal(sc[0].start, 0)
   assert.equal(sc.at(-1).end, 120)
   assert.ok(sc.every((x) => x.text.length))
   assert.deepEqual(sc.filter((x) => x.animate).map((x) => x.i).slice(0, 3), [0, 3, 6])
   assert.ok(planScenes({ text: words(5000), duration: 1800, pace: 'hyper' }).length <= MAX_SCENES)
+  assert.equal(planScenes({ text: words(300), duration: 120, pace: 'rapid' }).length, 48)
+  assert.equal(planScenes({ text: words(300), duration: 120, pace: 'hyper' }).length, 48)
   assert.ok(planScenes({ text: words(100), duration: 60, mode: 'cheapest' }).every((x) => !x.animate))
 })
 
@@ -72,4 +74,14 @@ test('style samples: one image per style, the same in every genre', () => {
   assert.equal(styleSample('archive'), '/home/img/styles/archive.jpg')
   assert.equal(styleSample('archive', 'mystery'), '/home/img/styles/archive.jpg')
   assert.equal(styleSample('whiteboard'), '/home/img/styles/flat_whiteboard.jpg')
+})
+
+test('failed scenes borrow from nearby drawn scenes in rotation, never one frame on repeat', async () => {
+  const { fillSceneGaps } = await import('../lib/visual-styles.js')
+  const { images, filled } = fillSceneGaps(['a', '', '', '', 'b', '', 'c'])
+  assert.deepEqual([...filled].sort(), [1, 2, 3, 5])
+  // the run of three gaps between a and b gets different pictures
+  assert.equal(new Set([images[1], images[2], images[3]]).size > 1, true)
+  assert.ok(images.every(Boolean))
+  assert.deepEqual(fillSceneGaps(['', '']).images, ['', ''])
 })

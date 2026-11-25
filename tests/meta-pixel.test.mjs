@@ -10,10 +10,10 @@ test('checkout payload uses live Whop yearly totals', () => {
   const plus = checkoutPayload('plus', 'annual')
   assert.equal(plus.content_name, 'Plus')
   assert.equal(plus.currency, 'USD')
-  assert.equal(plus.value, 588)
-  assert.equal(checkoutPayload('starter', 'monthly').value, 70)
-  assert.equal(checkoutPayload('creator', 'yearly').value, 828)
-  assert.equal(checkoutPayload('studio', 'annual').value, 1260)
+  assert.equal(plus.value, 468)
+  assert.equal(checkoutPayload('starter', 'monthly').value, 49)
+  assert.equal(checkoutPayload('creator', 'yearly').value, 948)
+  assert.equal(checkoutPayload('studio', 'annual').value, 2388)
 })
 
 test('conversion event ids stay stable so pixel and CAPI can dedupe', () => {

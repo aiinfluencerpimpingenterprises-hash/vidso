@@ -287,3 +287,32 @@ test('media jobs stitch word times and keep every voiceover URL', () => {
     'https://cdn.example/b.mp3',
   ])
 })
+
+test('every section gets its own id, so an edit is never overwritten by a twin', async () => {
+  const { uniqueSectionIds, mergeNewSections } = await import('../lib/faceless-length.js')
+  const secs = uniqueSectionIds([{ id: 's1', text: 'a' }, { id: 's2', text: 'b' }, { id: 's1', text: 'c' }, { text: 'd' }, { id: 's2', text: 'e' }])
+  const ids = secs.map((s) => s.id)
+  assert.equal(new Set(ids).size, ids.length)
+  assert.deepEqual(ids.slice(0, 2), ['s1', 's2'])
+  const added = mergeNewSections([{ id: 's1', heading: 'One' }, { id: 's2', heading: 'Two' }], [{ id: 's1', heading: 'Three', text: 'x' }], 5)
+  assert.equal(added[0].id, 's3')
+})
+
+test('an ending that repeats the opening hook is dropped', async () => {
+  const { dropRepeatedHook } = await import('../lib/faceless-length.js')
+  const hook = 'Mansa Musa was the richest man who ever lived. His pilgrimage to Mecca crashed the price of gold in Cairo for twelve years.'
+  const body = 'In 1324 the king of Mali left Niani with sixty thousand people and camels loaded with gold dust and slaves carrying staffs.'
+  // a short last section that just repeats the hook
+  const s1 = dropRepeatedHook({ sections: [{ id: 's1', text: hook }, { id: 's2', text: body }, { id: 's3', text: 'Mansa Musa was the richest man who ever lived, and his pilgrimage to Mecca crashed the price of gold in Cairo.' }] })
+  assert.equal(s1.sections.length, 2)
+  assert.equal(s1.hookRepeatDropped, true)
+  assert.ok(!/richest man who ever lived/.test(s1.full_script.split(body)[1] || ''))
+  // a long last section keeps its own text and loses only the repeated closing sentence
+  const long = Array(12).fill('The caravans crossed the Sahara for months, trading salt for gold at every oasis along the way.').join(' ')
+  const s2 = dropRepeatedHook({ sections: [{ id: 's1', text: hook }, { id: 's2', text: long + ' Mansa Musa was the richest man who ever lived, and his pilgrimage to Mecca crashed the price of gold.' }] })
+  assert.equal(s2.sections.length, 2)
+  assert.ok(!/richest man who ever lived/.test(s2.sections[1].text))
+  // an ending with new information is left alone
+  const s3 = dropRepeatedHook({ sections: [{ id: 's1', text: hook }, { id: 's2', text: body }] })
+  assert.equal(s3.hookRepeatDropped, undefined)
+})

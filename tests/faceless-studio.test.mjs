@@ -56,10 +56,10 @@ test('create honors 9:16 and keeps a pipeline seed', () => {
 test('create persists a Fal video model for Studio B-roll', () => {
   const rec = createProjectRecord(
     { id: 'u' },
-    { topic: 'x', video_model: 'kling-3-pro', pipeline: { videoModel: 'kling-3-pro' } },
+    { topic: 'x', video_model: 'h3-max-turbo', pipeline: { videoModel: 'h3-max-turbo' } },
   )
-  assert.equal(rec.video_model, 'kling-3-pro')
-  assert.equal(rec.pipeline.videoModel, 'kling-3-pro')
+  assert.equal(rec.video_model, 'h3-max-turbo')
+  assert.equal(rec.pipeline.videoModel, 'h3-max-turbo')
 })
 
 test('create persists clip duration, sound, and generation count', () => {

@@ -21,7 +21,7 @@ test('progress follows the crew and focuses the working agent', () => {
 test('video plan counts scenes, animated scenes and a rough time', () => {
   const still = videoPlan({ seconds: 600, mode: 'cheapest' })
   const anim = videoPlan({ seconds: 600, mode: 'cinematic' })
-  assert.equal(still.count, 86)
+  assert.equal(still.count, 150) // 10 min at the 4s Normal pace
   assert.equal(still.animated, 0)
   assert.equal(anim.animated, anim.count)
   assert.ok(anim.minutes > still.minutes)

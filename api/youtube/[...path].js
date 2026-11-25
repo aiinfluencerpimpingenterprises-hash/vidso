@@ -1,4 +1,5 @@
 import { evaluatePlan, toHttp } from '../../lib/enforce.js'
+import { cleanupStorage } from '../../lib/storage-cleanup.js'
 import { cors, readJson, requireUser, send, bearer } from '../_lib/http.js'
 import { handleRuns } from '../../lib/runs-api.js'
 import {
@@ -342,7 +343,8 @@ async function handleScenes(req, res, body, mode) {
     const out = await runScenePlanner({ scenes, topic: String(body?.topic || '').slice(0, 300), styleName: String(body?.style || '').slice(0, 60), character: String(body?.character || '').slice(0, 300), falKey: key })
     return send(res, 200, { scenes: out })
   } catch (e) {
-    return send(res, 502, { error: e.message || 'Scene agent failed' })
+    // A final failure (fal said the join failed) is 422 so the client stops polling and shows why.
+    return send(res, e.terminal ? 422 : 502, { error: e.message || 'Scene agent failed' })
   }
 }
 
@@ -441,6 +443,20 @@ async function handleTitles(req, res, body) {
   }
 }
 
+/** Vercel cron sends `Authorization: Bearer $CRON_SECRET`; nothing else may trigger deletes. */
+async function handleStorageCron(req, res) {
+  const secret = String(process.env.CRON_SECRET || '').trim()
+  if (!secret) return send(res, 503, { error: 'CRON_SECRET is not set' })
+  const auth = String(req.headers.authorization || '')
+  if (auth !== 'Bearer ' + secret) return send(res, 401, { error: 'Unauthorized' })
+  const dryRun = /(?:^|[?&])dry=1(?:&|$)/.test(String(req.url || '').split('?')[1] || '')
+  try {
+    return send(res, 200, await cleanupStorage({ dryRun }))
+  } catch (e) {
+    return send(res, 500, { ok: false, error: e.message || 'Cleanup failed' })
+  }
+}
+
 export default async function handler(req, res) {
   cors(req, res)
   if (req.method === 'OPTIONS') {
@@ -449,6 +465,8 @@ export default async function handler(req, res) {
   }
 
   const sub = pathOf(req)
+  // Daily storage cleanup (vercel.json crons). Shares this function because of Vercel's function cap.
+  if (sub === 'cron/storage') return handleStorageCron(req, res)
   // Server-side video runs share this function (Vercel's function cap): /api/youtube/runs/…
   if (sub === 'runs' || sub.startsWith('runs/')) return handleRuns(req, res, sub.split('/').slice(1).filter(Boolean))
   if (sub === 'callback' && req.method === 'GET') {

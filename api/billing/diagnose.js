@@ -155,7 +155,7 @@ function verdict({ configured, member, memberships, lookup }) {
 function warningsFor({ member, memberships }) {
   const out = []
   if (!kvConfigured()) {
-    out.push('No durable grant store is configured, so a confirmed payment is only remembered until this lambda goes cold. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in Vercel so paid accounts survive a cold start.')
+    out.push('No durable grant store is configured, so a confirmed payment is only remembered until this lambda goes cold. Run docs/supabase-kv.sql in Supabase and set SUPABASE_SERVICE_ROLE_KEY in Vercel (or connect Upstash Redis) so paid accounts survive a cold start.')
   }
   if (member.ok && member.rows > 0 && member.emailReadable === false) {
     out.push('member:email:read is not granted, so Whop hides member emails. Matching still works when an email query returns exactly one member, but it cannot tell two members apart or catch a buyer who paid under a different email. Grant it in Whop under Developer, Company API Keys.')

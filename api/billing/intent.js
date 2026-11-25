@@ -1,5 +1,5 @@
 import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
-import { saveIntent } from '../../lib/checkout-intents.js'
+import { saveIntentDurable } from '../../lib/checkout-intents.js'
 import {
   buildCapiEvent,
   capiUserData,
@@ -103,7 +103,7 @@ export default async function handler(req, res) {
   if (!emailsFromUser(user).length) return send(res, 400, { error: 'This account has no email.' })
 
   const userId = user.id || user.user_id
-  const rec = saveIntent(user, {
+  const rec = await saveIntentDurable(user, {
     tier: body.tier,
     cycle: body.cycle,
     fbp: body.fbp,

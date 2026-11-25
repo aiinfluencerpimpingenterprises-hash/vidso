@@ -2,7 +2,7 @@ import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { saveGrant, withStoredGrant } from '../../lib/grants.js'
 import { lookupPaidMembership, whopConfig } from '../../lib/whop-lookup.js'
-import { mayAttachOffEmail } from '../../lib/checkout-intents.js'
+import { hydrateIntent, mayAttachOffEmail } from '../../lib/checkout-intents.js'
 
 export const config = { maxDuration: 30 }
 
@@ -110,6 +110,7 @@ export default async function handler(req, res) {
   const paidEmail = String(body.paidEmail || '').trim().toLowerCase()
   const ownEmails = emailsFromUser(user)
   const offEmail = paidEmail && paidEmail.includes('@') && !ownEmails.includes(paidEmail) ? paidEmail : ''
+  if (offEmail) await hydrateIntent(user)
   if (offEmail && !mayAttachOffEmail(user, offEmail)) {
     return send(res, 200, {
       active: false,

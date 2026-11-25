@@ -127,6 +127,6 @@ test('sendPurchaseEvent uses live Whop prices', async () => {
       return { ok: true, status: 200, json: async () => ({ events_received: 1 }) }
     },
   })
-  assert.equal(calls[0].data[0].custom_data.value, 1260)
+  assert.equal(calls[0].data[0].custom_data.value, 2388)
   assert.equal(calls[0].data[0].custom_data.content_name, 'Studio')
 })

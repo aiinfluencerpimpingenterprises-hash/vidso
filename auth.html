@@ -368,9 +368,52 @@ function consumeOAuthReturn() {
   const access = hash.get('access_token') || query.get('access_token')
   const refresh = hash.get('refresh_token') || query.get('refresh_token')
   if (!access) return false
-  setSession({ access_token: access, refresh_token: refresh || '' })
   history.replaceState({}, '', location.pathname)
+  // Connecting Claude: this Google sign-in is Claude's own, so the browser's session stays as it was.
+  if (connectorNext()) {
+    finishConnector({ access_token: access, refresh_token: refresh || '' })
+    return 'connector'
+  }
+  setSession({ access_token: access, refresh_token: refresh || '' })
   return true
+}
+
+/** The pending Claude authorize URL while connecting Claude, else ''. */
+function connectorNext() {
+  const next = rememberAuthNext()
+  return /^\/(?:api\/)?oauth\/authorize(?:\?|$)/.test(next) ? next : ''
+}
+
+/**
+ * Give Claude the session from this sign-in and send it back to Claude. Nothing
+ * is saved in this browser, so Claude and this tab never share a refresh token
+ * (sharing one meant whichever refreshed first signed the other out).
+ */
+async function finishConnector(session) {
+  const next = connectorNext()
+  const loginErr = document.getElementById('login-err')
+  try {
+    if (!next || !session?.access_token || !session?.refresh_token) throw new Error('Sign-in did not go through. Try again.')
+    const res = await fetch('/api/oauth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: session.access_token, refresh_token: session.refresh_token, next }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !data.redirect) throw new Error(data.error_description || data.error || 'Could not connect Claude. Try again.')
+    try {
+      sessionStorage.removeItem('vidso_auth_next')
+      sessionStorage.removeItem('vidso_auth_intent')
+    } catch (_) {}
+    location.replace(data.redirect)
+  } catch (e) {
+    prepareConnectorLogin()
+    document.querySelectorAll('.auth-cta,.auth-google').forEach((b) => setLoading(b, false))
+    if (loginErr) {
+      loginErr.textContent = e.message || 'Could not connect Claude. Try again.'
+      loginErr.style.display = 'block'
+    }
+  }
 }
 
 function showPaywall() {
@@ -483,7 +526,7 @@ function prepareConnectorLogin() {
   const title = document.getElementById('auth-title')
   const lead = document.querySelector('.auth-lead')
   if (title) title.textContent = 'Connect Claude to TubeOps'
-  if (lead) lead.textContent = 'Sign in so Claude can use your TubeOps tools. This window will close after you continue.'
+  if (lead) lead.textContent = 'Sign in to give Claude its own TubeOps sign-in. You stay signed in on this browser.'
   const email = document.getElementById('login-email')
   if (email) try { email.focus() } catch (_) {}
 }
@@ -511,35 +554,6 @@ function goAfterAuth() {
   persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 
-async function resumeConnectorIfSession() {
-  try {
-    const ok = await restoreSession()
-    if (!ok) {
-      prepareConnectorLogin()
-      return
-    }
-  } catch (e) {
-    if (isInvalidRefreshError(e, e?.status)) clearSession()
-    prepareConnectorLogin()
-    return
-  }
-  try {
-    await api.user.me()
-    goAfterAuth()
-  } catch (e) {
-    const unauthorized = e && e.status === 401
-    if (unauthorized) {
-      let refused = !getRefreshToken()
-      try {
-        if (getRefreshToken() && await refreshSessionOnce()) { goAfterAuth(); return }
-      } catch (er) { refused = isInvalidRefreshError(er, er?.status) }
-      // Only a refused refresh token ends the session; a network blip keeps it for next time.
-      if (refused) clearSession()
-    }
-    prepareConnectorLogin()
-  }
-}
-
 async function persistPaidBeforeApp() {
   try {
     const me = await api.user.me()
@@ -558,7 +572,9 @@ function consumeOAuthErrorParams() {
 
 const pendingOauth = rememberAuthNext()
 const oauthReturned = consumeOAuthReturn()
-if (oauthReturned) {
+if (oauthReturned === 'connector') {
+  prepareConnectorLogin()
+} else if (oauthReturned) {
   let signupIntent = false
   try { signupIntent = sessionStorage.getItem('vidso_auth_intent') === 'signup' } catch (_) {}
   if (signupIntent) trackCompleteRegistration(emailFromAccessToken())
@@ -567,8 +583,8 @@ if (oauthReturned) {
   consumeOAuthErrorParams()
   const next = rememberAuthNext() || pendingOauth
   if (next) {
-    if (getToken() || getRefreshToken()) resumeConnectorIfSession()
-    else prepareConnectorLogin()
+    // Claude always signs in on its own, even when this browser is signed in.
+    prepareConnectorLogin()
   } else if (getToken() || getRefreshToken()) {
     resumeAppIfSession()
   }
@@ -640,6 +656,11 @@ document.getElementById('login-cta').onclick = async () => {
   setLoading(btn, true)
   try {
     const data = await api.auth.login(email, pass)
+    if (connectorNext()) {
+      pixelIdentify(email)
+      await finishConnector(data.session)
+      return
+    }
     setSession(data.session)
     pixelIdentify(email)
     afterAuth()
@@ -661,6 +682,20 @@ document.getElementById('signup-cta').onclick = async () => {
   setLoading(btn, true)
   try {
     const data = await api.auth.signup(email, pass, name)
+    if (data.needsConfirmation) {
+      trackCompleteRegistration(email)
+      setLoading(btn, false)
+      switchTab('login')
+      document.getElementById('login-err').textContent = 'Confirm your email from the link we sent to ' + email + ', then sign in.'
+      document.getElementById('login-err').style.display = 'block'
+      return
+    }
+    if (connectorNext()) {
+      pixelIdentify(email)
+      trackCompleteRegistration(email)
+      await finishConnector(data.session)
+      return
+    }
     setSession(data.session)
     pixelIdentify(email)
     trackCompleteRegistration(email)

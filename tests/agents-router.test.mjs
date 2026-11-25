@@ -34,3 +34,15 @@ test('asking to see the finished video shows it instead of starting a new one', 
   assert.equal(r('show me a video about cats', true).type, 'topic')
   assert.equal(r('make a video about sharks', false).type, 'topic')
 })
+
+test('start composer idea chips: format label and shuffled pages without repeats', async () => {
+  const { ideaFormat, ideaPage } = await import('../lib/agents-chat.js')
+  assert.equal(ideaFormat('Why your brain lies to you'), 'Explainer')
+  assert.equal(ideaFormat('What did ancient humans do for fun?'), 'Explainer')
+  assert.equal(ideaFormat('The rise and fall of Blockbuster'), 'Documentary')
+  const first = ideaPage(['My niche idea'], 0)
+  assert.equal(first.length, 6)
+  assert.equal(first[0], 'My niche idea')
+  assert.equal(new Set(first).size, 6)
+  assert.notDeepEqual(ideaPage([], 1), ideaPage([], 0))
+})

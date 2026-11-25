@@ -200,13 +200,13 @@ test('enabling orchestration patches every mapped TubeOps plan once', async () =
   }
   try {
     const rows = await enableVidsoOrchestration({ WHOP_API_KEY: 'test-key' })
-    assert.equal(rows.length, 6)
+    assert.equal(rows.length, 8)
     assert.equal(rows.every((row) => row.ok), true)
-    assert.equal(patched.length, 6)
+    assert.equal(patched.length, 8)
     assert.ok(patched.every((path) => path.startsWith('/plans/plan_')))
     // A second pass must not rewrite plans that the cache already marked done.
     await enableVidsoOrchestration({ WHOP_API_KEY: 'test-key' })
-    assert.equal(patched.length, 6)
+    assert.equal(patched.length, 8)
   } finally {
     globalThis.fetch = real
     delete process.env.WHOP_API_KEY

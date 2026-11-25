@@ -4,11 +4,12 @@ import {
   DURATION_PRESETS,
   ENTITLEMENTS,
   GATED_FEATURES,
-  UNLIMITED,
+  channelLimit,
   durationPresets,
   entitlementsFor,
   formatMinutes,
   isUnlimited,
+  quotaLimit,
   quotaWindow,
   secondsFromDurationId,
 } from '../lib/entitlements.js'
@@ -29,12 +30,13 @@ import {
   ROUTE_POLICY,
   SHORT_FORM_MAX_SECONDS,
 } from '../lib/quota.js'
-import { incrementUsage, incrementStudioCredits, readUsage, _resetStoreForTests } from '../lib/usage-store.js'
+import { addSceneAllowance, incrementUsage, incrementStudioCredits, readUsage, rolloverCredits, takeSceneAllowance, _resetStoreForTests } from '../lib/usage-store.js'
 import { resolveWhopPlan, WHOP_PLAN_ENV_DEFAULTS, expectedPrice } from '../lib/whop-map.js'
 
 const plusUser = { plan_status: 'active', plan: 'plus' }
 const proUser = { plan_status: 'active', plan: 'pro' }
 const studioUser = { plan_status: 'active', plan: 'studio' }
+const plusAnchor = '2026-01-15T00:00:00Z'
 
 function user(tier, extra = {}) {
   return { plan_status: 'active', plan: tier, ...extra }
@@ -42,15 +44,14 @@ function user(tier, extra = {}) {
 
 test('max video length marketing row matches the matrix and is included on every tier', () => {
   const row = FEATURE_ROWS.find((r) => r.label === 'Max video length')
-  assert.equal(FEATURE_ROWS.length, 18)
+  assert.equal(FEATURE_ROWS.length, 20)
   assert.equal(row.plus, '10 min')
-  assert.equal(row.pro, '15 min')
+  assert.equal(row.pro, '20 min')
   assert.equal(row.studio, '30 min')
-  assert.equal(rowIncluded(row, 'plus'), true)
-  assert.equal(rowIncluded(row, 'pro'), true)
-  assert.equal(rowIncluded(row, 'studio'), true)
+  assert.equal(row.agency, '30 min')
+  for (const tier of ['plus', 'pro', 'studio', 'agency']) assert.equal(rowIncluded(row, tier), true)
   assert.equal(formatMinutes(ENTITLEMENTS.plus.max_video_length_seconds), '10 min')
-  assert.equal(formatMinutes(ENTITLEMENTS.pro.max_video_length_seconds), '15 min')
+  assert.equal(formatMinutes(ENTITLEMENTS.pro.max_video_length_seconds), '20 min')
   assert.equal(formatMinutes(ENTITLEMENTS.studio.max_video_length_seconds), '30 min')
 })
 
@@ -66,46 +67,25 @@ test('annual and monthly of the same tier resolve to identical entitlements', ()
   }
 })
 
-test('unlimited is null, never a large integer', () => {
-  assert.equal(ENTITLEMENTS.studio.long_form_per_month, UNLIMITED)
-  assert.equal(ENTITLEMENTS.studio.short_form_per_month, UNLIMITED)
-  assert.equal(isUnlimited(ENTITLEMENTS.studio.long_form_per_month), true)
-  assert.equal(isUnlimited(ENTITLEMENTS.plus.long_form_per_month), false)
+test('plans sell credits; video counts are never capped', () => {
   assert.equal(ENTITLEMENTS.plus.studio_credits_per_month, 300)
-  assert.equal(ENTITLEMENTS.pro.studio_credits_per_month, 500)
-  assert.equal(ENTITLEMENTS.studio.studio_credits_per_month, 600)
-  assert.equal(isUnlimited(ENTITLEMENTS.studio.studio_credits_per_month), false)
+  assert.equal(ENTITLEMENTS.pro.studio_credits_per_month, 750)
+  assert.equal(ENTITLEMENTS.studio.studio_credits_per_month, 2000)
+  assert.equal(ENTITLEMENTS.agency.studio_credits_per_month, 5000)
+  for (const tier of ['plus', 'pro', 'studio', 'agency']) {
+    assert.equal(isUnlimited(quotaLimit(tier, 'long_form')), true)
+    assert.equal(isUnlimited(ENTITLEMENTS[tier].studio_credits_per_month), false)
+  }
+  assert.deepEqual([1, 3, 10, 25], ['plus', 'pro', 'studio', 'agency'].map((t) => channelLimit(t)))
+  assert.equal(channelLimit('plus', 2), 3)
 })
 
-test('quota boundary: last allowed Plus long-form, then the next is refused', () => {
-  const last = evaluateQuota({ user: plusUser, kind: 'long_form', used: 29 })
-  assert.equal(last.ok, true)
-  assert.equal(last.increment, true)
-  assert.equal(last.remaining, 1)
-
-  const next = evaluateQuota({ user: plusUser, kind: 'long_form', used: 30 })
-  assert.equal(next.ok, false)
-  assert.equal(next.status, 402)
-  assert.equal(next.code, 'quota_exceeded')
-  assert.match(next.message, /30 long-form/)
-  assert.match(next.message, /Pro/)
-})
-
-test('quota boundary: last allowed Plus short-form, then the next is refused', () => {
-  const last = evaluateQuota({ user: plusUser, kind: 'short_form', used: 14 })
-  assert.equal(last.ok, true)
-  const next = evaluateQuota({ user: plusUser, kind: 'short_form', used: 15 })
-  assert.equal(next.ok, false)
-  assert.match(next.message, /15 short-form/)
-})
-
-test('quota boundary: last allowed Pro long-form, then the next is refused', () => {
-  const last = evaluateQuota({ user: proUser, kind: 'long_form', used: 99 })
-  assert.equal(last.ok, true)
-  const next = evaluateQuota({ user: proUser, kind: 'long_form', used: 100 })
-  assert.equal(next.ok, false)
-  assert.match(next.message, /100 long-form/)
-  assert.match(next.message, /Studio/)
+test('no plan refuses a video for count: credits decide', () => {
+  for (const u of [plusUser, proUser, studioUser]) {
+    const q = evaluateQuota({ user: u, kind: 'long_form', used: 100000 })
+    assert.equal(q.ok, true)
+    assert.equal(q.increment, false)
+  }
 })
 
 test('length cap: Plus 600s allowed, 601s rejected before compute', () => {
@@ -119,9 +99,9 @@ test('length cap: Plus 600s allowed, 601s rejected before compute', () => {
   assert.equal(over.requiredTier, 'pro')
 })
 
-test('length cap: Pro 900s allowed, 901s rejected', () => {
-  assert.equal(evaluateLength({ user: proUser, durationSeconds: 900 }).ok, true)
-  const over = evaluateLength({ user: proUser, durationSeconds: 901 })
+test('length cap: Pro 1200s allowed, 1201s rejected', () => {
+  assert.equal(evaluateLength({ user: proUser, durationSeconds: 1200 }).ok, true)
+  const over = evaluateLength({ user: proUser, durationSeconds: 1201 })
   assert.equal(over.ok, false)
   assert.equal(over.requiredTier, 'studio')
 })
@@ -150,7 +130,7 @@ test('gated features per tier', () => {
       custom_brand_kit: true,
       retention_score: false,
       high_volume_workflow: false,
-      multi_channel_management: false,
+      multi_channel_management: true,
       image_4k: false,
     },
     studio: {
@@ -164,8 +144,9 @@ test('gated features per tier', () => {
       image_4k: true,
     },
   }
+  expected.agency = expected.studio
   for (const feature of GATED_FEATURES) {
-    for (const tier of ['plus', 'pro', 'studio']) {
+    for (const tier of ['plus', 'pro', 'studio', 'agency']) {
       const result = evaluateFeature({ user: user(tier), feature })
       if (expected[tier][feature]) {
         assert.equal(result.ok, true, `${tier} should have ${feature}`)
@@ -208,7 +189,7 @@ test('mapped Whop IDs resolve to tier + cycle; unknown IDs are legacy', () => {
   assert.equal(plusMo.status, 'mapped')
   assert.equal(plusMo.tier, 'plus')
   assert.equal(plusMo.cycle, 'monthly')
-  assert.equal(plusMo.expectedPrice, 70)
+  assert.equal(plusMo.expectedPrice, 49)
 
   const plusYr = resolveWhopPlan(WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PLUS_YEARLY)
   assert.equal(plusYr.tier, 'plus')
@@ -218,6 +199,45 @@ test('mapped Whop IDs resolve to tier + cycle; unknown IDs are legacy', () => {
   const unknown = resolveWhopPlan('plan_legacy_old_sku')
   assert.equal(unknown.status, 'unmapped')
   assert.equal(unknown.legacy, true)
+})
+
+test('new checkout plans are live; the old plans still grant their tier', () => {
+  const live = {
+    WHOP_PLAN_PLUS_MONTHLY: 'plan_BQHP4JsKpws0Y',
+    WHOP_PLAN_PLUS_YEARLY: 'plan_8E43QsYkb4rQQ',
+    WHOP_PLAN_PRO_MONTHLY: 'plan_g9BXWHChnHyCz',
+    WHOP_PLAN_PRO_YEARLY: 'plan_hJ8UkJfKUmxiR',
+    WHOP_PLAN_STUDIO_MONTHLY: 'plan_2AAHUugBB97xT',
+    WHOP_PLAN_STUDIO_YEARLY: 'plan_EfqB3YSTQ1v24',
+  }
+  for (const [key, id] of Object.entries(live)) assert.equal(WHOP_PLAN_ENV_DEFAULTS[key], id)
+  const retired = [
+    ['plan_2PQXzyYrseWZ6', 'plus', 'monthly'], ['plan_5FMFAYw0z7AbJ', 'plus', 'yearly'],
+    ['plan_oYn5KJ7Wnv8NA', 'pro', 'monthly'], ['plan_PBiAm2SiwS0jR', 'pro', 'yearly'],
+    ['plan_pXuKK8Tk1Aj05', 'studio', 'monthly'], ['plan_7HLlhKgRF0XfQ', 'studio', 'yearly'],
+  ]
+  for (const [id, tier, cycle] of retired) {
+    const hit = resolveWhopPlan(id)
+    assert.equal(hit.status, 'mapped')
+    assert.equal(hit.tier, tier)
+    assert.equal(hit.cycle, cycle)
+  }
+})
+
+test('Agency: monthly plan, and the yearly toggle buys the quarterly plan', async () => {
+  const { WHOP_CHECKOUT, planRowFor } = await import('../lib/whop-map.js')
+  const { longCycleLabel } = await import('../lib/pricing.js')
+  assert.equal(WHOP_CHECKOUT.agency_monthly, 'https://whop.com/checkout/plan_9RPGJHBpjbA8D')
+  assert.equal(WHOP_CHECKOUT.agency_yearly, 'https://whop.com/checkout/plan_TgrAq6gea7W37')
+  assert.equal(planRowFor('agency', 'annual').cycle, 'quarterly')
+  assert.equal(planRowFor('pro', 'annual').cycle, 'yearly')
+  const q = resolveWhopPlan('plan_TgrAq6gea7W37')
+  assert.equal(q.tier, 'agency')
+  assert.equal(q.cycle, 'quarterly')
+  assert.equal(q.expectedPrice, 1437)
+  assert.equal(resolveWhopPlan('plan_9RPGJHBpjbA8D').expectedPrice, 599)
+  assert.equal(longCycleLabel('agency'), 'Billed every 3 months')
+  assert.equal(longCycleLabel('studio'), 'Billed annually')
 })
 
 test('legacy unmapped subscribers keep access and are not auto-migrated', () => {
@@ -258,37 +278,31 @@ test('usage parser never treats credits as video counts', () => {
   assert.equal(withCounters.short_form_used, 4)
 })
 
-test('quota display matches advertised counts, not credits', () => {
-  const view = quotaView({ plan_status: 'active', plan: 'plus', credits: 300 })
-  assert.equal(view.compact, '30 LF · 15 SF')
-  assert.doesNotMatch(view.compact, /300/)
-  assert.doesNotMatch(view.longText, /credit/i)
-  const remaining = quotaView(
-    { plan_status: 'active', plan: 'plus' },
-    { long_form_used: 3, short_form_used: 5 },
-  )
-  assert.equal(remaining.compact, '27 LF · 10 SF')
+test('quota display shows credits and minutes of video', () => {
+  const view = quotaView({ plan_status: 'active', plan: 'plus' })
+  assert.equal(view.compact, '300 cr')
+  assert.match(view.longText, /about 37 min of video/)
+  const left = quotaView({ plan_status: 'active', plan: 'plus' }, { studio_credits_used: 100, credits_carry: 50 })
+  assert.equal(left.compact, '250 cr')
+  assert.match(left.longText, /50 rolled over/)
 })
 
-test('Faceless Studio credits stay metered but off the pricing cards', () => {
-  const row = FEATURE_ROWS.find((r) => r.label === 'Faceless Studio credits')
-  assert.equal(row.hidden, true)
-  assert.equal(row.plus, '300 / month')
-  assert.equal(row.pro, '500 / month')
-  assert.equal(row.studio, '600 / month')
-  assert.equal(rowIncluded(row, 'plus'), true)
-  const last = evaluateStudioCredits({ user: plusUser, cost: 56, used: 244 })
+test('credits: last one allowed, then refused; rollover and up-front need count', () => {
+  const last = evaluateStudioCredits({ user: plusUser, cost: 50, used: 250 })
   assert.equal(last.ok, true)
   assert.equal(last.remaining, 0)
-  const over = evaluateStudioCredits({ user: plusUser, cost: 56, used: 245 })
+  const over = evaluateStudioCredits({ user: plusUser, cost: 50, used: 251 })
   assert.equal(over.ok, false)
   assert.equal(over.code, 'credits_exhausted')
   assert.equal(over.requiredTier, 'pro')
-  const studioOk = evaluateStudioCredits({ user: studioUser, cost: 320, used: 280 })
-  assert.equal(studioOk.ok, true)
-  const studioOut = evaluateStudioCredits({ user: studioUser, cost: 1, used: 600 })
-  assert.equal(studioOut.ok, false)
-  assert.equal(studioOut.requiredTier, undefined)
+  const carried = evaluateStudioCredits({ user: plusUser, cost: 50, used: 251, carry: 100 })
+  assert.equal(carried.ok, true)
+  const needs = evaluateStudioCredits({ user: plusUser, cost: 50, used: 0, need: 400 })
+  assert.equal(needs.ok, false)
+  assert.match(needs.message, /This video needs 400 credits/)
+  const agencyOut = evaluateStudioCredits({ user: user('agency'), cost: 1, used: 5000 })
+  assert.equal(agencyOut.ok, false)
+  assert.equal(agencyOut.requiredTier, undefined)
 })
 
 test('faceless render is the only quota consumer; captions are plan-only', () => {
@@ -298,22 +312,18 @@ test('faceless render is the only quota consumer; captions are plan-only', () =>
   assert.equal(ROUTE_POLICY.featureGate['POST /api/autoclip'], 'viral_moment_clipping')
 })
 
-test('evaluateGeneration refuses Plus over length or over quota', () => {
-  const ok = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 29 })
+test('evaluateGeneration refuses Plus only over length', () => {
+  const ok = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 300 })
   assert.equal(ok.ok, true)
   assert.equal(ok.kind, 'long_form')
-  const overQuota = evaluateGeneration({ user: plusUser, durationSeconds: 600, kind: 'long_form', used: 30 })
-  assert.equal(overQuota.ok, false)
-  assert.equal(overQuota.code, 'quota_exceeded')
   const overLen = evaluateGeneration({ user: plusUser, durationSeconds: 901, kind: 'long_form', used: 0 })
   assert.equal(overLen.ok, false)
   assert.equal(overLen.code, 'length_exceeded')
 })
 
-test('Whop yearly charges match the live whole-dollar prices', () => {
-  assert.equal(expectedPrice('plus', 'yearly'), 588)
-  assert.equal(expectedPrice('pro', 'yearly'), 828)
-  assert.equal(expectedPrice('studio', 'yearly'), 1260)
+test('Whop charges match the plan prices', () => {
+  assert.deepEqual(['plus', 'pro', 'studio', 'agency'].map((t) => expectedPrice(t, 'monthly')), [49, 99, 249, 599])
+  assert.deepEqual(['plus', 'pro', 'studio', 'agency'].map((t) => expectedPrice(t, 'yearly')), [468, 948, 2388, 5748])
 })
 
 test('duration_id long_600 is 600 seconds', () => {
@@ -326,13 +336,11 @@ test('duration_id long_600 is 600 seconds', () => {
   assert.equal(secondsFromDurationId('shorts_45'), 45)
 })
 
-test('in-app duration chips match advertised 10 / 15 / 30 min caps', () => {
-  assert.equal(DURATION_PRESETS.long.some((d) => d.seconds === 1200), false)
+test('in-app duration chips match advertised 10 / 20 / 30 min caps', () => {
   assert.deepEqual(durationPresets('long', ENTITLEMENTS.plus.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600])
-  assert.deepEqual(durationPresets('long', ENTITLEMENTS.pro.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900])
-  assert.deepEqual(durationPresets('long', ENTITLEMENTS.studio.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900, 1800])
-  assert.deepEqual(durationPresets('long', null).map((d) => d.seconds), [180, 300, 600, 900, 1800])
-  assert.deepEqual(durationPresets('long', 0).map((d) => d.seconds), [180, 300, 600, 900, 1800])
+  assert.deepEqual(durationPresets('long', ENTITLEMENTS.pro.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900, 1200])
+  assert.deepEqual(durationPresets('long', ENTITLEMENTS.studio.max_video_length_seconds).map((d) => d.seconds), [180, 300, 600, 900, 1200, 1800])
+  assert.deepEqual(durationPresets('long', null).map((d) => d.seconds), [180, 300, 600, 900, 1200, 1800])
 })
 
 test('Whop plan ID alone resolves the same length cap as plan name', () => {
@@ -348,8 +356,8 @@ test('Whop plan ID alone resolves the same length cap as plan name', () => {
     membership: { plan_id: WHOP_PLAN_ENV_DEFAULTS.WHOP_PLAN_PRO_YEARLY },
   }
   assert.equal(resolveAccess(nested).tier, 'pro')
-  assert.equal(evaluateLength({ user: nested, durationSeconds: 900 }).ok, true)
-  assert.equal(evaluateLength({ user: nested, durationSeconds: 901 }).ok, false)
+  assert.equal(evaluateLength({ user: nested, durationSeconds: 1200 }).ok, true)
+  assert.equal(evaluateLength({ user: nested, durationSeconds: 1201 }).ok, false)
 })
 
 test('usage store increments and resets on the anniversary window', async () => {
@@ -375,9 +383,9 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
   const access = resolveAccess(gifted, off)
   assert.equal(access.active, true)
   assert.equal(access.tier, 'studio')
-  assert.equal(access.entitlements.long_form_per_month, UNLIMITED)
+  assert.equal(access.entitlements.studio_credits_per_month, 2000)
   const q = quotaView(gifted)
-  assert.equal(q.unlimited, true)
+  assert.equal(q.compact, '2000 cr')
   const stranger = resolveAccess({ email: 'someone@example.com', plan_status: 'inactive' }, off)
   assert.equal(stranger.active, false)
   const nested = resolveAccess({
@@ -394,7 +402,7 @@ test('comped Studio email keeps top-tier access when paywall is on', () => {
   }, off)
   assert.equal(xenon.active, true)
   assert.equal(xenon.tier, 'studio')
-  assert.equal(xenon.entitlements.long_form_per_month, UNLIMITED)
+  assert.equal(xenon.entitlements.studio_credits_per_month, 2000)
   const rishav = resolveAccess({
     email: 'rishavvashisht347@gmail.com',
     plan: 'free',
@@ -422,7 +430,7 @@ test('paid Pro email is granted when Whop has not provisioned yet', () => {
     const access = resolveAccess(paid, off)
     assert.equal(access.active, true)
     assert.equal(access.tier, 'pro')
-    assert.equal(access.entitlements.long_form_per_month, 100)
+    assert.equal(access.entitlements.studio_credits_per_month, 750)
     const q = quotaView(paid)
     assert.equal(q.unlimited, false)
     assert.equal(q.tier, 'pro')
@@ -431,3 +439,26 @@ test('paid Pro email is granted when Whop has not provisioned yet', () => {
 
 
 
+
+test('unused credits roll over one month, capped at a month\'s worth', async () => {
+  assert.equal(rolloverCredits({ limit: 300, used: 100 }), 200)
+  assert.equal(rolloverCredits({ limit: 300, carry: 200, used: 50 }), 300)
+  assert.equal(rolloverCredits({ limit: 300, carry: 100, used: 500 }), 0)
+  assert.equal(rolloverCredits({ limit: 300, used: 300, windowsPassed: 3 }), 300)
+  _resetStoreForTests()
+  const u = { id: 'roll1', plan: 'plus', plan_status: 'active', created_at: plusAnchor }
+  await incrementStudioCredits(u, 120, new Date('2026-01-20T00:00:00Z'))
+  const feb = readUsage(u, new Date('2026-02-16T00:00:00Z'))
+  assert.equal(feb.studio_credits_used, 0)
+  assert.equal(feb.credits_carry, 180)
+})
+
+test('a paid video hands out free scenes, one at a time', async () => {
+  _resetStoreForTests()
+  const u = { id: 'scene1', plan: 'plus', plan_status: 'active', created_at: plusAnchor }
+  const now = new Date('2026-01-20T00:00:00Z')
+  await addSceneAllowance(u, 2, now)
+  assert.equal(await takeSceneAllowance(u, now), true)
+  assert.equal(await takeSceneAllowance(u, now), true)
+  assert.equal(await takeSceneAllowance(u, now), false)
+})

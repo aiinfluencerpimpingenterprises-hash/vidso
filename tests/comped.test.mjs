@@ -92,8 +92,10 @@ test('Whop receipt email matches TubeOps login when only the dots differ', () =>
   assert.equal(membershipMatchesUser(row, { emails: ['subramaniamvishwak@gmail.com'] }), true)
 })
 
-test('aiinfluencerpimpingenterprises gets unlimited (Studio) on both spellings', async () => {
+test('aiinfluencerpimpingenterprises gets unlimited (Studio); look-alike domains get nothing', async () => {
   const { compedTierForEmail } = await import('../lib/comped.js')
   assert.equal(compedTierForEmail('aiinfluencerpimpingenterprises@gmail.com'), 'studio')
-  assert.equal(compedTierForEmail('aiinfluencerpimpingenterprises@gamil.com'), 'studio')
+  // Anyone could register a typo address, so typo domains are never comped.
+  assert.equal(compedTierForEmail('aiinfluencerpimpingenterprises@gamil.com'), null)
+  assert.equal(compedTierForEmail('xenonforyou@gmai.com'), null)
 })

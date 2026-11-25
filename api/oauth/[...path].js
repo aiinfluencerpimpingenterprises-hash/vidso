@@ -2,6 +2,7 @@ import { cors, readJson, send } from '../_lib/http.js'
 import { requestOrigin, verifyPayload } from '../../lib/youtube.js'
 import {
   assertRedirect,
+  authorizeParamsFromNext,
   authorizationServerMetadata,
   authorizeHtml,
   canonicalMcpUrl,
@@ -15,8 +16,8 @@ import {
   registerClient,
   resourceFromMetadataSubpath,
   tokenResponse,
+  UPSTREAM,
   verifyPkce,
-  vidsoSessionFromCookies,
 } from '../../lib/mcp-oauth.js'
 
 export const config = { maxDuration: 30 }
@@ -70,53 +71,69 @@ async function handleRegister(req, res) {
   }
 }
 
-async function handleAuthorize(req, res) {
-  const origin = originOf(req)
-  const q = queryOf(req)
+/** Checks a pending authorize request; returns its parts or an error code. */
+function checkAuthorize(q, origin) {
   const clientId = String(q.get('client_id') || '')
   const redirectUri = String(q.get('redirect_uri') || '')
   const state = String(q.get('state') || '')
   const challenge = String(q.get('code_challenge') || '')
   const method = String(q.get('code_challenge_method') || 'S256')
   const resource = String(q.get('resource') || canonicalMcpUrl(origin))
-  const failToClient = (error) => {
-    if (!redirectUri) return html(res, 400, authorizeHtml(error))
-    const u = new URL(redirectUri)
-    u.searchParams.set('error', error)
-    if (state) u.searchParams.set('state', state)
-    return redirect(res, u.toString())
-  }
-  if (String(q.get('response_type') || 'code') !== 'code') return failToClient('unsupported_response_type')
-  if (!challenge || method.toUpperCase() !== 'S256') return failToClient('invalid_request')
-  let client
+  if (String(q.get('response_type') || 'code') !== 'code') return { error: 'unsupported_response_type', redirectUri, state }
+  if (!challenge || method.toUpperCase() !== 'S256') return { error: 'invalid_request', redirectUri, state }
   try {
-    client = readClient(clientId)
-    assertRedirect(client, redirectUri)
+    assertRedirect(readClient(clientId), redirectUri)
   } catch {
+    return { error: 'unregistered', redirectUri: '', state }
+  }
+  return { clientId, redirectUri, state, challenge, resource }
+}
+
+function clientRedirect(redirectUri, params) {
+  const u = new URL(redirectUri)
+  for (const [k, v] of Object.entries(params)) if (v) u.searchParams.set(k, v)
+  return u.toString()
+}
+
+// Claude always signs in on its own here. Reusing the browser's session meant
+// Claude and the browser shared one refresh token, so whichever refreshed first
+// signed the other out.
+async function handleAuthorize(req, res) {
+  const origin = originOf(req)
+  const q = queryOf(req)
+  const pending = checkAuthorize(q, origin)
+  if (pending.error === 'unregistered') {
     return html(res, 400, authorizeHtml('This Claude connector is not registered. Add the TubeOps URL again.'))
   }
-  let session
-  try {
-    session = await vidsoSessionFromCookies(req)
-  } catch {
-    session = null
+  if (pending.error) {
+    if (!pending.redirectUri) return html(res, 400, authorizeHtml(pending.error))
+    return redirect(res, clientRedirect(pending.redirectUri, { error: pending.error, state: pending.state }))
   }
-  if (!session?.access) {
-    const next = '/oauth/authorize?' + q.toString()
-    return redirect(res, origin + '/login?next=' + encodeURIComponent(next))
-  }
+  const next = '/oauth/authorize?' + q.toString()
+  return redirect(res, origin + '/login?connect=claude&next=' + encodeURIComponent(next))
+}
+
+/** The login page hands over Claude's own fresh session; answer with Claude's redirect. */
+async function handleConnectorSession(req, res) {
+  if (req.method !== 'POST') return send(res, 405, { error: 'method_not_allowed' })
+  const body = await readJson(req).catch(() => ({}))
+  const access = String(body.access_token || '').trim()
+  const refresh = String(body.refresh_token || '').trim()
+  const q = authorizeParamsFromNext(body.next)
+  if (!access || !refresh || !q) return send(res, 400, { error: 'invalid_request' })
+  const pending = checkAuthorize(q, originOf(req))
+  if (pending.error) return send(res, 400, { error: pending.error })
+  const me = await fetch(UPSTREAM + '/api/user/me', { headers: { Authorization: 'Bearer ' + access } }).catch(() => null)
+  if (!me?.ok) return send(res, 401, { error: 'Sign-in did not go through. Try again.' })
   const code = issueAuthCode({
-    access: session.access,
-    refresh: session.refresh,
-    clientId,
-    redirectUri,
-    codeChallenge: challenge,
-    resource,
+    access,
+    refresh,
+    clientId: pending.clientId,
+    redirectUri: pending.redirectUri,
+    codeChallenge: pending.challenge,
+    resource: pending.resource,
   })
-  const u = new URL(redirectUri)
-  u.searchParams.set('code', code)
-  if (state) u.searchParams.set('state', state)
-  return redirect(res, u.toString())
+  return send(res, 200, { redirect: clientRedirect(pending.redirectUri, { code, state: pending.state }) })
 }
 
 async function handleToken(req, res) {
@@ -143,11 +160,19 @@ async function handleToken(req, res) {
         refresh: payload.refresh,
         clientId: payload.client_id,
         resource: payload.resource,
+        own: !!payload.own,
       }))
     }
     if (grant === 'refresh_token') {
       const payload = verifyPayload(String(body.refresh_token || ''))
       if (payload.typ !== 'mcp_oauth_refresh' || !payload.refresh) throw new Error('invalid_grant')
+      if (!payload.own) {
+        // Connected before Claude had its own sign-in: refreshing would sign the
+        // browser out, so send Claude back through sign-in once.
+        const err = new Error('Reconnect TubeOps in Claude so it gets its own sign-in.')
+        err.body = { error: 'invalid_grant', error_description: err.message }
+        throw err
+      }
       const session = await refreshVidsoSession(payload.refresh)
       return send(res, 200, tokenResponse({
         access: session.access_token,
@@ -183,6 +208,7 @@ export default async function handler(req, res) {
   }
   if (sub === 'register') return handleRegister(req, res)
   if (sub === 'authorize') return handleAuthorize(req, res)
+  if (sub === 'session') return handleConnectorSession(req, res)
   if (sub === 'token') return handleToken(req, res)
   return send(res, 404, { error: 'Not found' })
 }
