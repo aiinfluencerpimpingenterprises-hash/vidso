@@ -7,7 +7,7 @@
    Interaction: whole-layer parallax only (no redraw / warp of the SVG).
 */
 (function () {
-  var R2_SRC = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev/topo-bg.svg';
+  var R2_SRC = 'https://pub-491b074b69d84792b488d1a85c6e39eb.r2.dev/topo-bg.svg';
 
   var OPACITY = {
     landing: 0.6,

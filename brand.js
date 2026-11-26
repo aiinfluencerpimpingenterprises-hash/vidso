@@ -1,6 +1,6 @@
 /* Shared TubeOps brand assets (Cloudflare R2). Loaded as a classic script: sets globals. */
 (function (global) {
-  var R2_BASE = 'https://pub-f40c956471ff49feab622906892ec527.r2.dev';
+  var R2_BASE = 'https://pub-491b074b69d84792b488d1a85c6e39eb.r2.dev';
 
   global.VIDSO_R2_BASE = R2_BASE;
   global.VIDSO_LOGO_URL = '/vidso-logo.png';

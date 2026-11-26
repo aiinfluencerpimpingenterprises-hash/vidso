@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readState } from '../scripts/media-origin.mjs'
 import {
   createProjectRecord,
   isStudioSidecarName,
@@ -102,7 +103,7 @@ test('LFG step shots use the shared R2 host', () => {
   assert.equal(LFG_STEP_SHOTS.script.endsWith('/Script.png'), true)
   assert.equal(LFG_STEP_SHOTS.media.endsWith('/Media.png'), true)
   assert.equal(LFG_STEP_SHOTS.export.endsWith('/Export.png'), true)
-  assert.ok(LFG_STEP_SHOTS.script.includes('pub-f40c956471ff49feab622906892ec527.r2.dev'))
+  assert.ok(LFG_STEP_SHOTS.script.startsWith(readState().legacy || 'https://pub-f40c956471ff49feab622906892ec527.r2.dev'))
 })
 
 test('studio gallery config is unique, filterable, and has no em dashes', () => {

@@ -5,6 +5,7 @@ import { VISUAL_STYLES, STYLE_GROUPS, DEFAULT_STYLE, visualStyleById, planScenes
 import { normalizeProfile } from '../lib/channel-kit.js'
 import { parseScenes } from '../lib/scene-agent.js'
 import { routeManagerMessage as route } from '../lib/agents-chat.js'
+import { mediaUrl, readState } from '../scripts/media-origin.mjs'
 
 const words = (n) => Array.from({ length: n }, (_, i) => 'w' + i).join(' ')
 
@@ -71,9 +72,11 @@ test('asking about art style opens the visuals settings', () => {
 })
 
 test('style samples: one image per style, the same in every genre', () => {
-  assert.equal(styleSample('archive'), '/home/img/styles/archive.jpg')
-  assert.equal(styleSample('archive', 'mystery'), '/home/img/styles/archive.jpg')
-  assert.equal(styleSample('whiteboard'), '/home/img/styles/flat_whiteboard.jpg')
+  // Samples load from the media CDN once scripts/media-origin.mjs has pointed the site at one.
+  const at = (p) => mediaUrl(p, readState().origin)
+  assert.equal(styleSample('archive'), at('/home/img/styles/archive.jpg'))
+  assert.equal(styleSample('archive', 'mystery'), at('/home/img/styles/archive.jpg'))
+  assert.equal(styleSample('whiteboard'), at('/home/img/styles/flat_whiteboard.jpg'))
 })
 
 test('failed scenes borrow from nearby drawn scenes in rotation, never one frame on repeat', async () => {
