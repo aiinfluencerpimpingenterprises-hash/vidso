@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect your agent · TubeOps MCP</title>
+<meta name="description" content="Connect Claude, Claude Code, Cursor, VS Code or any MCP client to TubeOps. Your agent plans, writes, voices, renders and uploads long-form YouTube videos.">
+<link rel="canonical" href="https://www.tubeops.pro/connect">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TubeOps">
+<meta property="og:url" content="https://www.tubeops.pro/connect">
+<meta property="og:title" content="Connect your agent to TubeOps">
+<meta property="og:description" content="One MCP link lets Claude, Cursor or any agent make long-form YouTube videos with TubeOps, from script to upload.">
+<meta property="og:image" content="https://www.tubeops.pro/og-image-v3.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.tubeops.pro/og-image-v3.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<script src="/brand.js"></script>
+<style>
+  :root{color-scheme:dark;--bg:#0b0b0c;--txt:#f5f5f4;--muted:rgba(245,245,244,.68);--faint:rgba(245,245,244,.45);--line:rgba(245,245,244,.09);--line-2:rgba(245,245,244,.15);--red:#ff2d48;--blue:#E94B58;--glow:233,75,88;--card:rgba(255,255,255,.03)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit}
+  .wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 24px}
+  h1,h2{font-family:'Lora',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:1.06}
+  code,pre,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* ---------- header (same as the home page) ---------- */
+  header{position:sticky;top:0;z-index:50;background:rgba(11,11,12,.78);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.06)}
+  header > .wrap{max-width:none;padding:0 44px;position:relative}
+  nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:76px}
+  .logo{display:flex;align-items:center;gap:9px;font-family:'Lora',Georgia,serif;font-weight:500;font-size:23px;line-height:1;letter-spacing:-.015em;justify-self:start}
+  .logo img{width:28px;height:28px;object-fit:contain}
+  .nav-links{display:flex;align-items:center;gap:38px;font-size:15px;font-weight:450;color:rgba(245,245,244,.72);justify-self:center}
+  .nav-links a{position:relative;transition:color .2s}
+  .nav-links a:hover,.nav-links a.on{color:var(--txt)}
+  .nav-badge{position:absolute;left:50%;top:100%;transform:translate(-50%,5px);white-space:nowrap;font-size:9.5px;font-weight:700;letter-spacing:.07em;line-height:1;padding:3px 6px;border-radius:6px;background:var(--blue);color:#fff;pointer-events:none}
+  .nav-cta{display:flex;align-items:center;gap:26px;justify-self:end}
+  .ghost{font-size:15px;font-weight:500;transition:opacity .2s}
+  .ghost:hover{opacity:.75}
+  .nav-signup{display:inline-flex;align-items:center;height:38px;padding:0 16px;border-radius:9px;background:#fff;color:#161616;font-size:15px;font-weight:550;transition:background .2s}
+  .nav-signup:hover{background:#ececec}
+  .nav-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
+  .nav-toggle svg{width:20px;height:20px}
+  .nav-drawer{display:none}
+  @media(max-width:900px){
+    header > .wrap{padding:0 16px}
+    nav{display:flex;height:62px}
+    .nav-links,.nav-cta{display:none}
+    .nav-toggle{display:inline-flex}
+    .logo{font-size:18px}
+    .logo img{width:24px;height:24px}
+    header.menu-open .nav-drawer{display:block;position:absolute;left:16px;right:16px;top:60px;background:rgba(12,12,14,.97);border:1px solid var(--line-2);border-radius:16px;padding:10px;box-shadow:0 24px 60px rgba(0,0,0,.65)}
+    .nav-drawer a{display:flex;align-items:center;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:500;color:var(--muted)}
+    .nav-drawer a:hover{background:rgba(255,255,255,.05);color:#fff}
+    .nav-drawer .nav-badge{position:static;transform:none;margin-left:8px}
+    .nav-drawer .drawer-signup{justify-content:center;margin-top:8px;background:#fff;color:#161616;font-weight:600}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:92px 0 64px;text-align:center;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-20% -10% auto;height:620px;background:radial-gradient(50% 60% at 50% 0%,rgba(255,45,72,.22),rgba(255,45,72,0) 70%);pointer-events:none}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80}
+  .hero h1{position:relative;margin:22px auto 0;max-width:860px;font-size:clamp(44px,7vw,84px)}
+  .hero p.lede{position:relative;margin:22px auto 0;max-width:640px;font-size:18px;color:var(--muted)}
+  .url-box{position:relative;display:flex;align-items:center;gap:6px;width:min(620px,100%);margin:36px auto 0;padding:6px 6px 6px 8px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .url-box .k{flex:none;height:34px;display:inline-flex;align-items:center;padding:0 10px;border-radius:10px;background:rgba(255,45,72,.14);color:#ff8a9a;font-size:12px;font-weight:700;letter-spacing:.06em}
+  .url-box code{flex:1;min-width:0;text-align:left;font-size:15.5px;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .copy-btn{flex:none;height:40px;padding:0 18px;border-radius:11px;border:0;background:#fff;color:#161616;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+  .copy-btn:hover{background:#ececec}
+  .copy-btn.done{background:#4ade80}
+  .clients{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:28px auto 0;max-width:760px}
+  .clients span{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.025);font-size:13.5px;color:var(--muted)}
+  .clients svg{width:16px;height:16px}
+
+  /* ---------- demo terminal ---------- */
+  .demo{padding:24px 0 40px}
+  .term{max-width:880px;margin:0 auto;border-radius:20px;overflow:hidden;border:1px solid var(--line-2);background:#0f0f11;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+  .term-bar{display:flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .term-bar i{width:11px;height:11px;border-radius:50%;background:#3a3a3e}
+  .term-bar i:nth-child(1){background:#ff5f57}.term-bar i:nth-child(2){background:#febc2e}.term-bar i:nth-child(3){background:#28c840}
+  .term-bar span{margin-left:10px;font-size:12.5px;color:var(--faint)}
+  .term-body{padding:22px 24px 26px;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:14px;line-height:1.85;min-height:300px}
+  .term-body p{opacity:0;transform:translateY(4px);animation:line .45s ease forwards;animation-delay:calc(var(--i) * .55s)}
+  @keyframes line{to{opacity:1;transform:none}}
+  .term-body .me{color:#fff}.term-body .me b{color:#ff8a9a;font-weight:500}
+  .term-body .dim{color:var(--faint)}
+  .term-body .ok{color:#4ade80}
+  .term-body .k{display:inline-block;min-width:84px;color:#f5f5f4}
+  .term-body .done{color:#fff}
+  .term-body .bar{display:inline-block;vertical-align:middle;width:180px;height:6px;margin-left:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .term-body .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff2d48,#ff8a9a);animation:fill 2.4s ease forwards;animation-delay:4s}
+  @keyframes fill{to{width:100%}}
+
+  /* ---------- sections ---------- */
+  section.block{padding:88px 0}
+  .s-head{max-width:720px;margin:0 auto 44px;text-align:center}
+  .s-head h2{font-size:clamp(34px,4.6vw,52px)}
+  .s-head p{margin-top:14px;font-size:17px;color:var(--muted)}
+
+  /* setup tabs */
+  .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:fit-content;max-width:100%;margin:0 auto 26px;padding:5px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  .tab{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:0;background:none;font-size:14px;font-weight:550;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+  .tab svg{width:16px;height:16px}
+  .tab:hover{color:#fff}
+  .tab.on{background:#fff;color:#161616}
+  .panel{display:none;max-width:880px;margin:0 auto;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));padding:30px}
+  .panel.on{display:block}
+  .steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:16px}
+  .steps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start;font-size:15.5px;color:var(--muted)}
+  .steps li::before{content:counter(s);display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:rgba(255,45,72,.14);color:#ff8a9a;font-weight:700;font-size:14px}
+  .steps li b{color:var(--txt);font-weight:600}
+  .steps li > div{padding-top:4px}
+  .code{position:relative;margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#0c0c0e}
+  .code pre{margin:0;padding:14px 92px 14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.6;color:#e9e7e2;white-space:pre}
+  .code .copy-btn{position:absolute;top:8px;right:8px;height:30px;padding:0 12px;border-radius:8px;font-size:12.5px;background:rgba(255,255,255,.1);color:#fff}
+  .code .copy-btn:hover{background:rgba(255,255,255,.18)}
+  .code .copy-btn.done{background:#4ade80;color:#111}
+  .note{margin-top:22px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:14px;color:var(--muted)}
+
+  /* capabilities */
+  .caps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .cap{position:relative;padding:24px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));transition:border-color .2s,transform .2s}
+  .cap:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .cap .ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.06);margin-bottom:18px}
+  .cap .ic svg{width:20px;height:20px}
+  .cap h3{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .cap p{margin-top:8px;font-size:14.5px;color:var(--muted)}
+  .cap .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .cap .tools code{font-size:11.5px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--faint)}
+  .cap.wide{grid-column:span 2}
+  .cap.big{grid-column:span 2;background:radial-gradient(80% 120% at 100% 0%,rgba(255,45,72,.14),rgba(255,45,72,0) 60%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border-color:rgba(255,92,112,.3)}
+  .cap.big .ic{background:rgba(255,45,72,.18);color:#ff8a9a}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+  .flow span{height:30px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;background:rgba(255,255,255,.06);font-size:13px;color:#fff}
+  .flow i{color:var(--faint);font-style:normal}
+
+  /* prompts */
+  .prompts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:960px;margin:0 auto}
+  .prompt{display:flex;align-items:flex-start;gap:12px;padding:18px 18px 18px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.025);font-size:15px;color:var(--txt);text-align:left;cursor:pointer;transition:border-color .2s,background .2s}
+  .prompt:hover{border-color:var(--line-2);background:rgba(255,255,255,.045)}
+  .prompt svg{flex:none;width:18px;height:18px;margin-top:2px;color:#ff8a9a}
+  .prompt small{display:block;margin-top:4px;font-size:12.5px;color:var(--faint)}
+  .prompt.done small{color:#4ade80}
+
+  /* faq */
+  .faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+  .faq details{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);padding:0 20px}
+  .faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;font-size:16px;font-weight:550;cursor:pointer}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-size:22px;font-weight:300;color:var(--faint);transition:transform .2s}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq p{padding:0 0 18px;font-size:15px;color:var(--muted)}
+
+  /* closing CTA */
+  .cta-box{position:relative;overflow:hidden;max-width:1000px;margin:0 auto;padding:64px 32px;border-radius:28px;text-align:center;border:1px solid rgba(255,92,112,.28);background:radial-gradient(60% 90% at 50% 0%,rgba(255,45,72,.2),rgba(255,45,72,0) 70%),#111113}
+  .cta-box h2{font-size:clamp(32px,4.4vw,50px)}
+  .cta-box p{margin:14px auto 0;max-width:520px;color:var(--muted);font-size:17px}
+  .cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 22px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;border:0;transition:background .2s}
+  .btn.white{background:#fff;color:#161616}.btn.white:hover{background:#ececec}
+  .btn.line{border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:#fff}.btn.line:hover{background:rgba(255,255,255,.08)}
+
+  @media(max-width:900px){
+    .caps{grid-template-columns:1fr 1fr}.cap.big,.cap.wide{grid-column:1/-1}
+    .prompts{grid-template-columns:1fr}
+    section.block{padding:64px 0}
+  }
+  @media(max-width:600px){
+    .hero{padding:64px 0 40px}
+    .caps{grid-template-columns:1fr}.cap.wide,.cap.big{grid-column:auto}
+    .panel{padding:22px 18px}
+    .url-box code{font-size:13px}
+    .term-body{font-size:12px;padding:18px 16px}
+    .term-body .bar{width:90px}
+  }
+
+  /* ---------- footer (same as the home page) ---------- */
+  footer.ft{position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.06);padding:76px 0 26px;background:radial-gradient(70% 60% at 50% 115%,rgba(255,45,72,.16),rgba(255,45,72,0) 70%)}
+  .ft-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr);gap:64px;align-items:start}
+  .ft-brand .logo{margin-bottom:18px}
+  .ft-brand .fdesc{font-size:15px;color:rgba(245,245,244,.62);max-width:340px;line-height:1.55;margin:0}
+  .ft-cta{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;margin-top:24px;border-radius:10px;background:#fff;color:#161616;font-size:14px;font-weight:600;transition:background .2s}
+  .ft-cta:hover{background:#ececec}
+  .ft-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+  .ft .fcol h4{font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,245,244,.4);margin:0 0 18px}
+  .ft .fcol a{display:block;width:fit-content;font-size:14.5px;color:rgba(245,245,244,.78);margin-bottom:13px;cursor:pointer;transition:color .2s}
+  .ft .fcol a:hover{color:#fff}
+  .ft-word{margin:72px 0 0;text-align:center;font-family:'Lora',Georgia,serif;font-weight:500;font-size:clamp(88px,19vw,300px);line-height:.78;letter-spacing:-.045em;white-space:nowrap;background:linear-gradient(180deg,rgba(245,245,244,.16) 0%,rgba(245,245,244,.02) 88%);-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;pointer-events:none}
+  .ft-bottom{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(245,245,244,.45)}
+  .ft-yt{display:inline-flex;align-items:center;gap:8px}
+  .ft-yt svg{width:18px;height:18px;color:#ff2d48}
+  @media(max-width:900px){.ft-top{grid-template-columns:1fr;gap:44px}}
+  @media(max-width:560px){footer.ft{padding-top:56px}.ft-cols{grid-template-columns:1fr 1fr}.ft-cols .fcol:last-child{grid-column:1/-1}.ft-word{margin-top:48px}}
+  @media(prefers-reduced-motion:reduce){.term-body p{animation:none;opacity:1;transform:none}.term-body .bar span{animation:none;width:100%}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="/" class="logo"><img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="TubeOps" decoding="async">TubeOps</a>
+      <div class="nav-links">
+        <a href="/#features">Features</a>
+        <a href="/pricing">Pricing<span class="nav-badge">20% OFF YEARLY</span></a>
+        <a href="/connect" class="on" aria-current="page">MCP</a>
+        <a href="/#faq">FAQ</a>
+      </div>
+      <div class="nav-cta">
+        <a href="/login" class="ghost">Login</a>
+        <a href="/signup" class="nav-signup">Sign up</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu" onclick="document.querySelector('header').classList.toggle('menu-open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+    <div class="nav-drawer">
+      <a href="/#features">Features</a>
+      <a href="/pricing">Pricing<span class="nav-badge">20% OFF YEARLY</span></a>
+      <a href="/connect">MCP</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/login">Login</a>
+      <a href="/signup" class="drawer-signup">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow"><i></i>TubeOps MCP server</span>
+      <h1>Bring your own agent to TubeOps</h1>
+      <p class="lede">Add one link to Claude, Cursor or any MCP client. Your agent writes the script, voices it, draws every scene, renders the video and uploads it to your channel.</p>
+      <div class="url-box">
+        <span class="k">MCP</span>
+        <code data-mcp-url>https://www.tubeops.pro/mcp</code>
+        <button type="button" class="copy-btn" data-copy-from="[data-mcp-url]">Copy link</button>
+      </div>
+      <div class="clients" aria-label="Works with">
+        <span><svg viewBox="0 0 24 24" fill="#d97757"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>Claude</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l4 4-4 4M12 16h7"/></svg>Claude Code</span>
+        <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.93 24 22.35 18V6L11.93 0 1.5 6v12z" opacity=".35"/><path d="M22.35 6 11.93 24V12z"/></svg>Cursor</span>
+        <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 2.3 9.4 9.8 4.6 6.2 2.6 7.2v9.6l2 1 4.8-3.6 8.2 7.5 3.8-1.8V4.1zM4.8 14.6V9.4l2.6 2.6zm12.6 1.8L12.8 12l4.6-4.4z"/></svg>VS Code</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg>Any MCP client</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" aria-label="Example">
+    <div class="wrap">
+      <div class="term" aria-hidden="true">
+        <div class="term-bar"><i></i><i></i><i></i><span>claude — tubeops</span></div>
+        <div class="term-body">
+          <p class="me" style="--i:0"><b>&gt;</b> make a 12 min video on the deepest places on Earth and upload it tonight</p>
+          <p class="dim" style="--i:1">⏺ tubeops · longform_make_video</p>
+          <p style="--i:2"><span class="ok">✓</span> <span class="k">Script</span><span class="dim">8 chapters · 1,700 words · hook rewritten twice</span></p>
+          <p style="--i:3"><span class="ok">✓</span> <span class="k">Style</span><span class="dim">Cinematic realism</span></p>
+          <p style="--i:4"><span class="ok">✓</span> <span class="k">Voice</span><span class="dim">Marcus · 12:04</span></p>
+          <p style="--i:5"><span class="ok">✓</span> <span class="k">Scenes</span><span class="dim">41 shots, 9 animated</span></p>
+          <p style="--i:6"><span class="ok">✓</span> <span class="k">Render</span><span class="bar"><span></span></span></p>
+          <p class="done" style="--i:7"><span class="ok">✓</span> Uploaded as private. Goes public at 8 PM. Want 3 Shorts from it?</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="setup">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>Set up in a minute</h2>
+        <p>Pick your app. You sign in with your TubeOps account once, and your agent works with your plan's credits and channels.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab on" role="tab" data-tab="claude">Claude</button>
+        <button class="tab" role="tab" data-tab="code">Claude Code</button>
+        <button class="tab" role="tab" data-tab="cursor">Cursor</button>
+        <button class="tab" role="tab" data-tab="vscode">VS Code</button>
+        <button class="tab" role="tab" data-tab="other">Other apps</button>
+      </div>
+
+      <div class="panel on" data-panel="claude" role="tabpanel">
+        <ol class="steps">
+          <li><div>In Claude (web or desktop), open <b>Settings → Connectors</b> and click <b>Add custom connector</b>.</div></li>
+          <li><div>Name it <b>TubeOps</b> and paste this link:
+            <div class="code"><pre>https://www.tubeops.pro/mcp</pre><button type="button" class="copy-btn">Copy</button></div></div></li>
+          <li><div>Click <b>Connect</b> and sign in to TubeOps. That's it: ask Claude to make a video.</div></li>
+        </ol>
+        <p class="note">Opening the link in a browser brings you to this page. It only works when you paste it into your AI app.</p>
+      </div>
+
+      <div class="panel" data-panel="code" role="tabpanel">
+        <ol class="steps">
+          <li><div>Run this in your terminal:
+            <div class="code"><pre>claude mcp add --transport http tubeops https://www.tubeops.pro/mcp</pre><button type="button" class="copy-btn">Copy</button></div></div></li>
+          <li><div>Start <b>claude</b>, type <b>/mcp</b>, pick <b>tubeops</b> and sign in to TubeOps in the browser window that opens.</div></li>
+          <li><div>Ask for a video in plain words. Claude Code runs the whole pipeline and tells you when the MP4 is ready.</div></li>
+        </ol>
+      </div>
+
+      <div class="panel" data-panel="cursor" role="tabpanel">
+        <ol class="steps">
+          <li><div>Open <b>Cursor Settings → MCP</b> and click <b>Add new MCP server</b>, or edit <b>~/.cursor/mcp.json</b>:
+            <div class="code"><pre>{
+  "mcpServers": {
+    "tubeops": { "url": "https://www.tubeops.pro/mcp" }
+  }
+}</pre><button type="button" class="copy-btn">Copy</button></div></div></li>
+          <li><div>Click <b>Login</b> next to tubeops and sign in to TubeOps.</div></li>
+          <li><div>In the chat, ask the agent to swap a shot, rewrite a chapter or start a new video.</div></li>
+        </ol>
+      </div>
+
+      <div class="panel" data-panel="vscode" role="tabpanel">
+        <ol class="steps">
+          <li><div>Add this to <b>.vscode/mcp.json</b> in your project (or run <b>MCP: Add Server</b> from the command palette):
+            <div class="code"><pre>{
+  "servers": {
+    "tubeops": { "type": "http", "url": "https://www.tubeops.pro/mcp" }
+  }
+}</pre><button type="button" class="copy-btn">Copy</button></div></div></li>
+          <li><div>Click <b>Start</b> above the server and sign in to TubeOps when asked.</div></li>
+          <li><div>Open Copilot Chat in agent mode and ask for a video.</div></li>
+        </ol>
+      </div>
+
+      <div class="panel" data-panel="other" role="tabpanel">
+        <ol class="steps">
+          <li><div>In ChatGPT, Windsurf or any app that supports remote MCP servers, add a server with this link:
+            <div class="code"><pre>https://www.tubeops.pro/mcp</pre><button type="button" class="copy-btn">Copy</button></div></div></li>
+          <li><div>Choose <b>Streamable HTTP</b> if the app asks for a transport, and <b>OAuth</b> for sign-in.</div></li>
+          <li><div>Sign in to TubeOps when the app opens the login page.</div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="tools">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>What your agent can do</h2>
+        <p>The same agents that run TubeOps, as tools your AI can call.</p>
+      </div>
+      <div class="caps">
+        <article class="cap big">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg></div>
+          <h3>Make a whole long-form video</h3>
+          <p>One request goes from a topic to a captioned MP4 in any of the 67 styles, then straight to your channel.</p>
+          <div class="flow"><span>Topic</span><i>→</i><span>Script</span><i>→</i><span>Voice</span><i>→</i><span>Scenes</span><i>→</i><span>Render</span><i>→</i><span>Upload</span></div>
+          <div class="tools"><code>longform_make_video</code><code>longform_render_start</code><code>youtube_upload</code></div>
+        </article>
+        <article class="cap">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg></div>
+          <h3>Scripts and titles</h3>
+          <p>Chapters written for watch time, and five title angles that have broken out before.</p>
+          <div class="tools"><code>longform_script</code><code>title_generate</code></div>
+        </article>
+        <article class="cap">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="m3 15 5-5 4 4 3-3 6 6"/></svg></div>
+          <h3>Thumbnails</h3>
+          <p>Click-worthy thumbnails from the title and hook, in the style you pick.</p>
+          <div class="tools"><code>thumbnail_generate</code></div>
+        </article>
+        <article class="cap">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+          <h3>Voiceover</h3>
+          <p>Narrate any script with the TubeOps voice library.</p>
+          <div class="tools"><code>vidso_voices</code><code>voiceover_generate</code></div>
+        </article>
+        <article class="cap">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
+          <h3>Shorts and clips</h3>
+          <p>Find the viral moments in a long video and reframe them for vertical.</p>
+          <div class="tools"><code>clip_analyze</code><code>clip_start</code><code>reframe_start</code></div>
+        </article>
+        <article class="cap">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+          <h3>Captions</h3>
+          <p>Transcribe any video or audio link into timed captions.</p>
+          <div class="tools"><code>captions_transcribe</code></div>
+        </article>
+        <article class="cap wide">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+          <h3>Your files and account</h3>
+          <p>See what's rendered, what's left on your plan and which channels are connected.</p>
+          <div class="tools"><code>files_list</code><code>vidso_account</code><code>youtube_status</code></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="prompts">
+    <div class="wrap">
+      <div class="s-head">
+        <h2>Try asking</h2>
+        <p>Click one to copy it, then paste it into your agent.</p>
+      </div>
+      <div class="prompts">
+        <button type="button" class="prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Make a 10 minute history video on why the Bronze Age collapsed, in the historical painting style.<small>Click to copy</small></span></button>
+        <button type="button" class="prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Write 5 titles and a thumbnail for my video on the deepest places on Earth.<small>Click to copy</small></span></button>
+        <button type="button" class="prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Plan a week of uploads for a stick-figure finance channel and start the first video.<small>Click to copy</small></span></button>
+        <button type="button" class="prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Cut three Shorts from my last video and schedule them for this weekend.<small>Click to copy</small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="s-head"><h2>Questions</h2></div>
+      <div class="faq">
+        <details><summary>What is MCP?</summary><p>MCP (Model Context Protocol) is the open standard AI apps use to call outside tools. Adding the TubeOps link gives your agent the same video tools you have in the TubeOps app.</p></details>
+        <details><summary>Do I need a TubeOps plan?</summary><p>Your agent works with your TubeOps account, so it uses your plan's credits, video minutes and channels, the same as making the video in the app.</p></details>
+        <details><summary>Will my agent post to YouTube without asking?</summary><p>It only uploads when you ask it to, to a channel you've connected in TubeOps. You can tell it to upload as private or schedule the video for later.</p></details>
+        <details><summary>Can I still edit what the agent made?</summary><p>Yes. Every video your agent makes shows up in TubeOps, where you can redraw scenes, change the pacing, add music and restyle the captions before you export.</p></details>
+        <details><summary>I opened the link and saw this page. Is something wrong?</summary><p>No. The MCP link is meant for AI apps. Paste it into your app's connector settings, using the steps above.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta-box">
+        <h2>Your agent, your channel</h2>
+        <p>Make a free account, connect your agent and ask for your first video.</p>
+        <div class="cta-row">
+          <a class="btn white" href="/signup">Create an account</a>
+          <button type="button" class="btn line" data-copy-from="[data-mcp-url]">Copy MCP link</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <a href="/" class="logo">
+          <img data-vidso-logo src="/vidso-logo.png" width="28" height="28" alt="TubeOps" decoding="async">
+          TubeOps
+        </a>
+        <p class="fdesc">Agents that plan, write, voice, illustrate and edit long-form YouTube videos, from a topic to an upload.</p>
+        <a class="ft-cta" href="/signup">Start your channel <span aria-hidden="true">→</span></a>
+        <div class="foot-social" data-vidso-socials></div>
+      </div>
+      <div class="ft-cols">
+        <div class="fcol">
+          <h4>Product</h4>
+          <a href="/#features">How it works</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/connect">MCP for your agent</a>
+          <a href="/#faq">FAQ</a>
+        </div>
+        <div class="fcol">
+          <h4>Account</h4>
+          <a href="/login">Log in</a>
+          <a href="/signup">Sign up</a>
+          <a href="/agents">Open the app</a>
+        </div>
+        <div class="fcol">
+          <h4>Legal</h4>
+          <a href="/terms">Terms of service</a>
+          <a href="/privacy">Privacy policy</a>
+          <a href="/refund">Refund policy</a>
+          <a data-vidso-support data-label="Contact support" data-fill-text></a>
+        </div>
+      </div>
+    </div>
+    <div class="ft-word" aria-hidden="true">TubeOps</div>
+    <div class="ft-bottom">
+      <span>© 2026 TubeOps</span>
+      <span class="ft-yt"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>Made for long-form YouTube</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // The MCP link always matches the site it's served from (preview, staging or live).
+  var url = location.origin.replace('://tubeops.pro', '://www.tubeops.pro') + '/mcp'
+  document.querySelectorAll('[data-mcp-url]').forEach(function (el) { el.textContent = url })
+  document.querySelectorAll('.code pre').forEach(function (pre) { pre.textContent = pre.textContent.split('https://www.tubeops.pro/mcp').join(url) })
+
+  function copy(text, btn, label) {
+    var done = function () {
+      var old = label || btn.textContent
+      btn.classList.add('done'); btn.textContent = 'Copied'
+      setTimeout(function () { btn.classList.remove('done'); btn.textContent = old }, 1600)
+    }
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, done)
+    else done()
+  }
+  document.querySelectorAll('[data-copy-from]').forEach(function (btn) {
+    var label = btn.textContent
+    btn.addEventListener('click', function () { copy(document.querySelector(btn.getAttribute('data-copy-from')).textContent.trim(), btn, label) })
+  })
+  document.querySelectorAll('.code .copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { copy(btn.parentNode.querySelector('pre').textContent, btn, 'Copy') })
+  })
+  document.querySelectorAll('.prompt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var small = btn.querySelector('small'), text = btn.querySelector('span').firstChild.textContent.trim()
+      var done = function () { btn.classList.add('done'); small.textContent = 'Copied'; setTimeout(function () { btn.classList.remove('done'); small.textContent = 'Click to copy' }, 1600) }
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, done); else done()
+    })
+  })
+
+  var tabs = document.querySelectorAll('.tab')
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.toggle('on', t === tab); t.setAttribute('aria-selected', t === tab) })
+      document.querySelectorAll('.panel').forEach(function (p) { p.classList.toggle('on', p.getAttribute('data-panel') === tab.getAttribute('data-tab')) })
+    })
+  })
+  // Deep link: /connect#cursor opens that tab.
+  var want = location.hash.replace('#', '')
+  var hit = document.querySelector('.tab[data-tab="' + want + '"]')
+  if (hit) hit.click()
+})()
+</script>
+</body>
+</html>

@@ -668,6 +668,8 @@ export const api = {
     // body: { script, voice_id, voice_settings, aspect, duration_id } → { jobId }
     startMedia: (body) => gatedReq('POST', '/api/faceless/media', body),
     pollMedia: (jobId) => reqTo(BASE + `/api/faceless/media/${jobId}`, 'GET', null, false, { timeoutMs: 15000 }),
+    /** Give back a failed narration job's credits (the server checks the job really failed). */
+    refundMedia: (jobId) => gatedReq('POST', '/api/faceless/media/refund', { jobId }, { timeoutMs: 20000 }),
     concatVoiceovers: (urls) => gatedReq('POST', '/api/media/concat', { urls }),
     /** Same-origin proxy for CDN voiceover parts (avoids browser CORS on join). */
     voiceoverFetchUrl: (fileUrl) => {

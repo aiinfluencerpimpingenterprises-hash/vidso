@@ -19,6 +19,8 @@ const REWRITES = new Map([
   ['/studio', '/dashboard/index.html'],
   ['/edit', '/dashboard/index.html'],
   ['/brand', '/dashboard/index.html'],
+  ['/channels', '/dashboard/index.html'],
+  ['/connect', '/connect/index.html'],
   ['/create', '/dashboard/index.html'],
   ['/video-generation', '/dashboard/index.html'],
   ['/image-generation', '/dashboard/index.html'],

@@ -34,7 +34,6 @@ import {
 } from '../../lib/youtube.js'
 import {
   mcpArchived,
-  mcpConnectorPageHtml,
   mcpResourceFromReq,
   protectedResourceMetadataPath,
   unwrapMcpBearer,
@@ -481,10 +480,11 @@ export default async function handler(req, res) {
     // stay live, so this guard is scoped to the MCP subpath only.
     if (mcpArchived(req)) return send(res, 404, { error: 'Not found' })
     if (wantsBrowserPage(req)) {
-      res.statusCode = 200
-      res.setHeader('Content-Type', 'text/html; charset=utf-8')
+      // A person opening the MCP link lands on the setup page; AI apps never ask for HTML.
+      res.statusCode = 302
+      res.setHeader('Location', '/connect')
       res.setHeader('Cache-Control', 'no-store')
-      return res.end(mcpConnectorPageHtml(requestOrigin(req)))
+      return res.end()
     }
     let user
     let token

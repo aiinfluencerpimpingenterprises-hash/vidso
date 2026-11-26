@@ -2,7 +2,7 @@ import { falImageInput } from '../../lib/fal-image.js'
 import { falVideoInput } from '../../lib/fal-video.js'
 import { evaluateFeature, evaluatePlan, evaluateStudioCredits, toHttp } from '../../lib/enforce.js'
 import { creditCharge, usesSceneAllowance } from '../../lib/studio-credits.js'
-import { addSceneAllowance, hydrateUsage, incrementStudioCredits, takeSceneAllowance } from '../../lib/usage-store.js'
+import { addSceneAllowance, hydrateUsage, releaseStudioCredits, reserveStudioCredits, takeSceneAllowance } from '../../lib/usage-store.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
 
 export const config = { maxDuration: 30 }
@@ -92,8 +92,28 @@ export default async function handler(req, res) {
     return send(res, http.status, http.body)
   }
 
-  // A free scene that fal never accepted goes back, so a failed draw doesn't use up the allowance.
-  const refund = async () => { if (free) { try { await addSceneAllowance(user, 1) } catch (_) {} } }
+  // Take the credits before fal starts, atomically, so a burst of parallel
+  // requests can't spend past the balance. They go back if fal refuses the job.
+  let held = 0
+  let remaining = credits.remaining
+  if (credits.charge) {
+    const hold = await reserveStudioCredits(user, credits.charge, credits.limit)
+    if (!hold.ok) {
+      const again = evaluateStudioCredits({ user, cost: charge, used: hold.used, carry: usage.credits_carry })
+      const http = again.ok
+        ? { status: 402, body: { ok: false, error: 'credits_exhausted', message: 'Not enough credits left. Another job just used them.' } }
+        : toHttp(again)
+      return send(res, http.status, http.body)
+    }
+    held = credits.charge
+    remaining = Math.max(0, credits.limit - hold.used)
+  }
+
+  // A free scene or held credits that fal never accepted go back, so a failed draw costs nothing.
+  const refund = async () => {
+    if (free) { try { await addSceneAllowance(user, 1) } catch (_) {} }
+    if (held) { try { await releaseStudioCredits(user, held) } catch (_) {} }
+  }
   try {
     const falRes = await fetch('https://queue.fal.run/' + endpoint, {
       method: 'POST',
@@ -113,13 +133,6 @@ export default async function handler(req, res) {
     if (!data.request_id || !data.status_url || !data.response_url) {
       await refund()
       return send(res, 502, { error: 'The ' + label.toLowerCase() + ' service did not return a request handle' })
-    }
-    let remaining = credits.remaining
-    if (credits.charge) {
-      try {
-        const after = await incrementStudioCredits(user, credits.charge)
-        remaining = Math.max(0, credits.limit - (after.studio_credits_used || 0))
-      } catch (_) {}
     }
     return send(res, 200, {
       kind: wantVideo ? 'video' : 'image',

@@ -4,11 +4,11 @@
   ],
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/rapi/api/faceless/script", "destination": "/api/gate/faceless?p=script" },
-    { "source": "/rapi/api/faceless/media", "destination": "/api/gate/faceless?p=media" },
-    { "source": "/rapi/api/faceless/render", "destination": "/api/gate/faceless?p=render" },
-    { "source": "/rapi/api/download/analyze", "destination": "/api/gate/download?p=analyze" },
-    { "source": "/rapi/api/autoclip", "destination": "/api/gate/autoclip" },
+    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Ss][Cc][Rr][Ii][Pp][Tt]/?)", "destination": "/api/gate/faceless?p=script" },
+    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Mm][Ee][Dd][Ii][Aa]/?)", "destination": "/api/gate/faceless?p=media" },
+    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Rr][Ee][Nn][Dd][Ee][Rr]/?)", "destination": "/api/gate/faceless?p=render" },
+    { "source": "/rapi/api/:paid([Dd][Oo][Ww][Nn][Ll][Oo][Aa][Dd]/[Aa][Nn][Aa][Ll][Yy][Zz][Ee]/?)", "destination": "/api/gate/download?p=analyze" },
+    { "source": "/rapi/api/:paid([Aa][Uu][Tt][Oo][Cc][Ll][Ii][Pp]/?)", "destination": "/api/gate/autoclip" },
     {
       "source": "/rapi/:path*",
       "destination": "https://vibrant-patience-production-a7f0.up.railway.app/:path*"
@@ -20,6 +20,10 @@
     {
       "source": "/mcp",
       "destination": "/api/youtube/mcp"
+    },
+    {
+      "source": "/connect",
+      "destination": "/connect/index.html"
     },
     {
       "source": "/api/pixel/event",
@@ -99,6 +103,10 @@
     },
     {
       "source": "/brand",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/channels",
       "destination": "/dashboard/index.html"
     },
     {

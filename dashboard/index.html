@@ -313,6 +313,24 @@ html:has(#panel-create.active .cc-banner) .content{padding-top:calc(var(--app-ch
 .topnav-item.active{color:#fff;font-weight:600}
 .topnav-item .nav-caret{opacity:.8}
 .topnav-item:focus-visible,.topnav-ico-btn:focus-visible,.topnav-logo:focus-visible,.topnav-avatar:focus-visible{outline:2px solid rgba(255,255,255,.7)}
+/* App font: SF Pro Display everywhere, regular weights. Caption previews keep their own fonts. */
+:root{--app-font:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Inter,system-ui,sans-serif}
+body{font-family:var(--app-font)}
+body :not([style*="font-family"],[style*="font-family"] *,.brand,.brand *,.topnav-logo,.topnav-logo *,.logo,.logo *,svg,svg *,pre,code,kbd){font-family:var(--app-font)!important}
+body :is(b,strong):not([style*="font-family"] *){font-weight:500}
+body :is(h1,h2,h3,h4):not([style*="font-family"] *){font-weight:600}
+.avatar-initial,.topnav-avatar{font-weight:500!important}
+.credits-pill,.credits-pill *{font-weight:500!important}
+/* 2026 refresh: glass top bar, active page as a pill */
+.app-topnav{background:rgba(11,11,12,.72);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.06)}
+.topnav-primary{gap:2px}
+.topnav-item,.credits-pill,.topnav-menu{font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.topnav-item{height:36px;padding:0 16px;color:rgba(255,255,255,.66);font-size:15px;font-weight:400;letter-spacing:-.005em;transition:background .15s,color .15s}
+.topnav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.topnav-item.active{color:#fff;font-weight:500;background:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.credits-pill{font-weight:500}
+.credits-pill{height:32px;padding:0 12px 0 9px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:.78rem}
+.credits-pill:hover{background:rgba(255,255,255,.09)}
 .nav-badge,.badge-soon{display:inline-flex;align-items:center;justify-content:center;height:18px;padding:0 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
 .user-profile-card{background:var(--card-grad);border:1px solid var(--border);border-radius:var(--radius-card);padding:0;display:flex;flex-direction:column;overflow:hidden}
 .user-profile-top{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;background:transparent;text-decoration:none;color:inherit;cursor:default}
@@ -1338,7 +1356,7 @@ html.needs-onboarding #onboarding-modal.hidden{display:flex!important}
 }
 .cs-h{
   position:absolute;width:11px;height:11px;background:#E94B58;border:2px solid #fff;border-radius:50%;
-  box-shadow:0 0 0 1px rgba(45,124,246,.35);
+  box-shadow:0 0 0 1px rgba(255,45,72,.35);
 }
 .cs-h.n{top:-6px;left:50%;transform:translateX(-50%)}
 .cs-h.s{bottom:-6px;left:50%;transform:translateX(-50%)}
@@ -1622,7 +1640,7 @@ body.editor-open .topbar{display:none!important}
   transition:border-color .15s,box-shadow .15s
 }
 .clip-hero-row:focus-within{
-  border-color:#6b9aff;box-shadow:0 0 0 4px rgba(var(--glow),.18),0 0 28px rgba(var(--glow),.14)
+  border-color:#ff5c70;box-shadow:0 0 0 4px rgba(var(--glow),.18),0 0 28px rgba(var(--glow),.14)
 }
 .clip-hero-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px}
 .clip-hero-icon svg{width:24px;height:24px}
@@ -1637,7 +1655,7 @@ body.editor-open .topbar{display:none!important}
   background:var(--a1)!important;box-shadow:0 4px 18px rgba(var(--glow),.28)!important;color:var(--ink)!important;border:none!important
 }
 .clip-hero-btn svg{width:15px;height:15px}
-.clip-hero-btn:hover{background:#6b9aff!important;transform:none!important;box-shadow:0 6px 22px rgba(var(--glow),.5)!important}
+.clip-hero-btn:hover{background:#ff5c70!important;transform:none!important;box-shadow:0 6px 22px rgba(var(--glow),.5)!important}
 .clip-ctype{
   display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap;font-size:.82rem;color:#9ca3af
 }
@@ -4131,7 +4149,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <span class="settings-row-label">Plans &amp; credits</span>
         <span class="settings-row-value" id="settings-plan-label">Plans →</span>
       </button>
-      <button type="button" class="settings-row-btn" id="settings-yt-link">
+      <button type="button" class="settings-row-btn" id="settings-yt-link" hidden style="display:none">
         <span class="settings-row-label">My YouTube Channel</span>
         <span class="settings-row-value" id="settings-yt-state">Connect →</span>
       </button>
@@ -4266,7 +4284,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <button type="button" role="menuitem" onclick="switchPanel('files', null)">My files</button>
         <button type="button" role="menuitem" onclick="openPaywall({force:true})">Plans &amp; credits</button>
         <button type="button" role="menuitem" id="user-getting-started-btn">Getting started</button>
-        <button type="button" role="menuitem" id="nav-yt-mcp-btn">My YouTube Channel</button>
+        <button type="button" role="menuitem" id="nav-yt-mcp-btn" hidden style="display:none">My YouTube Channel</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
         <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
@@ -6544,7 +6562,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
               <div id="fv-export-result" style="display:none;margin-top:14px">
                 <video id="fv-export-video" controls playsinline style="width:100%;max-width:360px;border-radius:12px;background:#000;display:block;margin:0 auto"></video>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center">
-                  <a class="btn btn-primary" id="fv-export-dl" download="vidso-faceless.mp4">⬇ Download Video</a>
+                  <a class="btn btn-primary" id="fv-export-dl" download="tubeops-faceless.mp4">⬇ Download Video</a>
                   <button type="button" class="btn btn-secondary" id="fv-yt-upload" hidden onclick="fvUploadToYoutube()">Upload to YouTube</button>
                   <button type="button" class="btn btn-ghost" onclick="fvStartExport(true)">↻ Render again</button>
                 </div>
@@ -6643,6 +6661,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module">
 import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken, refreshSessionOnce } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
+import { channelBannerPrompt, BANNER_MODEL, BANNER_ASPECT } from '/lib/channel-banner.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
   facelessMediaPayloadExtras,
@@ -6728,7 +6747,7 @@ import {
   setupChannel,
   readReference,
 } from '/lib/youtube-client.js'
-import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptFromText } from '/lib/channel-kit.js'
+import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptEstimate, scriptFromText } from '/lib/channel-kit.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
 import { initAgentsChat } from '/lib/agents-chat.js'
@@ -7172,6 +7191,11 @@ window.doLogout = async () => {
   if (uiPreviewMode()) { enterUiPreview(); return }
   await api.auth.logout().catch(()=>{})
   obClearNeedFlag()
+  // The Agents chat, its saved run and the video in progress belong to this account, not the next one.
+  try {
+    for (const k of Object.keys(sessionStorage)) if (k.startsWith('vidso_agents_chat')) sessionStorage.removeItem(k)
+    for (const k of Object.keys(localStorage)) if (k.startsWith('vidso_agents_run') || k === 'vidso_server_run' || k === 'vidso_video_channel') localStorage.removeItem(k)
+  } catch (_) {}
   clearSession()
   currentUser = null
   persistPlanActive(false)
@@ -9204,7 +9228,7 @@ const titles = {
   downloader:'Video Downloader',   files:'My Files', youtube:'My YouTube Channel', commentary:'Video Commentary', mcp:'MCP'
 }
 const PANEL_PATHS = {
-  agents:'/agents', manual:'/studio', edit:'/edit', brand:'/brand', create:'/create', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
+  agents:'/agents', manual:'/studio', edit:'/edit', brand:'/channels', create:'/create', dashboard:'/dashboard', clipper:'/clipping', ranking:'/ranking', imagegen:'/image-generation',
   videogen:'/video-generation', ytvideogen:'/youtube-generation', facelessstudio:'/faceless-studio', tools:'/tools',
   captions:'/captions', voiceover:'/voiceover', editor:'/editor', reframe:'/reframe',
   downloader:'/downloader', files:'/files', youtube:'/youtube', commentary:'/commentary', mcp:'/connectors'
@@ -9230,6 +9254,7 @@ function panelFromPath() {
     return panelArchived('facelessstudio') ? DEFAULT_PANEL : 'facelessstudio'
   }
   if (path === '/connections') return 'youtube'
+  if (path === '/brand') return 'brand' // the Channels page's old address
   const mapped = PATH_TO_PANEL[path]
   if (mapped) return mapped
   try {
@@ -9871,14 +9896,21 @@ window.fvRedrawScene = async (i, prompt) => {
   fvAgentsChanged()
   return url
 }
-window.fvAnimateScene = async (i) => {
+// Camera-only moves for a still: the model follows bracketed camera commands, and nothing in the picture moves.
+const FV_CAMERA_MOVES = {
+  zoom_in: '[Push in] Slow, smooth camera push-in toward the center of the image. The picture itself stays still: no people, objects or background move. Keep the art style exactly.',
+  zoom_out: '[Pull out] Slow, smooth camera pull-out from the center, revealing a little more of the image. The picture itself stays still: no people, objects or background move. Keep the art style exactly.',
+  pan: '[Truck right] Slow, smooth sideways camera pan across the image. The picture itself stays still: no people, objects or background move. Keep the art style exactly.',
+}
+window.fvAnimateScene = async (i, move = '') => {
   const sc = fvSceneAt(i)
   if (!sc.image) throw new Error('Draw the scene first.')
   // Every animation uses Hailuo 02 Standard, whatever older videos were made with.
   const model = videoModelById(SCENE_ANIMATION_MODEL)
+  const camera = FV_CAMERA_MOVES[move] || ''
   const data = await api.generate.video({
     model: model.id,
-    prompt: (sc.prompt || sc.text) + '. Gentle natural motion, keep the art style.',
+    prompt: camera ? camera + ' Scene: ' + (sc.prompt || sc.text) : (sc.prompt || sc.text) + '. Gentle natural motion, keep the art style.',
     aspect: fvState.sceneProject.aspect,
     duration: fvVideoDurationFor(model, sc.end - sc.start),
     generate_audio: false,
@@ -9889,6 +9921,7 @@ window.fvAnimateScene = async (i) => {
   if (!url) throw new Error('The animation did not come back. Try again.')
   if (fvState.sceneProject?.scenes?.find((x) => x.i === sc.i) !== sc) throw new Error('The video changed while this scene was animating.')
   sc.clip = url
+  sc.move = camera ? move : ''
   fvState.sceneProject.edits++
   fvAgentsChanged()
   return url
@@ -10540,7 +10573,7 @@ function fvPaintDelivery(scrollTo) {
           </div>
         </div>
         <div class="fv-dl-actions">
-          <a class="btn btn-primary" href="${fvEsc(fvState.renderUrl)}" download="${fvEsc(title.replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'vidso-video')}.mp4">Download video</a>
+          <a class="btn btn-primary" href="${fvEsc(fvState.renderUrl)}" download="${fvEsc(title.replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'tubeops-video')}.mp4">Download video</a>
           <button type="button" class="btn btn-secondary" data-dl-yt>Upload to YouTube</button>
         </div>
         <div class="status fv-dl-yt" id="fv-dl-yt" hidden></div>`
@@ -10707,6 +10740,9 @@ function fvLocalAgentsState() {
     topic: document.getElementById('fv-topic')?.value || '',
     durationId: fvState.durationId || '',
     durationLabel: picked?.label || '',
+    // What the run really uses: the plan caps a longer pick.
+    durationPicked: picked?.id || '',
+    durationSeconds: picked?.seconds || 0,
     voiceId: fvState.voiceId || '',
     voiceState: typeof voicesLoadState === 'string' ? voicesLoadState : '',
     voices: (Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), name: String(v.name || '').split(' - ')[0], desc: String(v.name || '').includes(' - ') ? String(v.name).split(' - ').slice(1).join(' - ') : (v.description || ''), category: v.category || '', gender: String(v.labels?.gender || v.gender || '').toLowerCase(), accent: v.labels?.accent || v.accent || '', preview: v.preview_url || '' })),
@@ -10829,6 +10865,7 @@ window.fvAgentsRun = async ({ topic, durationId, aspect, channel } = {}) => {
   if (!getToken()) return 'SIGN_IN'
   if (fvState.scriptBusy || fvServerRunActive() || (fvState.crew && fvState.crew.stage !== 'done' && fvState.autoChain)) return 'The agents are still working on the current video.'
   try { fvInit() } catch (_) {}
+  fvState.ownScriptSeconds = 0
   if (aspect) { try { window.fvSetAspect(aspect) } catch (_) {} }
   if (durationId) { try { window.fvSetDuration(durationId) } catch (_) {} }
   // Made on the server when this deployment can: the video keeps going if the tab closes.
@@ -10992,6 +11029,8 @@ window.fvAgentsRunScript = async ({ text, title, manual = false } = {}) => {
   const words = scriptWordCount(script)
   const secs = Math.round((words / 150) * 60)
   try { window.fvSetDuration(nearestDuration(secs).id) } catch (_) {}
+  // The credit check before narration uses the script's real length, the same number its cost chip shows.
+  fvState.ownScriptSeconds = scriptEstimate(text).seconds || secs
   const el = document.getElementById('fv-topic')
   if (el) { el.value = script.title; el.dispatchEvent(new Event('input')) }
   const mode = document.getElementById('fv-agent-mode')
@@ -11076,6 +11115,77 @@ window.fvStudioEditSection = (i, text) => {
   try { fvRenderScript(fvState.script) } catch (_) {}
   fvAgentsChanged()
 }
+/** Make a channel's banner once (a wide AI scene in its style) and keep it on the channel.
+ *  Runs quietly in the background; a failure is remembered for this visit so it isn't retried in a loop. */
+const fvBannerJobs = new Map()
+const fvBannerPending = new Set()
+window.fvEnsureChannelBanner = (id) => {
+  const prof = () => (window.agentsChat?.profiles?.list() || []).find((x) => x.id === id)
+  const p = prof()
+  if (!p || p.bannerUrl || !getToken()) return Promise.resolve(p?.bannerUrl || '')
+  if (fvBannerJobs.has(id)) return fvBannerJobs.get(id)
+  fvBannerPending.add(id)
+  const job = (async () => {
+    try {
+      const data = await api.generate.image({
+        prompt: channelBannerPrompt(p),
+        model: BANNER_MODEL,
+        aspect_ratio: BANNER_ASPECT,
+        quality: '1K',
+        resolution: '1K',
+        num_images: 1,
+      })
+      const url = data?.urls?.[0]
+      if (!url) return ''
+      // The channel may have been edited while the banner was drawing: patch only the banner.
+      if (!prof()) return ''
+      window.agentsChat?.profiles?.patch?.(id, { bannerUrl: url })
+      return url
+    } catch (e) {
+      try { console.warn('[banner]', e?.message || e) } catch (_) {}
+      return ''
+    } finally {
+      fvBannerPending.delete(id)
+      try { window.dispatchEvent(new CustomEvent('vidso:channel-banner', { detail: { id } })) } catch (_) {}
+    }
+  })()
+  fvBannerJobs.set(id, job)
+  return job
+}
+window.fvBannerBusy = (id) => fvBannerPending.has(id)
+/** Rewrite one part of the script with AI. how: 'redo' | 'shorter' | 'longer' | 'punchier'; note: the user's own words. Returns '' or an error. */
+window.fvStudioRewriteSection = async (i, how = 'redo', note = '') => {
+  const script = fvState.script
+  const sec = script?.sections?.[i]
+  if (!sec) return 'That part is gone. Reload the script.'
+  if (!getToken()) return 'SIGN_IN'
+  const have = Math.max(20, countSpokenWords(sec.text))
+  const target = Math.round(have * (how === 'shorter' ? 0.65 : how === 'longer' ? 1.5 : 1))
+  const ask = {
+    redo: 'Rewrite this part with fresh wording. Keep the same facts and about the same length.',
+    shorter: 'Rewrite this part about a third shorter. Keep the key facts.',
+    longer: 'Rewrite this part about half again longer, adding detail. Do not recap.',
+    punchier: 'Rewrite this part to be punchier and more gripping: short sentences, strong verbs. Same facts, same length.',
+  }[how] || 'Rewrite this part.'
+  const topic = script.topic || document.getElementById('fv-topic')?.value || script.title || ''
+  try {
+    const out = await api.faceless.rewriteSection({
+      topic: topic + '\n\n' + ask + (String(note || '').trim() ? ' The writer asks: ' + String(note).trim().slice(0, 400) : '') +
+        ' Return only the narration for this one part.',
+      section_id: sec.id,
+      heading: sec.heading,
+      text: sec.text,
+      full_script: String(script.full_script || '').slice(0, 2500),
+      target_words: target,
+    }, { timeoutMs: 90000 })
+    const next = String(fvSectionRewriteText(out) || '').trim()
+    if (!next) return 'The rewrite came back empty. Try again.'
+    window.fvStudioEditSection(i, next)
+    return ''
+  } catch (e) {
+    return e.message || 'The part could not be rewritten.'
+  }
+}
 window.fvStudioSetTitle = (t) => {
   t = String(t || '').trim().slice(0, 120)
   if (!fvState.script || !t) return
@@ -11130,6 +11240,7 @@ window.fvRestoreDraft = () => {
 }
 window.fvAgentsReset = () => {
   try { window.fvClearScript({}) } catch (_) {}
+  fvState.ownScriptSeconds = 0
   fvState.sceneProgress = null
   fvState.serverRun = null
   try { localStorage.removeItem('vidso_server_run') } catch (_) {}
@@ -11156,6 +11267,8 @@ function fvDurationList() {
 }
 /** Lengths this user's plan allows, as [id, label] pairs (Studio, channel creator). */
 window.fvDurationChoices = () => fvDurationList().map((d) => [d.id, d.label])
+/** The longest video this plan makes, in seconds (Infinity when there is no cap). The Agents length menus lock the rest. */
+window.fvDurationCap = () => fvDurationCapSeconds()
 
 function fvCustomDurationLabel(seconds) {
   if (fvState.format === 'shorts') return seconds + 's'
@@ -11986,7 +12099,11 @@ function fvWaitForMediaJob(jobId, label) {
         }
         fvStopMediaPoll()
         if (job.status === 'error') {
-          reject(new Error(job.error || 'Media failed'))
+          // The job's credits come back; the server checks with Railway that it really failed.
+          let back = 0
+          try { back = Number((await api.faceless.refundMedia(jobId))?.refunded) || 0 } catch (_) {}
+          if (back) { try { loadUsage() } catch (_) {} }
+          reject(new Error((job.error || 'Media failed') + (back ? ' Its ' + back + ' credits were given back.' : '')))
           return
         }
         resolve(job)
@@ -12008,6 +12125,10 @@ function fvWaitForMediaJob(jobId, label) {
   })
 }
 
+/** A pasted or uploaded script's real length in seconds (0 for a written script). */
+function fvOwnScriptSeconds() {
+  return fvState.script ? Number(fvState.ownScriptSeconds) || 0 : 0
+}
 /** What the whole video will cost in credits, sent with its first voice part. */
 function fvVideoCreditEstimate(seconds) {
   const vis = fvVisual()
@@ -12035,7 +12156,7 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label, firs
     ...extras,
     ...voiceOpts,
     scene_pace: fvVisual().pace || 'normal',
-    ...(first ? { credits_needed: fvVideoCreditEstimate(extras.duration_seconds) } : {}),
+    ...(first ? { credits_needed: fvVideoCreditEstimate(fvOwnScriptSeconds() || extras.duration_seconds) } : {}),
   })
   return fvWaitForMediaJob(jobId, label)
 }
@@ -13619,7 +13740,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
     fvSyncYoutubeUploadBtn(st)
     const title = (fvState.script?.title || 'TubeOps video').slice(0, 100)
     const description = fvPublishDescription().slice(0, 4900)
-    const tags = Array.isArray(fvState.publish?.tags) && fvState.publish.tags.length ? fvState.publish.tags : ['vidso']
+    const tags = Array.isArray(fvState.publish?.tags) && fvState.publish.tags.length ? fvState.publish.tags : ['tubeops']
     const privacy = st.privacy || 'public'
     let result
     try {
@@ -14105,6 +14226,7 @@ window.fvGenerateScript = async () => {
   }
   const topic = (document.getElementById('fv-topic')?.value || '').trim()
   if (!topic) return fvSetStatus('Enter a topic or prompt first', 'err')
+  fvState.ownScriptSeconds = 0 // a written script is charged by its picked length
   let picked
   try { picked = fvRequireDuration() } catch (e) {
     return fvSetStatus(e.message, 'err')
