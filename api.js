@@ -140,7 +140,12 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
   const recovered = opts.recoverScript ? recoverScriptData(data, raw) : null
   if (!res.ok) {
     if (recovered) return recovered
-    const fallback = raw && !raw.trim().startsWith('{') ? raw.trim().slice(0, 180) : 'Request failed'
+    // Never show a bare "Request failed": say what the server answered, or which status it gave.
+    const text = raw && !raw.trim().startsWith('{') ? raw : (typeof data.raw === 'string' ? data.raw : '')
+    const clean = String(text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 180)
+    const fallback = clean
+      ? (res.status === 504 || /timed? ?out|timeout/i.test(clean) ? 'The server took too long to answer. Try again.' : res.status >= 502 && res.status <= 503 ? 'The server was busy. Try again in a moment.' : clean)
+      : `The server couldn't finish that (error ${res.status}). Try again.`
     const msg = data.message || data.error || fallback
     if (!opts.skipAuthRefresh && !opts._authRetried && isExpiredAuthError(msg, res.status)) {
       try {

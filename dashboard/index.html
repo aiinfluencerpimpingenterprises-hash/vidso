@@ -10449,6 +10449,7 @@ function fvCrewEmit(final, text) {
   } catch (_) {}
 }
 function fvCrewReset() {
+  fvState.failed = null
   FV_CREW.forEach((a) => {
     const el = fvCrewEl(a)
     if (el) fvCrewSet(a, 'idle', el.dataset.idle || '')
@@ -10481,8 +10482,25 @@ function fvCrewFail(stage, msg) {
   if (!fvState.crew) return
   const who = stage === 'script' ? ['script'] : stage === 'media' ? ['voice', 'agent'] : ['editor']
   who.forEach((a) => fvCrewSet(a, 'error', msg || 'Something went wrong'))
-  fvCrewSet('manager', 'stuck', 'Stopped: needs you')
+  // Say what stopped and what to do, so the chat can offer Try again.
+  const step = stage === 'script' ? 'The script' : stage === 'media' ? 'The narration and scenes' : 'The final render'
+  fvState.failed = { stage, msg: String(msg || ''), topic: document.getElementById('fv-topic')?.value || fvState.script?.topic || '', at: Date.now() }
+  const why = String(msg || 'something went wrong').replace(/\.?\s*Try again[^.]*\.?$/i, '').replace(/\.$/, '').replace(/^[A-Z](?![A-Z])/, (c) => c.toLowerCase())
+  fvCrewSet('manager', 'stuck', `${step} stopped: ${why}. Press Try again and the team picks up from there.`)
   fvCrewStop('error', msg)
+}
+/** Try the step that stopped again: rewrite the script, re-record the narration, or re-render. */
+window.fvRetryFailed = async () => {
+  const f = fvState.failed
+  if (!f) return 'Nothing to try again.'
+  fvState.failed = null
+  if (f.stage === 'script' || !fvState.script) return window.fvAgentsRun({ topic: f.topic || fvState.script?.topic || '' })
+  if (f.stage === 'media' || !voiceoverPlaylist(fvState.media).length) {
+    fvState.autoChain = true
+    try { window.fvContinueToMedia(true) } catch (e) { return e.message || 'Could not start the narration again.' }
+    return ''
+  }
+  return window.fvAgentsRerender('Rendering again')
 }
 // Script status lines ("Writing items 3–6 of 12…", "Expanding … (2/5)…") double as progress.
 function fvCrewScript(msg) {
@@ -10933,6 +10951,7 @@ function fvLocalAgentsState() {
     crew,
     log: Array.isArray(fvState.agentLog) ? fvState.agentLog.slice() : [],
     editId: fvState.editProjectId || '',
+    failed: fvState.failed ? { stage: fvState.failed.stage, msg: fvState.failed.msg } : null,
     renderSaved: fvState.renderSaved || '',
     running: !!(fvState.crew && fvState.crew.stage !== 'done' && Object.values(crew).some((c) => c.state === 'working')),
     busyScript: !!fvState.scriptBusy,
@@ -14208,6 +14227,10 @@ async function fvRequestScript(payload, topic, picked, timeoutMs, extra, retried
       return fvRequestScript(payload, topic, picked, timeoutMs, [extra, shorter].filter(Boolean).join('\n\n'), true)
     } else if (e.code === 'json_parse' || isJsonSyntaxError(e)) {
       throw new Error('Script JSON was incomplete. Try Generate Script again.')
+    } else if (!retried && (e.network || [502, 503, 504, 524].includes(Number(e.status)) || e.code === 'upstream_failed')) {
+      fvSetStatus('The script writer was slow to answer. Trying once more…', 'loading')
+      fvCrewScript('The script writer was slow to answer. Trying once more…')
+      return fvRequestScript(payload, topic, picked, timeoutMs, extra, true)
     } else {
       throw e
     }
