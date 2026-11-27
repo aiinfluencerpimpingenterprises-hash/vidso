@@ -104,7 +104,7 @@ function send(res, status, body) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-vidso-studio')
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-vidso-studio, x-vidso-path')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
   if (req.method === 'OPTIONS') {
     res.statusCode = 204

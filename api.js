@@ -104,7 +104,7 @@ async function reqTo(url, method, body, isFormData = false, opts = {}) {
     try { await ensureFreshToken() } catch (_) {}
   }
   const token = getToken()
-  const headers = {}
+  const headers = { ...(opts.headers || {}) }
   // Refresh calls must not send a stale Bearer — Railway treats it as auth failure.
   if (token && !opts.skipAuthRefresh) headers['Authorization'] = `Bearer ${token}`
   const hasBody = method !== 'GET' && method !== 'HEAD' && body != null
@@ -249,7 +249,9 @@ async function gatedReq(method, path, body, opts = {}) {
   const url = gateUrl(path)
   if (url) {
     try {
-      return await reqTo(url, method, body, false, opts)
+      // The full path rides along in a header, so the gate never forwards a cut-down path.
+      const full = String(path || '').split('?')[0].replace(/^\/api\//, '')
+      return await reqTo(url, method, body, false, { ...opts, headers: { ...(opts.headers || {}), 'X-Vidso-Path': full } })
     } catch (e) {
       if (e.status !== 404) throw e
       // Falling back skips quota and plan checks, so make it visible.

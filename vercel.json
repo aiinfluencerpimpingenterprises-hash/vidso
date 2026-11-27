@@ -130,8 +130,8 @@
       "destination": "/api/gate/faceless-studio?p=:path*"
     },
     {
-      "source": "/api/gate/:first/:rest*",
-      "destination": "/api/gate/:first?p=:rest*"
+      "source": "/api/gate/:first/:rest+",
+      "destination": "/api/gate/:first?p=:rest+"
     },
     {
       "source": "/tools",

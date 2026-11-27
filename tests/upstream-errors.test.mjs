@@ -16,3 +16,13 @@ test('an upstream error that already has a message is passed through', () => {
   const data = { error: 'credits_exhausted', message: 'Not enough credits' }
   assert.equal(upstreamError({ status: 402, data }, 'faceless/media'), data)
 })
+
+test('the gate rebuilds the full path even when routing drops ?p=', async () => {
+  const { studioRouteFromReq } = await import('../lib/studio-gate.js')
+  const H = (h) => ({ 'x-vidso-path': h })
+  assert.equal(studioRouteFromReq({ url: '/api/gate/faceless?p=', query: { path: ['faceless'], p: '' }, headers: H('faceless/script') }).subpath, 'faceless/script')
+  assert.equal(studioRouteFromReq({ url: '/api/gate/faceless?p=media%2Frefund', query: { path: ['faceless'], p: 'media/refund' }, headers: H('faceless/media/refund') }).subpath, 'faceless/media/refund')
+  assert.equal(studioRouteFromReq({ url: '/rapi/api/faceless/script', query: { paid: 'faceless/script' }, headers: {} }).subpath, 'faceless/script')
+  // A header that doesn't belong to this route is ignored.
+  assert.equal(studioRouteFromReq({ url: '/api/gate/faceless?p=script', query: { path: ['faceless'], p: 'script' }, headers: H('usage') }).subpath, 'faceless/script')
+})
