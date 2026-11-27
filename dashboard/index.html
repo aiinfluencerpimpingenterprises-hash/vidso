@@ -7430,7 +7430,7 @@ function fvSyncYoutubeUploadBtn(st) {
   const on = !!(st || _ytStatus)?.connected
   if (stateEl) stateEl.textContent = on ? 'Connected →' : 'Connect →'
   if (!btn) return
-  btn.hidden = !fvExportResultOpen()
+  btn.hidden = true // Upload to YouTube is switched off for now
   btn.textContent = 'Upload to YouTube'
 }
 function ytChSetMsg(text, kind) {
@@ -10793,7 +10793,6 @@ function fvPaintDelivery(scrollTo) {
         </div>
         <div class="fv-dl-actions">
           <a class="btn btn-primary" href="${fvEsc(fvState.renderUrl)}" download="${fvEsc(title.replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'tubeops-video')}.mp4">Download video</a>
-          <button type="button" class="btn btn-secondary" data-dl-yt>Upload to YouTube</button>
         </div>
         <div class="status fv-dl-yt" id="fv-dl-yt" hidden></div>`
   box.hidden = false
@@ -15001,7 +15000,7 @@ function filesSetYtStatus(msg, kind) {
 function filesSyncYtBtn(st, kind) {
   const btn = document.getElementById('files-lb-yt')
   if (!btn) return
-  btn.hidden = kind !== 'video'
+  btn.hidden = true // Upload to YouTube is switched off for now
   btn.textContent = 'Upload to YouTube'
 }
 
@@ -15212,7 +15211,7 @@ const GS_STEPS = [
   { id: 'video', name: 'Make your first video', note: 'Type a topic in Agents. The team writes, voices, draws and edits it.', go: 'agents', cta: 'Open Agents' },
   { id: 'studio', name: 'Go step by step in Studio', note: 'Write or upload the script, pick the settings, then make the video.', go: 'manual', cta: 'Open Studio' },
   { id: 'edit', name: 'Polish it in the Editor', note: 'Redraw or animate any scene, change captions and music, then render.', go: 'edit', cta: 'Open Editor' },
-  { id: 'publish', name: 'Upload to YouTube', note: 'Download the video, or upload it straight from the finished video card.', go: 'files', cta: 'Open My files' },
+  { id: 'publish', name: 'Download and post it', note: 'Download the finished video from its card or My Files, then post it on YouTube.', go: 'files', cta: 'Open My files' },
 ]
 function gsDone() {
   const done = new Set()
