@@ -282,7 +282,7 @@ import { api, setSession, clearSession, getToken, getRefreshToken, restoreSessio
 import { mountPricing } from '/lib/pricing-ui.js'
 import { trackCompleteRegistration, trackInitiateCheckout, trackPurchase, pixelIdentify, pixelClickIds } from '/lib/meta-pixel.js'
 
-const APP = '/create'
+const APP = '/agents' // every sign-in lands on Agents
 let paywallCycle = 'annual'
 let currentUser = null
 let _planPoll = null
@@ -547,10 +547,8 @@ function goAfterAuth() {
     after = String(sessionStorage.getItem('vidso_after_login') || '')
     sessionStorage.removeItem('vidso_after_login')
   } catch (_) {}
-  if (after.startsWith('/') && !after.startsWith('//') && !after.includes('://')) {
-    persistPaidBeforeApp().finally(() => location.replace(after))
-    return
-  }
+  // Signing in always lands on Agents, whatever page sent you to sign in.
+  void after
   persistPaidBeforeApp().finally(() => location.replace(APP))
 }
 

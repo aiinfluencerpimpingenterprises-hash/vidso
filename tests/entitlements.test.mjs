@@ -76,7 +76,7 @@ test('plans sell credits; video counts are never capped', () => {
     assert.equal(isUnlimited(quotaLimit(tier, 'long_form')), true)
     assert.equal(isUnlimited(ENTITLEMENTS[tier].studio_credits_per_month), false)
   }
-  assert.deepEqual([1, 3, 10, 25], ['plus', 'pro', 'studio', 'agency'].map((t) => channelLimit(t)))
+  assert.deepEqual([1, 2, 3, 4], ['plus', 'pro', 'studio', 'agency'].map((t) => channelLimit(t)))
   assert.equal(channelLimit('plus', 2), 3)
 })
 

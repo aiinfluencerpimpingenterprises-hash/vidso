@@ -322,7 +322,7 @@ body :is(h1,h2,h3,h4):not([style*="font-family"] *){font-weight:600}
 .avatar-initial,.topnav-avatar{font-weight:500!important}
 .credits-pill,.credits-pill *{font-weight:500!important}
 /* 2026 refresh: glass top bar, active page as a pill */
-.app-topnav{background:rgba(11,11,12,.72);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.06)}
+.app-topnav{background:rgba(11,11,12,.72);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom:0;box-shadow:none}
 .topnav-primary{gap:2px}
 .topnav-item,.credits-pill,.topnav-menu{font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .topnav-item{height:36px;padding:0 16px;color:rgba(255,255,255,.66);font-size:15px;font-weight:400;letter-spacing:-.005em;transition:background .15s,color .15s}
@@ -3784,6 +3784,118 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
   .app-banner-msg{font-size:.7rem}
   .brand{font-size:1.1rem}
 }
+
+/* Account popup: profile, plan with a credits bar, a short list and a quiet sign out */
+#settings-modal .settings-shell.acct{max-width:400px;padding:6px;border-radius:18px;background:#141416;border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px -20px rgba(0,0,0,.8);backdrop-filter:none}
+#settings-modal .settings-shell.acct:focus,#settings-modal .settings-shell.acct:focus-visible{outline:none}
+.acct-top{display:flex;align-items:center;gap:12px;padding:14px 12px 16px}
+.acct-top .user-avatar{width:40px;height:40px;flex:none;font-size:15px}
+.acct-who{flex:1;min-width:0}
+.acct-name{margin:0;font-size:15px;font-weight:500;color:#f2f2f0;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-email{margin-top:2px;font-size:12.5px;color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-x{flex:none;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:rgba(255,255,255,.5);cursor:pointer}
+.acct-x:hover{background:rgba(255,255,255,.06);color:#fff}
+.acct-x svg{width:16px;height:16px}
+.acct-plan{margin:0 6px;padding:14px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.acct-plan-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.acct-plan-top>div{display:flex;flex-direction:column;gap:2px}
+.acct-plan-top small{font-size:12px;color:rgba(255,255,255,.42)}
+.acct-plan-top b{font-size:14px;font-weight:500;color:#f2f2f0}
+.acct-link{border:0;background:none;padding:2px 0;color:rgba(255,255,255,.6);font:400 12.5px inherit;font-family:inherit;cursor:pointer}
+.acct-link:hover{color:#fff}
+.acct-bar{height:4px;margin:14px 0 9px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.acct-bar i{display:block;height:100%;width:0;border-radius:4px;background:#ff2d48;transition:width .4s ease}
+.acct-plan-foot{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:rgba(255,255,255,.45)}
+.acct-plan-foot span:first-child{color:rgba(255,255,255,.75)}
+.acct-list{display:flex;flex-direction:column;padding:8px 0 4px}
+.acct-row{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border:0;border-radius:10px;background:transparent;color:rgba(255,255,255,.8);font:400 13.5px inherit;font-family:inherit;text-align:left;cursor:pointer}
+.acct-row:hover{background:rgba(255,255,255,.05);color:#fff}
+.acct-row[hidden]{display:none}
+.acct-row>svg:first-child{width:16px;height:16px;flex:none;color:rgba(255,255,255,.5)}
+.acct-row span{flex:1}
+.acct-chev{width:14px;height:14px;flex:none;color:rgba(255,255,255,.3)}
+.acct-out{display:block;width:calc(100% - 12px);margin:4px 6px 6px;padding:10px;border:0;border-top:1px solid rgba(255,255,255,.06);border-radius:0;background:transparent;color:rgba(255,255,255,.5);font:400 13px inherit;font-family:inherit;text-align:left;cursor:pointer}
+.acct-out:hover{color:#ff6b80}
+
+/* Getting started: five steps, ticked as they are done */
+#gs-modal .gs{max-width:520px;width:calc(100% - 32px);padding:6px;border-radius:18px;background:#141416;border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}
+#gs-modal .gs:focus{outline:none}
+.gs-head{display:flex;align-items:flex-start;gap:12px;padding:16px 12px 14px 16px}
+.gs-head>div{flex:1}
+.gs-head h2{margin:0;font-size:16px;font-weight:500;color:#f2f2f0}
+.gs-head p{margin:4px 0 0;font-size:12.5px;color:rgba(255,255,255,.45)}
+.gs-bar{height:3px;margin:0 16px 10px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.gs-bar i{display:block;height:100%;width:0;background:#ff2d48;border-radius:3px;transition:width .4s ease}
+.gs-steps{list-style:none;margin:0;padding:0 0 6px}
+.gs-step{display:flex;align-items:center;gap:13px;padding:11px 10px;border-radius:12px}
+.gs-step:hover{background:rgba(255,255,255,.03)}
+.gs-num{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.14);font-size:12px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums}
+.gs-num svg{width:13px;height:13px}
+.gs-step.is-done .gs-num{background:#ff2d48;border-color:#ff2d48;color:#fff}
+.gs-step.is-next .gs-num{border-color:rgba(255,45,72,.7);color:#fff}
+.gs-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gs-txt b{font-size:13.5px;font-weight:500;color:#ececea}
+.gs-step.is-done .gs-txt b{color:rgba(255,255,255,.55)}
+.gs-txt small{font-size:12px;line-height:1.45;color:rgba(255,255,255,.42)}
+.gs-go{flex:none;height:30px;padding:0 11px;border-radius:8px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:rgba(255,255,255,.75);font:400 12.5px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}
+.gs-go:hover{background:rgba(255,255,255,.08);color:#fff}
+.gs-step.is-next .gs-go{background:#ff2d48;border-color:#ff2d48;color:#fff}
+@media (max-width:560px){.gs-go{display:none}}
+
+/* My files: same calm page style as Channels */
+#panel-files.content-glow::before{display:none}
+#panel-files{max-width:1120px;margin:0 auto;padding-top:18px}
+#panel-files .page-header{margin:6px 0 22px}
+#panel-files .page-header h2{margin:0;font:500 26px/1.2 "SF Pro Display",-apple-system,BlinkMacSystemFont,Inter,system-ui,sans-serif;letter-spacing:-.015em;text-transform:none;color:#f2f2f0}
+#panel-files .page-header p{margin:6px 0 0;font-size:13.5px;color:rgba(255,255,255,.45)}
+#panel-files #files-card{padding:0;border:0;background:transparent;box-shadow:none;outline:0}
+#panel-files #files-card::before,#panel-files #files-card::after{display:none}
+#panel-files .files-toolbar{margin-bottom:18px}
+#panel-files #files-filters{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+#panel-files #files-filters .fv-chip{height:30px;padding:0 13px;border:0;border-radius:8px;background:transparent;color:rgba(255,255,255,.55);font-size:12.5px;font-weight:400;box-shadow:none}
+#panel-files #files-filters .fv-chip:hover{color:#fff}
+#panel-files #files-filters .fv-chip.active{background:rgba(255,255,255,.12);color:#fff;font-weight:500}
+#panel-files .files-toolbar .btn{height:34px;padding:0 14px;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:rgba(255,255,255,.8);font-size:13px;font-weight:400;box-shadow:none}
+#panel-files .files-toolbar .btn:hover{background:rgba(255,255,255,.09);color:#fff}
+#panel-files .files-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+#panel-files .files-tile{padding:6px;border-radius:14px;background:#141416;border:1px solid rgba(255,255,255,.07);transition:border-color .15s}
+#panel-files .files-tile:hover{border-color:rgba(255,255,255,.16)}
+#panel-files .files-tile-media{border-radius:9px}
+#panel-files .files-tile-kind{left:8px;top:8px;padding:3px 8px;font-size:11px;font-weight:500;letter-spacing:0;text-transform:none;background:rgba(0,0,0,.6);color:rgba(255,255,255,.85);backdrop-filter:blur(6px)}
+#panel-files .files-tile-del{width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+#panel-files .files-tile-del svg{width:14px;height:14px}
+#panel-files .files-tile-del:hover{background:#ff2d48}
+#panel-files .files-tile-meta{padding:10px 6px 4px}
+#panel-files .files-tile-name{font-size:13px;font-weight:500;color:#ececea}
+#panel-files .files-tile-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px}
+#panel-files .files-empty{min-height:300px;gap:6px;border:1px dashed rgba(255,255,255,.1);border-radius:16px;background:transparent}
+#panel-files .files-empty-title{font-size:15px;font-weight:500;color:#ececea}
+#panel-files .files-empty-sub{font-size:13px;color:rgba(255,255,255,.45)}
+.files-empty-btn{margin-top:12px;height:34px;padding:0 16px;border:0;border-radius:9px;background:#ff2d48;color:#fff;font:500 13px inherit;font-family:inherit;cursor:pointer}
+.files-empty-btn:hover{background:#ff4560}
+/* File viewer */
+.files-lb{background:rgba(5,5,6,.86);backdrop-filter:blur(8px)}
+.files-lb-bar{display:flex;align-items:center;gap:10px}
+.files-lb-bar .btn,.files-lb-x{height:34px;border-radius:9px;font-size:13px;font-weight:400;box-shadow:none}
+.files-lb-bar .btn-primary{background:#ff2d48;border-color:#ff2d48}
+
+/* Plans & credits for members: a close button, the current plan marked */
+#paywall-modal .paywall-shell{position:relative}
+.paywall-x{position:absolute;top:16px;right:16px;z-index:3;display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:9px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);cursor:pointer}
+.paywall-x[hidden]{display:none}
+.paywall-x:hover{background:rgba(255,255,255,.1);color:#fff}
+.paywall-x svg{width:16px;height:16px}
+#paywall-modal.is-member .paywall-foot .btn-ghost{display:none}
+#paywall-modal .paywall-plan.is-current{border-color:rgba(255,255,255,.35)!important;box-shadow:0 0 0 1px rgba(255,255,255,.35)!important}
+#paywall-modal .paywall-plan.is-current [data-tier]{background:rgba(255,255,255,.06)!important;color:rgba(255,255,255,.7)!important;border-color:rgba(255,255,255,.12)!important;cursor:default;box-shadow:none!important}
+#paywall-modal.is-member .paywall-kicker{text-transform:none;letter-spacing:0;font-weight:400;font-size:13px}
+#paywall-modal.is-member .paywall-title{font-size:28px!important;font-weight:500!important;letter-spacing:-.015em}
+#paywall-modal.is-member .paywall-sub{font-size:13.5px;color:rgba(255,255,255,.5)}
+
+/* Agents sidebar collapsed: the nav logo shrinks to just the icon, smoothly */
+.topnav-logo .brand{max-width:200px;overflow:hidden;white-space:nowrap;transition:max-width .32s cubic-bezier(.32,.72,0,1),opacity .2s ease}
+.topnav-logo{transition:gap .32s cubic-bezier(.32,.72,0,1)}
+@media (min-width:861px){html:has(#panel-agents.active .ag-app.is-side-min:not(.is-ed)) .topnav-logo{gap:0}html:has(#panel-agents.active .ag-app.is-side-min:not(.is-ed)) .topnav-logo .brand{max-width:0;opacity:0}}
 </style>
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
@@ -4024,6 +4136,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <!-- PAYWALL (shown after onboarding + tour for unpaid accounts) -->
 <div class="modal-bg hidden" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
   <div class="paywall-shell" tabindex="-1">
+    <button type="button" class="paywall-x" id="paywall-x" hidden onclick="closePaywall()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <p class="paywall-kicker">Unlock TubeOps</p>
     <h2 class="paywall-title" id="paywall-title">Choose the plan for you.</h2>
     <p class="paywall-sub">Pick a plan to start making videos with your agents.</p>
@@ -4116,45 +4229,56 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 })()
 </script>
 
+<!-- GETTING STARTED -->
+<div class="modal-bg hidden" id="gs-modal" onclick="if(event.target===this)closeGettingStarted()">
+  <div class="modal gs" role="dialog" aria-modal="true" aria-labelledby="gs-title" tabindex="-1">
+    <div class="gs-head">
+      <div><h2 id="gs-title">Getting started</h2><p>Five steps from an idea to a video on YouTube.</p></div>
+      <button type="button" class="acct-x" onclick="closeGettingStarted()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="gs-bar"><i id="gs-bar-fill"></i></div>
+    <ol class="gs-steps" id="gs-steps"></ol>
+  </div>
+</div>
+
 <!-- ACCOUNT SETTINGS -->
 <div class="modal-bg hidden" id="settings-modal" onclick="if(event.target===this)closeAccountSettings()">
-  <div class="modal settings-shell" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
-    <div class="settings-head">
-      <h2 id="settings-title">Account</h2>
-      <button type="button" class="settings-close" onclick="closeAccountSettings()" aria-label="Close settings">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="settings-profile">
+  <div class="modal settings-shell acct" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+    <div class="acct-top">
       <span class="user-avatar" id="settings-avatar">?</span>
-      <div class="settings-profile-meta">
-        <div class="settings-name" id="settings-name">Your account</div>
-        <div class="settings-email" id="settings-email">—</div>
+      <div class="acct-who">
+        <h2 class="acct-name" id="settings-title"><span id="settings-name">Your account</span></h2>
+        <div class="acct-email" id="settings-email">—</div>
       </div>
-    </div>
-    <div class="settings-rows">
-      <div class="settings-row">
-        <span class="settings-row-label">This month</span>
-        <span class="settings-row-value" id="settings-credits">—</span>
-      </div>
-      <button type="button" class="settings-row-btn" id="settings-getting-started" aria-label="Open getting started tours">
-        <span class="settings-row-label">Getting started</span>
-        <span class="settings-row-value">Tours →</span>
-      </button>
-      <button type="button" class="settings-row-btn" id="settings-studio" data-archived hidden aria-label="Open Faceless Studio">
-        <span class="settings-row-label">Faceless Studio</span>
-        <span class="settings-row-value">Test →</span>
-      </button>
-      <button type="button" class="settings-row-btn" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open plans and credits">
-        <span class="settings-row-label">Plans &amp; credits</span>
-        <span class="settings-row-value" id="settings-plan-label">Plans →</span>
-      </button>
-      <button type="button" class="settings-row-btn" id="settings-yt-link" hidden style="display:none">
-        <span class="settings-row-label">My YouTube Channel</span>
-        <span class="settings-row-value" id="settings-yt-state">Connect →</span>
+      <button type="button" class="acct-x" onclick="closeAccountSettings()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
-    <button type="button" class="btn btn-secondary settings-signout" onclick="closeAccountSettings();doLogout()">Sign out</button>
+    <div class="acct-plan">
+      <div class="acct-plan-top">
+        <div><small>Plan</small><b id="acct-plan-name">—</b></div>
+        <button type="button" class="acct-link" onclick="closeAccountSettings();openPaywall({force:true})" id="settings-plan-label">Change plan</button>
+      </div>
+      <div class="acct-bar" aria-hidden="true"><i id="acct-bar-fill"></i></div>
+      <div class="acct-plan-foot"><span id="settings-credits">—</span><span id="acct-minutes"></span></div>
+    </div>
+    <div class="acct-list">
+      <button type="button" class="acct-row" id="settings-getting-started" aria-label="Open getting started">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>
+        <span>Getting started</span><svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button type="button" class="acct-row" onclick="closeAccountSettings();switchPanel('files', null)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>My files</span><svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button type="button" class="acct-row" id="settings-billing" onclick="closeAccountSettings();openPaywall({force:true})" aria-label="Open plans and credits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></svg>
+        <span>Plans &amp; credits</span><svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button type="button" class="acct-row" id="settings-studio" data-archived hidden aria-label="Open Faceless Studio"><span>Faceless Studio</span></button>
+      <button type="button" class="acct-row" id="settings-yt-link" hidden style="display:none"><span>My YouTube Channel</span><span id="settings-yt-state">Connect</span></button>
+    </div>
+    <button type="button" class="acct-out" onclick="closeAccountSettings();doLogout()">Sign out</button>
   </div>
 </div>
 
@@ -4287,7 +4411,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <button type="button" role="menuitem" id="nav-yt-mcp-btn" hidden style="display:none">My YouTube Channel</button>
         <button type="button" role="menuitem" id="user-studio-btn" data-archived hidden>Faceless Studio</button>
         <button type="button" role="menuitem" id="user-settings-btn" onclick="openAccountSettings()">Account settings</button>
-        <button type="button" role="menuitem" onclick="doLogout()">Sign out</button>
+        <button type="button" role="menuitem" id="user-signout-btn" onclick="doLogout()">Sign out</button>
       </div>
     </div>
   </div>
@@ -6027,7 +6151,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('files-input').click()">Upload</button>
           <input type="file" id="files-input" accept="video/*,audio/*,image/*" style="display:none" onchange="uploadFile(this)"/>
         </div>
-        <div class="files-grid" id="files-list"><div class="files-empty"><div class="files-empty-title">Loading library…</div></div></div>
+        <div class="files-grid" id="files-list" aria-live="polite"><div class="files-empty"><div class="files-empty-title">Loading library…</div></div></div>
       </div>
     </div>
     <div class="panel content-glow" id="panel-youtube">
@@ -6755,7 +6879,7 @@ import { initStudioHub } from '/lib/studio-hub.js'
 import { initBrandStudio } from '/lib/brand-studio.js'
 import { initChannelCreator } from '/lib/channel-creator.js'
 import { DEFAULT_IMAGE_MODEL, sceneImageModelFor } from '/lib/fal-image.js'
-import { estimateVideoCredits } from '/lib/studio-credits.js'
+import { estimateVideoCredits, creditCharge } from '/lib/studio-credits.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById, SCENE_ANIMATION_MODEL } from '/lib/fal-video.js'
 import { fillSceneGaps, planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE } from '/lib/visual-styles.js'
@@ -6858,6 +6982,8 @@ function enterUiPreview() {
   try { closeOnboarding() } catch (_) {}
   try { closeUiTour() } catch (_) {}
   populateUser()
+  // Not signed in: the menu's last item signs in instead of out.
+  try { const b = document.getElementById('user-signout-btn'); if (b) b.textContent = 'Sign in'; const o = document.querySelector('#settings-modal .acct-out'); if (o) o.textContent = 'Sign in' } catch (_) {}
   restorePanelFromHash()
   startPreviewTourEntry()
 }
@@ -7077,7 +7203,7 @@ function showAuthError(message) {
 
 function authRedirectTarget() {
   const path = normalizePath(location.pathname)
-  if (path === '/login' || path === '/signup') return location.origin + '/create'
+  if (path === '/login' || path === '/signup') return location.origin + '/agents'
   return location.origin + location.pathname + location.search
 }
 
@@ -7187,8 +7313,16 @@ window.doSignup = async () => {
   finally { setAuthCtaLoading(btn, false) }
 }
 
+/** Go to the sign-in page and come back to this page after. Preview mode (localhost) ends here. */
+window.vidsoOpenSignup = () => {
+  try {
+    clearUiPreviewFlag()
+  } catch (_) {}
+  location.href = '/login'
+}
 window.doLogout = async () => {
-  if (uiPreviewMode()) { enterUiPreview(); return }
+  // The Preview user (local, not signed in) has nothing to sign out of: this is the way in.
+  if (uiPreviewMode() || currentUser?.id === 'local-preview') { window.vidsoOpenSignup(); return }
   await api.auth.logout().catch(()=>{})
   obClearNeedFlag()
   // The Agents chat, its saved run and the video in progress belong to this account, not the next one.
@@ -7248,14 +7382,24 @@ window.openAccountSettings = () => {
   if (nameEl) nameEl.textContent = name || 'Your account'
   const emailEl = document.getElementById('settings-email')
   if (emailEl) emailEl.textContent = email
+  const q = quotaView(currentUser, lastUsage)
+  const active = hasActivePlan()
+  const planName = document.getElementById('acct-plan-name')
+  if (planName) planName.textContent = active ? String(q.longText || '').split(' · ')[0] || String(currentUser.plan || 'Plan').replace(/^./, (c) => c.toUpperCase()) : 'No plan yet'
   const creditsEl = document.getElementById('settings-credits')
-  if (creditsEl) creditsEl.textContent = quotaView(currentUser, lastUsage).longText
-  const planEl = document.getElementById('settings-plan-label')
-  if (planEl) {
-    planEl.textContent = hasActivePlan()
-      ? `${String(currentUser.plan || 'Plan')} · active →`
-      : 'Choose a plan →'
+  const minEl = document.getElementById('acct-minutes')
+  const fill = document.getElementById('acct-bar-fill')
+  if (q.credits != null && q.creditsMonthly) {
+    if (creditsEl) creditsEl.textContent = `${Number(q.credits).toLocaleString('en-US')} of ${Number(q.creditsMonthly).toLocaleString('en-US')} credits left`
+    if (minEl) minEl.textContent = `about ${q.minutes} min of video`
+    if (fill) fill.style.width = Math.max(0, Math.min(100, (q.credits / q.creditsMonthly) * 100)) + '%'
+  } else {
+    if (creditsEl) creditsEl.textContent = active ? q.longText : 'Pick a plan to start making videos'
+    if (minEl) minEl.textContent = ''
+    if (fill) fill.style.width = active ? '100%' : '0%'
   }
+  const planEl = document.getElementById('settings-plan-label')
+  if (planEl) planEl.textContent = active ? 'Change plan' : 'Choose a plan'
   modal.classList.remove('hidden')
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
@@ -9074,9 +9218,44 @@ window.__paywallPricing = mountPricing(document.getElementById('paywall-plans'),
 })
 
 window.refreshPlanStatus = () => watchForPurchase({ timeoutMs: 45000 })
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return
+  const m = document.getElementById('paywall-modal')
+  if (m && !m.classList.contains('hidden') && m.classList.contains('is-member')) closePaywall()
+})
+document.getElementById('paywall-modal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'paywall-modal' && e.currentTarget.classList.contains('is-member')) closePaywall()
+})
 
+/** Someone already on a plan sees "Plans & credits": their plan marked, what's left, and a close button. */
+function paywallForMember() {
+  const modal = document.getElementById('paywall-modal')
+  if (!modal) return
+  const member = !!currentUser && hasActivePlan()
+  const q = member ? quotaView(currentUser, lastUsage) : null
+  const tier = member ? String(q?.tier || currentUser.plan || '').toLowerCase() : ''
+  const name = member ? (String(q?.longText || '').split(' · ')[0] || tier.replace(/^./, (c) => c.toUpperCase())) : ''
+  const set = (sel, text) => { const el = modal.querySelector(sel); if (el) el.textContent = text }
+  set('.paywall-kicker', member ? 'Plans & credits' : 'Unlock TubeOps')
+  set('.paywall-title', member ? `You're on ${name}` : 'Choose the plan for you.')
+  set('.paywall-sub', member
+    ? (q?.credits != null ? `${Number(q.credits).toLocaleString('en-US')} credits left this month, about ${q.minutes} min of video. Switch plans any time.` : 'Switch plans any time.')
+    : 'Pick a plan to start making videos with your agents.')
+  modal.classList.toggle('is-member', member)
+  const x = document.getElementById('paywall-x'); if (x) x.hidden = !member
+  modal.querySelectorAll('.paywall-plan').forEach((card) => {
+    const on = member && card.getAttribute('data-plan') === tier
+    card.classList.toggle('is-current', on)
+    const btn = card.querySelector('[data-tier]')
+    if (!btn) return
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent
+    btn.textContent = on ? 'Current plan' : btn.dataset.label
+    btn.disabled = on
+  })
+}
 window.openPaywall = (opts = {}) => {
-  if (!paywallOn()) { closePaywall(); return }
+  // Plans & credits opened on purpose always shows the plans, even where the paywall gate is off (localhost).
+  if (!paywallOn() && !opts.force) { closePaywall(); return }
   if (_paywallOpening) return
   if (!opts.force && hasActivePlan()) { closePaywall(); return }
   if (introPending()) return
@@ -9092,6 +9271,7 @@ window.openPaywall = (opts = {}) => {
   document.body.classList.add('paywalled')
   document.documentElement.classList.add('needs-paywall')
   document.documentElement.classList.remove('needs-gate')
+  paywallForMember()
   modal.querySelector('.paywall-shell')?.focus?.()
   _paywallOpening = false
   trackViewContent('Paywall')
@@ -9219,7 +9399,7 @@ function populateUser() {
 
 // ── PANELS + clean URL routes (TubeOps-style) ───────────────────────────────
 const DEFAULT_PANEL = 'create'
-const DEFAULT_PATH = '/create'
+const DEFAULT_PATH = '/agents'
 const HOME_PATHS = new Set(['/', '/overview', '/analytics', '/upscale'])
 const titles = {
   home:'Agents', agents:'Agents', manual:'Studio', edit:'Editor', brand:'Channels', create:'Create your channel', dashboard:'Dashboard', clipper:'Clipping', ranking:'Ranking', imagegen:'Thumbnail Generator',
@@ -9811,6 +9991,8 @@ async function fvApplyAiScenes(job) {
     edits: 0,
     scenes: scenes.map((sc) => ({ i: sc.i, start: sc.start, end: sc.end, text: sc.text, prompt: prompts[sc.i] || sc.text, image: images[sc.i] || '', clip: clips[sc.i] || '' })),
   }
+  // A clip the user attached in chat plays as the opening scene.
+  if (fvState.openingClip && fvState.sceneProject.scenes[0]) { fvState.sceneProject.scenes[0].clip = fvState.openingClip; fvState.sceneProject.scenes[0].own = true }
   say('Joining the scenes')
   fvQueueSaveEditProject()
   const timeline = await fvTimelineFromScenes(fvState.sceneProject)
@@ -10168,6 +10350,7 @@ window.fvClearScript = (opts = {}) => {
   fvState.renderJobId = null
   fvState.renderPoll = null
   fvState.renderUrl = null
+  fvState.renderSaved = ""
   fvState.phase = 1
   fvState.allowShortScript = false
   fvState.allowShortRender = false
@@ -10330,8 +10513,8 @@ function fvCrewScriptDone(words, short) {
     ? 'Script came in a little short; carrying on with it'
     : 'Handing the script to Voice, Agent and Thumbnail')
   fvCrewEmit()
-  fvThumbAgent()
-  fvPublishAgent()
+  if (fvToolOn('thumbnail')) fvThumbAgent()
+  if (fvToolOn('publish')) fvPublishAgent()
   setTimeout(() => {
     if (!fvState.autoChain) return
     try { window.fvContinueToMedia(!!short) } catch (_) {}
@@ -10347,7 +10530,7 @@ function fvCrewMediaStart() {
   fvState.crew = { stage: 'media', p: 0 }
   fvState.logOn = true
   fvCrewSet('voice', 'working', 'Recording the narration')
-  if (!fvState.thumb?.url && !fvState.thumbBusy && fvState.script) setTimeout(() => { fvThumbAgent() }, 0)
+  if (fvToolOn('thumbnail') && !fvState.thumb?.url && !fvState.thumbBusy && fvState.script) setTimeout(() => { fvThumbAgent() }, 0)
   fvCrewSet('agent', 'working', 'Matching B-roll to each line')
   fvCrewSet('editor', 'idle', fvCrewEl('editor')?.dataset.idle || '')
   fvCrewSet('manager', 'working', 'Voice and Agent are building the media')
@@ -10509,19 +10692,33 @@ async function fvThumbAgent(opts = {}) {
   fvState.thumbBusy = true
   const topic = document.getElementById('fv-topic')?.value || script.topic || ''
   const title = script.title || topic
+  const refs = (Array.isArray(opts.refs) ? opts.refs : []).filter((u) => /^https?:/.test(String(u || ''))).slice(0, 3)
+  // A change to the thumbnail we already have edits that image (same style, same layout);
+  // only "another style" or a first thumbnail designs a new one.
+  const current = fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? fvState.thumb : null
+  const edit = !!(opts.edit && current && note)
   const ranked = pickThumbnailStyles(title + ' ' + topic)
-  if (opts.next) fvState.thumbTurn = (Number(fvState.thumbTurn) || 0) + 1
-  const styleId = ranked[(Number(fvState.thumbTurn) || 0) % ranked.length]
+  if (opts.next && !edit) fvState.thumbTurn = (Number(fvState.thumbTurn) || 0) + 1
+  const styleId = edit ? (current.styleId || ranked[0]) : ranked[(Number(fvState.thumbTurn) || 0) % ranked.length]
   const style = thumbnailStyleById(styleId)
-  const name = style?.name || 'Thumbnail'
+  const name = edit ? (current.style || style?.name || 'Thumbnail') : (style?.name || 'Thumbnail')
   const was = fvState.logOn
   fvState.logOn = true
   fvState.thumb = { ...(fvState.thumb?.url ? { prev: fvState.thumb.url } : {}), busy: true, style: name }
-  fvCrewSet('thumbnail', 'working', 'Designing ' + (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name + ' thumbnail for “' + title.slice(0, 60) + '”')
+  fvCrewSet('thumbnail', 'working', edit
+    ? 'Editing the thumbnail: ' + note.slice(0, 80)
+    : 'Designing ' + (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name + ' thumbnail for “' + title.slice(0, 60) + '”')
   fvPaintDelivery()
   try {
-    const prompt = buildStylePrompt({ styleId, title, topic, hook: openingOf(script, 1) }) + (note ? '\nExtra direction from the creator: ' + note : '')
-    const rec = await fvGenerateThumbImage({ prompt, model: 'nano-banana-pro', aspect: '16:9' })
+    const prompt = edit
+      ? 'Edit this YouTube thumbnail (the first image). Change only this: ' + note +
+        '\nKeep everything else exactly as it is: the same layout, art style, characters, colours and every other piece of text. 16:9.' +
+        (refs.length ? '\nUse the other attached image' + (refs.length > 1 ? 's' : '') + ' as reference for the change.' : '')
+      : buildStylePrompt({ styleId, title, topic, hook: openingOf(script, 1) }) +
+        (note ? '\nExtra direction from the creator: ' + note : '') +
+        (refs.length ? '\nUse the attached image' + (refs.length > 1 ? 's' : '') + ' as a visual reference.' : '')
+    const image_urls = edit ? [current.url, ...refs] : refs
+    const rec = await fvGenerateThumbImage({ prompt, model: 'nano-banana-pro', aspect: '16:9', image_urls })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
     fvState.thumb = { url, styleId, style: name, title }
@@ -10642,7 +10839,7 @@ function fvSaveEditProject() {
     title: s.title || document.getElementById('fv-topic')?.value || 'Untitled video',
     thumb: fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? fvState.thumb.url : (p.scenes[0]?.image || ''),
     thumbnail: fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? { ...fvState.thumb } : null,
-    renderUrl: /^https?:/.test(String(fvState.renderUrl || '')) ? fvState.renderUrl : '',
+    renderUrl: /^https?:/.test(String(fvState.renderUrl || '')) ? fvState.renderUrl : (/^https?:/.test(String(fvState.renderSaved || '')) ? fvState.renderSaved : ''),
     aspect: fvState.aspect || p.aspect || '16:9',
     voiceId: fvState.voiceId || '',
     preview: { musicId: fvState.preview?.musicId || 'none', musicVol: fvState.preview?.musicVol ?? 0.25 },
@@ -10735,6 +10932,8 @@ function fvLocalAgentsState() {
   return {
     crew,
     log: Array.isArray(fvState.agentLog) ? fvState.agentLog.slice() : [],
+    editId: fvState.editProjectId || '',
+    renderSaved: fvState.renderSaved || '',
     running: !!(fvState.crew && fvState.crew.stage !== 'done' && Object.values(crew).some((c) => c.state === 'working')),
     busyScript: !!fvState.scriptBusy,
     topic: document.getElementById('fv-topic')?.value || '',
@@ -10912,7 +11111,25 @@ window.fvTitleSteer = async (note) => {
     fvState.logOn = was || fvState.logOn
   }
 }
-window.fvThumbSteer = (note) => fvThumbAgent({ next: true, note })
+window.fvThumbSteer = (note, refs = []) => {
+  const n = String(note || '')
+  const fresh = /\b(new|another|different|other)\s+(style|thumbnail|design|one|look)\b|\bstart over\b|\bfrom scratch\b/i.test(n)
+  return fvThumbAgent({ next: true, note: n, refs, edit: !fresh })
+}
+/** An image pasted or dropped into a chat box: upload it and return its public link. */
+window.fvUploadChatImage = async (file) => {
+  const video = /^video\//.test(file?.type || '')
+  if (!file || !(/^image\//.test(file.type || '') || video)) throw new Error('Only images and videos can be added here.')
+  if (file.size > (video ? 300 : 15) * 1024 * 1024) throw new Error(video ? 'That video is over 300 MB.' : 'That image is over 15 MB.')
+  if (!getToken()) throw new Error('Sign in to add images.')
+  const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg').replace('quicktime', 'mov').replace(/[^a-z0-9]/g, '')
+  const fd = new FormData()
+  fd.append('file', new File([file], (file.name && file.name !== 'image.png' ? file.name : 'pasted-' + Date.now() + '.' + ext), { type: file.type }))
+  const up = await api.upload.file(fd)
+  const url = up?.url || up?.file?.url || up?.storage_url
+  if (!url) throw new Error('The image did not upload. Try again.')
+  return url
+}
 // Caption looks the Manager can apply from chat, then re-render through the Editor.
 const FV_CAPTION_LOOKS = {
   bold: { name: 'Bold yellow', font: 'Arial Black', size: 64, color: '#ffffff', hl: '#ffd400', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
@@ -11153,6 +11370,51 @@ window.fvEnsureChannelBanner = (id) => {
   return job
 }
 window.fvBannerBusy = (id) => fvBannerPending.has(id)
+/** Tools the user can switch on and off from the + menu in Agents (kept per browser). */
+const FV_TOOLS = [
+  { id: 'thumbnail', name: 'Thumbnail', on: true },
+  { id: 'captions', name: 'Captions', on: true },
+  { id: 'music', name: 'Background music', on: false },
+  { id: 'publish', name: 'Description & tags', on: true },
+]
+function fvToolState() { try { return JSON.parse(localStorage.getItem('tubeops_tools') || '{}') || {} } catch (_) { return {} } }
+function fvToolOn(id) { const v = fvToolState()[id]; return typeof v === 'boolean' ? v : !!FV_TOOLS.find((t) => t.id === id)?.on }
+window.fvTools = () => {
+  let thumbCr = 0
+  try { thumbCr = creditCharge({ kind: 'image', model: 'nano-banana-pro', resolution: '2K', aspect: '16:9' }) } catch (_) {}
+  const cost = { thumbnail: thumbCr ? `${thumbCr} credits each` : 'Uses credits', captions: 'Free', music: 'Free', publish: 'Free' }
+  const note = { thumbnail: 'A click-worthy thumbnail for every video', captions: 'Words on screen as the narrator speaks', music: 'A soft track under the narration', publish: 'YouTube description, tags and chapters' }
+  return FV_TOOLS.map((t) => ({ id: t.id, name: t.name, on: fvToolOn(t.id), cost: cost[t.id], note: note[t.id] }))
+}
+window.fvSetTool = (id, on) => {
+  if (!FV_TOOLS.some((t) => t.id === id)) return
+  const st = fvToolState(); st[id] = !!on
+  try { localStorage.setItem('tubeops_tools', JSON.stringify(st)) } catch (_) {}
+  if (id === 'music' && fvState.preview) fvState.preview.musicId = on ? (fvState.preview.musicId && fvState.preview.musicId !== 'none' ? fvState.preview.musicId : 'cinematic') : 'none'
+  fvAgentsChanged()
+}
+/** Your newest images and videos from My Files, for the + menu. */
+window.fvRecentFiles = async () => {
+  if (!getToken()) return []
+  const raw = await api.upload.list()
+  const all = Array.isArray(raw) ? raw : (raw?.files || [])
+  return sortFilesNewest(all.filter((f) => !isHistorySidecarName(f.original_name || f.name)))
+    .map((f) => ({ url: f.url || f.storage_url, name: f.original_name || f.name || 'File', kind: fileKind(f) }))
+    .filter((f) => f.url && (f.kind === 'image' || f.kind === 'video'))
+    .slice(0, 12)
+}
+/** A clip attached in chat plays as the opening scene: now if the scenes exist, or when they are drawn. */
+window.fvSetOpeningClip = async (url) => {
+  fvState.openingClip = String(url || '')
+  const sc = fvState.sceneProject?.scenes?.[0]
+  if (!sc || !url) return ''
+  sc.clip = url
+  sc.own = true
+  fvState.sceneProject.edits++
+  fvQueueSaveEditProject()
+  fvAgentsChanged()
+  return fvState.renderUrl ? (await window.fvRenderSceneEdits()) || '' : ''
+}
 /** Rewrite one part of the script with AI. how: 'redo' | 'shorter' | 'longer' | 'punchier'; note: the user's own words. Returns '' or an error. */
 window.fvStudioRewriteSection = async (i, how = 'redo', note = '') => {
   const script = fvState.script
@@ -13480,6 +13742,66 @@ function fvSetExportStatus(msg, kind) {
   if (kind === 'loading') fvCrewRender(msg)
 }
 
+/** Seconds of an audio file, from its metadata (0 when it can't be read). */
+function fvAudioSeconds(url) {
+  return new Promise((resolve) => {
+    try {
+      const a = new Audio()
+      a.preload = 'metadata'
+      const done = (v) => { a.onloadedmetadata = a.onerror = null; resolve(Number.isFinite(v) ? v : 0) }
+      a.onloadedmetadata = () => done(a.duration)
+      a.onerror = () => done(0)
+      setTimeout(() => done(0), 15000)
+      a.src = url
+    } catch (_) { resolve(0) }
+  })
+}
+/**
+ * Captions are drawn from the narration's word timings. When the voice job came back without them
+ * (or with only a few), transcribe the narration first so the render still has captions.
+ * Never blocks the render: on any failure the video renders as before.
+ */
+async function fvEnsureCaptionWords() {
+  const m = fvState.media
+  if (!m) return
+  const have = (m.words || []).filter((w) => String(w.word || w.text || '').trim()).length
+  const s = fvState.script || {}
+  const scriptWords = countSpokenWords(s.full_script || (s.sections || []).map((x) => x.text).join(' '))
+  if (have >= Math.max(5, Math.round(scriptWords * 0.3))) return
+  const parts = voiceoverPlaylist(m)
+  if (!parts.length) return
+  fvLengthTrace('caption-words-missing', { have, scriptWords, parts: parts.length })
+  const words = []
+  let offset = 0
+  for (let k = 0; k < parts.length; k++) {
+    fvSetExportStatus(parts.length > 1 ? `Timing the captions (${k + 1} of ${parts.length})…` : 'Timing the captions…', 'loading')
+    const start = await api.transcribe.start(parts[k])
+    const jobId = start?.job_id || start?.jobId || start?.id
+    if (!jobId) throw new Error('Transcription did not start')
+    let result = null
+    for (let i = 0; i < 120 && !result; i++) {
+      await new Promise((r) => setTimeout(r, 3000))
+      const p = await api.transcribe.poll(jobId)
+      if (p?.status === 'completed') result = p
+      else if (p?.status === 'error') throw new Error('Transcription failed')
+    }
+    if (!result) throw new Error('Transcription timed out')
+    const list = (result.words || []).filter((w) => String(w.text || w.word || '').trim())
+    const maxEnd = Math.max(0, ...list.map((w) => Number(w.end) || 0))
+    const div = maxEnd > 3600 ? 1000 : 1 // milliseconds or seconds
+    for (const w of list) {
+      words.push({ word: String(w.text || w.word).trim(), start: (Number(w.start) || 0) / div + offset, end: (Number(w.end) || 0) / div + offset })
+    }
+    const partSeconds = parts.length === 1 ? (Number(m.duration) || maxEnd / div) : ((await fvAudioSeconds(parts[k])) || maxEnd / div)
+    offset += partSeconds
+  }
+  if (words.length > have) {
+    fvState.media = { ...m, words }
+    try { sessionStorage.setItem('vidso_faceless_media', JSON.stringify(fvState.media)) } catch (_) {}
+    fvLengthTrace('caption-words-filled', { words: words.length })
+  }
+}
+
 window.fvStartExport = async (opts = {}) => {
   if (opts === true) opts = { again: true }
   if (!voiceoverPlaylist(fvState.media).length) return fvSetExportStatus('Missing voiceover', 'err')
@@ -13535,13 +13857,18 @@ window.fvStartExport = async (opts = {}) => {
   fvSetYoutubeStatus('')
   fvState.ytVideoId = null
 
-  const musicTrack = FV_MUSIC.find(m => m.id === (fvState.preview?.musicId || 'none'))
+  // The Music tool picks a track when none was chosen; switched off, the video has no music.
+  if (fvToolOn('music') && (!fvState.preview?.musicId || fvState.preview.musicId === 'none')) { fvState.preview = fvState.preview || {}; fvState.preview.musicId = 'cinematic' }
+  const musicTrack = fvToolOn('music') ? FV_MUSIC.find(m => m.id === (fvState.preview?.musicId || 'none')) : null
   const caption = fvCapStyle()
 
   try {
     fvSetExportStatus('Preparing voiceover…', 'loading')
     try { await ensureFreshToken() } catch (_) {}
     const voiceoverUrl = await fvEnsurePublicVoiceoverUrl()
+    if (fvToolOn('captions')) try { await fvEnsureCaptionWords() } catch (e) {
+      try { console.warn('[render] could not time the captions:', e?.message || e) } catch (_) {}
+    }
     const voParts = voiceoverPlaylist(fvState.media)
     const { jobId } = await api.faceless.startRender({
       voiceover_url: voiceoverUrl,
@@ -13549,7 +13876,7 @@ window.fvStartExport = async (opts = {}) => {
       duration: fvState.media.duration,
       duration_id: picked.id,
       duration_seconds: picked.seconds,
-      words: fvState.media.words || [],
+      words: fvToolOn('captions') ? (fvState.media.words || []) : [],
       timeline: fvTimelineForRender(fvState.media.timeline || []),
       aspect: fvState.media.aspect || fvState.aspect,
       caption: {
@@ -13643,6 +13970,7 @@ function fvPollRenderJob(jobId, picked, btn) {
         fvCrewRenderDone()
         if (fvState.renderUrl && String(fvState.renderUrl).startsWith('blob:')) URL.revokeObjectURL(fvState.renderUrl)
         fvState.renderUrl = url
+        fvState.renderSaved = ""
         const vid = document.getElementById('fv-export-video')
         vid.src = url
         vid.onloadedmetadata = () => {
@@ -14546,10 +14874,11 @@ function renderFilesGallery() {
   if (!items.length) {
     const empty = filesCache.length
       ? 'Nothing in this filter yet.'
-      : 'Generate a Long Form video or a thumbnail and it will land here.'
+      : 'Make a video in Agents or Studio and it lands here, with its thumbnail and narration.'
     list.innerHTML = `<div class="files-empty">
-      <div class="files-empty-title">${filesCache.length ? 'No matches' : 'Your gallery is empty'}</div>
+      <div class="files-empty-title">${filesCache.length ? 'Nothing here yet' : 'No files yet'}</div>
       <div class="files-empty-sub">${empty}</div>
+      ${filesCache.length ? '' : `<button type="button" class="files-empty-btn" onclick="switchPanel('agents', document.getElementById('nav-agents'))">Make a video</button>`}
     </div>`
     return
   }
@@ -14561,7 +14890,7 @@ function renderFilesGallery() {
     const id = fvEsc(f.id || '')
     return `<div class="files-tile" data-file-id="${id}">
       <button type="button" class="files-tile-hit" onclick="openFilesLightbox('${id}')" aria-label="${fvEsc(f.original_name || 'Open file')}"></button>
-      <button type="button" class="files-tile-del" aria-label="Delete" onclick="delFile('${id}',this)">✕</button>
+      <button type="button" class="files-tile-del" aria-label="Delete" title="Delete" onclick="delFile('${id}',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
       <div class="files-tile-media">
         <span class="files-tile-kind">${fvEsc(label)}</span>
         ${filesTileMedia(f)}
@@ -14707,7 +15036,10 @@ async function loadFiles() {
     filesCache = []
     renderDashRecent([])
     const list = document.getElementById('files-list')
-    if (list) list.innerHTML = `<div class="files-empty"><div class="files-empty-title">Could not load files</div><div class="files-empty-sub">${fvEsc(e.message || '')}</div></div>`
+    const signedOut = !getToken() || /missing token|unauthori[sz]ed|401/i.test(String(e?.message || ''))
+    if (list) list.innerHTML = signedOut
+      ? `<div class="files-empty"><div class="files-empty-title">Sign in to see your files</div><div class="files-empty-sub">Every video, thumbnail and narration you make is kept here.</div><button type="button" class="files-empty-btn" onclick="vidsoOpenSignup()">Sign in</button></div>`
+      : `<div class="files-empty"><div class="files-empty-title">Could not load your files</div><div class="files-empty-sub">${fvEsc(e.message || 'Try again in a moment.')}</div><button type="button" class="files-empty-btn" onclick="loadFiles()">Try again</button></div>`
   }
 }
 
@@ -14753,7 +15085,11 @@ async function fvSaveRenderToLibrary(blobUrl, title) {
     fd.append('file', file)
     const rec = await api.upload.file(fd)
     const saved = rec?.url || rec?.file?.url || rec?.storage_url || rec?.file_url || ''
-    if (saved) fvRememberVideo({ url: saved, title: title || '' })
+    if (saved) {
+      fvRememberVideo({ url: saved, title: title || '' })
+      // The tab keeps playing its own copy; the saved link is what chats and the Editor project remember.
+      if (fvState.renderUrl === blobUrl) { fvState.renderSaved = saved; fvQueueSaveEditProject(); fvAgentsChanged() }
+    }
     loadFiles()
     fvSetExportStatus('Render complete · saved to My Files', 'ok')
   } catch (_) {}
@@ -14796,13 +15132,52 @@ function setStatus(id, msg, type) {
   }
 }
 
+const GS_STEPS = [
+  { id: 'channel', name: 'Set up a channel', note: 'Pick a niche, an art style and a narrator. Every video follows it.', go: 'brand', cta: 'Open Channels' },
+  { id: 'video', name: 'Make your first video', note: 'Type a topic in Agents. The team writes, voices, draws and edits it.', go: 'agents', cta: 'Open Agents' },
+  { id: 'studio', name: 'Go step by step in Studio', note: 'Write or upload the script, pick the settings, then make the video.', go: 'manual', cta: 'Open Studio' },
+  { id: 'edit', name: 'Polish it in the Editor', note: 'Redraw or animate any scene, change captions and music, then render.', go: 'edit', cta: 'Open Editor' },
+  { id: 'publish', name: 'Upload to YouTube', note: 'Download the video, or upload it straight from the finished video card.', go: 'files', cta: 'Open My files' },
+]
+function gsDone() {
+  const done = new Set()
+  try { if ((window.agentsChat?.profiles?.list() || []).length) done.add('channel') } catch (_) {}
+  try {
+    const vids = (typeof filesCache !== 'undefined' ? filesCache : []).filter((f) => /\.(mp4|mov|webm)$/i.test(f.original_name || f.name || '') || String(f.mime || f.type || '').startsWith('video/'))
+    if (vids.length || window.fvAgentsState?.()?.renderUrl) { done.add('video'); done.add('studio') }
+  } catch (_) {}
+  return done
+}
+window.openGettingStarted = () => {
+  const modal = document.getElementById('gs-modal')
+  const list = document.getElementById('gs-steps')
+  if (!modal || !list) return
+  const done = gsDone()
+  const next = GS_STEPS.find((x) => !done.has(x.id))
+  list.innerHTML = GS_STEPS.map((x, i) => `<li class="gs-step${done.has(x.id) ? ' is-done' : ''}${next === x ? ' is-next' : ''}">
+      <span class="gs-num">${done.has(x.id) ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : i + 1}</span>
+      <span class="gs-txt"><b>${x.name}</b><small>${x.note}</small></span>
+      <button type="button" class="gs-go" data-gs-go="${x.go}">${x.cta}</button>
+    </li>`).join('')
+  const fill = document.getElementById('gs-bar-fill')
+  if (fill) fill.style.width = (done.size / GS_STEPS.length) * 100 + '%'
+  list.querySelectorAll('[data-gs-go]').forEach((b) => b.addEventListener('click', () => {
+    closeGettingStarted()
+    try { switchPanel(b.dataset.gsGo, document.getElementById('nav-' + b.dataset.gsGo)) } catch (_) {}
+  }))
+  modal.classList.remove('hidden')
+  modal.querySelector('.gs')?.focus?.()
+}
+window.closeGettingStarted = () => document.getElementById('gs-modal')?.classList.add('hidden')
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') try { closeGettingStarted() } catch (_) {} })
+
 function bindGettingStarted() {
   const launch = (e) => {
     e.preventDefault()
     e.stopPropagation()
     try { closeAccountSettings() } catch (_) {}
     try { document.getElementById('nav-avatar-wrap')?.classList.remove('is-open') } catch (_) {}
-    openTourMenu()
+    openGettingStarted()
   }
   document.getElementById('user-getting-started-btn')?.addEventListener('click', launch)
   document.getElementById('settings-getting-started')?.addEventListener('click', launch)
