@@ -79,12 +79,13 @@
       }
     }
   };
+  // Served from this site (/avatars): the old R2 copies no longer exist.
   global.VIDSO_TRUSTED_CREATOR_FILES = [
-    'trustedcreators1.png',
-    'trustedcreators2.png',
-    'trustedcreators3.png',
-    'trustedcreators4.png',
-    'trustedcreators5.png'
+    '/avatars/small/sarah-m.jpg',
+    '/avatars/small/emma-l.jpg',
+    '/avatars/small/maya-k.jpg',
+    '/avatars/small/jessica-r.jpg',
+    '/avatars/small/chloe-p.jpg'
   ];
 
   /** Apply R2 logo URL to every <img data-vidso-logo> currently in the DOM. */

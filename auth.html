@@ -159,7 +159,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <body>
 <div class="auth-page" id="auth-card" role="dialog" aria-labelledby="auth-title">
 <section class="auth-left">
-  <a class="auth-home" href="/home" id="auth-home">← Home</a>
+  <a class="auth-home" href="/" id="auth-home">← Home</a>
   <div class="auth-panel" id="auth-panel">
     <div class="auth-brand">
       <img data-vidso-logo width="44" height="44" alt="TubeOps" decoding="async" style="object-fit:contain">
@@ -320,7 +320,7 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
     try { tab.opener = null } catch (_) {}
     tab.location.href = url
     setTimeout(() => {
-      setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)
+      setPaywallStatus('Pay in the Whop tab. This page unlocks TubeOps as soon as Whop confirms it.', null)
       watchForPurchase(tier)
     }, 600)
   },

@@ -78,6 +78,8 @@
       img.alt = '';
       img.decoding = 'async';
       img.setAttribute('aria-hidden', 'true');
+      // The pattern file is optional: if it is missing, drop the layer instead of showing a broken image.
+      img.onerror = function () { try { img.remove(); } catch (e) {} };
       img.src = R2_SRC;
       el.appendChild(img);
     } else if (img.src.indexOf('topo-bg.svg') === -1) {

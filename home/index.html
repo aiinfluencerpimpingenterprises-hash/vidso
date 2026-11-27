@@ -1221,6 +1221,8 @@
   .ft .fcol h4{font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,245,244,.4);margin:0 0 18px}
   .ft .fcol a{display:block;width:fit-content;font-size:14.5px;color:rgba(245,245,244,.78);margin-bottom:13px;cursor:pointer;transition:color .2s}
   .ft .fcol a:hover{color:#fff}
+  /* Phones: links tall enough to tap (about 40px each) without changing how they look. */
+  @media (max-width:640px){.ft .fcol a{padding:9px 0;margin-bottom:2px}.vlink{padding:10px 0}.ft [data-vidso-support]{display:inline-block;padding:9px 0}}
   .ft-word{margin:72px 0 0;text-align:center;font-family:'Lora',Georgia,serif;font-weight:500;font-size:clamp(88px,19vw,300px);line-height:.78;letter-spacing:-.045em;white-space:nowrap;background:linear-gradient(180deg,rgba(245,245,244,.16) 0%,rgba(245,245,244,.02) 88%);-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;pointer-events:none}
   .ft-bottom{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(245,245,244,.45)}
   .ft-yt{display:inline-flex;align-items:center;gap:8px}
@@ -1820,11 +1822,16 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
           'Trusted creator portrait 5'
         ];
         var stack = document.getElementById('trustedAvatars');
-        if (!stack || !R2_BASE) return;
+        if (!stack) return;
         var html = '';
         for (var i = 0; i < TRUSTED_CREATOR_FILES.length; i++) {
+          var f = TRUSTED_CREATOR_FILES[i];
+          // Site paths (/avatars/...) load as they are; bare names come from the media bucket.
+          var src = f.charAt(0) === '/' ? f : (R2_BASE ? R2_BASE + '/' + f : '');
+          if (!src) continue;
           html += '<img class="av"'
-            + ' src="' + R2_BASE + '/' + TRUSTED_CREATOR_FILES[i] + '"'
+            + ' src="' + src + '"'
+            + ' onerror="this.remove()"'
             + ' width="34" height="34"'
             + ' alt="' + TRUSTED_CREATOR_ALTS[i] + '"'
             + ' loading="eager" fetchpriority="high" decoding="async"'
@@ -2948,6 +2955,8 @@ if (window.gsap) {
   try { signedIn = !!(localStorage.getItem('clipzo_token') || localStorage.getItem('clipzo_refresh')) } catch (e) {}
   if (!signedIn) signedIn = /(?:^|;\s*)clipzo_(?:token|refresh)=/.test(document.cookie)
   function sync(){ next.disabled = about.value.trim().length < 3 }
+  // Text the agent (or Tab) put in the box, not the visitor: a new category replaces it.
+  var autoFill = ''
   about.addEventListener('input', sync)
   about.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit() } })
   open.addEventListener('click', function(){ row.hidden = !row.hidden; open.classList.toggle('is-on', !row.hidden); if (!row.hidden) ref.focus() })
@@ -2965,6 +2974,7 @@ if (window.gsap) {
     var cat = btn.getAttribute('data-cat')
     cats.forEach(function(b){ var on = b === btn; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', on ? 'true' : 'false') })
     bgVids.forEach(function(v){ var on = v.getAttribute('data-cat') === cat; v.classList.toggle('is-on', on); if (on) { try { v.currentTime = 0 } catch (e) {} playIf(v) } else if (v.pause) v.pause() })
+    if (about.value && about.value === autoFill) { about.value = ''; autoFill = ''; sync() }
     if (!about.value) typePh(btn.getAttribute('data-idea'))
   }
   cats.forEach(function(b){ b.addEventListener('click', function(){ pick(b); about.focus() }) })
@@ -3001,11 +3011,11 @@ if (window.gsap) {
     autoT = setTimeout(function(){
       about.value = ''
       var i = 0
-      ;(function step(){ about.value = text.slice(0, ++i); if (i < text.length) setTimeout(step, 16); else { sync(); auto.classList.remove('is-busy'); auto.querySelector('span').textContent = 'Let agent choose'; about.focus() } })()
+      ;(function step(){ about.value = text.slice(0, ++i); if (i < text.length) setTimeout(step, 16); else { autoFill = text; sync(); auto.classList.remove('is-busy'); auto.querySelector('span').textContent = 'Let agent choose'; about.focus() } })()
     }, 650)
   })
   // Tab in an empty box takes the example on screen.
-  about.addEventListener('keydown', function(e){ if (e.key === 'Tab' && !e.shiftKey && !about.value && about.placeholder) { e.preventDefault(); about.value = about.placeholder; sync() } })
+  about.addEventListener('keydown', function(e){ if (e.key === 'Tab' && !e.shiftKey && !about.value && about.placeholder) { e.preventDefault(); about.value = about.placeholder; autoFill = about.value; sync() } })
   form.addEventListener('submit', function(e){
     e.preventDefault()
     var text = about.value.trim(); if (text.length < 3) return
@@ -3115,7 +3125,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault()
   err.textContent = ''
   const addr = email.value.trim()
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) { err.textContent = 'Enter your email address.'; email.focus(); return }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) { err.textContent = addr ? 'Enter a valid email address.' : 'Enter your email address.'; email.focus(); return }
   if (pass.hidden) { pass.hidden = false; go.textContent = 'Create account'; pass.focus(); return }
   if (pass.value.length < 6) { err.textContent = 'Use at least 6 characters for the password.'; pass.focus(); return }
   go.disabled = true; go.textContent = 'One moment…'

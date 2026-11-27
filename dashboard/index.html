@@ -59,8 +59,10 @@
       refreshTok = ''
     }
     var q = location.search || ''
-    var on = /(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview'
-    var off = /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
+    // Preview mode (the app without signing in) is for local and Vercel preview builds only, never the live site.
+    var devHost = /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|.+\.vercel\.app)$/.test(location.hostname)
+    var on = devHost && (/(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview')
+    var off = !devHost || /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
     if (off) localStorage.removeItem('vidso_ui_preview')
     else if (on) {
       localStorage.setItem('vidso_ui_preview', '1')
@@ -3886,6 +3888,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 .paywall-x:hover{background:rgba(255,255,255,.1);color:#fff}
 .paywall-x svg{width:16px;height:16px}
 #paywall-modal.is-member .paywall-foot .btn-ghost{display:none}
+#paywall-modal .paywall-plan.is-picked{border-color:#ff2d48!important;box-shadow:0 0 0 1px #ff2d48!important}
 #paywall-modal .paywall-plan.is-current{border-color:rgba(255,255,255,.35)!important;box-shadow:0 0 0 1px rgba(255,255,255,.35)!important}
 #paywall-modal .paywall-plan.is-current [data-tier]{background:rgba(255,255,255,.06)!important;color:rgba(255,255,255,.7)!important;border-color:rgba(255,255,255,.12)!important;cursor:default;box-shadow:none!important}
 #paywall-modal.is-member .paywall-kicker{text-transform:none;letter-spacing:0;font-weight:400;font-size:13px}
@@ -4275,6 +4278,10 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></svg>
         <span>Plans &amp; credits</span><svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
+      <a class="acct-row" id="settings-manage-billing" href="https://whop.com/@me/settings/orders/" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg>
+        <span>Manage billing</span><svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
       <button type="button" class="acct-row" id="settings-studio" data-archived hidden aria-label="Open Faceless Studio"><span>Faceless Studio</span></button>
       <button type="button" class="acct-row" id="settings-yt-link" hidden style="display:none"><span>My YouTube Channel</span><span id="settings-yt-state">Connect</span></button>
     </div>
@@ -4347,7 +4354,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu" aria-controls="nav-drawer" aria-expanded="false">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <a href="/home" class="topnav-logo" aria-label="TubeOps home">
+    <a href="/" class="topnav-logo" aria-label="TubeOps home">
       <img data-vidso-logo width="28" height="28" alt="" decoding="async">
       <span class="brand">TubeOps</span>
     </a>
@@ -6784,7 +6791,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 <script type="module" src="/lib/studio-home-boot.js"></script>
 <script type="module">
 import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken, refreshSessionOnce } from '/api.js'
-import { mountPricing } from '/lib/pricing-ui.js'
+import { mountPricing, pickedPlan, PICKED_PLAN_KEY } from '/lib/pricing-ui.js'
 import { channelBannerPrompt, BANNER_MODEL, BANNER_ASPECT } from '/lib/channel-banner.js'
 import { initAppSidebar } from '/lib/app-sidebar.js'
 import { voiceGroupFor, voiceGroup, rankVoices, bestForIds, voiceSettingsFor, captionLookFor, cameraMoveFor } from '/lib/genre-kit.js'
@@ -6929,14 +6936,21 @@ function clearUiPreviewFlag() {
 
 function uiPreviewForced() {
   try {
+    if (!previewModeHost()) return false
     const q = new URLSearchParams(location.search || '')
     const path = (location.pathname || '').replace(/\/+$/, '') || '/'
     return q.get('ui') === '1' || q.get('dev') === '1' || q.get('paywall') === '0' || path === '/ui' || path === '/preview'
   } catch (_) { return false }
 }
 
+/** Local and Vercel preview builds: the only places preview mode (no sign-in) works. */
+function previewModeHost() {
+  try { return /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|.+\.vercel\.app)$/.test(location.hostname) } catch (_) { return false }
+}
+
 function uiPreviewMode() {
   try {
+    if (!previewModeHost()) { clearUiPreviewFlag(); return false }
     const q = new URLSearchParams(location.search || '')
     if (q.get('ui') === '0' || q.get('dev') === '0') {
       clearUiPreviewFlag()
@@ -7407,6 +7421,9 @@ window.openAccountSettings = () => {
   }
   const planEl = document.getElementById('settings-plan-label')
   if (planEl) planEl.textContent = active ? 'Change plan' : 'Choose a plan'
+  // Paying members change or cancel their subscription on Whop.
+  const billing = document.getElementById('settings-manage-billing')
+  if (billing) billing.hidden = !(active && !uiPreviewMode())
   modal.classList.remove('hidden')
   const shell = modal.querySelector('.settings-shell')
   shell?.focus?.()
@@ -9183,8 +9200,17 @@ async function watchForPurchase(opts = {}) {
   return _planPoll
 }
 
+/** Whop's page where a buyer changes or cancels the subscription they have. */
+const WHOP_ORDERS_URL = 'https://whop.com/@me/settings/orders/'
 window.startCheckout = async (tier) => {
+  // Someone already paying must not get a second checkout (two subscriptions, billed twice).
+  if (currentUser && hasActivePlan()) {
+    window.open(WHOP_ORDERS_URL, '_blank', 'noopener')
+    setPaywallStatus('To switch plans, cancel your current plan in Whop (you keep it until the end of what you paid for), then pick the new plan here. Questions: support@tubeops.pro', null)
+    return
+  }
   pendingCheckoutTier(tier)
+  try { localStorage.removeItem(PICKED_PLAN_KEY) } catch (_) {}
   const email = String(currentUser?.email || '').trim()
   if (!email || !email.includes('@')) {
     setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
@@ -9213,7 +9239,7 @@ window.startCheckout = async (tier) => {
   try { tab.opener = null } catch (_) {}
   tab.location.href = url
   setTimeout(() => {
-    setPaywallStatus('Pay in the Whop tab — this page checks Whop if Clipzo is still unpaid.', null)
+    setPaywallStatus('Pay in the Whop tab. This page unlocks TubeOps as soon as Whop confirms it.', null)
     watchForPurchase({ tier })
   }, 600)
 }
@@ -9233,6 +9259,27 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('paywall-modal')?.addEventListener('click', (e) => {
   if (e.target.id === 'paywall-modal' && e.currentTarget.classList.contains('is-member')) closePaywall()
 })
+
+/** The plan picked on the landing page before sign-up: open on its billing cycle with it ready to buy. */
+function showPickedPlan(modal) {
+  const pick = !hasActivePlan() ? pickedPlan() : null
+  modal.querySelectorAll('.paywall-plan.is-picked').forEach((c) => c.classList.remove('is-picked'))
+  if (!pick) return
+  try { window.setPaywallCycle?.(pick.cycle) } catch (_) {}
+  const card = modal.querySelector(`.paywall-plan[data-plan="${pick.tier}"]`)
+  if (!card) return
+  card.classList.add('is-picked')
+  modal.querySelectorAll('.paywall-plan [data-tier]').forEach((b) => {
+    const on = b.closest('.paywall-plan') === card
+    b.classList.toggle('btn-primary', on)
+    b.classList.toggle('btn-secondary', !on)
+  })
+  const btn = card.querySelector('[data-tier]')
+  const name = card.querySelector('.pn')?.textContent || pick.tier
+  if (btn) btn.textContent = `Continue with ${name} →`
+  setPaywallStatus(`You picked ${name}. Continue to checkout when you're ready.`, null)
+  setTimeout(() => { try { card.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) } catch (_) {} }, 60)
+}
 
 /** Someone already on a plan sees "Plans & credits": their plan marked, what's left, and a close button. */
 function paywallForMember() {
@@ -9256,7 +9303,9 @@ function paywallForMember() {
     const btn = card.querySelector('[data-tier]')
     if (!btn) return
     if (!btn.dataset.label) btn.dataset.label = btn.textContent
-    btn.textContent = on ? 'Current plan' : btn.dataset.label
+    // Members switch through Whop (never a second checkout), so say "Switch to …".
+    const planName = String(card.querySelector('.pn')?.textContent || card.getAttribute('data-plan') || '').trim()
+    btn.textContent = on ? 'Current plan' : member ? `Switch to ${planName.replace(/^./, (c) => c.toUpperCase())}` : btn.dataset.label
     btn.disabled = on
   })
 }
@@ -9279,6 +9328,7 @@ window.openPaywall = (opts = {}) => {
   document.documentElement.classList.add('needs-paywall')
   document.documentElement.classList.remove('needs-gate')
   paywallForMember()
+  showPickedPlan(modal)
   modal.querySelector('.paywall-shell')?.focus?.()
   _paywallOpening = false
   trackViewContent('Paywall')
@@ -11250,7 +11300,14 @@ window.fvAgentsCaptions = (id) => {
   return window.fvAgentsRerender('Re-cutting the video with ' + FV_CAPTION_LOOKS[id].name + ' captions')
 }
 window.fvAgentsVoice = (id) => { try { window.pickFvVoice(id) } catch (_) {} ; fvAgentsChanged() }
-window.fvAgentsLoadVoices = () => { if (voicesLoadState === 'idle' || voicesLoadState === 'error') { try { loadVoices().finally(fvAgentsChanged) } catch (_) {} } }
+// Pages call this on every redraw, so a failed load waits before trying again (and never retries
+// while signed out): otherwise each failure redraws the page, which asks again, in a loop.
+let fvVoicesFailedAt = 0
+window.fvAgentsLoadVoices = () => {
+  if (voicesLoadState === 'error' && (!getToken() || Date.now() - fvVoicesFailedAt < 30000)) return
+  if (voicesLoadState !== 'idle' && voicesLoadState !== 'error') return
+  try { loadVoices().finally(() => { if (voicesLoadState === 'error') fvVoicesFailedAt = Date.now(); fvAgentsChanged() }) } catch (_) {}
+}
 window.fvAskManager = (args) => askManager(args)
 window.fvAgentsAngle = (id) => { fvState.angle = id || 'auto'; try { localStorage.setItem('vidso_fv_angle', fvState.angle) } catch (_) {} ; fvAgentsChanged() }
 try { fvState.angle = localStorage.getItem('vidso_fv_angle') || 'auto' } catch (_) { fvState.angle = 'auto' }
@@ -11452,7 +11509,8 @@ function fvToolOn(id) { const v = fvToolState()[id]; return typeof v === 'boolea
 window.fvTools = () => {
   let thumbCr = 0
   try { thumbCr = creditCharge({ kind: 'image', model: 'nano-banana-pro', resolution: '2K', aspect: '16:9' }) } catch (_) {}
-  const cost = { thumbnail: thumbCr ? `${thumbCr} credits each` : 'Uses credits', captions: 'Free', music: 'Free', publish: 'Free' }
+  // A new thumbnail draws two options and keeps the better one (fvThumbAgent candidates: 2); an edit draws one.
+  const cost = { thumbnail: thumbCr ? `${thumbCr * 2} credits each (${thumbCr} for an edit)` : 'Uses credits', captions: 'Free', music: 'Free', publish: 'Free' }
   const note = { thumbnail: 'A click-worthy thumbnail for every video', captions: 'Words on screen as the narrator speaks', music: 'A soft track under the narration', publish: 'YouTube description, tags and chapters' }
   return FV_TOOLS.map((t) => ({ id: t.id, name: t.name, on: fvToolOn(t.id), cost: cost[t.id], note: note[t.id] }))
 }

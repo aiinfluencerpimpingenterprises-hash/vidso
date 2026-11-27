@@ -196,23 +196,33 @@
   ],
   "redirects": [
     {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/landing",
-      "destination": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
       "source": "/landing/",
-      "destination": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
       "source": "/landing/:path*",
-      "destination": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
       "source": "/index.html",
-      "destination": "/home",
+      "destination": "/",
       "permanent": false
     },
     {

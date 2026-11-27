@@ -80,8 +80,8 @@ test('pricing: value rows never show a cross, savings read per year', () => {
   assert.match(ui, /export function specRows/)
   assert.match(ui, /export function planIncludes/)
   assert.doesNotMatch(ui, /ICO_OFF|feat-row off/)
-  for (const t of TIERS) assert.match(planView(t).savingsLabel, /^Save \$[\d,]+ a year$/)
-  assert.equal(planView('agency').savingsLabel, 'Save $1,440 a year')
+  for (const t of TIERS) assert.match(planView(t).savingsLabel, /^Save \$[\d,]+ (a year|every 3 months)$/)
+  assert.equal(planView('agency').savingsLabel, 'Save $360 every 3 months')
 })
 
 test('home page copy matches the product', () => {

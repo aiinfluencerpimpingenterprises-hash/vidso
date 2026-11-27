@@ -7,3 +7,5 @@ User-agent: Google-InspectionTool
 Allow: /
 User-agent: APIs-Google
 Allow: /
+
+Sitemap: https://www.tubeops.pro/sitemap.xml

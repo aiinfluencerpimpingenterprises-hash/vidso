@@ -59,7 +59,7 @@ test('browser GET to /mcp is a connector page; JSON MCP clients are not', () => 
   const html = mcpConnectorPageHtml('https://www.vidso.pro')
   assert.equal(html.includes('https://www.vidso.pro/mcp'), true)
   assert.equal(html.includes('Add custom connector'), true)
-  assert.equal(html.includes('/home'), true)
+  assert.equal(html.includes('href="/agents"'), true) // Account settings live in the app
   assert.equal(html.includes('/connectors'), false)
 })
 
