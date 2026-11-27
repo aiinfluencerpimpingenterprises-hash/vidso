@@ -9726,6 +9726,9 @@ window.fvSnapshotForStudio = () => {
     scriptAiUsed: fvState.scriptAiUsed,
     thumb: fvState.thumb?.url ? fvState.thumb : null,
     agentLog: Array.isArray(fvState.agentLog) ? fvState.agentLog.slice(-60) : [],
+    // The finished video (its saved link, not this tab's blob) and its Editor project, so a reload shows it again.
+    renderSaved: /^https?:/.test(String(fvState.renderSaved || '')) ? fvState.renderSaved : (/^https?:/.test(String(fvState.renderUrl || '')) ? fvState.renderUrl : ''),
+    editProjectId: fvState.editProjectId || '',
     videoModel: fvState.videoModel || '',
     clipDuration: fvState.clipDuration || 5,
     resolution: fvState.resolution || '',
@@ -9788,6 +9791,10 @@ window.fvHydrateFromStudio = (project) => {
     if (phase >= 3 && media) {
       try { fvInitPreview() } catch (_) {}
     }
+    // The finished video comes back with the project, so the chat and Studio show it after a reload.
+    const savedVideo = /^https?:/.test(String(snap.renderSaved || '')) ? String(snap.renderSaved) : ''
+    if (savedVideo && media) { fvState.renderUrl = savedVideo; fvState.renderSaved = savedVideo; fvState.deliveryOn = true }
+    if (snap.editProjectId && !fvState.editProjectId) fvState.editProjectId = String(snap.editProjectId)
   } finally {
     fvHydrating = false
   }
@@ -10773,7 +10780,7 @@ async function fvThumbAgent(opts = {}) {
     })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
-    setTimeout(() => { try { fvQueueSaveEditProject() } catch (_) {} }, 0) // keep the new thumbnail with the saved project
+    setTimeout(() => { try { fvQueueSaveEditProject() } catch (_) {} ; try { fvNotifyStudio() } catch (_) {} }, 0) // keep the new thumbnail with the saved project (here and in the Studio project)
     fvState.thumb = edit ? { url, styleId, style: name, title, concept: current.concept } : { url, styleId, style: fvState.thumbConceptNow?.recipe ? fvState.thumbConceptNow.recipe + ' thumbnail' : name, title, concept: fvState.thumbConceptNow || null }
     fvCrewSet('thumbnail', 'done', name + ' thumbnail ready')
     try { await window.fsAttachThumbnail?.(rec, 'Thumbnail · ' + name) } catch (_) {}
@@ -14067,6 +14074,7 @@ function fvPollRenderJob(jobId, picked, btn) {
         fvState.renderUrl = url
         fvState.renderSaved = ""
         try { fvQueueSaveEditProject() } catch (_) {} // the saved project keeps the finished video for reloads
+        try { fvNotifyStudio() } catch (_) {}
         if (/^https?:/.test(url)) fvRememberVideo({ url, title: fvState.script?.title || '' })
         const vid = document.getElementById('fv-export-video')
         vid.src = url
@@ -15195,7 +15203,7 @@ async function fvSaveRenderToLibrary(blobUrl, title) {
     if (saved) {
       fvRememberVideo({ url: saved, title: title || '' })
       // The tab keeps playing its own copy; the saved link is what chats and the Editor project remember.
-      if (fvState.renderUrl === blobUrl) { fvState.renderSaved = saved; fvQueueSaveEditProject(); fvAgentsChanged() }
+      if (fvState.renderUrl === blobUrl) { fvState.renderSaved = saved; fvQueueSaveEditProject(); fvNotifyStudio(); fvAgentsChanged() }
     }
     loadFiles()
     fvSetExportStatus('Render complete · saved to My Files', 'ok')
