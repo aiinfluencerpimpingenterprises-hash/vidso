@@ -6786,6 +6786,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken, refreshSessionOnce } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { channelBannerPrompt, BANNER_MODEL, BANNER_ASPECT } from '/lib/channel-banner.js'
+import { voiceGroupFor, voiceGroup, rankVoices, bestForIds, voiceSettingsFor, captionLookFor, cameraMoveFor } from '/lib/genre-kit.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
   facelessMediaPayloadExtras,
@@ -6815,6 +6816,8 @@ import {
   dropRepeatedHook,
 } from '/lib/faceless-length.js'
 import { hookRewriteInstruction, openingOf, scoreHook } from '/lib/viral-playbook.js'
+import { hookFormulaFor, stripScriptWrapUp } from '/lib/retention.js'
+import { pickScriptFormat } from '/lib/script-formats.js'
 import {
   TTS_CHUNK_CHARS,
   chunkNarrationText,
@@ -9957,7 +9960,8 @@ async function fvApplyAiScenes(job) {
       if (noCredits || stale()) return
       const data = await api.generate.video({
         model: videoModel.id,
-        prompt: (prompts[sc.i] || sc.text) + '. Gentle natural motion, keep the art style.',
+        // The camera move that suits this kind of channel (slow push-in for mystery, documentary pan for history…).
+        prompt: (prompts[sc.i] || sc.text) + '. ' + cameraMoveFor(fvChannelKey()) + ' Natural motion, keep the art style.',
         aspect: fvState.aspect || '16:9',
         duration: fvVideoDurationFor(videoModel, sc.end - sc.start),
         generate_audio: false,
@@ -10202,7 +10206,7 @@ window.fvLengthenVideo = async (durationId) => {
   fvCrewSet('script', 'working', 'Making the script ' + (picked.label || 'longer'))
   fvAgentsChanged()
   try {
-    const payload = facelessScriptPayload({ topic, aspect: fvState.aspect, durationId: picked.id, durationSeconds: picked.seconds })
+    const payload = facelessScriptPayload({ topic, aspect: fvState.aspect, durationId: picked.id, durationSeconds: picked.seconds, nextTopic: fvState.nextTopic || '' })
     let data = rebuildFullScript({ ...s, aspect: fvState.aspect, topic })
     data = await fvExpandScriptToLength(data, topic, payload, picked, scriptTimeoutMs(picked.seconds))
     data = rebuildFullScript({ ...data, title: s.title, title_options: s.title_options })
@@ -10963,7 +10967,7 @@ function fvLocalAgentsState() {
     durationSeconds: picked?.seconds || 0,
     voiceId: fvState.voiceId || '',
     voiceState: typeof voicesLoadState === 'string' ? voicesLoadState : '',
-    voices: (Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), name: String(v.name || '').split(' - ')[0], desc: String(v.name || '').includes(' - ') ? String(v.name).split(' - ').slice(1).join(' - ') : (v.description || ''), category: v.category || '', gender: String(v.labels?.gender || v.gender || '').toLowerCase(), accent: v.labels?.accent || v.accent || '', preview: v.preview_url || '' })),
+    voices: fvRankedVoices((Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, label: fvVoiceLabel(v), name: String(v.name || '').split(' - ')[0], desc: String(v.name || '').includes(' - ') ? String(v.name).split(' - ').slice(1).join(' - ') : (v.description || ''), category: v.category || '', gender: String(v.labels?.gender || v.gender || '').toLowerCase(), accent: v.labels?.accent || v.accent || '', preview: v.preview_url || '', age: v.labels?.age || '', use_case: v.labels?.use_case || v.labels?.['use case'] || '', description: v.labels?.description || v.description || '' }))),
     aspect: fvState.aspect || '16:9',
     script: s ? {
       title: s.title || '',
@@ -11157,12 +11161,22 @@ const FV_CAPTION_LOOKS = {
   doc: { name: 'Documentary', font: 'Times New Roman', size: 46, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
   comic: { name: 'Comic pop', font: 'Bangers', size: 66, color: '#ffffff', hl: '#00e5ff', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 4 },
   mono: { name: 'Minimal mono', font: 'DM Mono', size: 42, color: '#ffffff', hl: '#ffffff', shadow: true, stroke: false },
+  // Trending looks (2025-2026), matched to what the render can draw: font, colours, outline, shadow, the spoken-word colour and capitals.
+  hormozi: { name: 'Hormozi', font: 'Anton', size: 66, color: '#ffffff', hl: '#2bdc6c', shadow: true, stroke: true, strokeColor: '#000000', strokeW: 3, upper: true },
+  beast: { name: 'MrBeast', font: 'Luckiest Guy', size: 68, color: '#ffd400', hl: '#3dff6e', shadow: false, stroke: true, strokeColor: '#000000', strokeW: 8, upper: true },
+  karaoke: { name: 'Karaoke', font: 'Montserrat', size: 56, color: '#ffffff', hl: '#ffd400', shadow: true, stroke: true, strokeColor: '#000000', strokeW: 3 },
+  cinematic: { name: 'Cinematic serif', font: 'Playfair Display', size: 52, color: '#f5efe0', hl: '#e8c77a', shadow: true, stroke: false },
+  casefile: { name: 'Case file', font: 'Special Elite', size: 48, color: '#f2efe6', hl: '#ff4d4d', shadow: true, stroke: false },
+  neon: { name: 'Neon', font: 'Bebas Neue', size: 70, color: '#ffffff', hl: '#29f0ff', shadow: true, stroke: true, strokeColor: '#6a00ff', strokeW: 4, upper: true },
+  kids: { name: 'Kids bubbly', font: 'Fredoka', size: 62, color: '#ffffff', hl: '#ffcf2e', shadow: false, stroke: true, strokeColor: '#5b2bd1', strokeW: 6 },
+  minimal: { name: 'Modern minimal', font: 'Poppins', size: 52, color: '#ffffff', hl: '#ff5a72', shadow: true, stroke: false },
 }
-window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, size: v.size, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color, base: v.color, hl: v.hl, stroke: v.stroke ? (v.strokeColor || '#000') : '', strokeW: v.strokeW || 0, shadow: !!v.shadow }))
+window.fvCaptionLooks = () => Object.entries(FV_CAPTION_LOOKS).map(([id, v]) => ({ id, name: v.name, upper: !!v.upper, size: v.size, font: v.font, color: v.hl !== '#ffffff' ? v.hl : v.color, base: v.color, hl: v.hl, stroke: v.stroke ? (v.strokeColor || '#000') : '', strokeW: v.strokeW || 0, shadow: !!v.shadow }))
 function fvApplyCaptionLook(id) {
   const L = FV_CAPTION_LOOKS[id]
   if (!L) return false
   fvState.captionLook = id
+  fvState.captionUpper = !!L.upper
   const sel = document.getElementById('fv-cap-font')
   try { if (sel && sel.options.length < 8) fillCaptionFontSelect(sel) } catch (_) {}
   const opt = sel && [...sel.options].find((o) => o.textContent.trim().toLowerCase() === L.font.toLowerCase())
@@ -11939,12 +11953,44 @@ function applyVoiceControls(kind, input) {
   return v
 }
 
+/** The active channel, and which kind of channel it is (mystery, history, education, …). */
+function fvActiveChannel() {
+  try { const id = window.agentsChat?.profiles?.activeId?.(); return (window.agentsChat?.profiles?.list?.() || []).find((x) => x.id === id) || null } catch (_) { return null }
+}
+function fvChannelKey() {
+  const p = fvActiveChannel()
+  let niche = p?.niche || ''
+  try { niche = niche || window.agentsChat?.profiles?.niche?.()?.id || '' } catch (_) {}
+  return voiceGroupFor({ genre: p?.genre || '', niche, about: p?.about || '' })
+}
+window.fvChannelKey = () => fvChannelKey()
+/** The next episode, teased in the last 15-20 seconds of this one's narration. */
+window.fvSetNextTopic = (t) => { fvState.nextTopic = String(t || '').trim().slice(0, 140) }
+/** Pick the narrator that best suits the active channel (when it has none of its own). */
+window.fvPickBestVoice = async () => {
+  try { await loadVoices() } catch (_) {}
+  const list = fvRankedVoices((Array.isArray(voices) ? voices : []).map((v) => ({ id: v.id, name: String(v.name || '').split(' - ')[0], desc: String(v.name || '').includes(' - ') ? String(v.name).split(' - ').slice(1).join(' - ') : (v.description || ''), category: v.category || '', gender: String(v.labels?.gender || v.gender || '').toLowerCase(), accent: v.labels?.accent || v.accent || '', preview: v.preview_url || '', age: v.labels?.age || '', use_case: v.labels?.use_case || '', description: v.labels?.description || '' })))
+  if (list[0]) { try { window.pickFvVoice(list[0].id) } catch (_) {} ; fvAgentsChanged() }
+}
+/** Voices sorted best first for the active channel; the best few carry a "Best for …" tag. */
+function fvRankedVoices(list) {
+  const key = fvChannelKey()
+  const best = new Set(bestForIds(list, key))
+  const label = 'Best for ' + voiceGroup(key).label
+  return rankVoices(list, key).map((v) => ({ ...v, bestFor: best.has(v.id) ? label : '' }))
+}
 function fvCurrentVoiceSettings() {
+  // Until the user moves a voice slider, narration uses the settings that suit the channel's genre.
+  if (!fvState.voiceTouched) {
+    fvState.voiceSettings = applyVoiceControls('fv', voiceSettingsFor(fvChannelKey()))
+    return fvState.voiceSettings
+  }
   fvState.voiceSettings = readVoiceControls('fv')
   return fvState.voiceSettings
 }
 
 window.fvOnVoiceSetting = () => {
+  fvState.voiceTouched = true
   fvCurrentVoiceSettings()
   applyVoiceControls('fv', fvState.voiceSettings)
 }
@@ -12501,7 +12547,7 @@ async function fvBuildMediaViaTtsFallback() {
   if (!voiceId) throw new Error('Pick a narrator voice')
   const aspect = script.aspect || fvState.aspect
   const voiceOpts = voiceSettingsPayload(
-    fvState.voiceSettings || script.voice_settings || readVoiceControls('fv'),
+    fvState.voiceTouched ? (fvState.voiceSettings || script.voice_settings || readVoiceControls('fv')) : fvCurrentVoiceSettings(),
   )
   const chunks = chunkNarrationText(text, TTS_CHUNK_CHARS)
   const urls = []
@@ -12581,7 +12627,7 @@ window.fvStartMedia = async (force) => {
   }
   const extras = facelessMediaPayloadExtras(picked.id, picked.seconds)
   const voiceOpts = voiceSettingsPayload(
-    fvState.voiceSettings || fvState.script.voice_settings || readVoiceControls('fv'),
+    fvState.voiceTouched ? (fvState.voiceSettings || fvState.script.voice_settings || readVoiceControls('fv')) : fvCurrentVoiceSettings(),
   )
   // Keep each Railway media job under the TTS char cap so the worker never needs /api/media/concat.
   const chunks = splitScriptForMedia({
@@ -13895,7 +13941,7 @@ window.fvStartExport = async (opts = {}) => {
       duration: fvState.media.duration,
       duration_id: picked.id,
       duration_seconds: picked.seconds,
-      words: fvToolOn('captions') ? (fvState.media.words || []) : [],
+      words: fvToolOn('captions') ? (fvState.captionUpper ? (fvState.media.words || []).map((w) => ({ ...w, word: String(w.word || w.text || '').toUpperCase(), ...(w.text != null ? { text: String(w.text).toUpperCase() } : {}) })) : (fvState.media.words || [])) : [],
       timeline: fvTimelineForRender(fvState.media.timeline || []),
       aspect: fvState.media.aspect || fvState.aspect,
       caption: {
@@ -14343,11 +14389,15 @@ async function fvStrengthenHook(script, topic) {
   const before = scoreHook(openingOf(script))
   fvState.hookScore = before
   fvLengthTrace('hook-score', { score: before.score, verdict: before.verdict, weakest: before.weakest })
-  if (before.verdict !== 'WEAK') return script
+  // Every video gets a hook pass now (not only weak ones): the hook formula for this kind of video,
+  // and the first lines must prove the chosen title. The rewrite is kept only if it scores higher.
+  if (before.verdict === 'STRONG' && !script.title) return script
   fvSetStatus('Sharpening the opening hook…', 'loading')
+  const formula = hookFormulaFor(pickScriptFormat(topic).id)
+  const titleLine = script.title ? ' The first two sentences must prove this title is true: "' + String(script.title).slice(0, 140) + '".' : ''
   try {
     const out = await api.faceless.rewriteSection({
-      topic: topic + '\n\n' + hookRewriteInstruction(topic),
+      topic: topic + '\n\n' + hookRewriteInstruction(topic) + ' Hook style: ' + formula + titleLine,
       section_id: sec.id,
       heading: sec.heading,
       text: sec.text,
@@ -14608,6 +14658,7 @@ window.fvGenerateScript = async () => {
       aspect: fvState.aspect,
       durationId: picked.id,
       durationSeconds: picked.seconds,
+      nextTopic: fvState.nextTopic || '',
     })
     const angleNote = angleBrief(fvState.angle)
     if (angleNote) payload.brief = [payload.brief, angleNote].filter(Boolean).join(' ')
@@ -14639,8 +14690,9 @@ window.fvGenerateScript = async () => {
     const targetWords = payload.final_target_words || payload.target_words
     data = capScriptToTarget(data, targetWords)
     data = dropRepeatedHook(data) // the model sometimes ends by repeating its opening hook
-    data = await fvStrengthenHook(data, topic)
+    data = rebuildFullScript(stripScriptWrapUp(data)) // no "thanks for watching" endings: viewers leave on them
     data = await fvPickTitle(data, topic)
+    data = await fvStrengthenHook(data, topic)
     words = scriptWordCount(data)
     implied = impliedSecondsFromWords(words)
     fvState.phase = 1

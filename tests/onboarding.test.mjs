@@ -47,7 +47,7 @@ test('genre and channel name flow into the profile', () => {
   const p = normalizeProfile(profileFromSetup({ genre: 'history', channelName: 'Rome Unrolled', style: 'oil' }, 'History'))
   assert.equal(p.name, 'Rome Unrolled')
   assert.equal(p.angle, 'story')
-  assert.equal(p.captions, 'doc')
+  assert.equal(p.captions, 'cinematic') // history channels default to the cinematic serif captions
 })
 
 test('answers become a brand profile', () => {
