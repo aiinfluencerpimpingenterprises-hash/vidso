@@ -130,6 +130,10 @@ async function localAgentRoute(req, res, sub) {
       if (sub === 'compose') return json(200, await runCompose({ segments: body.segments, id: body.id, ms: body.ms, falKey }))
       return json(200, { scenes: await runScenePlanner({ scenes: body.scenes, topic: body.topic, styleName: body.style, character: body.character, falKey }) })
     }
+    if (sub === 'thumbnail') {
+      const { runThumbnailDirector } = await import('../lib/thumbnail-agent.js')
+      return json(200, await runThumbnailDirector({ title: body.title, topic: body.topic, hook: body.hook, artStyle: body.art_style, recipeKey: body.recipe, avoid: body.avoid, note: body.note, falKey }))
+    }
     if (sub === 'channel') {
       const { runChannelAgent } = await import('../lib/channel-agent.js')
       return json(200, await runChannelAgent({ genre: body.genre, about: body.about, niche: body.niche, reference: body.reference, falKey }))
@@ -185,7 +189,7 @@ async function localGenerate(req, res, sub) {
 const server = http.createServer((req, res) => {
   const genRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/generate\/(image|image-save)$/) || [])[1]
   if (genRoute) return localGenerate(req, res, genRoute)
-  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish|scenes|compose|channel|reference)$/) || [])[1]
+  const agentRoute = req.method === 'POST' && (cleanPath(req.url).match(/^\/api\/youtube\/(manager|titles|publish|scenes|compose|channel|reference|thumbnail)$/) || [])[1]
   if (agentRoute) return localAgentRoute(req, res, agentRoute)
   const rel = resolveRel(req.url)
   let file = safeFile(rel)

@@ -6873,7 +6873,9 @@ import {
   composeScenes,
   setupChannel,
   readReference,
+  planThumbnail,
 } from '/lib/youtube-client.js'
+import { thumbRecipeKey, thumbnailImagePrompt, fallbackConcept, cleanThumbText, THUMB_RECIPES } from '/lib/thumbnail-agent.js'
 import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptEstimate, scriptFromText } from '/lib/channel-kit.js'
 import { initImageWorkspace } from '/lib/image-workspace.js'
 import { initFacelessStudio } from '/lib/faceless-studio.js'
@@ -6885,7 +6887,7 @@ import { DEFAULT_IMAGE_MODEL, sceneImageModelFor } from '/lib/fal-image.js'
 import { estimateVideoCredits, creditCharge } from '/lib/studio-credits.js'
 import { buildStylePrompt, pickThumbnailStyles, thumbnailStyleById } from '/lib/thumbnail-styles.js'
 import { clampVideoCount, isFalVideoModel, STOCK_VIDEO_MODEL, videoModelById, SCENE_ANIMATION_MODEL } from '/lib/fal-video.js'
-import { fillSceneGaps, planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE } from '/lib/visual-styles.js'
+import { fillSceneGaps, planScenes, sceneImagePrompt, visualStyleById, visualModeById, DEFAULT_STYLE, styleSample } from '/lib/visual-styles.js'
 import { bindMediaPlaceholders } from '/lib/media-placeholder.js'
 import { initBanner, initTopNav, markNavActive, openAvatarMenu, closeNavMenusPublic, panelArchived } from '/lib/app-chrome.js'
 import { initToolsGallery } from '/lib/tools-gallery.js?v=r2-tool-shots-11'
@@ -10729,21 +10731,37 @@ async function fvThumbAgent(opts = {}) {
   fvState.thumb = { ...(fvState.thumb?.url ? { prev: fvState.thumb.url } : {}), busy: true, style: name }
   fvCrewSet('thumbnail', 'working', edit
     ? 'Editing the thumbnail: ' + note.slice(0, 80)
-    : 'Designing ' + (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name + ' thumbnail for “' + title.slice(0, 60) + '”')
+    : 'Designing the thumbnail for “' + title.slice(0, 60) + '”')
   fvPaintDelivery()
   try {
-    const prompt = edit
-      ? 'Edit this YouTube thumbnail (the first image). Change only this: ' + note +
+    let prompt
+    let image_urls
+    if (edit) {
+      prompt = 'Edit this YouTube thumbnail (the first image). Change only this: ' + note +
         '\nKeep everything else exactly as it is: the same layout, art style, characters, colours and every other piece of text. 16:9.' +
         (refs.length ? '\nUse the other attached image' + (refs.length > 1 ? 's' : '') + ' as reference for the change.' : '')
-      : buildStylePrompt({ styleId, title, topic, hook: openingOf(script, 1) }) +
-        (note ? '\nExtra direction from the creator: ' + note : '') +
-        (refs.length ? '\nUse the attached image' + (refs.length > 1 ? 's' : '') + ' as a visual reference.' : '')
-    const image_urls = edit ? [current.url, ...refs] : refs
+      image_urls = [current.url, ...refs]
+    } else {
+      // A brief first (one subject, side, 0-4 words that add to the title), then drawn in the
+      // video's own art style, with the style sample, the character and a drawn scene as references.
+      const vis = fvVisual()
+      const art = visualStyleById(vis.style)
+      const artStyle = art ? art.name + ': ' + String(art.prompt || '').slice(0, 180) : ''
+      const recipe = thumbRecipeKey({ topic, title, group: fvChannelKey() })
+      const prev = fvState.thumb?.concept || fvState.lastThumbConcept
+      const planned = await planThumbnail({ title, topic, hook: openingOf(script, 2), artStyle, recipe, avoid: opts.next && prev ? prev.subject : '', note })
+      const concept = planned?.concept || fallbackConcept({ title, recipeKey: recipe })
+      fvState.lastThumbConcept = concept
+      const scene = (fvState.sceneProject?.scenes || []).find((x) => x.image && /^https?:/.test(x.image))
+      const styleRef = art ? styleSample(art.id) : ''
+      image_urls = [...refs, vis.characterUrl, scene?.image, styleRef].filter((u) => /^https?:/.test(String(u || ''))).slice(0, 4)
+      prompt = thumbnailImagePrompt({ concept, title, artStyle, hasRefs: image_urls.length > 0 }) + (note ? ' The creator asked for: ' + note : '')
+      fvState.thumbConceptNow = { ...concept, recipe: THUMB_RECIPES[recipe]?.name || '' }
+    }
     const rec = await fvGenerateThumbImage({ prompt, model: 'nano-banana-pro', aspect: '16:9', image_urls })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
-    fvState.thumb = { url, styleId, style: name, title }
+    fvState.thumb = edit ? { url, styleId, style: name, title, concept: current.concept } : { url, styleId, style: fvState.thumbConceptNow?.recipe ? fvState.thumbConceptNow.recipe + ' thumbnail' : name, title, concept: fvState.thumbConceptNow || null }
     fvCrewSet('thumbnail', 'done', name + ' thumbnail ready')
     try { await window.fsAttachThumbnail?.(rec, 'Thumbnail · ' + name) } catch (_) {}
   } catch (e) {

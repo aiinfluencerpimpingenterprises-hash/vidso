@@ -43,6 +43,7 @@ import {
 import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
 import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
+import { runThumbnailDirector } from '../../lib/thumbnail-agent.js'
 import { runManagerAgent } from '../../lib/manager-agent.js'
 import { runPublishAgent } from '../../lib/publish-agent.js'
 import { runChannelAgent } from '../../lib/channel-agent.js'
@@ -421,6 +422,27 @@ async function handleManager(req, res, body) {
 }
 
 /** Title agent: ranked title options for a video (see lib/title-agent.js). */
+/** Thumbnail director: what one thumbnail shows (subject, shot, side, 0-4 words), before it is drawn. */
+async function handleThumbnail(req, res, body) {
+  const key = falKey()
+  if (!key) return send(res, 501, { error: 'Thumbnail director is not configured on this deployment.' })
+  try {
+    const out = await runThumbnailDirector({
+      title: String(body?.title || '').slice(0, 200),
+      topic: String(body?.topic || '').slice(0, 400),
+      hook: String(body?.hook || '').slice(0, 400),
+      artStyle: String(body?.art_style || '').slice(0, 300),
+      recipeKey: String(body?.recipe || '').slice(0, 30),
+      avoid: String(body?.avoid || '').slice(0, 300),
+      note: String(body?.note || '').slice(0, 300),
+      falKey: key,
+    })
+    return send(res, 200, out)
+  } catch (e) {
+    return send(res, 502, { error: e.message || 'Thumbnail director failed' })
+  }
+}
+
 async function handleTitles(req, res, body) {
   const key = falKey()
   if (!key) return send(res, 501, { error: 'Title agent is not configured on this deployment.' })
@@ -521,6 +543,7 @@ export default async function handler(req, res) {
   if (sub === 'settings' && req.method === 'POST') return handleSettings(req, res, token, await readJson(req))
   if (sub === 'upload' && req.method === 'POST') return handleUpload(req, res, token, await readJson(req))
   if (sub === 'titles' && req.method === 'POST') return handleTitles(req, res, await readJson(req))
+  if (sub === 'thumbnail' && req.method === 'POST') return handleThumbnail(req, res, await readJson(req))
   if (sub === 'manager' && req.method === 'POST') return handleManager(req, res, await readJson(req))
   if (sub === 'publish' && req.method === 'POST') return handlePublish(req, res, await readJson(req))
   if (sub === 'channel' && req.method === 'POST') return handleChannel(req, res, await readJson(req))
