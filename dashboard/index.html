@@ -3895,7 +3895,7 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 /* Agents sidebar collapsed: the nav logo shrinks to just the icon, smoothly */
 .topnav-logo .brand{max-width:200px;overflow:hidden;white-space:nowrap;transition:max-width .32s cubic-bezier(.32,.72,0,1),opacity .2s ease}
 .topnav-logo{transition:gap .32s cubic-bezier(.32,.72,0,1)}
-@media (min-width:861px){html:has(#panel-agents.active .ag-app.is-side-min:not(.is-ed)) .topnav-logo{gap:0}html:has(#panel-agents.active .ag-app.is-side-min:not(.is-ed)) .topnav-logo .brand{max-width:0;opacity:0}}
+@media (min-width:861px){html.side-min .topnav-logo{gap:0}html.side-min .topnav-logo .brand{max-width:0;opacity:0}}
 </style>
 <script src="/brand.js" defer></script>
 <!-- Meta Pixel Code -->
@@ -6786,6 +6786,7 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
 import { api, setSession, clearSession, getToken, getRefreshToken, restoreSession, isInvalidRefreshError, ensureFreshToken, refreshSessionOnce } from '/api.js'
 import { mountPricing } from '/lib/pricing-ui.js'
 import { channelBannerPrompt, BANNER_MODEL, BANNER_ASPECT } from '/lib/channel-banner.js'
+import { initAppSidebar } from '/lib/app-sidebar.js'
 import { voiceGroupFor, voiceGroup, rankVoices, bestForIds, voiceSettingsFor, captionLookFor, cameraMoveFor } from '/lib/genre-kit.js'
 import { durationPresets, secondsFromDurationId } from '/lib/entitlements.js'
 import {
@@ -6874,6 +6875,7 @@ import {
   setupChannel,
   readReference,
   planThumbnail,
+  judgeThumbnails,
 } from '/lib/youtube-client.js'
 import { thumbRecipeKey, thumbnailImagePrompt, fallbackConcept, cleanThumbText, THUMB_RECIPES } from '/lib/thumbnail-agent.js'
 import { angleBrief, buildChapters, chaptersText, nearestDuration, scriptEstimate, scriptFromText } from '/lib/channel-kit.js'
@@ -10758,9 +10760,20 @@ async function fvThumbAgent(opts = {}) {
       prompt = thumbnailImagePrompt({ concept, title, artStyle, hasRefs: image_urls.length > 0 }) + (note ? ' The creator asked for: ' + note : '')
       fvState.thumbConceptNow = { ...concept, recipe: THUMB_RECIPES[recipe]?.name || '' }
     }
-    const rec = await fvGenerateThumbImage({ prompt, model: 'nano-banana-pro', aspect: '16:9', image_urls })
+    // New thumbnails: two versions of the brief, and a vision judge keeps the cleaner, stronger one.
+    const judgeText = edit ? '' : cleanThumbText(fvState.thumbConceptNow?.text || '', title)
+    const rec = await fvGenerateThumbImage({
+      prompt, model: 'nano-banana-pro', aspect: '16:9', image_urls,
+      candidates: edit ? 1 : 2,
+      pick: async (urls) => {
+        fvCrewSet('thumbnail', 'working', 'Picking the stronger of two thumbnails')
+        const verdict = await judgeThumbnails({ images: urls, title, text: judgeText })
+        return verdict?.best || 0
+      },
+    })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
+    setTimeout(() => { try { fvQueueSaveEditProject() } catch (_) {} }, 0) // keep the new thumbnail with the saved project
     fvState.thumb = edit ? { url, styleId, style: name, title, concept: current.concept } : { url, styleId, style: fvState.thumbConceptNow?.recipe ? fvState.thumbConceptNow.recipe + ' thumbnail' : name, title, concept: fvState.thumbConceptNow || null }
     fvCrewSet('thumbnail', 'done', name + ' thumbnail ready')
     try { await window.fsAttachThumbnail?.(rec, 'Thumbnail · ' + name) } catch (_) {}
@@ -14053,6 +14066,8 @@ function fvPollRenderJob(jobId, picked, btn) {
         if (fvState.renderUrl && String(fvState.renderUrl).startsWith('blob:')) URL.revokeObjectURL(fvState.renderUrl)
         fvState.renderUrl = url
         fvState.renderSaved = ""
+        try { fvQueueSaveEditProject() } catch (_) {} // the saved project keeps the finished video for reloads
+        if (/^https?:/.test(url)) fvRememberVideo({ url, title: fvState.script?.title || '' })
         const vid = document.getElementById('fv-export-video')
         vid.src = url
         vid.onloadedmetadata = () => {
@@ -15299,7 +15314,7 @@ initImageWorkspace({
   resolveAccess,
 })
 
-async function fvGenerateThumbImage({ prompt, model, aspect, image_urls } = {}) {
+async function fvGenerateThumbImage({ prompt, model, aspect, image_urls, candidates = 1, pick } = {}) {
     const refs = Array.isArray(image_urls) ? image_urls.filter(Boolean) : []
     const data = await api.generate.image({
       prompt,
@@ -15307,10 +15322,13 @@ async function fvGenerateThumbImage({ prompt, model, aspect, image_urls } = {}) 
       aspect_ratio: aspect || '16:9',
       quality: '2K',
       resolution: '2K',
-      num_images: 1,
+      num_images: Math.max(1, Math.min(3, Number(candidates) || 1)),
       ...(refs.length ? { image_urls: refs } : {}),
     })
-    const url = data.urls?.[0]
+    // Several candidates: keep the one the judge picks (the first if the judge is unavailable).
+    let chosen = 0
+    if (typeof pick === 'function' && (data.urls || []).length > 1) { try { chosen = Number(await pick(data.urls)) || 0 } catch (_) { chosen = 0 } }
+    const url = data.urls?.[chosen] || data.urls?.[0]
     if (!url) throw new Error('No image came back.')
     let saved = null
     try {
@@ -15334,6 +15352,10 @@ try {
     openWizard: () => window.switchPanel('videogen'),
   })
 } catch (e) { console.warn('[agents] init failed', e) }
+try {
+  // One sidebar on every page: Agents, Studio, Editor, Channels, then the chats (like Claude).
+  initAppSidebar({ main: document.querySelector('.main'), getUser: () => currentUser })
+} catch (e) { console.warn('[sidebar] init failed', e) }
 try {
   window.studioHub = initStudioHub({ root: document.getElementById('studio-root') })
   window.videoEditor = { open: (tab) => { try { window.agentsChat?.hostEditor(document.getElementById('edit-root'), tab) } catch (_) {} } }

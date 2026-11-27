@@ -43,7 +43,7 @@ import {
 import { MCP_OPEN_TOOLS } from '../../lib/vidso-mcp.js'
 import { resolveVidsoUser } from '../../lib/gate-run.js'
 import { runTitleAgent } from '../../lib/title-agent.js'
-import { runThumbnailDirector } from '../../lib/thumbnail-agent.js'
+import { runThumbnailDirector, runThumbnailJudge } from '../../lib/thumbnail-agent.js'
 import { runManagerAgent } from '../../lib/manager-agent.js'
 import { runPublishAgent } from '../../lib/publish-agent.js'
 import { runChannelAgent } from '../../lib/channel-agent.js'
@@ -427,6 +427,10 @@ async function handleThumbnail(req, res, body) {
   const key = falKey()
   if (!key) return send(res, 501, { error: 'Thumbnail director is not configured on this deployment.' })
   try {
+    // Judge mode: pick the better of the drawn candidates.
+    if (Array.isArray(body?.images)) {
+      return send(res, 200, await runThumbnailJudge({ images: body.images.slice(0, 4).map(String), title: String(body?.title || '').slice(0, 200), text: String(body?.text || '').slice(0, 60), falKey: key }))
+    }
     const out = await runThumbnailDirector({
       title: String(body?.title || '').slice(0, 200),
       topic: String(body?.topic || '').slice(0, 400),

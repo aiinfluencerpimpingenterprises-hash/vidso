@@ -131,7 +131,8 @@ async function localAgentRoute(req, res, sub) {
       return json(200, { scenes: await runScenePlanner({ scenes: body.scenes, topic: body.topic, styleName: body.style, character: body.character, falKey }) })
     }
     if (sub === 'thumbnail') {
-      const { runThumbnailDirector } = await import('../lib/thumbnail-agent.js')
+      const { runThumbnailDirector, runThumbnailJudge } = await import('../lib/thumbnail-agent.js')
+      if (Array.isArray(body.images)) return json(200, await runThumbnailJudge({ images: body.images, title: body.title, text: body.text, falKey }))
       return json(200, await runThumbnailDirector({ title: body.title, topic: body.topic, hook: body.hook, artStyle: body.art_style, recipeKey: body.recipe, avoid: body.avoid, note: body.note, falKey }))
     }
     if (sub === 'channel') {

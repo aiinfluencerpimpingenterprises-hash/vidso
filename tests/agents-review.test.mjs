@@ -20,7 +20,7 @@ test('approve, own script and New chat check for a running video before archivin
   assert.ok(approve.indexOf('videoBusy(st)') > -1 && approve.indexOf('videoBusy(st)') < approve.indexOf('archiveCurrent'))
   const own = src.slice(src.indexOf('async function runOwnScript'), src.indexOf('function bindOwnScriptExtras'))
   assert.ok(own.indexOf('videoBusy(st0)') > -1 && own.indexOf('videoBusy(st0)') < own.indexOf('archiveCurrent'))
-  const fresh = src.slice(src.indexOf("root.querySelectorAll('[data-ag-new]')"), src.indexOf("root.querySelectorAll('[data-ag-chat]')"))
+  const fresh = src.slice(src.indexOf('function newChatNow()'), src.indexOf('function chatList()'))
   assert.ok(fresh.indexOf('videoBusy(live)') > -1 && fresh.indexOf('videoBusy(live)') < fresh.indexOf('archiveCurrent'))
 })
 
