@@ -1,14 +1,32 @@
 {
   "crons": [
-    { "path": "/api/youtube/cron/storage", "schedule": "30 3 * * *" }
+    {
+      "path": "/api/youtube/cron/storage",
+      "schedule": "30 3 * * *"
+    }
   ],
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Ss][Cc][Rr][Ii][Pp][Tt]/?)", "destination": "/api/gate/faceless?p=script" },
-    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Mm][Ee][Dd][Ii][Aa]/?)", "destination": "/api/gate/faceless?p=media" },
-    { "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Rr][Ee][Nn][Dd][Ee][Rr]/?)", "destination": "/api/gate/faceless?p=render" },
-    { "source": "/rapi/api/:paid([Dd][Oo][Ww][Nn][Ll][Oo][Aa][Dd]/[Aa][Nn][Aa][Ll][Yy][Zz][Ee]/?)", "destination": "/api/gate/download?p=analyze" },
-    { "source": "/rapi/api/:paid([Aa][Uu][Tt][Oo][Cc][Ll][Ii][Pp]/?)", "destination": "/api/gate/autoclip" },
+    {
+      "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Ss][Cc][Rr][Ii][Pp][Tt]/?)",
+      "destination": "/api/gate/faceless?p=script"
+    },
+    {
+      "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Mm][Ee][Dd][Ii][Aa]/?)",
+      "destination": "/api/gate/faceless?p=media"
+    },
+    {
+      "source": "/rapi/api/:paid([Ff][Aa][Cc][Ee][Ll][Ee][Ss][Ss]/[Rr][Ee][Nn][Dd][Ee][Rr]/?)",
+      "destination": "/api/gate/faceless?p=render"
+    },
+    {
+      "source": "/rapi/api/:paid([Dd][Oo][Ww][Nn][Ll][Oo][Aa][Dd]/[Aa][Nn][Aa][Ll][Yy][Zz][Ee]/?)",
+      "destination": "/api/gate/download?p=analyze"
+    },
+    {
+      "source": "/rapi/api/:paid([Aa][Uu][Tt][Oo][Cc][Ll][Ii][Pp]/?)",
+      "destination": "/api/gate/autoclip"
+    },
     {
       "source": "/rapi/:path*",
       "destination": "https://vibrant-patience-production-a7f0.up.railway.app/:path*"
@@ -278,11 +296,32 @@
   ],
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
       "source": "/",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -300,7 +339,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -309,7 +348,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -318,7 +357,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -327,7 +366,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -336,7 +375,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -345,7 +384,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -354,7 +393,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -363,7 +402,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -372,7 +411,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -381,7 +420,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -390,7 +429,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -399,7 +438,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -408,7 +447,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -417,7 +456,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },
@@ -507,7 +546,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, must-revalidate"
         }
       ]
     },

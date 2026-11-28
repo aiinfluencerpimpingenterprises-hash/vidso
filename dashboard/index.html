@@ -131,7 +131,8 @@
   // New signups land in the app: the Manager runs the channel setup in the Agents chat.
   if (needOb) document.documentElement.classList.add('needs-setup')
   // The channel setup at /create is free; the paywall waits for "Create video".
-  else if (!paid && !/^\/create\/?$/.test(location.pathname)) document.documentElement.classList.add('needs-paywall')
+  // Plan not known yet (new device, cleared storage): a plain cover until the account check answers, not the paywall.
+  else if (!paid && !/^\/create\/?$/.test(location.pathname)) document.documentElement.classList.add('needs-gate')
 })()
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -3888,6 +3889,12 @@ body.paywalled #app-topnav,body.paywalled #app-banner,body.paywalled main{pointe
 .paywall-x:hover{background:rgba(255,255,255,.1);color:#fff}
 .paywall-x svg{width:16px;height:16px}
 #paywall-modal.is-member .paywall-foot .btn-ghost{display:none}
+#paywall-modal .paywall-other{margin:14px auto 0;max-width:460px;text-align:center;font-size:13px;color:rgba(255,255,255,.5)}
+#paywall-modal .paywall-other summary{cursor:pointer;list-style:none}
+#paywall-modal .paywall-other summary::-webkit-details-marker{display:none}
+#paywall-modal .paywall-other-row{display:flex;gap:8px;margin-top:10px}
+#paywall-modal .paywall-other-row input{flex:1;min-width:0;height:38px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e0e10;color:#f4f4f2;font:inherit;font-size:14px}
+#paywall-modal .paywall-other-row .btn{height:38px;padding:0 14px}
 #paywall-modal .paywall-plan.is-picked{border-color:#ff2d48!important;box-shadow:0 0 0 1px #ff2d48!important}
 #paywall-modal .paywall-plan.is-current{border-color:rgba(255,255,255,.35)!important;box-shadow:0 0 0 1px rgba(255,255,255,.35)!important}
 #paywall-modal .paywall-plan.is-current [data-tier]{background:rgba(255,255,255,.06)!important;color:rgba(255,255,255,.7)!important;border-color:rgba(255,255,255,.12)!important;cursor:default;box-shadow:none!important}
@@ -4150,6 +4157,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
     </div>
     <div class="paywall-plans" id="paywall-plans"></div>
     <p class="paywall-under"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>Cancel anytime. No hidden fees.</p>
+    <!-- Paid on Whop with a different email (Apple Hide My Email, another Google account): find that payment. -->
+    <details class="paywall-other">
+      <summary>Already paid with a different email?</summary>
+      <form class="paywall-other-row" onsubmit="event.preventDefault();window.refreshPlanStatus()">
+        <input type="email" id="paywall-paid-email" placeholder="Email on your Whop receipt" autocomplete="email" aria-label="Email on your Whop receipt">
+        <button type="submit" class="btn btn-secondary">Find my payment</button>
+      </form>
+    </details>
     <div class="paywall-foot">
       <button type="button" class="btn btn-ghost" onclick="doLogout()">Sign out</button>
       <p class="paywall-note">Checkout starts from this TubeOps account. Billing problem? <a data-vidso-support data-subject="Billing question" data-label="Contact support" data-fill-text></a></p>
@@ -7024,7 +7039,8 @@ function applyAuthRouteTab() {
 
 function afterAuthReady(opts = {}) {
   if (!uiPreviewForced()) clearUiPreviewFlag()
-  persistPlanActive(hasActivePlan())
+  // A stand-in user (account check failed) never decides the plan: keep what was known.
+  if (!currentUser?._stub) { persistPlanActive(hasActivePlan()); document.getElementById('gate-note')?.remove() }
   if (obIsSignupSession()) trackCompleteRegistration(currentUser?.email)
   // Returning logins skip the tour. First-run tour only follows this session's signup onboarding.
   if (!obIsSignupSession() && !_obDoneThisSession) _tourDoneThisSession = true
@@ -7051,6 +7067,21 @@ function afterAuthReady(opts = {}) {
   loadUsage()
   loadVoices()
   loadFiles()
+  if (currentUser?._stub && !hasActivePlan()) {
+    // Couldn't check the account: say so (it retries by itself) instead of showing the paywall.
+    document.documentElement.classList.remove('needs-paywall')
+    document.documentElement.classList.add('needs-gate')
+    let note = document.getElementById('gate-note')
+    if (!note) {
+      note = document.createElement('div')
+      note.id = 'gate-note'
+      note.setAttribute('role', 'status')
+      note.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30000;color:rgba(255,255,255,.6);font:400 14px Inter,system-ui,sans-serif;text-align:center'
+      document.body.appendChild(note)
+    }
+    note.textContent = "Can't reach TubeOps right now. Retrying…"
+    return
+  }
   if (funnelLocked() && !introPending()) {
     maybeShowPaywall()
     if (opts.restoreRoute !== false) restorePanelFromHash()
@@ -7169,12 +7200,12 @@ async function checkAuth() {
           showModal()
           return
         }
-        if (!currentUser) currentUser = userStubFromToken()
+        if (!currentUser) currentUser = meUnavailableStub()
         if (!currentUser) { showModal(); return }
       }
     } else {
       // Network/5xx must not log the user out on refresh.
-      if (!currentUser) currentUser = userStubFromToken()
+      if (!currentUser) currentUser = meUnavailableStub()
       if (!currentUser) { showModal(); return }
     }
   }
@@ -7183,6 +7214,27 @@ async function checkAuth() {
     clearBillingReturn()
     watchForPurchase({ fromWhop: true })
   }
+}
+
+/** The account check failed (network or server error): a stand-in user with the last known plan,
+ *  marked so nothing treats it as "unpaid", and the real check is tried again in the background. */
+function meUnavailableStub() {
+  const stub = userStubFromToken()
+  if (!stub) return null
+  let paidBefore = false
+  try { paidBefore = localStorage.getItem(PLAN_ACTIVE_KEY) === '1' } catch (_) {}
+  stub._stub = true
+  if (paidBefore) { stub.plan_status = 'active'; stub.active = true }
+  let tries = 0
+  const again = async () => {
+    if (!currentUser?._stub || ++tries > 20) return
+    try {
+      currentUser = await api.user.me()
+      afterAuthReady({ restoreRoute: false })
+    } catch (_) { setTimeout(again, Math.min(30000, 4000 * tries)) }
+  }
+  setTimeout(again, 4000)
+  return stub
 }
 
 function showModal() {
@@ -10502,6 +10554,12 @@ window.fvClearScript = (opts = {}) => {
   fvState.preview = null
   fvState.renderJobId = null
   fvState.renderPoll = null
+  // A downloaded render lives in memory as a blob (hundreds of MB for a long video): let it go.
+  if (String(fvState.renderUrl || '').startsWith('blob:')) {
+    const old = fvState.renderUrl
+    try { const v = document.getElementById('fv-export-video'); if (v && v.src === old) { v.pause(); v.removeAttribute('src'); v.load() } } catch (_) {}
+    setTimeout(() => { try { URL.revokeObjectURL(old) } catch (_) {} }, 1000)
+  }
   fvState.renderUrl = null
   fvState.renderSaved = ""
   fvState.phase = 1
@@ -11073,13 +11131,34 @@ function fvSaveEditProject() {
     media: { jobId: m.jobId, voiceover_url: m.voiceover_url, voiceover_urls: m.voiceover_urls || voiceoverPlaylist(m), duration: m.duration, words: (m.words || []).slice(0, 12000), clips: m.clips, timeline: m.timeline, aspect: m.aspect, voice_id: m.voice_id, broll_source: m.broll_source },
     project: p,
   }
-  const list = [rec, ...fvEditProjects().filter((x) => x.id !== id)].slice(0, 8)
-  for (let n = list.length; n > 0; n--) {
-    try { localStorage.setItem(fvEditKey(), JSON.stringify(list.slice(0, n))); return } catch (_) { /* full: keep fewer */ }
+  // Saved videos share the browser's ~5 MB with channels, chats and job memory: keep at most
+  // 1.5 MB of them (newest first), so they never crowd out the rest and make other saves fail.
+  const BUDGET = 1.5 * 1024 * 1024
+  const all = [rec, ...fvEditProjects().filter((x) => x.id !== id)].slice(0, 6)
+  const keep = []
+  let size = 2
+  for (const x of all) {
+    const n = JSON.stringify(x).length + 1
+    if (keep.length && size + n > BUDGET) break
+    keep.push(x); size += n
   }
+  for (let n = keep.length; n > 0; n--) {
+    try { localStorage.setItem(fvEditKey(), JSON.stringify(keep.slice(0, n))); fvEditSavedSig = fvEditSig(); return } catch (_) { /* full: keep fewer */ }
+  }
+}
+/** What a saved video depends on: only when this changes is it worth writing it again. */
+let fvEditSavedSig = ''
+function fvEditSig() {
+  const p = fvState.sceneProject
+  const m = fvState.media
+  return [m?.jobId, fvState.editProjectId, p?.edits, p?.scenes?.length, (p?.scenes || []).map((x) => (x.image || '').slice(-12) + (x.clip ? 'c' : '')).join(''),
+    fvState.thumb?.url, fvState.renderUrl && /^https?:/.test(fvState.renderUrl) ? fvState.renderUrl : '', fvState.renderSaved, fvState.script?.title,
+    fvState.preview?.musicId, fvState.preview?.musicVol, fvState.aspect, fvState.voiceId].join('|')
 }
 function fvQueueSaveEditProject() {
   if (!fvState.sceneProject) return
+  // Progress ticks call this every second or two during a render: skip when nothing saved has changed.
+  if (fvEditSig() === fvEditSavedSig) return
   clearTimeout(fvEditSaveT)
   fvEditSaveT = setTimeout(() => { try { fvSaveEditProject() } catch (_) {} }, 600)
 }

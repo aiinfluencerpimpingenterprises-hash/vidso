@@ -1,4 +1,5 @@
 import { cors, readJson, send } from '../_lib/http.js'
+import { handlePasswordRecover, handlePasswordUpdate } from '../_lib/password-reset.js'
 import { requestOrigin } from '../../lib/youtube.js'
 import {
   assertRedirect,
@@ -211,10 +212,12 @@ export default async function handler(req, res) {
     res.statusCode = 204
     return res.end()
   }
-  if (mcpArchived(req)) return send(res, 404, { error: 'Not found' })
-
   const origin = originOf(req)
   const sub = oauthApiSubpath(req)
+  // "Forgot password" lives here too (an existing function, so no new Vercel function is needed).
+  if (sub === 'password-recover') return handlePasswordRecover(req, res, origin)
+  if (sub === 'password-update') return handlePasswordUpdate(req, res)
+  if (mcpArchived(req)) return send(res, 404, { error: 'Not found' })
   if (sub === 'protected-resource' || sub.startsWith('protected-resource/')) {
     const resource = resourceFromMetadataSubpath(sub, origin)
     res.setHeader('Cache-Control', 'no-store')

@@ -65,6 +65,9 @@ input:focus{border-color:rgba(245,245,244,.45)}
 .auth-or{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--faint);font-size:.75rem}
 .auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
 .modal-error{font-size:.8rem;color:#f87171;margin-top:12px;display:none;text-align:center}
+.modal-error.is-info{color:rgba(255,255,255,.7)}
+.auth-forgot{display:block;margin:10px auto 0;padding:4px 8px;border:0;background:none;color:rgba(255,255,255,.5);font:inherit;font-size:.82rem;cursor:pointer}
+.auth-forgot:hover{color:#fff}
 .auth-alt{margin-top:18px;text-align:center;font-size:.85rem;color:var(--faint)}
 .auth-alt span:has(.tab-btn.active){display:none}
 .tab-btn{background:none;border:none;padding:0;color:var(--ink);font:inherit;font-weight:500;cursor:pointer}
@@ -175,7 +178,14 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
       <div class="field"><label class="sr-only" for="login-email">Email</label><input type="email" id="login-email" placeholder="Email address" autocomplete="email"/></div>
       <div class="field more"><label class="sr-only" for="login-pass">Password</label><input type="password" id="login-pass" placeholder="Password" autocomplete="current-password"/></div>
       <button type="button" class="btn btn-primary auth-cta" id="login-cta"><span class="auth-cta-label">Continue</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <button type="button" class="auth-forgot" id="login-forgot">Forgot password?</button>
       <div class="modal-error" id="login-err"></div>
+    </div>
+    <!-- Opened from the reset email: choose a new password. -->
+    <div id="tab-reset" hidden>
+      <div class="field"><label class="sr-only" for="reset-pass">New password</label><input type="password" id="reset-pass" placeholder="New password (6+ characters)" autocomplete="new-password"/></div>
+      <button type="button" class="btn btn-primary auth-cta" id="reset-cta"><span class="auth-cta-label">Set new password</span><span class="auth-cta-spinner" aria-hidden="true"><i></i></span></button>
+      <div class="modal-error" id="reset-err"></div>
     </div>
     <div id="tab-signup" style="display:none">
       <div class="field"><label class="sr-only" for="su-email">Email</label><input type="email" id="su-email" placeholder="Email address" autocomplete="email"/></div>
@@ -574,6 +584,68 @@ function consumeOAuthErrorParams() {
   const oauthErr = consumeOAuthError()
   if (oauthErr) showError(oauthErr)
 }
+
+// ── Forgot password ──
+// The reset email links back here with #access_token=…&type=recovery. That is not a sign-in: take the
+// token out of the address (so nothing below signs in with it) and ask for a new password instead.
+const recovery = (() => {
+  const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''))
+  if (hash.get('type') !== 'recovery' || !hash.get('access_token')) return ''
+  const token = hash.get('access_token')
+  try { history.replaceState(null, '', location.pathname) } catch (_) {}
+  return token
+})()
+function authNote(id, text, info) {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.textContent = text
+  el.classList.toggle('is-info', !!info)
+  el.style.display = text ? 'block' : 'none'
+}
+if (recovery) {
+  document.getElementById('tab-login').style.display = 'none'
+  document.getElementById('tab-signup').style.display = 'none'
+  document.getElementById('tab-reset').hidden = false
+  for (const sel of ['.auth-alt', '.auth-or', '.auth-social']) { const el = document.querySelector(sel); if (el) el.style.display = 'none' }
+  const title = document.getElementById('auth-title')
+  if (title) title.textContent = 'Choose a new password'
+  setTimeout(() => document.getElementById('reset-pass')?.focus(), 50)
+}
+document.getElementById('reset-cta')?.addEventListener('click', async () => {
+  const pass = document.getElementById('reset-pass').value
+  if (pass.length < 6) return authNote('reset-err', 'Use at least 6 characters.')
+  const btn = document.getElementById('reset-cta')
+  btn.disabled = true
+  try {
+    const r = await fetch('/api/oauth/password-update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ access_token: recovery, password: pass }) })
+    const data = await r.json().catch(() => ({}))
+    if (!r.ok) { authNote('reset-err', data.message || 'Could not change the password.'); btn.disabled = false; return }
+    document.getElementById('tab-reset').hidden = true
+    document.getElementById('tab-login').style.display = ''
+    for (const sel of ['.auth-alt', '.auth-or', '.auth-social']) { const el = document.querySelector(sel); if (el) el.style.display = '' }
+    const title = document.getElementById('auth-title')
+    if (title) title.textContent = 'Welcome to TubeOps'
+    authNote('login-err', data.message || 'Password changed. Sign in with your new password.', true)
+  } catch (_) {
+    authNote('reset-err', "Couldn't reach TubeOps. Check your connection and try again.")
+    btn.disabled = false
+  }
+})
+document.getElementById('reset-pass')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('reset-cta')?.click() })
+document.getElementById('login-forgot')?.addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value.trim()
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { document.getElementById('login-email').focus(); return authNote('login-err', 'Type your email above, then press Forgot password.') }
+  const btn = document.getElementById('login-forgot')
+  btn.disabled = true
+  try {
+    const r = await fetch('/api/oauth/password-recover', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
+    const data = await r.json().catch(() => ({}))
+    authNote('login-err', data.message || (r.ok ? 'Check your inbox for the reset link.' : 'Could not send the reset email.'), r.ok)
+  } catch (_) {
+    authNote('login-err', "Couldn't reach TubeOps. Check your connection and try again.")
+  }
+  setTimeout(() => { btn.disabled = false }, 4000)
+})
 
 const pendingOauth = rememberAuthNext()
 const oauthReturned = consumeOAuthReturn()

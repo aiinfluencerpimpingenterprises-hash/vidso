@@ -2,13 +2,17 @@ import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { saveIntentDurable } from '../../lib/checkout-intents.js'
 import {
   buildCapiEvent,
+  allowViewContent,
   capiUserData,
+  claimRegistrationEvent,
   CLIENT_CAPI_EVENTS,
   purchaseEventId,
+  SIGNED_IN_CAPI_EVENTS,
   sanitizeTestCode,
   sendMetaEvents,
 } from '../../lib/meta-capi.js'
 import { createCheckoutSession } from '../../lib/whop-checkout.js'
+import { bearer, requireUser } from '../_lib/http.js'
 
 export const config = { maxDuration: 15 }
 
@@ -40,17 +44,43 @@ function queryKind(req) {
 async function handlePixel(req, res, body) {
   const eventName = String(body.event_name || body.event || '').trim()
   if (!CLIENT_CAPI_EVENTS.has(eventName)) return send(res, 400, { error: 'Unsupported event' })
+  const ip = clientIp(req)
+  let email = ''
+  let userId = ''
+  if (SIGNED_IN_CAPI_EVENTS.has(eventName)) {
+    // Conversions count for Ads, so they need a real signed-in user, and use
+    // that user's own email and id; the body's email/user_id are ignored.
+    const token = bearer(req)
+    if (!token) return send(res, 401, { error: 'sign_in_required' })
+    let user
+    try {
+      ;({ user } = await requireUser(req, token))
+    } catch (e) {
+      const status = e.status === 503 ? 503 : 401
+      return send(res, status, { error: status === 401 ? 'sign_in_required' : (e.message || 'Try again') })
+    }
+    email = String(user?.email || emailFromJwt(token) || '').trim()
+    userId = String(user?.id || user?.user_id || '').trim()
+    if (!userId && !email) return send(res, 401, { error: 'sign_in_required' })
+    if (eventName === 'CompleteRegistration' && !(await claimRegistrationEvent(userId || email))) {
+      return send(res, 200, { received: true, pixel: 'duplicate' })
+    }
+  } else if (!allowViewContent(ip)) {
+    // Anonymous page views: past the per-IP cap they are dropped quietly.
+    res.statusCode = 204
+    return res.end()
+  }
   const result = await sendMetaEvents([
     buildCapiEvent({
       eventName,
       eventId: body.event_id,
       eventSourceUrl: String(body.event_source_url || req.headers.referer || 'https://www.tubeops.pro/').slice(0, 2048),
       userData: capiUserData({
-        email: body.email,
-        userId: body.user_id || body.userId,
+        email,
+        userId,
         fbp: body.fbp,
         fbc: body.fbc,
-        ip: clientIp(req),
+        ip,
         ua: req.headers['user-agent'],
       }),
       customData: body.custom_data && typeof body.custom_data === 'object' ? body.custom_data : {},

@@ -4,6 +4,7 @@ import { cors, readJson, requireUser, send, bearer } from '../_lib/http.js'
 import { handleRuns } from '../../lib/runs-api.js'
 import {
   bridgeCookieHeader,
+  clearYoutubeReconnect,
   deleteYoutubeRecord,
   exchangeGoogleCode,
   fetchYoutubeChannel,
@@ -215,6 +216,7 @@ async function handleCallback(req, res) {
     rec.channel_title = channel.title
     rec.channel_thumb = channel.thumb
     rec.connected_at = new Date().toISOString()
+    clearYoutubeReconnect(rec)
     if (rec.auto_upload == null) rec.auto_upload = false
     rec.privacy = normalizePrivacy(rec.privacy)
     await saveYoutubeRecord(bridge.token, rec)
@@ -241,19 +243,34 @@ async function handleToken(req, res, token) {
       privacy: normalizePrivacy(rec.privacy),
     })
   } catch (e) {
-    return send(res, e.status || 400, { error: e.message || 'Could not get a YouTube token', code: e.code })
+    return send(res, e.status || 400, youtubeErrorBody(e, 'Could not get a YouTube token'))
+  }
+}
+
+/** Error JSON with the code passed through, and a flag the app can show "Connect again" on. */
+export function youtubeErrorBody(e, fallback) {
+  return {
+    error: e?.message || fallback,
+    code: e?.code,
+    ...(e?.code === 'reconnect' ? { needsReconnect: true } : {}),
   }
 }
 
 async function handleSettings(req, res, token, body) {
-  const rec = await loadYoutubeRecord(token)
-  if (!youtubeRecordCanUpload(rec)) {
-    return send(res, 409, { error: 'Connect a YouTube channel first', code: rec?.channel_id ? 'reconnect' : 'not_connected' })
+  // Railway or the record can fail here; answer JSON, never an HTML 500.
+  try {
+    const rec = await loadYoutubeRecord(token)
+    if (!youtubeRecordCanUpload(rec)) {
+      const code = rec?.channel_id ? 'reconnect' : 'not_connected'
+      return send(res, 409, { error: 'Connect a YouTube channel first', code, ...(code === 'reconnect' ? { needsReconnect: true } : {}) })
+    }
+    if (body.autoUpload != null) rec.auto_upload = !!body.autoUpload
+    if (body.privacy != null) rec.privacy = normalizePrivacy(body.privacy)
+    await saveYoutubeRecord(token, rec)
+    return send(res, 200, publicYoutubeStatus(rec, req, { configured: true }))
+  } catch (e) {
+    return send(res, e.status && e.status >= 400 && e.status < 600 ? e.status : 502, youtubeErrorBody(e, 'Could not save YouTube settings'))
   }
-  if (body.autoUpload != null) rec.auto_upload = !!body.autoUpload
-  if (body.privacy != null) rec.privacy = normalizePrivacy(body.privacy)
-  await saveYoutubeRecord(token, rec)
-  return send(res, 200, publicYoutubeStatus(rec, req, { configured: true }))
 }
 
 async function handleUpload(req, res, token, body) {
@@ -261,7 +278,7 @@ async function handleUpload(req, res, token, body) {
     const result = await uploadYoutubeFromArgs(token, body)
     return send(res, 200, result)
   } catch (e) {
-    return send(res, e.status || 400, { error: e.message || 'Upload failed', code: e.code })
+    return send(res, e.status || 400, youtubeErrorBody(e, 'Upload failed'))
   }
 }
 
