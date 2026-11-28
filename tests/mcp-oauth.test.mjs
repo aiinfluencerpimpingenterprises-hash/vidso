@@ -199,3 +199,171 @@ test('the archive can be lifted by env without editing code', () => {
     else process.env.VIDSO_MCP_ARCHIVED = saved
   }
 })
+
+// --- Security: redirect allow-list, opaque codes and tokens, malformed bodies.
+
+import { allowedRedirectUri, assertRedirect, issueRefreshToken, readOAuthPayload } from '../lib/mcp-oauth.js'
+import { signPayload } from '../lib/youtube.js'
+
+test('registration only accepts Claude and loopback redirect URIs', () => {
+  for (const ok of [
+    'https://claude.ai/api/mcp/auth_callback',
+    'https://claude.com/api/mcp/auth_callback',
+    'https://app.claude.ai/cb',
+    'http://localhost:33418/callback',
+    'http://127.0.0.1:6274/oauth/callback',
+    'https://localhost/cb',
+  ]) assert.equal(allowedRedirectUri(ok), true, ok)
+  for (const bad of [
+    'https://evil.test/cb',
+    'https://claude.ai.evil.test/cb',
+    'https://evilclaude.ai/cb',
+    'http://claude.ai/cb',
+    'javascript:alert(1)',
+    'data:text/html,hi',
+    'http://localhost.evil.test/cb',
+    'http://10.0.0.1/cb',
+    'https://user@claude.ai/cb',
+  ]) assert.equal(allowedRedirectUri(bad), false, bad)
+  assert.throws(
+    () => registerClient({ redirect_uris: ['https://claude.ai/cb', 'https://evil.test/steal'] }, env),
+    (e) => e.status === 400 && e.body.error === 'invalid_redirect_uri',
+  )
+  assert.throws(
+    () => registerClient({ redirect_uris: ['javascript:alert(1)'] }, env),
+    (e) => e.status === 400 && e.body.error === 'invalid_redirect_uri',
+  )
+})
+
+test('an old client id that lists a bad redirect no longer authorizes', () => {
+  const legacy = signPayload({ typ: 'mcp_oauth_client', redirect_uris: ['https://evil.test/cb'], exp: Date.now() + 60000 }, env)
+  const client = readClient(legacy, env)
+  assert.throws(() => assertRedirect(client, 'https://evil.test/cb'), (e) => e.body.error === 'invalid_redirect_uri')
+})
+
+test('codes and tokens are opaque: no base64 JSON with the session inside', () => {
+  const code = issueAuthCode({
+    access: 'secret-supabase-access',
+    refresh: 'secret-supabase-refresh',
+    clientId: 'cid',
+    redirectUri: 'https://claude.ai/cb',
+    codeChallenge: 'abc',
+    resource: 'https://www.vidso.pro/mcp',
+  }, env)
+  const tokens = tokenResponse({ access: 'secret-supabase-access', refresh: 'secret-supabase-refresh', clientId: 'cid', resource: 'r' }, env)
+  for (const value of [code, tokens.access_token, tokens.refresh_token]) {
+    for (const part of value.split('.')) {
+      const decoded = Buffer.from(part, 'base64url').toString('utf8')
+      assert.equal(decoded.includes('secret-supabase'), false)
+      assert.throws(() => JSON.parse(decoded))
+    }
+  }
+  // They still open on the server.
+  assert.equal(readOAuthPayload(code, 'mcp_oauth_code', env).access, 'secret-supabase-access')
+  assert.equal(readOAuthPayload(tokens.refresh_token, 'mcp_oauth_refresh', env).client_id, 'cid')
+  // A sealed value can't be used as another kind of token.
+  assert.throws(() => readOAuthPayload(code, 'mcp_oauth_access', env))
+  assert.equal(unwrapMcpBearer(code, env).kind, 'vidso')
+})
+
+test('access tokens issued in the old signed form keep working; old codes do not', () => {
+  const oldAccess = signPayload({ typ: 'mcp_oauth_access', token: 'old-jwt', refresh: '', aud: 'r', exp: Date.now() + 60000 }, env)
+  const inner = unwrapMcpBearer(oldAccess, env)
+  assert.equal(inner.kind, 'mcp')
+  assert.equal(inner.token, 'old-jwt')
+  const oldRefresh = signPayload({ typ: 'mcp_oauth_refresh', refresh: 'rt', own: 1, client_id: 'c', exp: Date.now() + 60000 }, env)
+  assert.equal(readOAuthPayload(oldRefresh, 'mcp_oauth_refresh', env, { legacy: true }).refresh, 'rt')
+  const oldCode = signPayload({ typ: 'mcp_oauth_code', access: 'a', exp: Date.now() + 60000 }, env)
+  assert.throws(() => readOAuthPayload(oldCode, 'mcp_oauth_code', env))
+  // A tampered sealed token is refused.
+  const sealed = tokenResponse({ access: 'a', refresh: 'b', clientId: 'c', resource: 'r' }, env).access_token
+  assert.equal(unwrapMcpBearer(sealed.slice(0, -2) + (sealed.endsWith('AA') ? 'BB' : 'AA'), env).kind, 'vidso')
+})
+
+async function oauthCall(reqInit) {
+  const { default: handler } = await import('../api/oauth/[...path].js')
+  const chunks = reqInit.raw != null ? [Buffer.from(reqInit.raw)] : []
+  const req = {
+    method: reqInit.method || 'GET',
+    url: reqInit.url,
+    body: reqInit.body,
+    headers: { host: 'www.tubeops.pro', 'x-forwarded-proto': 'https', ...(reqInit.headers || {}) },
+    query: {},
+    async *[Symbol.asyncIterator]() { for (const c of chunks) yield c },
+  }
+  const res = {
+    statusCode: 200,
+    headers: {},
+    body: '',
+    setHeader(k, v) { this.headers[k.toLowerCase()] = v },
+    getHeader(k) { return this.headers[k.toLowerCase()] },
+    end(b) { this.body = b || '' },
+  }
+  await handler(req, res)
+  let json = null
+  try { json = JSON.parse(res.body) } catch (_) {}
+  return { status: res.statusCode, headers: res.headers, json, body: res.body }
+}
+
+test('a malformed token body is a 400, not a crash', async () => {
+  const bad = await oauthCall({
+    method: 'POST',
+    url: '/oauth/token',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    raw: 'grant_type=authorization_code&code=%E0%A4%A',
+  })
+  assert.equal(bad.status, 400)
+  assert.equal(bad.json.error, 'invalid_request')
+})
+
+test('register rejects a bad redirect with invalid_redirect_uri', async () => {
+  const r = await oauthCall({
+    method: 'POST',
+    url: '/oauth/register',
+    headers: { 'content-type': 'application/json' },
+    body: { client_name: 'x', redirect_uris: ['https://evil.test/cb'] },
+  })
+  assert.equal(r.status, 400)
+  assert.equal(r.json.error, 'invalid_redirect_uri')
+})
+
+test('authorize with an unregistered redirect shows a page instead of redirecting', async () => {
+  const prev = process.env.YOUTUBE_TOKEN_SECRET
+  process.env.YOUTUBE_TOKEN_SECRET = env.YOUTUBE_TOKEN_SECRET
+  try {
+    const { client_id } = registerClient({ redirect_uris: ['https://claude.ai/cb'] })
+    const q = new URLSearchParams({ client_id, redirect_uri: 'https://evil.test/cb', response_type: 'token', state: 's' })
+    const r = await oauthCall({ url: '/oauth/authorize?' + q })
+    assert.equal(r.status, 400)
+    assert.equal(r.headers.location, undefined)
+    assert.match(String(r.headers['content-type']), /text\/html/)
+  } finally {
+    if (prev === undefined) delete process.env.YOUTUBE_TOKEN_SECRET
+    else process.env.YOUTUBE_TOKEN_SECRET = prev
+  }
+})
+
+test('a refresh token only works for the client it was issued to', async () => {
+  const prev = process.env.YOUTUBE_TOKEN_SECRET
+  process.env.YOUTUBE_TOKEN_SECRET = env.YOUTUBE_TOKEN_SECRET
+  try {
+    const rt = issueRefreshToken({ refresh: 'rt', clientId: 'client-a', resource: 'r' })
+    const r = await oauthCall({
+      method: 'POST',
+      url: '/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      body: { grant_type: 'refresh_token', refresh_token: rt, client_id: 'client-b' },
+    })
+    assert.equal(r.status, 400)
+    assert.equal(r.json.error, 'invalid_grant')
+  } finally {
+    if (prev === undefined) delete process.env.YOUTUBE_TOKEN_SECRET
+    else process.env.YOUTUBE_TOKEN_SECRET = prev
+  }
+})
+
+test('the connector page only follows an http(s) redirect from the server', () => {
+  const html = readFileSync(new URL('../auth.html', import.meta.url), 'utf8')
+  assert.doesNotMatch(html, /location\.replace\(data\.redirect\)/)
+  assert.match(html, /dest\.protocol !== 'https:' && dest\.protocol !== 'http:'/)
+})

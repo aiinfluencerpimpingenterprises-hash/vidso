@@ -4,7 +4,8 @@
 import { withCompedPlan, emailsFromUser, COMPED_STUDIO_EMAILS } from '../../lib/comped.js'
 import { PAID_MEMBERSHIP_STATUSES } from '../../lib/paid-grant.js'
 import { resolveWhopPlan } from '../../lib/whop-map.js'
-import { kvConfigured } from '../../lib/kv.js'
+import { timingSafeEqual } from 'node:crypto'
+import { kvConfig, kvConfigured } from '../../lib/kv.js'
 import { fetchRecentPayments, summarizePayments } from '../../lib/whop-payments.js'
 import { enableVidsoOrchestration } from '../../lib/whop-checkout.js'
 import {
@@ -19,11 +20,25 @@ export const config = { maxDuration: 30 }
 
 const UPSTREAM = process.env.UPSTREAM_API || 'https://vibrant-patience-production-a7f0.up.railway.app'
 
-function send(res, status, body) {
+function sendJson(res, status, body) {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json')
   res.setHeader('Cache-Control', 'no-store')
   res.end(JSON.stringify(body, null, 2))
+}
+
+/** Which shared store is configured (upstash | supabase | none). Never the URL or token. */
+export function kvKind(env) {
+  const kind = kvConfig(env).kind
+  return kind === 'upstash' || kind === 'supabase' ? kind : 'none'
+}
+
+/** Constant-time compare, so the admin key can't be guessed a byte at a time. */
+export function adminKeyMatches(given, expected) {
+  const a = Buffer.from(String(given || ''), 'utf8')
+  const b = Buffer.from(String(expected || ''), 'utf8')
+  if (!a.length || !b.length || a.length !== b.length) return false
+  return timingSafeEqual(a, b)
 }
 
 function emailFromJwt(token) {
@@ -38,9 +53,10 @@ function emailFromJwt(token) {
 }
 
 async function requireOwner(req) {
+  // Header only: a key in the query string ends up in logs and browser history.
   const adminKey = String(process.env.VIDSO_ADMIN_KEY || '').trim()
-  const given = String(req.headers['x-admin-key'] || req.query?.admin_key || '').trim()
-  if (adminKey && given && given === adminKey) return { email: 'admin-key', owner: true }
+  const given = String(req.headers['x-admin-key'] || '').trim()
+  if (adminKey && given && adminKeyMatches(given, adminKey)) return { email: 'admin-key', owner: true }
 
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
   if (!token) {
@@ -181,8 +197,10 @@ export default async function handler(req, res) {
   try {
     owner = await requireOwner(req)
   } catch (e) {
-    return send(res, e.status || 401, { error: e.message || 'Unauthorized' })
+    return sendJson(res, e.status || 401, { error: e.message || 'Unauthorized' })
   }
+  // Every owner answer also says whether shared storage is on.
+  const reply = (r, status, body) => sendJson(r, status, body && typeof body === 'object' ? { kvKind: kvKind(), ...body } : body)
 
   const { apiKey, companyId } = whopConfig()
 
@@ -190,11 +208,11 @@ export default async function handler(req, res) {
   // WHOP_THREE_DS_LEVEL setting onto every mapped TubeOps plan. Checkout also does
   // this lazily; this is the explicit "turn it on now" path.
   if (req.query?.orchestration) {
-    if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
+    if (!apiKey) return reply(res, 200, { key: { configured: false, companyId } })
     const plans = await enableVidsoOrchestration()
     const failed = plans.filter((row) => !row.ok)
     const missingPerm = failed.some((row) => row.reason === 'missing_permission')
-    return send(res, 200, {
+    return reply(res, 200, {
       key: { configured: true, companyId },
       orchestration: {
         ok: failed.length === 0,
@@ -213,7 +231,7 @@ export default async function handler(req, res) {
   // ?payments=1 answers "why are charges failing?" rather than "why is this one
   // buyer locked out?". It reads the decline code Whop records per payment.
   if (req.query?.payments) {
-    if (!apiKey) return send(res, 200, { key: { configured: false, companyId } })
+    if (!apiKey) return reply(res, 200, { key: { configured: false, companyId } })
     const pages = Math.min(Math.max(Number(req.query.pages) || 3, 1), 8)
     const { rows, error } = await fetchRecentPayments(
       (path) => whopProbe(path),
@@ -222,7 +240,7 @@ export default async function handler(req, res) {
       pages,
     )
     if (error) {
-      return send(res, 200, {
+      return reply(res, 200, {
         key: { configured: true, companyId },
         payments: { ok: false, ...error },
         verdict: error.reason === 'missing_permission'
@@ -230,16 +248,16 @@ export default async function handler(req, res) {
           : 'Whop would not return payments: ' + error.message,
       })
     }
-    return send(res, 200, {
+    return reply(res, 200, {
       key: { configured: true, companyId },
       payments: summarizePayments(rows),
     })
   }
 
   const email = String(req.query?.email || emailsFromUser(owner)[0] || '').trim().toLowerCase()
-  if (!email) return send(res, 400, { error: 'Pass ?email= to diagnose an account.' })
+  if (!email) return reply(res, 400, { error: 'Pass ?email= to diagnose an account.' })
   if (!apiKey) {
-    return send(res, 200, {
+    return reply(res, 200, {
       key: { configured: false, companyId },
       target: email,
       verdict: verdict({ configured: false, member: {}, memberships: {}, lookup: {} }),
@@ -264,7 +282,7 @@ export default async function handler(req, res) {
 
   const lookup = await lookupPaidMembership({ email }, undefined, { force: true, deep: true })
 
-  return send(res, 200, {
+  return reply(res, 200, {
     key: { configured: true, companyId },
     target: email,
     verdict: verdict({ configured: true, member, memberships, lookup }),

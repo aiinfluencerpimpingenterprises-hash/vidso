@@ -25,7 +25,7 @@ import {
   saveYoutubeFromGoogleTokens,
   saveYoutubeRecord,
   uploadYoutubeFromArgs,
-  verifyPayload,
+  openPayload,
   youtubeApiSubpath,
   youtubeConfigured,
   youtubeDedicatedOAuth,
@@ -48,7 +48,7 @@ import { runManagerAgent } from '../../lib/manager-agent.js'
 import { runPublishAgent } from '../../lib/publish-agent.js'
 import { runChannelAgent } from '../../lib/channel-agent.js'
 import { runReferenceAgent } from '../../lib/reference-agent.js'
-import { runCompose, runScenePlanner } from '../../lib/scene-agent.js'
+import { clampComposeSegments, runCompose, runScenePlanner } from '../../lib/scene-agent.js'
 
 export const config = { maxDuration: 300 }
 
@@ -63,9 +63,18 @@ function redirect(res, url) {
   res.end()
 }
 
-function appReturn(req, path, extra = {}) {
+/** Only a path on this site: `//evil.com` and `/\\evil.com` are other hosts to a browser. */
+export function safeReturnPath(path) {
+  const p = String(path || '')
+  if (!p.startsWith('/') || p.startsWith('//') || p.startsWith('/\\')) return ''
+  if (/[\u0000-\u001f\u007f\\]/.test(p)) return ''
+  return p
+}
+
+export function appReturn(req, path, extra = {}) {
   const origin = requestOrigin(req)
-  const u = new URL((path && path.startsWith('/') ? path : '/video-generation'), origin)
+  let u = new URL(safeReturnPath(path) || '/video-generation', origin)
+  if (u.origin !== new URL(origin).origin) u = new URL('/video-generation', origin)
   Object.entries(extra).forEach(([k, v]) => {
     if (v != null && v !== '') u.searchParams.set(k, String(v))
   })
@@ -186,8 +195,8 @@ async function handleCallback(req, res) {
   let bridge
   let state
   try {
-    bridge = verifyPayload(cookies[YT_BRIDGE_COOKIE] || '')
-    state = verifyPayload(String(req.query.state || ''))
+    bridge = openPayload(cookies[YT_BRIDGE_COOKIE] || '')
+    state = openPayload(String(req.query.state || ''))
   } catch {
     return fail('expired')
   }
@@ -206,7 +215,7 @@ async function handleCallback(req, res) {
     rec.channel_title = channel.title
     rec.channel_thumb = channel.thumb
     rec.connected_at = new Date().toISOString()
-    if (rec.auto_upload == null) rec.auto_upload = true
+    if (rec.auto_upload == null) rec.auto_upload = false
     rec.privacy = normalizePrivacy(rec.privacy)
     await saveYoutubeRecord(bridge.token, rec)
     res.setHeader('Set-Cookie', bridgeCookieHeader('', { clear: true }))
@@ -333,12 +342,30 @@ function falKey() {
   return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
 }
 
+// The manager prompt is paid per token, so its context has a hard size cap.
+const MANAGER_CONTEXT_MAX = 8000
+
+/** The manager's context, at most 8000 characters of JSON: a small known subset, else nothing. */
+export function boundedManagerContext(context) {
+  if (!context || typeof context !== 'object' || Array.isArray(context)) return {}
+  let json = ''
+  try { json = JSON.stringify(context) } catch (_) { return {} }
+  if (json.length <= MANAGER_CONTEXT_MAX) return context
+  const out = {}
+  for (const [k, v] of Object.entries(context).slice(0, 40)) {
+    if (v == null || typeof v === 'boolean' || typeof v === 'number') out[k] = v
+    else if (typeof v === 'string') out[k] = v.slice(0, 300)
+  }
+  try { json = JSON.stringify(out) } catch (_) { return {} }
+  return json.length <= MANAGER_CONTEXT_MAX ? out : {}
+}
+
 /** Scene agent: scene descriptions for AI visuals, and joining stills into clips (lib/scene-agent.js). */
 async function handleScenes(req, res, body, mode) {
   const key = falKey()
   if (!key) return send(res, 501, { error: 'AI scenes are not configured on this deployment.' })
   try {
-    if (mode === 'compose') return send(res, 200, await runCompose({ segments: body?.segments, id: body?.id, ms: body?.ms, falKey: key }))
+    if (mode === 'compose') return send(res, 200, await runCompose({ segments: clampComposeSegments(body?.segments), id: body?.id, ms: body?.ms, falKey: key }))
     const scenes = (Array.isArray(body?.scenes) ? body.scenes : []).slice(0, 200)
     const out = await runScenePlanner({ scenes, topic: String(body?.topic || '').slice(0, 300), styleName: String(body?.style || '').slice(0, 60), character: String(body?.character || '').slice(0, 300), falKey: key })
     return send(res, 200, { scenes: out })
@@ -409,7 +436,7 @@ async function handleManager(req, res, body) {
       .map((h) => ({ from: h?.from === 'me' ? 'me' : 'manager', text: String(h?.text || '').slice(0, 300) }))
     const out = await runManagerAgent({
       message: message.slice(0, 1000),
-      context: body.context && typeof body.context === 'object' ? body.context : {},
+      context: boundedManagerContext(body.context),
       history,
       captionStyles: styles,
       falKey: key,

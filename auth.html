@@ -290,6 +290,9 @@ const paywallPricing = mountPricing(document.getElementById('paywall-plans'), {
   variant: 'paywall',
   cycle: 'annual',
   onCta: async (tier) => {
+    // A double click must not open two checkouts (two subscriptions).
+    if (window._checkoutAt && Date.now() - window._checkoutAt < 8000) return
+    window._checkoutAt = Date.now()
     // Open the tab while the click still counts as a user gesture. Safari (and
     // Chrome after ~5s) blocks a window.open that waits on these requests.
     const tab = window.open('', '_blank')
@@ -405,7 +408,11 @@ async function finishConnector(session) {
       sessionStorage.removeItem('vidso_auth_next')
       sessionStorage.removeItem('vidso_auth_intent')
     } catch (_) {}
-    location.replace(data.redirect)
+    // Only a real web address: never a javascript: or data: URL from the response.
+    let dest = null
+    try { dest = new URL(String(data.redirect)) } catch (_) {}
+    if (!dest || (dest.protocol !== 'https:' && dest.protocol !== 'http:')) throw new Error('Could not connect Claude. Try again.')
+    location.replace(dest.href)
   } catch (e) {
     prepareConnectorLogin()
     document.querySelectorAll('.auth-cta,.auth-google').forEach((b) => setLoading(b, false))

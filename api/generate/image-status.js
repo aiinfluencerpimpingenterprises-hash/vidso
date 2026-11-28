@@ -1,11 +1,19 @@
 import { dimsFromFalResult, urlsFromFalResult } from '../../lib/fal-image.js'
 import { urlsFromFalVideoResult } from '../../lib/fal-video.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
+import { claimFalRefund, readFalJobHandle, requestIdFromQueueUrl } from '../_lib/fal-job.js'
+import { addSceneAllowance, releaseStudioCredits } from '../../lib/usage-store.js'
 
 export const config = { maxDuration: 30 }
 
 function falKey() {
   return String(process.env.FAL_KEY || process.env.FAL_API_KEY || '').replace(/^Key\s+/i, '').trim()
+}
+
+function errorText(value) {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  return String(value.message || value.msg || JSON.stringify(value))
 }
 
 function isQueueUrl(url) {
@@ -25,8 +33,9 @@ export default async function handler(req, res) {
   }
   if (req.method !== 'POST') return send(res, 405, { error: 'Method not allowed' })
 
+  let user
   try {
-    await requireUser(req)
+    ;({ user } = await requireUser(req))
   } catch (e) {
     return send(res, e.status || 401, e.body || { error: e.message || 'Unauthorized' })
   }
@@ -41,6 +50,30 @@ export default async function handler(req, res) {
     return send(res, 400, { error: 'Missing generation handle' })
   }
 
+  // A job fal says failed is final: give back what it held (once, to its owner)
+  // and answer 422 so the client stops polling. Old clients send no handle and
+  // get the same 422 without a refund.
+  const failed = async (message) => {
+    let refunded = 0
+    let sceneBack = false
+    const job = readFalJobHandle(body.handle, user)
+    const rid = requestIdFromQueueUrl(statusUrl)
+    if (job && rid && job.rid === rid && (job.charge > 0 || job.free) && await claimFalRefund(rid)) {
+      if (job.charge > 0) {
+        try { await releaseStudioCredits(user, job.charge); refunded = job.charge } catch (_) {}
+      }
+      if (job.free) {
+        try { await addSceneAllowance(user, 1); sceneBack = true } catch (_) {}
+      }
+    }
+    return send(res, 422, {
+      error: String(message || 'Generation failed').slice(0, 400),
+      code: 'generation_failed',
+      refunded,
+      ...(sceneBack ? { sceneRefunded: true } : {}),
+    })
+  }
+
   try {
     const st = await fetch(statusUrl, { headers: { Authorization: 'Key ' + key } })
     const stText = await st.text()
@@ -52,10 +85,13 @@ export default async function handler(req, res) {
         : (status.detail || status.error || ('Image status ' + st.status))
       return send(res, 502, { error: String(errText).slice(0, 400) })
     }
-    if (status.status === 'FAILED' || status.status === 'CANCELLED') {
-      return send(res, 500, { error: status.error || ('Generation ' + String(status.status).toLowerCase()) })
+    const state = String(status.status || '').toUpperCase()
+    if (state === 'FAILED' || state === 'CANCELLED' || state === 'CANCELED' || state === 'ERROR') {
+      return failed(errorText(status.error) || ('Generation ' + state.toLowerCase()))
     }
-    if (status.status !== 'COMPLETED') return send(res, 200, { done: false })
+    if (state !== 'COMPLETED') return send(res, 200, { done: false })
+    // fal reports some failed jobs as COMPLETED with an error attached.
+    if (status.error) return failed(errorText(status.error))
 
     const r = await fetch(responseUrl, { headers: { Authorization: 'Key ' + key } })
     const rText = await r.text()
@@ -65,6 +101,8 @@ export default async function handler(req, res) {
       const errText = Array.isArray(result.detail)
         ? result.detail.map((d) => d.msg || d.message || JSON.stringify(d)).join('; ')
         : (result.detail || result.error || ('Image result ' + r.status))
+      // 422 is fal rejecting the finished job (bad input, safety filter): final.
+      if (r.status === 422) return failed(errText)
       return send(res, 502, { error: String(errText).slice(0, 400) })
     }
     const imageUrls = urlsFromFalResult(result)

@@ -1,5 +1,5 @@
 import { cors, readJson, send } from '../_lib/http.js'
-import { requestOrigin, verifyPayload } from '../../lib/youtube.js'
+import { requestOrigin } from '../../lib/youtube.js'
 import {
   assertRedirect,
   authorizeParamsFromNext,
@@ -11,6 +11,7 @@ import {
   oauthApiSubpath,
   parseForm,
   protectedResourceMetadata,
+  readOAuthPayload,
   readClient,
   refreshVidsoSession,
   registerClient,
@@ -79,13 +80,15 @@ function checkAuthorize(q, origin) {
   const challenge = String(q.get('code_challenge') || '')
   const method = String(q.get('code_challenge_method') || 'S256')
   const resource = String(q.get('resource') || canonicalMcpUrl(origin))
-  if (String(q.get('response_type') || 'code') !== 'code') return { error: 'unsupported_response_type', redirectUri, state }
-  if (!challenge || method.toUpperCase() !== 'S256') return { error: 'invalid_request', redirectUri, state }
+  // The client and its redirect come first: until they check out, an error must
+  // never be sent to the redirect_uri (that would be an open redirect).
   try {
     assertRedirect(readClient(clientId), redirectUri)
   } catch {
     return { error: 'unregistered', redirectUri: '', state }
   }
+  if (String(q.get('response_type') || 'code') !== 'code') return { error: 'unsupported_response_type', redirectUri, state }
+  if (!challenge || method.toUpperCase() !== 'S256') return { error: 'invalid_request', redirectUri, state }
   return { clientId, redirectUri, state, challenge, resource }
 }
 
@@ -138,12 +141,21 @@ async function handleConnectorSession(req, res) {
 
 async function handleToken(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'method_not_allowed' })
-  const body = await readTokenBody(req)
+  let body
+  try {
+    body = await readTokenBody(req)
+  } catch {
+    body = null // bad percent-encoding throws in decodeURIComponent
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return send(res, 400, { error: 'invalid_request', error_description: 'Malformed token request body' })
+  }
   const grant = String(body.grant_type || '')
+  const sentClient = String(body.client_id || '')
   try {
     if (grant === 'authorization_code') {
-      const payload = verifyPayload(String(body.code || ''))
-      if (payload.typ !== 'mcp_oauth_code') throw new Error('invalid_grant')
+      const payload = readOAuthPayload(String(body.code || ''), 'mcp_oauth_code')
+      if (sentClient && sentClient !== payload.client_id) throw new Error('invalid_grant')
       assertRedirect(readClient(payload.client_id), payload.redirect_uri)
       if (payload.redirect_uri !== String(body.redirect_uri || '')) {
         const err = new Error('redirect_uri mismatch')
@@ -164,8 +176,14 @@ async function handleToken(req, res) {
       }))
     }
     if (grant === 'refresh_token') {
-      const payload = verifyPayload(String(body.refresh_token || ''))
-      if (payload.typ !== 'mcp_oauth_refresh' || !payload.refresh) throw new Error('invalid_grant')
+      const payload = readOAuthPayload(String(body.refresh_token || ''), 'mcp_oauth_refresh', undefined, { legacy: true })
+      if (!payload.refresh) throw new Error('invalid_grant')
+      // A refresh token only works for the client it was issued to.
+      if (sentClient && sentClient !== String(payload.client_id || '')) {
+        const err = new Error('client_id mismatch')
+        err.body = { error: 'invalid_grant', error_description: 'This refresh token belongs to another client' }
+        throw err
+      }
       if (!payload.own) {
         // Connected before Claude had its own sign-in: refreshing would sign the
         // browser out, so send Claude back through sign-in once.

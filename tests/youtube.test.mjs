@@ -120,7 +120,8 @@ test('public status never includes tokens', () => {
     channel_title: 'Faceless Lab',
   }, { headers: { host: 'vidso.pro', 'x-forwarded-proto': 'https' } }, { configured: true })
   assert.equal(gisOnly.connected, true)
-  assert.equal(gisOnly.privacy, 'public')
+  assert.equal(gisOnly.privacy, 'private') // nothing chosen: never public by default
+  assert.equal(gisOnly.autoUpload, false) // off unless turned on
   assert.equal(JSON.stringify(gisOnly).includes('secret2'), false)
   const st = publicYoutubeStatus({
     refresh_token: 'secret',
@@ -174,11 +175,11 @@ test('redirect URI prefers env then canonical production host', () => {
   )
 })
 
-test('privacy falls back to public', () => {
+test('privacy falls back to private', () => {
   assert.equal(normalizePrivacy('unlisted'), 'unlisted')
   assert.equal(normalizePrivacy('public'), 'public')
-  assert.equal(normalizePrivacy('weird'), 'public')
-  assert.equal(normalizePrivacy(''), 'public')
+  assert.equal(normalizePrivacy('weird'), 'private')
+  assert.equal(normalizePrivacy(''), 'private')
 })
 
 test('oauth sidecar is hidden from My Files', () => {
@@ -327,14 +328,14 @@ test('YouTube settings uses visibility cards instead of a native select', () => 
   assert.match(dash, /My YouTube Channel/)
   assert.match(dash, /data-privacy="unlisted"/)
   assert.match(dash, /data-privacy="private"/)
-  assert.match(dash, /id="privacy" value="public"/)
-  assert.match(dash, /data-privacy="public" aria-checked="true"/)
+  assert.match(dash, /id="privacy" value="private"/) // private until the creator picks otherwise
+  assert.match(dash, /data-privacy="private" aria-checked="true"/)
   assert.doesNotMatch(dash, /<select id="privacy"/)
   assert.match(dash, /function ytChSetPrivacy/)
   assert.match(page, /data-privacy="unlisted"/)
   assert.match(page, /data-privacy="private"/)
-  assert.match(page, /id="privacy" value="public"/)
-  assert.match(page, /data-privacy="public" aria-checked="true"/)
+  assert.match(page, /id="privacy" value="private"/)
+  assert.match(page, /data-privacy="private" aria-checked="true"/)
   assert.doesNotMatch(page, /<select id="privacy"/)
   assert.match(js, /function setPrivacy/)
   assert.match(page, /id="yt-mcp-card"[^>]*\bdata-archived\b/)

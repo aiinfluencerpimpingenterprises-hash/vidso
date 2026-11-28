@@ -2,6 +2,10 @@ import { handleFacelessStudio } from '../../lib/faceless-studio-api.js'
 import { isStudioGatePath, studioRouteFromReq } from '../../lib/studio-gate.js'
 import { resolveVidsoUser, runGatedApi } from '../../lib/gate-run.js'
 import { railwayUpload } from '../../lib/railway-files.js'
+import { MB, safeFetch, safeFetchAllowed } from '../../lib/safe-fetch.js'
+
+const PART_MAX_BYTES = 25 * MB
+const JOINED_MAX_BYTES = 40 * MB
 
 export const config = { maxDuration: 300 }
 
@@ -43,19 +47,24 @@ async function concatVoiceoverParts(res, token, body) {
   const urls = Array.isArray(body?.urls) ? body.urls.map((u) => String(u || '').trim()).filter(Boolean) : []
   if (urls.length < 2) return send(res, 400, { error: 'Need at least two voiceover parts' })
   if (urls.length > 24) return send(res, 400, { error: 'Too many voiceover parts' })
+  // Only our storage and provider hosts: this server must not fetch whatever URL it is handed.
+  if (!urls.every(safeFetchAllowed)) return send(res, 400, { error: 'Voiceover host not allowed' })
   const parts = []
   let total = 0
   for (const url of urls) {
-    if (!/^https?:\/\//i.test(url)) return send(res, 400, { error: 'Invalid voiceover URL' })
-    const got = await fetch(url)
-    if (!got.ok) return send(res, 502, { error: 'Could not read a voiceover part' })
-    const buf = Buffer.from(await got.arrayBuffer())
-    total += buf.length
-    // ~40MB joined upload tends to trip Railway; fail early with a clear message.
-    if (total > 40 * 1024 * 1024) {
-      return send(res, 413, { error: 'Joined voiceover is too large to upload. Try a shorter script.' })
+    // ~40MB joined upload tends to trip Railway; stop reading as soon as it would pass that.
+    const room = JOINED_MAX_BYTES - total
+    let got
+    try {
+      got = await safeFetch(url, { maxBytes: Math.min(PART_MAX_BYTES, room) })
+    } catch (e) {
+      if (e.code === 'too_large') return send(res, 413, { error: 'Joined voiceover is too large to upload. Try a shorter script.' })
+      if (e.code === 'host_not_allowed') return send(res, 400, { error: 'Voiceover host not allowed' })
+      return send(res, 502, { error: 'Could not read a voiceover part' })
     }
-    parts.push(buf)
+    if (!got.ok) return send(res, 502, { error: 'Could not read a voiceover part' })
+    total += got.buffer.length
+    parts.push(got.buffer)
   }
   try {
     const rec = await railwayUpload(token, {
@@ -80,16 +89,23 @@ async function concatVoiceoverParts(res, token, body) {
 async function proxyVoiceoverPart(res, rawUrl) {
   const url = String(rawUrl || '').trim()
   if (!/^https?:\/\//i.test(url)) return send(res, 400, { error: 'Invalid voiceover URL' })
-  let host = ''
-  try { host = new URL(url).hostname } catch (_) { return send(res, 400, { error: 'Invalid voiceover URL' }) }
-  // Only proxy our upstream / common object-storage hosts.
-  const ok = /(railway\.app|r2\.cloudflarestorage\.com|amazonaws\.com|cloudfront\.net|supabase\.co|clipzo|vidso|elevenlabs|fal\.(media|ai)|googleusercontent\.com)/i.test(host)
-  if (!ok) return send(res, 400, { error: 'Voiceover host not allowed' })
-  const got = await fetch(url)
+  // Only proxy our upstream / object-storage / provider hosts (anchored match, no IPs).
+  if (!safeFetchAllowed(url)) return send(res, 400, { error: 'Voiceover host not allowed' })
+  let got
+  try {
+    got = await safeFetch(url, { maxBytes: PART_MAX_BYTES })
+  } catch (e) {
+    if (e.code === 'too_large') return send(res, 413, { error: 'Voiceover part is too large' })
+    if (e.code === 'host_not_allowed') return send(res, 400, { error: 'Voiceover host not allowed' })
+    return send(res, 502, { error: 'Could not read voiceover part' })
+  }
   if (!got.ok) return send(res, 502, { error: 'Could not read voiceover part' })
-  const buf = Buffer.from(await got.arrayBuffer())
+  const buf = got.buffer
+  // Never pass through a type that the browser would run as a page on our origin.
+  const type = String(got.headers.get('content-type') || '').split(';')[0].trim().toLowerCase()
   res.statusCode = 200
-  res.setHeader('Content-Type', got.headers.get('content-type') || 'audio/mpeg')
+  res.setHeader('Content-Type', /^(audio|video)\//.test(type) || type === 'application/octet-stream' ? type : 'audio/mpeg')
+  res.setHeader('X-Content-Type-Options', 'nosniff')
   res.setHeader('Cache-Control', 'private, max-age=60')
   res.setHeader('Access-Control-Allow-Origin', res.getHeader('Access-Control-Allow-Origin') || '*')
   return res.end(buf)
@@ -111,7 +127,14 @@ export default async function handler(req, res) {
     return res.end()
   }
 
-  const { subpath, segs, query } = studioRouteFromReq(req)
+  let route
+  try {
+    route = studioRouteFromReq(req)
+  } catch (e) {
+    // A path with `..`, `.`, encoded slashes and the like: refused before any upstream call.
+    return send(res, e.status || 400, { error: e.message || 'Invalid API path', code: e.code || 'invalid_path' })
+  }
+  const { subpath, segs, query } = route
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
   if (!token) return send(res, 401, { error: 'Missing token' })
 

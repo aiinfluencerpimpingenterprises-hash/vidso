@@ -4,6 +4,7 @@ import { evaluateFeature, evaluatePlan, evaluateStudioCredits, toHttp } from '..
 import { creditCharge, usesSceneAllowance } from '../../lib/studio-credits.js'
 import { addSceneAllowance, hydrateUsage, releaseStudioCredits, reserveStudioCredits, takeSceneAllowance } from '../../lib/usage-store.js'
 import { cors, readJson, requireUser, send } from '../_lib/http.js'
+import { falJobHandle } from '../_lib/fal-job.js'
 
 export const config = { maxDuration: 30 }
 
@@ -43,6 +44,12 @@ export default async function handler(req, res) {
     if (!gate.ok) return send(res, 403, { error: gate.message, code: gate.code, requiredTier: gate.requiredTier })
   }
 
+  const imageInput = (numImages) => falImageInput(body.model, prompt, {
+    aspect: body.aspect_ratio || body.aspect,
+    num_images: numImages,
+    resolution: quality || body.resolution,
+    image_urls: body.image_urls,
+  })
   let built
   try {
     built = wantVideo
@@ -55,14 +62,23 @@ export default async function handler(req, res) {
           ? body.image_urls
           : (body.image_url ? [body.image_url] : []),
       })
-      : falImageInput(body.model, prompt, {
-        aspect: body.aspect_ratio || body.aspect,
-        num_images: body.num_images,
-        resolution: quality || body.resolution,
-        image_urls: body.image_urls,
-      })
+      : imageInput(body.num_images)
   } catch (e) {
     return send(res, 400, { error: e.message, code: e.code })
+  }
+
+  // A video's own scenes are already paid for by its minutes, up to its allowance.
+  // Redraws past that, character scenes and animation cost credits.
+  const free = !wantVideo && usesSceneAllowance({ scene: body.scene === true, model: built.model.id, refs: built.input.image_urls })
+    && await takeSceneAllowance(user)
+  // One free scene is one picture: never let it carry a batch of four.
+  if (free && Number(built.input.num_images) !== 1) {
+    try {
+      built = imageInput(1)
+    } catch (e) {
+      try { await addSceneAllowance(user, 1) } catch (_) {}
+      return send(res, 400, { error: e.message, code: e.code })
+    }
   }
 
   const { endpoint, input, model, size } = built
@@ -80,10 +96,6 @@ export default async function handler(req, res) {
     scene: body.scene === true,
   })
   const usage = await hydrateUsage(user)
-  // A video's own scenes are already paid for by its minutes, up to its allowance.
-  // Redraws past that, character scenes and animation cost credits.
-  const free = !wantVideo && usesSceneAllowance({ scene: body.scene === true, model: model.id, refs: input.image_urls })
-    && await takeSceneAllowance(user)
   const credits = free
     ? { ok: true, charge: 0, limit: 0, remaining: null }
     : evaluateStudioCredits({ user, cost: charge, used: usage.studio_credits_used, carry: usage.credits_carry })
@@ -146,6 +158,9 @@ export default async function handler(req, res) {
       creditsCharged: credits.charge,
       creditsRemaining: remaining,
       creditsLimit: credits.limit,
+      // Send back to /api/generate/image-status: it lets a failed job give its
+      // credits (or free scene) back once, to this user only.
+      handle: falJobHandle({ user, requestId: data.request_id, charge: held, free }),
     })
   } catch (e) {
     await refund()

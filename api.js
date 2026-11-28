@@ -202,6 +202,8 @@ async function generateFalMedia(body, { timeoutMs, waitLabel } = {}) {
       st = await reqTo(pollUrl, 'POST', {
         statusUrl: start.statusUrl,
         responseUrl: start.responseUrl,
+        // Lets the server give the credits back once if fal fails the job.
+        ...(start.handle ? { handle: start.handle } : {}),
       }, false, { timeoutMs: 20000 })
       misses = 0
     } catch (e) {
@@ -688,7 +690,8 @@ export const api = {
     searchBroll: (body) => req('POST', '/api/faceless/broll/search', body),
     // body: { voiceover_url, duration, words, timeline, aspect, caption, music }
     startRender: (body) => gatedReq('POST', '/api/faceless/render', body),
-    pollRender: (jobId) => req('GET', `/api/faceless/render/${jobId}`),
+    // A status check that hangs must not freeze the render poll (it skips ticks while one is in flight).
+    pollRender: (jobId) => reqTo(BASE + `/api/faceless/render/${jobId}`, 'GET', null, false, { timeoutMs: 30000 }),
     /** Server-side copy of a finished render into My Files; returns { url }. */
     saveRender: (jobId, title) => reqTo(sameOriginApi('/api/youtube/runs?op=save-render'), 'POST', { jobId, title: title || '' }, false, { timeoutMs: 295000 }),
     /** True when API calls go through the /rapi proxy, where big downloads are unreliable. */

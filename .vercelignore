@@ -1,0 +1,7 @@
+# Not part of the site: keep internal notes, tests and dev scripts off the public web.
+docs/
+tests/
+scripts/
+*.md
+channel-farm-styles.jpg
+.DS_Store

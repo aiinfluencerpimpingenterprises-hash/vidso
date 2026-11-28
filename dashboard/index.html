@@ -6210,17 +6210,17 @@ src="https://www.facebook.com/tr?id=4458410001098183&ev=PageView&noscript=1"
                 <strong>Visibility</strong>
                 <span>For new uploads</span>
               </div>
-              <input type="hidden" id="privacy" value="public">
+              <input type="hidden" id="privacy" value="private">
               <div class="yt-ch-vis-opts" role="radiogroup" aria-label="YouTube visibility">
                 <button type="button" class="yt-ch-vis-opt" role="radio" data-privacy="unlisted" aria-checked="false">
                   <b>Unlisted</b>
                   <span>Anyone with the link</span>
                 </button>
-                <button type="button" class="yt-ch-vis-opt" role="radio" data-privacy="private" aria-checked="false">
+                <button type="button" class="yt-ch-vis-opt is-on" role="radio" data-privacy="private" aria-checked="true">
                   <b>Private</b>
                   <span>Only you can watch</span>
                 </button>
-                <button type="button" class="yt-ch-vis-opt is-on" role="radio" data-privacy="public" aria-checked="true">
+                <button type="button" class="yt-ch-vis-opt" role="radio" data-privacy="public" aria-checked="false">
                   <b>Public</b>
                   <span>Live on your channel</span>
                 </button>
@@ -7350,6 +7350,10 @@ window.doLogout = async () => {
   try {
     for (const k of Object.keys(sessionStorage)) if (k.startsWith('vidso_agents_chat')) sessionStorage.removeItem(k)
     for (const k of Object.keys(localStorage)) if (k.startsWith('vidso_agents_run') || k === 'vidso_server_run' || k === 'vidso_video_channel') localStorage.removeItem(k)
+    // Work in progress that isn't stored per account: the Studio draft, the half-done channel setup,
+    // the old shared Editor list and job memory.
+    for (const k of ['vidso_faceless_draft', 'vidso_faceless_media', 'vidso_faceless_preview']) sessionStorage.removeItem(k)
+    for (const k of ['vidso_cc_draft', 'vidso_edit_projects', 'tubeops_render_job', 'tubeops_media_part_jobs', 'tubeops_picked_plan', 'vidso_landing_topic']) localStorage.removeItem(k)
   } catch (_) {}
   clearSession()
   currentUser = null
@@ -7461,7 +7465,7 @@ function ytChSetMsg(text, kind) {
   el.className = 'yt-ch-msg' + (kind === 'err' ? ' is-err' : kind === 'ok' ? ' is-ok' : '')
 }
 function ytChSetPrivacy(value) {
-  const val = value === 'private' || value === 'unlisted' ? value : 'public'
+  const val = value === 'public' || value === 'unlisted' ? value : 'private'
   const input = document.getElementById('privacy')
   if (input) input.value = val
   document.querySelectorAll('#panel-youtube [data-privacy]').forEach((btn) => {
@@ -7510,7 +7514,7 @@ function renderYoutubeChannel(st) {
   }
   const auto = document.getElementById('yt-ch-auto')
   if (auto) auto.checked = st.autoUpload !== false
-  ytChSetPrivacy(st.privacy || 'public')
+  ytChSetPrivacy(st.privacy || 'private')
 }
 async function refreshYoutubeSettings() {
   if (typeof uiPreviewMode === 'function' && uiPreviewMode()) {
@@ -9209,6 +9213,9 @@ window.startCheckout = async (tier) => {
     setPaywallStatus('To switch plans, cancel your current plan in Whop (you keep it until the end of what you paid for), then pick the new plan here. Questions: support@tubeops.pro', null)
     return
   }
+  // A double click must not open two checkouts (two subscriptions).
+  if (window._fvCheckoutAt && Date.now() - window._fvCheckoutAt < 8000) return
+  window._fvCheckoutAt = Date.now()
   pendingCheckoutTier(tier)
   try { localStorage.removeItem(PICKED_PLAN_KEY) } catch (_) {}
   const email = String(currentUser?.email || '').trim()
@@ -10057,7 +10064,8 @@ async function fvApplyAiScenes(job) {
     scenes: scenes.map((sc) => ({ i: sc.i, start: sc.start, end: sc.end, text: sc.text, prompt: prompts[sc.i] || sc.text, image: images[sc.i] || '', clip: clips[sc.i] || '' })),
   }
   // A clip the user attached in chat plays as the opening scene.
-  if (fvState.openingClip && fvState.sceneProject.scenes[0]) { fvState.sceneProject.scenes[0].clip = fvState.openingClip; fvState.sceneProject.scenes[0].own = true }
+  // The attached clip opens this video only; later videos start without it.
+  if (fvState.openingClip && fvState.sceneProject.scenes[0]) { fvState.sceneProject.scenes[0].clip = fvState.openingClip; fvState.sceneProject.scenes[0].own = true; fvState.openingClip = null }
   say('Joining the scenes')
   fvQueueSaveEditProject()
   const timeline = await fvTimelineFromScenes(fvState.sceneProject)
@@ -10390,9 +10398,80 @@ function fvSetScriptAiLock(used) {
 }
 
 /** Wipe the generated script UI and return to the Generate Script form. */
-window.fvClearScript = (opts = {}) => {
+/** Short stable hash of a string (FNV-1a), for remembering which narration parts are done. */
+function fvHashText(str) {
+  let h = 2166136261
+  const t = String(str || '')
+  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return (h >>> 0).toString(36) + ':' + t.length
+}
+/** Narration part job ids by part (text + voice), kept for a day so a reload or "Try again" checks on the
+ *  paid job instead of recording it again. Small: ids only, the results come back from the server. */
+const FV_PART_JOBS_KEY = 'tubeops_media_part_jobs'
+function fvPartJobs() {
+  try {
+    const all = JSON.parse(localStorage.getItem(FV_PART_JOBS_KEY) || '{}') || {}
+    const out = {}
+    for (const [k, v] of Object.entries(all)) if (v && v.id && Date.now() - (Number(v.at) || 0) < 86400e3) out[k] = v.id
+    return out
+  } catch (_) { return {} }
+}
+function fvRememberPartJob(key, id) {
+  try {
+    const all = JSON.parse(localStorage.getItem(FV_PART_JOBS_KEY) || '{}') || {}
+    all[key] = { id, at: Date.now() }
+    const keep = Object.entries(all).sort((a, b) => (b[1].at || 0) - (a[1].at || 0)).slice(0, 40)
+    localStorage.setItem(FV_PART_JOBS_KEY, JSON.stringify(Object.fromEntries(keep)))
+  } catch (_) {}
+}
+/** The render in progress, kept so a reload can reconnect to it instead of paying for a new one. */
+const FV_RENDER_JOB_KEY = 'tubeops_render_job'
+function fvRememberRenderJob(id) {
+  try { if (id) localStorage.setItem(FV_RENDER_JOB_KEY, JSON.stringify({ id, media: fvState.media?.jobId || '', at: Date.now() })); else localStorage.removeItem(FV_RENDER_JOB_KEY) } catch (_) {}
+}
+function fvSavedRenderJob() {
+  try {
+    const v = JSON.parse(localStorage.getItem(FV_RENDER_JOB_KEY) || 'null')
+    return v && v.id && Date.now() - (Number(v.at) || 0) < 6 * 3600e3 ? v : null
+  } catch (_) { return null }
+}
+/**
+ * After a reload stopped a video: pick it up where it was instead of starting over.
+ * A render in progress reconnects; finished narration goes on to render; a restored script goes on to narration.
+ * Returns '' when it continued, or a message.
+ */
+window.fvResumeAfterReload = () => {
+  if (fvState.scriptBusy || fvState.mediaPoll || fvState.renderPoll) return 'The team is already working on it.'
+  const saved = fvSavedRenderJob()
+  const hasMedia = voiceoverPlaylist(fvState.media).length > 0
+  if (hasMedia && saved && (!saved.media || saved.media === fvState.media?.jobId) && !fvState.renderUrl) {
+    fvState.renderJobId = saved.id
+    fvState.deliveryOn = false
+    return window.fvResumeRender() || ''
+  }
+  if (hasMedia) return window.fvAgentsRerender?.('Rendering the video') || ''
+  if (fvState.script) {
+    fvState.logOn = true
+    fvState.autoChain = true
+    fvState.crew = { stage: 'media', p: 0 }
+    try { window.fvContinueToMedia(true) } catch (e) { return e.message || 'Could not continue the video.' }
+    return ''
+  }
+  return 'NO_DRAFT'
+}
+/** Stop everything still running for the current video: waits end, the crew goes idle, busy flags clear. */
+function fvStopInFlight() {
+  try { fvState.mediaWaitCancel?.() } catch (_) {}
   try { if (fvState.mediaPoll) clearInterval(fvState.mediaPoll) } catch (_) {}
   try { if (fvState.renderPoll) clearInterval(fvState.renderPoll) } catch (_) {}
+  fvState.mediaPoll = null
+  fvState.renderPoll = null
+  fvState.autoChain = false
+  if (fvState.crew && fvState.crew.stage !== 'done') fvState.crew = null
+  try { fvCrewReset() } catch (_) {}
+}
+window.fvClearScript = (opts = {}) => {
+  fvStopInFlight()
   fvState.script = null
   try { fvRenderTitleOptions(null) } catch (_) {}
   // The next video starts with no scenes and its own saved-project entry, and any
@@ -10404,6 +10483,14 @@ window.fvClearScript = (opts = {}) => {
   fvState.deliveryOn = false
   fvState.thumb = null
   fvState.publish = null
+  // A thumbnail or description still being made for the old video must not land on the next one (they check runEpoch).
+  fvState.thumbBusy = false
+  fvState.publishBusy = false
+  fvState.mediaParts = {}
+  fvState.failed = null
+  fvState.madeIn = ''
+  fvState.hookScore = null
+  fvState.ytVideoId = null
   fvState.agentLog = []
   try { fvPaintDelivery(); fvRenderAgentLog() } catch (_) {}
   fvState.scriptAiUsed = false
@@ -10768,18 +10855,36 @@ function fvThumbError(e) {
 }
 // Thumbnail agent: picks the best 2026 style for the topic, builds the art direction from the
 // chosen title and the opening line, and lets Nano Banana Pro design it (lib/thumbnail-styles.js).
+/** "Give me a thumbnail for a video on memecoins" -> "memecoins". */
+function fvThumbTopicFrom(note) {
+  const n = String(note || '').trim()
+  const m = n.match(/\b(?:video|thumbnail|one)\s+(?:on|about|for)\s+(?:(?:a|my|the)\s+)?(?:(?:youtube\s+)?video\s+(?:on|about|for)\s+)?(.+)$/i)
+  const t = (m ? m[1] : '').replace(/[.!?]+$/, '').trim()
+  return t.length >= 2 ? t.slice(0, 120) : ''
+}
 async function fvThumbAgent(opts = {}) {
   const note = String(opts.note || '').trim().slice(0, 300)
-  const script = fvState.script
-  if (!script || fvState.thumbBusy) return
+  if (fvState.thumbBusy) return
+  // No video in this chat (or its script failed): a thumbnail can still be made on its own, from
+  // the topic in the request ("a thumbnail for a video on memecoins") or the last one asked for.
+  let script = fvState.script
+  const alone = !script
+  if (alone) {
+    const t = fvThumbTopicFrom(note) || fvThumbTopicFrom(opts.request) || fvState.thumbTopic || ''
+    if (!t) throw new Error('Tell me what the video is about, for example "a thumbnail for a video on memecoins".')
+    fvState.thumbTopic = t
+    script = { title: t.charAt(0).toUpperCase() + t.slice(1), topic: t, sections: [] }
+  }
   fvState.thumbBusy = true
-  const topic = document.getElementById('fv-topic')?.value || script.topic || ''
+  const epoch = fvState.runEpoch || 0
+  const stale = () => (fvState.runEpoch || 0) !== epoch
+  const topic = alone ? script.topic : (document.getElementById('fv-topic')?.value || script.topic || '')
   const title = script.title || topic
   const refs = (Array.isArray(opts.refs) ? opts.refs : []).filter((u) => /^https?:/.test(String(u || ''))).slice(0, 3)
   // A change to the thumbnail we already have edits that image (same style, same layout);
   // only "another style" or a first thumbnail designs a new one.
   const current = fvState.thumb?.url && /^https?:/.test(fvState.thumb.url) ? fvState.thumb : null
-  const edit = !!(opts.edit && current && note)
+  const edit = !!(opts.edit && current && note && !(alone && (fvThumbTopicFrom(note) || fvThumbTopicFrom(opts.request))))
   const ranked = pickThumbnailStyles(title + ' ' + topic)
   if (opts.next && !edit) fvState.thumbTurn = (Number(fvState.thumbTurn) || 0) + 1
   const styleId = edit ? (current.styleId || ranked[0]) : ranked[(Number(fvState.thumbTurn) || 0) % ranked.length]
@@ -10830,15 +10935,18 @@ async function fvThumbAgent(opts = {}) {
     })
     const url = rec?.storage_url || rec?.url
     if (!url) throw new Error('No image came back.')
+    if (stale()) return // a new video started while this was drawing: it is not this video's thumbnail
     setTimeout(() => { try { fvQueueSaveEditProject() } catch (_) {} ; try { fvNotifyStudio() } catch (_) {} }, 0) // keep the new thumbnail with the saved project (here and in the Studio project)
     fvState.thumb = edit ? { url, styleId, style: name, title, concept: current.concept } : { url, styleId, style: fvState.thumbConceptNow?.recipe ? fvState.thumbConceptNow.recipe + ' thumbnail' : name, title, concept: fvState.thumbConceptNow || null }
-    fvCrewSet('thumbnail', 'done', name + ' thumbnail ready')
+    fvCrewSet('thumbnail', 'done', String(name).replace(/\s*thumbnail$/i, '') + ' thumbnail ready')
     try { await window.fsAttachThumbnail?.(rec, 'Thumbnail · ' + name) } catch (_) {}
   } catch (e) {
+    if (stale()) return
     const prev = fvState.thumb?.prev
     fvState.thumb = prev ? { url: prev, style: name } : { error: fvThumbError(e) }
     fvCrewSet('thumbnail', 'stuck', fvThumbError(e))
   } finally {
+    if (stale()) return
     fvState.thumbBusy = false
     fvState.logOn = was || fvState.logOn
     fvPaintDelivery()
@@ -10930,10 +11038,18 @@ function fvAgentsChanged() {
 // ── Saved edit projects: a finished video's scenes, narration and timing ─────
 // Kept in this browser so the Editor reopens a video after a reload. Up to 8,
 // newest first; each is keyed by the narration job so re-saves replace it.
-const FV_EDIT_KEY = 'vidso_edit_projects'
+// Saved Editor projects belong to the signed-in account (the next account on this browser never sees them).
+const FV_EDIT_KEY_OLD = 'vidso_edit_projects'
+const fvEditKey = () => FV_EDIT_KEY_OLD + ':' + String(currentUser?.id || currentUser?.user_id || currentUser?.email || 'guest')
 let fvEditSaveT = 0
 function fvEditProjects() {
-  try { const v = JSON.parse(localStorage.getItem(FV_EDIT_KEY) || '[]'); return Array.isArray(v) ? v : [] } catch (_) { return [] }
+  try {
+    // One-time move of the old shared list to the account signed in now.
+    const old = localStorage.getItem(FV_EDIT_KEY_OLD)
+    if (old && currentUser && !localStorage.getItem(fvEditKey())) localStorage.setItem(fvEditKey(), old)
+    if (old && currentUser) localStorage.removeItem(FV_EDIT_KEY_OLD)
+    const v = JSON.parse(localStorage.getItem(fvEditKey()) || '[]'); return Array.isArray(v) ? v : []
+  } catch (_) { return [] }
 }
 function fvSaveEditProject() {
   const p = fvState.sceneProject
@@ -10958,7 +11074,7 @@ function fvSaveEditProject() {
   }
   const list = [rec, ...fvEditProjects().filter((x) => x.id !== id)].slice(0, 8)
   for (let n = list.length; n > 0; n--) {
-    try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(list.slice(0, n))); return } catch (_) { /* full: keep fewer */ }
+    try { localStorage.setItem(fvEditKey(), JSON.stringify(list.slice(0, n))); return } catch (_) { /* full: keep fewer */ }
   }
 }
 function fvQueueSaveEditProject() {
@@ -10996,7 +11112,7 @@ window.fvSaveEditProjectNow = () => { try { fvSaveEditProject() } catch (_) {} }
 window.fvForgetEditProject = (id) => {
   // Forgetting the open video also stops it being saved again a moment later.
   if (id === fvState.editProjectId) { clearTimeout(fvEditSaveT); fvState.editProjectId = null; fvState.sceneProject = null }
-  try { localStorage.setItem(FV_EDIT_KEY, JSON.stringify(fvEditProjects().filter((x) => x.id !== id))) } catch (_) {}
+  try { localStorage.setItem(fvEditKey(), JSON.stringify(fvEditProjects().filter((x) => x.id !== id))) } catch (_) {}
   fvAgentsChanged()
 }
 window.fvAgentsState = () => {
@@ -11221,10 +11337,11 @@ window.fvTitleSteer = async (note) => {
     fvState.logOn = was || fvState.logOn
   }
 }
-window.fvThumbSteer = (note, refs = []) => {
+/** `request` is the user's own words, when the Manager passes its summary as `note`. */
+window.fvThumbSteer = (note, refs = [], request = '') => {
   const n = String(note || '')
-  const fresh = /\b(new|another|different|other)\s+(style|thumbnail|design|one|look)\b|\bstart over\b|\bfrom scratch\b/i.test(n)
-  return fvThumbAgent({ next: true, note: n, refs, edit: !fresh })
+  const fresh = /\b(new|another|different|other)\s+(style|thumbnail|design|one|look)\b|\bstart over\b|\bfrom scratch\b/i.test(n) || !!fvThumbTopicFrom(n) || !!fvThumbTopicFrom(request)
+  return fvThumbAgent({ next: true, note: n, refs, edit: !fresh, request })
 }
 /** An image pasted or dropped into a chat box: upload it and return its public link. */
 window.fvUploadChatImage = async (file) => {
@@ -11339,6 +11456,8 @@ async function fvPublishAgent() {
   if (!s || fvState.publishBusy) return
   fvState.publishBusy = true
   fvState.publish = null
+  const epoch = fvState.runEpoch || 0
+  const stale = () => (fvState.runEpoch || 0) !== epoch
   fvAgentLog('publish', 'Writing the YouTube description and tags', 'working')
   fvAgentsChanged()
   try {
@@ -11348,13 +11467,16 @@ async function fvPublishAgent() {
       script: String(s.full_script || (s.sections || []).map((x) => x.text).join('\n\n')).slice(0, 6000),
       niche: window.vidsoNiche || '',
     })
+    if (stale()) return
     if (!out?.description) throw new Error(out ? 'No description came back' : 'Descriptions are written on the live app')
     fvState.publish = { description: out.description, tags: Array.isArray(out.tags) ? out.tags : [] }
     fvAgentLog('publish', 'Description and ' + fvState.publish.tags.length + ' tags ready; chapters are added from the script', 'done')
   } catch (e) {
+    if (stale()) return
     fvState.publish = { error: e.message || 'Publish agent failed' }
     fvAgentLog('publish', e.message || 'Publish agent failed', 'stuck')
   } finally {
+    if (stale()) return
     fvState.publishBusy = false
     fvAgentsChanged()
     try { window.fvStudioOnChange?.() } catch (_) {}
@@ -11532,10 +11654,12 @@ window.fvRecentFiles = async () => {
     .slice(0, 12)
 }
 /** A clip attached in chat plays as the opening scene: now if the scenes exist, or when they are drawn. */
-window.fvSetOpeningClip = async (url) => {
+/** opts.next: keep it for the next video only (the loaded video belongs to another channel). */
+window.fvSetOpeningClip = async (url, opts = {}) => {
   fvState.openingClip = String(url || '')
-  const sc = fvState.sceneProject?.scenes?.[0]
+  const sc = opts.next ? null : fvState.sceneProject?.scenes?.[0]
   if (!sc || !url) return ''
+  fvState.openingClip = null // used now, by this video
   sc.clip = url
   sc.own = true
   fvState.sceneProject.edits++
@@ -12246,8 +12370,7 @@ window.fvContinueToMedia = (allowShort) => {
 }
 
 window.fvBackToEditor = () => {
-  fvState.autoChain = false
-  if (fvState.mediaPoll) { clearInterval(fvState.mediaPoll); fvState.mediaPoll = null }
+  fvStopInFlight()
   fvPausePreview()
   fvState.phase = 1
   document.getElementById('fv-media-box')?.classList.remove('show')
@@ -12497,6 +12620,8 @@ function fvWaitForMediaJob(jobId, label) {
   return new Promise((resolve, reject) => {
     fvState.mediaJobId = jobId
     fvStopMediaPoll()
+    // "Back to script" or a new video stops this wait (rejecting it), so nothing is left "working".
+    fvState.mediaWaitCancel = () => { fvStopMediaPoll(); fvState.mediaWaitCancel = null; const e = new Error('Stopped'); e.cancelled = true; reject(e) }
     let misses = 0
     let busy = false
     let nextAt = 0
@@ -12514,13 +12639,18 @@ function fvWaitForMediaJob(jobId, label) {
         misses = 0
         document.getElementById('fv-media-bar').style.width = Math.max(5, job.progress || 0) + '%'
         fvCrewProgress('media', job.progress)
-        if (job.status === 'processing' || job.status === 'queued') {
+        const jst = String(job.status || '').toLowerCase()
+        const failedJob = ['error', 'failed', 'failure', 'cancelled', 'canceled'].includes(jst)
+        const finished = ['done', 'complete', 'completed', 'success', 'succeeded', 'ready'].includes(jst) || (!jst && !!(job.voiceover_url || job.voiceover_urls?.length))
+        if (!failedJob && !finished) {
+          // processing / queued / anything new: keep waiting (the 45-minute limit still applies).
           fvSetMediaStatus(job.step || label || 'Processing…', 'loading')
           busy = false
           return
         }
         fvStopMediaPoll()
-        if (job.status === 'error') {
+        fvState.mediaWaitCancel = null
+        if (failedJob) {
           // The job's credits come back; the server checks with Railway that it really failed.
           let back = 0
           try { back = Number((await api.faceless.refundMedia(jobId))?.refunded) || 0 } catch (_) {}
@@ -12557,7 +12687,7 @@ function fvVideoCreditEstimate(seconds) {
   return estimateVideoCredits({ seconds, pace: vis.pace, mode: vis.mode, character: !!vis.characterUrl }).total
 }
 
-async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label, first = false) {
+async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label, first = false, onJob) {
   try { await ensureFreshToken() } catch (_) {}
   const { jobId } = await api.faceless.startMedia({
     script: {
@@ -12580,6 +12710,7 @@ async function fvStartOneMediaJob(chunk, extras, voiceOpts, voiceId, label, firs
     scene_pace: fvVisual().pace || 'normal',
     ...(first ? { credits_needed: fvVideoCreditEstimate(fvOwnScriptSeconds() || extras.duration_seconds) } : {}),
   })
+  try { onJob?.(jobId) } catch (_) {}
   return fvWaitForMediaJob(jobId, label)
 }
 
@@ -12769,6 +12900,10 @@ window.fvStartMedia = async (force) => {
 
   try {
     const jobs = []
+    // Parts already recorded (same text, voice and settings) are reused on "Try again", so a failure
+    // in part 4 of 6 doesn't pay for parts 1-3 twice. The memory goes with the script (fvClearScript).
+    const partKey = (chunk) => fvHashText([voiceId, JSON.stringify(voiceOpts), extras.duration_id, chunk.full_script || (chunk.sections || []).map((x) => x.text).join('\n')].join('|'))
+    if (!fvState.mediaParts || typeof fvState.mediaParts !== 'object') fvState.mediaParts = {}
     for (let i = 0; i < chunks.length; i++) {
       const label = chunks.length > 1
         ? 'Building voiceover + B-roll (' + (i + 1) + ' of ' + chunks.length + ')…'
@@ -12776,7 +12911,15 @@ window.fvStartMedia = async (force) => {
       fvSetMediaStatus(label, 'loading')
       document.getElementById('fv-media-bar').style.width = Math.max(5, Math.round((i / chunks.length) * 90)) + '%'
       if (stale()) return
-      jobs.push(await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label, i === 0))
+      const key = partKey(chunks[i])
+      let job = !force && fvState.mediaParts[key]
+      // After a reload the result is gone but the paid job may still be on the server: check on it first.
+      const known = !job && !force ? fvPartJobs()[key] : ''
+      if (known) { try { job = await fvWaitForMediaJob(known, label) } catch (e) { if (e?.cancelled) throw e; job = null } }
+      if (stale()) return
+      if (!job) job = await fvStartOneMediaJob(chunks[i], extras, voiceOpts, voiceId, label, i === 0, (id) => fvRememberPartJob(key, id))
+      fvState.mediaParts[key] = job
+      jobs.push(job)
     }
     if (stale()) return
     let ready = chunks.length === 1 ? jobs[0] : mergeMediaJobs(jobs)
@@ -12810,6 +12953,7 @@ window.fvStartMedia = async (force) => {
     fvCrewMediaDone()
   } catch (e) {
     fvStopMediaPoll()
+    if (e?.cancelled || stale()) return // stopped on purpose (Back to script / new video): nothing failed
     if (isVoiceoverJoinError(e) && !force) {
       // Join/download must never fail Media — parts are already on the CDN.
       try {
@@ -14059,6 +14203,7 @@ window.fvStartExport = async (opts = {}) => {
         : null,
     })
     fvState.renderJobId = jobId
+    fvRememberRenderJob(jobId)
     fvState.renderPicked = picked
     fvPollRenderJob(jobId, picked, btn)
   } catch (e) {
@@ -14083,22 +14228,37 @@ function fvPollRenderJob(jobId, picked, btn) {
   if (fvState.renderPoll) clearInterval(fvState.renderPoll)
   let misses = 0
   let busy = false
+  const startedAt = Date.now()
+  // A render worker that dies leaves the job "processing" forever: give up after 75 minutes.
+  const deadline = 75 * 60 * 1000
   fvState.renderPoll = setInterval(async () => {
     if (busy) return
+    if (Date.now() - startedAt > deadline) {
+      clearInterval(fvState.renderPoll)
+      fvState.renderPoll = null
+      if (btn) btn.disabled = false
+      fvSetExportStatus('The render is taking far too long. Try again.', 'err')
+      fvCrewFail('render', 'The render is taking far too long (over 75 minutes). Try again.')
+      return
+    }
     busy = true
       try {
         const job = await api.faceless.pollRender(jobId)
         if (misses) { misses = 0; fvCrewSet('editor', 'working', 'Back online, still rendering') }
         document.getElementById('fv-export-bar').style.width = Math.max(3, job.progress || 0) + '%'
         fvCrewProgress('render', job.progress)
-        if (job.status === 'queued' || job.status === 'processing') {
+        const rst = String(job.status || '').toLowerCase()
+        const renderFailed = ['error', 'failed', 'failure', 'cancelled', 'canceled'].includes(rst)
+        const renderDone = ['done', 'complete', 'completed', 'success', 'succeeded', 'ready'].includes(rst) || (!rst && !!(job.url || job.video_url || job.output_url))
+        if (!renderFailed && !renderDone) {
           fvSetExportStatus(job.step || 'Rendering…', 'loading')
           return
         }
         clearInterval(fvState.renderPoll)
         fvState.renderPoll = null
         if (btn) btn.disabled = false
-        if (job.status === 'error') {
+        fvRememberRenderJob('') // finished either way: nothing to reconnect to after a reload
+        if (renderFailed) {
           fvSetExportStatus(job.error || 'Render failed', 'err')
           fvCrewFail('render', job.error || 'Render failed')
           return
@@ -14232,7 +14392,7 @@ window.fvUploadToYoutube = async (opts = {}) => {
     const title = (fvState.script?.title || 'TubeOps video').slice(0, 100)
     const description = fvPublishDescription().slice(0, 4900)
     const tags = Array.isArray(fvState.publish?.tags) && fvState.publish.tags.length ? fvState.publish.tags : ['tubeops']
-    const privacy = st.privacy || 'public'
+    const privacy = st.privacy || 'private'
     let result
     try {
       const tok = await youtubeAccessToken()
@@ -14276,13 +14436,22 @@ window.fvUploadToYoutube = async (opts = {}) => {
   }
 }
 
+// Auto-upload posts each video once: re-renders (caption changes, scene edits, Render again) never
+// post another copy. Remembered per narration job, across reloads.
+const FV_YT_AUTO_KEY = 'tubeops_yt_auto_uploaded'
+function fvAutoUploadedIds() { try { return JSON.parse(localStorage.getItem(FV_YT_AUTO_KEY) || '[]') } catch (_) { return [] } }
 async function fvMaybeAutoUploadYoutube() {
   if (!fvState.renderUrl) return
+  const vid = String(fvState.media?.jobId || fvState.editProjectId || '')
+  if (!vid || fvAutoUploadedIds().includes(vid)) return
   try {
     const st = await youtubeStatus()
     _ytStatus = st
     fvSyncYoutubeUploadBtn(st)
-    if (st?.connected && st.autoUpload) await window.fvUploadToYoutube({ auto: true })
+    if (st?.connected && st.autoUpload === true) {
+      try { localStorage.setItem(FV_YT_AUTO_KEY, JSON.stringify([vid, ...fvAutoUploadedIds()].slice(0, 200))) } catch (_) {}
+      await window.fvUploadToYoutube({ auto: true })
+    }
   } catch (_) {
     fvSyncYoutubeUploadBtn({ connected: false })
   }
@@ -15171,7 +15340,7 @@ window.filesUploadToYoutube = async () => {
         blob,
         title,
         description,
-        privacy: tok.privacy || st.privacy || 'public',
+        privacy: tok.privacy || st.privacy || 'private',
         onProgress: (pct) => filesSetYtStatus('Uploading to YouTube… ' + pct + '%', 'loading'),
       })
     } catch (e) {
@@ -15180,7 +15349,7 @@ window.filesUploadToYoutube = async () => {
         videoUrl: f.url,
         title,
         description,
-        privacy: st.privacy || 'public',
+        privacy: st.privacy || 'private',
       })
     }
     const link = result.studioUrl || result.url
@@ -15227,6 +15396,8 @@ window.uploadFile = async (input) => {
 }
 
 window.delFile = async (id, btn) => {
+  // Deleting from My Files is permanent, and on touch screens the trash sits where you tap to open a file.
+  if (!window.confirm('Delete this file from My Files? This can\'t be undone.')) return
   if (btn) btn.disabled = true
   try {
     await api.upload.del(id)

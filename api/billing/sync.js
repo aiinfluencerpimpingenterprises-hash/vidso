@@ -1,8 +1,28 @@
 import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
-import { saveGrant, withStoredGrant } from '../../lib/grants.js'
-import { lookupPaidMembership, whopConfig } from '../../lib/whop-lookup.js'
-import { hydrateIntent, mayAttachOffEmail } from '../../lib/checkout-intents.js'
+import { membershipOwnedByOther, saveGrant, withStoredGrant } from '../../lib/grants.js'
+import { lookupPaidMembership, retrieveMembership, whopConfig } from '../../lib/whop-lookup.js'
+import { hydrateIntent, intentFor, mayAttachOffEmail, membershipCreatedMs, offEmailClaimAllowed } from '../../lib/checkout-intents.js'
+
+const SUPPORT_MESSAGE = 'We could not confirm this payment belongs to this account. Contact support with your receipt.'
+
+/**
+ * A membership that matched only the typed receipt email. It is attached only
+ * when this account started a checkout for that tier before the membership was
+ * created (and within 3 hours of it), and no other TubeOps account holds it.
+ */
+async function offEmailClaimOk(user, hit) {
+  if (!hit?.membershipId || !hit.tier) return false
+  const membership = await retrieveMembership(hit.membershipId)
+  if (!membership) return false
+  // Checkout from another TubeOps account stamps that account's id on the membership.
+  const meta = membership.metadata && typeof membership.metadata === 'object' ? membership.metadata : {}
+  const ownId = String(user?.id || user?.user_id || '').trim()
+  const stamped = [meta.user_id, meta.vidso_user_id].map((v) => String(v || '').trim()).filter(Boolean)
+  if (stamped.length && !stamped.includes(ownId)) return false
+  if (await membershipOwnedByOther(user, hit.membershipId)) return false
+  return offEmailClaimAllowed({ intent: intentFor(user), tier: hit.tier, createdAt: membershipCreatedMs(membership) }).ok
+}
 
 export const config = { maxDuration: 30 }
 
@@ -119,11 +139,27 @@ export default async function handler(req, res) {
       message: 'Start checkout from this signed-in account first, then enter the email on the Whop receipt. That keeps someone else from claiming your payment.',
     })
   }
-  const hit = await lookupPaidMembership(user, undefined, {
+  // This account's own emails and id first; that path is unchanged.
+  let hit = await lookupPaidMembership(user, undefined, {
     force: !!body.force,
     deep: true,
-    extraEmails: offEmail ? [offEmail] : [],
+    extraEmails: [],
   })
+  if (!hit.active && offEmail) {
+    hit = await lookupPaidMembership(user, undefined, {
+      force: !!body.force,
+      deep: true,
+      extraEmails: [offEmail],
+    })
+    if (hit.active && !(await offEmailClaimOk(user, hit))) {
+      return send(res, 200, {
+        active: false,
+        configured: true,
+        reason: 'contact_support',
+        message: SUPPORT_MESSAGE,
+      })
+    }
+  }
   if (!hit.active) {
     return send(res, 200, {
       active: false,
