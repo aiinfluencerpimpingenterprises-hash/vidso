@@ -60,7 +60,7 @@
     }
     var q = location.search || ''
     // Preview mode (the app without signing in) is for local and Vercel preview builds only, never the live site.
-    var devHost = /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|.+\.vercel\.app)$/.test(location.hostname)
+    var devHost = /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|(?!vidso-pi\.).+\.vercel\.app)$/.test(location.hostname) // vidso-pi.vercel.app is the live site
     var on = devHost && (/(?:\?|&)(?:ui|dev)=1(?:&|$)/.test(q) || /(?:\?|&)paywall=0(?:&|$)/.test(q) || path === '/ui' || path === '/preview')
     var off = !devHost || /(?:\?|&)(?:ui|dev)=0(?:&|$)/.test(q)
     if (off) localStorage.removeItem('vidso_ui_preview')
@@ -6945,7 +6945,7 @@ function uiPreviewForced() {
 
 /** Local and Vercel preview builds: the only places preview mode (no sign-in) works. */
 function previewModeHost() {
-  try { return /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|.+\.vercel\.app)$/.test(location.hostname) } catch (_) { return false }
+  try { return /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|(?!vidso-pi\.).+\.vercel\.app)$/.test(location.hostname) } catch (_) { return false } // vidso-pi.vercel.app is the live site
 }
 
 function uiPreviewMode() {
@@ -7046,7 +7046,8 @@ function afterAuthReady(opts = {}) {
     try { consumeYoutubeQuery() } catch (_) {}
     return
   }
-  obClearNeedFlag()
+  // The sign-up flag stays until the channel setup finishes (obFinishStep clears it): clearing it here
+  // sent every new /signup and Google account straight to the paywall instead of the free setup.
   loadUsage()
   loadVoices()
   loadFiles()
@@ -7098,7 +7099,7 @@ function revealOnboardingNow() {
     maybeShowOnboarding()
     return
   }
-  obClearNeedFlag()
+  // (Not obClearNeedFlag: the old survey is gone, but the flag now starts the Manager's channel setup.)
   document.documentElement.classList.remove('needs-onboarding')
   const modal = document.getElementById('onboarding-modal')
   if (modal) modal.classList.add('hidden')
@@ -9213,9 +9214,8 @@ window.startCheckout = async (tier) => {
     setPaywallStatus('To switch plans, cancel your current plan in Whop (you keep it until the end of what you paid for), then pick the new plan here. Questions: support@tubeops.pro', null)
     return
   }
-  // A double click must not open two checkouts (two subscriptions).
-  if (window._fvCheckoutAt && Date.now() - window._fvCheckoutAt < 8000) return
-  window._fvCheckoutAt = Date.now()
+  // A double click must not open two checkouts (two subscriptions) for the same plan.
+  if (window._fvCheckout && window._fvCheckout.tier === tier && Date.now() - window._fvCheckout.at < 8000) return
   pendingCheckoutTier(tier)
   try { localStorage.removeItem(PICKED_PLAN_KEY) } catch (_) {}
   const email = String(currentUser?.email || '').trim()
@@ -9223,6 +9223,7 @@ window.startCheckout = async (tier) => {
     setPaywallStatus('Sign in with an email on this account before checkout.', 'err')
     return
   }
+  window._fvCheckout = { tier, at: Date.now() }
   // Open the tab while the click still counts as a user gesture. Safari (and
   // Chrome after ~5s) blocks a window.open that waits on the session request.
   const tab = window.open('', '_blank')
@@ -11040,14 +11041,14 @@ function fvAgentsChanged() {
 // newest first; each is keyed by the narration job so re-saves replace it.
 // Saved Editor projects belong to the signed-in account (the next account on this browser never sees them).
 const FV_EDIT_KEY_OLD = 'vidso_edit_projects'
-const fvEditKey = () => FV_EDIT_KEY_OLD + ':' + String(currentUser?.id || currentUser?.user_id || currentUser?.email || 'guest')
+const fvEditKey = () => FV_EDIT_KEY_OLD + ':' + String(currentUser?.email || currentUser?.id || currentUser?.user_id || 'guest').toLowerCase()
 let fvEditSaveT = 0
 function fvEditProjects() {
   try {
     // One-time move of the old shared list to the account signed in now.
     const old = localStorage.getItem(FV_EDIT_KEY_OLD)
-    if (old && currentUser && !localStorage.getItem(fvEditKey())) localStorage.setItem(fvEditKey(), old)
-    if (old && currentUser) localStorage.removeItem(FV_EDIT_KEY_OLD)
+    if (old && currentUser?.email && !localStorage.getItem(fvEditKey())) localStorage.setItem(fvEditKey(), old)
+    if (old && currentUser?.email) localStorage.removeItem(FV_EDIT_KEY_OLD)
     const v = JSON.parse(localStorage.getItem(fvEditKey()) || '[]'); return Array.isArray(v) ? v : []
   } catch (_) { return [] }
 }
@@ -11340,7 +11341,8 @@ window.fvTitleSteer = async (note) => {
 /** `request` is the user's own words, when the Manager passes its summary as `note`. */
 window.fvThumbSteer = (note, refs = [], request = '') => {
   const n = String(note || '')
-  const fresh = /\b(new|another|different|other)\s+(style|thumbnail|design|one|look)\b|\bstart over\b|\bfrom scratch\b/i.test(n) || !!fvThumbTopicFrom(n) || !!fvThumbTopicFrom(request)
+  const alone = !fvState.script
+  const fresh = /\b(new|another|different|other)\s+(style|thumbnail|design|one|look)\b|\bstart over\b|\bfrom scratch\b/i.test(n) || (alone && (!!fvThumbTopicFrom(n) || !!fvThumbTopicFrom(request)))
   return fvThumbAgent({ next: true, note: n, refs, edit: !fresh, request })
 }
 /** An image pasted or dropped into a chat box: upload it and return its public link. */
@@ -11757,6 +11759,8 @@ window.fvAgentsReset = () => {
   fvState.ownScriptSeconds = 0
   fvState.sceneProgress = null
   fvState.serverRun = null
+  // Stop checking on the old server video (it would poll every 3 s for the rest of the session).
+  if (fvServerPoll) { clearInterval(fvServerPoll); fvServerPoll = 0 }
   try { localStorage.removeItem('vidso_server_run') } catch (_) {}
   fvAgentsChanged()
 }
@@ -12370,7 +12374,11 @@ window.fvContinueToMedia = (allowShort) => {
 }
 
 window.fvBackToEditor = () => {
-  fvStopInFlight()
+  fvState.autoChain = false
+  if (fvState.renderPoll) {
+    // A render is running: leave it alone; only the narration wait (if any) stops.
+    try { fvState.mediaWaitCancel?.() } catch (_) {}
+  } else fvStopInFlight()
   fvPausePreview()
   fvState.phase = 1
   document.getElementById('fv-media-box')?.classList.remove('show')
@@ -14237,6 +14245,8 @@ function fvPollRenderJob(jobId, picked, btn) {
       clearInterval(fvState.renderPoll)
       fvState.renderPoll = null
       if (btn) btn.disabled = false
+      fvState.renderJobId = null
+      fvRememberRenderJob('')
       fvSetExportStatus('The render is taking far too long. Try again.', 'err')
       fvCrewFail('render', 'The render is taking far too long (over 75 minutes). Try again.')
       return
@@ -14323,6 +14333,8 @@ function fvPollRenderJob(jobId, picked, btn) {
         clearInterval(fvState.renderPoll)
         fvState.renderPoll = null
         if (btn) btn.disabled = false
+        // A job the server no longer knows (restart, expired) can't be reconnected: Try again renders anew.
+        if (e?.status === 404) { fvState.renderJobId = null; fvRememberRenderJob('') }
         const msg = fvIsNetworkBlip(e) ? 'Lost the connection to the render. It may still finish: press Try again to check on it.' : (e.message || 'Poll failed')
         fvSetExportStatus(msg, 'err')
         fvCrewFail('render', msg)
@@ -14442,15 +14454,18 @@ const FV_YT_AUTO_KEY = 'tubeops_yt_auto_uploaded'
 function fvAutoUploadedIds() { try { return JSON.parse(localStorage.getItem(FV_YT_AUTO_KEY) || '[]') } catch (_) { return [] } }
 async function fvMaybeAutoUploadYoutube() {
   if (!fvState.renderUrl) return
-  const vid = String(fvState.media?.jobId || fvState.editProjectId || '')
+  const vid = String(fvState.media?.jobId || fvState.editProjectId || (fvState.script?.title ? 'title:' + fvState.script.title : ''))
   if (!vid || fvAutoUploadedIds().includes(vid)) return
   try {
     const st = await youtubeStatus()
     _ytStatus = st
     fvSyncYoutubeUploadBtn(st)
-    if (st?.connected && st.autoUpload === true) {
-      try { localStorage.setItem(FV_YT_AUTO_KEY, JSON.stringify([vid, ...fvAutoUploadedIds()].slice(0, 200))) } catch (_) {}
+    if (st?.connected && st.autoUpload === true && fvState.ytAutoFor !== vid) {
+      fvState.ytAutoFor = vid // no second auto-upload of this video while the first is going
+      fvState.ytVideoId = null
       await window.fvUploadToYoutube({ auto: true })
+      if (fvState.ytVideoId) { try { localStorage.setItem(FV_YT_AUTO_KEY, JSON.stringify([vid, ...fvAutoUploadedIds()].slice(0, 200))) } catch (_) {} }
+      else fvState.ytAutoFor = null // failed: the next render may try again
     }
   } catch (_) {
     fvSyncYoutubeUploadBtn({ connected: false })

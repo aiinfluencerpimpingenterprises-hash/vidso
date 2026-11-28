@@ -2,7 +2,7 @@ import { withCompedPlan, emailsFromUser } from '../../lib/comped.js'
 import { applyPaidGrant } from '../../lib/paid-grant.js'
 import { membershipOwnedByOther, saveGrant, withStoredGrant } from '../../lib/grants.js'
 import { lookupPaidMembership, retrieveMembership, whopConfig } from '../../lib/whop-lookup.js'
-import { hydrateIntent, intentFor, mayAttachOffEmail, membershipCreatedMs, offEmailClaimAllowed } from '../../lib/checkout-intents.js'
+import { hydrateIntent, intentFor, isPrivateRelayEmail, mayAttachOffEmail, membershipCreatedMs, offEmailClaimAllowed } from '../../lib/checkout-intents.js'
 
 const SUPPORT_MESSAGE = 'We could not confirm this payment belongs to this account. Contact support with your receipt.'
 
@@ -11,7 +11,7 @@ const SUPPORT_MESSAGE = 'We could not confirm this payment belongs to this accou
  * when this account started a checkout for that tier before the membership was
  * created (and within 3 hours of it), and no other TubeOps account holds it.
  */
-async function offEmailClaimOk(user, hit) {
+async function offEmailClaimOk(user, hit, offEmail = '') {
   if (!hit?.membershipId || !hit.tier) return false
   const membership = await retrieveMembership(hit.membershipId)
   if (!membership) return false
@@ -21,6 +21,9 @@ async function offEmailClaimOk(user, hit) {
   const stamped = [meta.user_id, meta.vidso_user_id].map((v) => String(v || '').trim()).filter(Boolean)
   if (stamped.length && !stamped.includes(ownId)) return false
   if (await membershipOwnedByOther(user, hit.membershipId)) return false
+  // Apple private-relay receipts are unguessable addresses, so they don't need the matching checkout
+  // (people often pay before signing up, or on another device).
+  if (isPrivateRelayEmail(offEmail)) return true
   return offEmailClaimAllowed({ intent: intentFor(user), tier: hit.tier, createdAt: membershipCreatedMs(membership) }).ok
 }
 
@@ -151,7 +154,7 @@ export default async function handler(req, res) {
       deep: true,
       extraEmails: [offEmail],
     })
-    if (hit.active && !(await offEmailClaimOk(user, hit))) {
+    if (hit.active && !(await offEmailClaimOk(user, hit, offEmail))) {
       return send(res, 200, {
         active: false,
         configured: true,

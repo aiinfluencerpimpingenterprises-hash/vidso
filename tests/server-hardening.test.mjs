@@ -318,7 +318,7 @@ test('a stage past its deadline fails the run with a clear message', async () =>
   assert.equal(STAGE_DEADLINES_MS.render, 60 * 60 * 1000)
 })
 
-test('upstream calls retry twice on network errors and 502/503, not on 4xx or a POST 504', async () => {
+test('status checks retry twice on network errors and 502/503/504; paid POSTs never repeat unless idempotent', async () => {
   let n = 0
   const slept = []
   const flaky = (fails, status) => ({
@@ -333,7 +333,9 @@ test('upstream calls retry twice on network errors and 502/503, not on 4xx or a 
   assert.deepEqual(await withRetry(flaky(2, 503)).call('gate', 'GET', '/x'), { ok: true, method: 'GET' })
   assert.deepEqual(slept, [1000, 2000])
   n = 0
-  assert.ok(await withRetry(flaky(1)).call('gate', 'POST', '/x'))
+  // A POST that failed after it was sent may already have started paid work: no repeat.
+  await assert.rejects(() => withRetry(flaky(1)).call('gate', 'POST', '/x'))
+  assert.equal(n, 1)
   n = 0
   await assert.rejects(() => withRetry(flaky(3, 502)).call('gate', 'GET', '/x'))
   assert.equal(n, 3)
